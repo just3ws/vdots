@@ -1,5 +1,12 @@
 " vim:set filetype=vim expandtab shiftwidth=2:
 
+" Python Integration {{{1
+
+let g:python_host_prog = '/Users/mike/.pyenv/versions/neovim2/bin/python'
+let g:python3_host_prog = '/Users/mike/.pyenv/versions/neovim3/bin/python'
+
+" }}}1
+
 " Plugins {{{1
 
 call plug#begin('~/.local/share/nvim/site/plugged')
@@ -7,71 +14,72 @@ call plug#begin('~/.local/share/nvim/site/plugged')
 " Pre-requisites {{{2
 
 Plug 'beautify-web/js-beautify', { 'do': 'npm install -g js-beautify', 'for': ['javascript', 'coffeescript', 'json'] }
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 
-" Python Integration {{{3
-
-let g:python_host_prog = '/Users/mike/.pyenv/versions/neovim2/bin/python'
-let g:python3_host_prog = '/Users/mike/.pyenv/versions/neovim3/bin/python'
-
-" }}}3
 
 " }}}2
 
-Plug 'wesQ3/vim-windowswap'
-Plug 'w0rp/ale'
+Plug 'chrisbra/vim-zsh'
+Plug 'tpope/vim-rhubarb'
+Plug 'godlygeek/tabular'
+Plug 'roalddevries/yaml.vim', { 'for' : 'yaml' }
+Plug 'digitalrounin/vim-yaml-folds', { 'for' : 'yaml' }
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
-Plug 'travisjeffery/vim-auto-mkdir'
-Plug 'kana/vim-textobj-user'
+Plug 'SirVer/ultisnips'
+Plug 'Xuyuanp/nerdtree-git-plugin', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
+Plug 'airblade/vim-gitgutter'
+" Plug 'carlitux/deoplete-ternjs', { 'for' : ['javascript', 'javascript.jsx'] }
+Plug 'chriskempson/base16-vim'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'dhruvasagar/vim-table-mode', { 'for': ['csv', 'xls', 'xlsx'] }
+Plug 'editorconfig/editorconfig-vim'
+Plug 'ervandew/supertab'
+Plug 'honza/vim-snippets'
+Plug 'jceb/vim-textobj-uri'
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/vim-easy-align'
+Plug 'justinmk/vim-sneak'
 Plug 'kana/vim-textobj-indent'
 Plug 'kana/vim-textobj-line'
-Plug 'whatyouhide/vim-textobj-xmlattr'
-Plug 'reedes/vim-textobj-sentence'
-Plug 'jceb/vim-textobj-uri'
+Plug 'kana/vim-textobj-user'
+Plug 'kchmck/vim-coffee-script', { 'for' : 'coffeescript' }
 Plug 'lucapette/vim-textobj-underscore'
-Plug 'reedes/vim-textobj-quote'
-Plug 'nelstrom/vim-textobj-rubyblock', { 'for' : 'ruby' }
-Plug 'wellle/targets.vim'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-Plug 'ervandew/supertab'
-Plug 'xolox/vim-misc'
-Plug 'xolox/vim-easytags'
 Plug 'majutsushi/tagbar'
-Plug 'airblade/vim-gitgutter'
-Plug 'tpope/vim-fugitive'
-Plug 'maksimr/vim-jsbeautify', { 'for' : ['javascript', 'json', 'jsx', 'html', 'css', 'scss'] }
-Plug 'kchmck/vim-coffee-script', { 'for' : 'coffescript' }
-Plug 'ternjs/tern_for_vim', { 'for' : ['javascript', 'javascript.jsx'], 'do' : 'npm install --global tern' }
-Plug 'carlitux/deoplete-ternjs', { 'for' : ['javascript', 'javascript.jsx'] }
-Plug 'othree/jspc.vim', { 'for' : ['javascript', 'javascript.jsx', 'coffeescript'] }
-Plug 'scrooloose/nerdtree', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
-Plug 'Xuyuanp/nerdtree-git-plugin', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'mileszs/ack.vim'
-Plug 'vim-scripts/mru.vim'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'junegunn/fzf.vim'
+Plug 'maksimr/vim-jsbeautify', { 'for' : ['javascript', 'json', 'javascript.jsx', 'html', 'css', 'scss'] }
 Plug 'mhinz/vim-startify'
+Plug 'mileszs/ack.vim'
+Plug 'nelstrom/vim-markdown-folding', { 'for': 'markdown' }
+Plug 'nelstrom/vim-textobj-rubyblock', { 'for' : ['ruby', 'eruby'] }
+Plug 'othree/jspc.vim', { 'for' : ['javascript', 'javascript.jsx', 'coffeescript'] }
+Plug 'reedes/vim-textobj-quote'
+Plug 'reedes/vim-textobj-sentence'
 Plug 'ryanoasis/vim-devicons'
+Plug 'scrooloose/nerdtree', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
 Plug 'sheerun/vim-polyglot'
+" Plug 'ternjs/tern_for_vim', { 'for' : ['javascript', 'javascript.jsx'], 'do' : 'npm install --global tern' }
 Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-bundler', { 'for' : 'ruby' }
 Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-cucumber', { 'for' : 'cucumber' }
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-haml', { 'for' : 'haml' }
 Plug 'tpope/vim-markdown', { 'for' : 'markdown' }
 Plug 'tpope/vim-projectionist'
-Plug 'tpope/vim-surround'
-Plug 'justinmk/vim-sneak'
-Plug 'vim-ruby/vim-ruby', { 'for' : ['ruby', 'eruby'] }
-Plug 'vim-scripts/ruby-matchit', { 'for' : ['ruby', 'eruby'] }
 Plug 'tpope/vim-rails', { 'for' : ['ruby', 'eruby', 'haml'] }
 Plug 'tpope/vim-rake', { 'for' : ['ruby', 'eruby', 'haml'] }
-Plug 'tpope/vim-bundler', { 'for' : 'ruby' }
-Plug 'tpope/vim-cucumber', { 'for' : 'cucumber' }
-Plug 'tpope/vim-haml', { 'for' : 'haml' }
+Plug 'tpope/vim-surround'
+Plug 'travisjeffery/vim-auto-mkdir'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'chriskempson/base16-vim'
-Plug 'junegunn/vim-easy-align'
+Plug 'vim-ruby/vim-ruby', { 'for' : ['ruby', 'eruby'] }
+Plug 'vim-scripts/mru.vim'
+Plug 'vim-scripts/ruby-matchit', { 'for' : ['ruby', 'eruby'] }
+Plug 'w0rp/ale'
+Plug 'wellle/targets.vim'
+Plug 'wesQ3/vim-windowswap'
+Plug 'whatyouhide/vim-textobj-xmlattr'
+Plug 'xolox/vim-easytags'
+Plug 'xolox/vim-misc'
 
 call plug#end()
 
@@ -157,6 +165,12 @@ let g:NERDTreeIgnore=[
 
 " }}}2
 
+" Fugitive {{{2
+
+let g:fugitive_git_executable="LANG=en_US.UTF-8 git"
+
+" }}}2
+
 " EditorConfig {{{2
 
 let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
@@ -188,11 +202,20 @@ let g:ctrlp_custom_ignore = {
 
 highlight clear ALEErrorSign
 highlight clear ALEWarningSign"
-let g:ale_statusline_format = ['⨉ %d', '⚠ %d', '⬥ ok']
-let g:ale_sign_error = '⨉'
-let g:ale_sign_warning = '⚠'
+" 🚑
+let g:ale_statusline_format = ['💢 %d', '💩 %d', '👌 ok']
+let g:ale_sign_error = '💢'
+let g:ale_sign_warning = '💩'
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
+
+" let g:ale_keep_list_window_open = 1
+" let g:ale_set_loclist = 0
+" let g:ale_set_quickfix = 1
+" let g:ale_sign_column_always = 1
+" let g:ale_open_list = 1
+" nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+" nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 " }}}2
 
@@ -200,6 +223,12 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 let g:gitgutter_realtime = 0 " Disable GitGutter in realtime
 let g:gitgutter_eager = 0 " Disable GitGutter to eager load on tab or buffer switch
+
+let g:gitgutter_sign_added = '++'
+let g:gitgutter_sign_modified = 'mm'
+let g:gitgutter_sign_removed = '--'
+let g:gitgutter_sign_removed_first_line = '^^'
+let g:gitgutter_sign_modified_removed = 'ww'
 
 " }}}2
 
@@ -349,7 +378,8 @@ set autoread " Read when a file has been changed even outside of Vim.
 set formatoptions+=j
 
 set novisualbell
-set t_vb=
+set belloff=all
+set vb t_vb=
 
 " }}}1
 
@@ -379,9 +409,9 @@ set infercase " Completion with case-mismatch matches case-insensitive if possib
 "Scrolling {{{1
 
 set scroll=8
-set scrolloff=0
+set scrolloff=1
 set sidescroll=4
-set sidescrolloff=0
+set sidescrolloff=1
 
 " }}}1
 
@@ -402,12 +432,18 @@ set smartindent " Use language indentation rules where possible
 
 " Keep undo history across sessions, by storing in file.
 
+silent execute '!mkdir -p ~/.local/share/nvim/backup/'
+silent execute '!mkdir -p ~/.local/share/nvim/swap/'
+silent execute '!mkdir -p ~/.local/share/nvim/undo/'
 
-silent !mkdir -p ~/.local/share/nvim/undo > /dev/null 2>&1
-set undodir=~/.local/share/nvim/undo
-set undofile
+set backupdir=~/.local/share/nvim/backup//
+set directory=~/.local/share/nvim/swap//
+set undodir=~/.local/share/nvim/undo//
 
 " }}}1
+
+" Convert ; to : in modeline
+nnoremap ; :
 
 " Functions {{{1
 
@@ -453,7 +489,8 @@ autocmd vimrc VimEnter * set vb t_vb=
 nnoremap <leader>t :TagbarToggle<cr>
 nnoremap <c-t>. :CtrlPTag<cr>
 
-nnoremap <cr> :nohlsearch<cr><cr> " Clear search on enter key
+ " Clear search on enter key
+nnoremap <cr> :nohlsearch<cr><cr>
 
 " If a line is wrapping then step into the wrap line as well.
 nnoremap j gj
@@ -464,3 +501,20 @@ nmap <leader><leader> V
 
 " Highlight last inserted text
 nnoremap gV `[v`]
+
+" if file name is `.gitignore`, be sure to set filetype to text
+autocmd BufNewFile,BufReadPost .gitignore set filetype=text
+
+autocmd FileType markdown setlocal spell spelllang=en_us
+autocmd FileType srt setlocal spell spelllang=en_us
+autocmd FileType txt setlocal spell spelllang=en_us
+
+" Automatically equalize window sizes when Vim window is resized
+autocmd VimResized * wincmd =
+
+" recognize files ending in .csv as csv files
+autocmd BufNewFile,BufReadPost *.csv set filetype=csv
+
+let g:netrw_banner  = 0
+
+" autocmd BufWritePre <buffer> set et|retab
