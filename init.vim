@@ -1,5 +1,7 @@
 " vim:set filetype=vim expandtab shiftwidth=2:
 
+set shell=/usr/local/bin/zsh
+
 " Python Integration {{{1
 
 let g:python_host_prog = '/Users/mike/.pyenv/versions/neovim2/bin/python'
@@ -19,21 +21,21 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 
 " }}}2
 
-Plug 'chrisbra/vim-zsh'
-Plug 'tpope/vim-rhubarb'
-Plug 'godlygeek/tabular'
-Plug 'roalddevries/yaml.vim', { 'for' : 'yaml' }
-Plug 'digitalrounin/vim-yaml-folds', { 'for' : 'yaml' }
+" Plug 'carlitux/deoplete-ternjs', { 'for' : ['javascript', 'javascript.jsx'] }
+" Plug 'mhinz/vim-startify'
+" Plug 'ternjs/tern_for_vim', { 'for' : ['javascript', 'javascript.jsx'], 'do' : 'npm install --global tern' }
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
 Plug 'SirVer/ultisnips'
 Plug 'Xuyuanp/nerdtree-git-plugin', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
 Plug 'airblade/vim-gitgutter'
-" Plug 'carlitux/deoplete-ternjs', { 'for' : ['javascript', 'javascript.jsx'] }
+Plug 'chrisbra/vim-zsh'
 Plug 'chriskempson/base16-vim'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'dhruvasagar/vim-table-mode', { 'for': ['csv', 'xls', 'xlsx'] }
+Plug 'digitalrounin/vim-yaml-folds', { 'for' : 'yaml' }
 Plug 'editorconfig/editorconfig-vim'
 Plug 'ervandew/supertab'
+Plug 'godlygeek/tabular'
 Plug 'honza/vim-snippets'
 Plug 'jceb/vim-textobj-uri'
 Plug 'junegunn/fzf.vim'
@@ -46,17 +48,16 @@ Plug 'kchmck/vim-coffee-script', { 'for' : 'coffeescript' }
 Plug 'lucapette/vim-textobj-underscore'
 Plug 'majutsushi/tagbar'
 Plug 'maksimr/vim-jsbeautify', { 'for' : ['javascript', 'json', 'javascript.jsx', 'html', 'css', 'scss'] }
-Plug 'mhinz/vim-startify'
 Plug 'mileszs/ack.vim'
 Plug 'nelstrom/vim-markdown-folding', { 'for': 'markdown' }
 Plug 'nelstrom/vim-textobj-rubyblock', { 'for' : ['ruby', 'eruby'] }
 Plug 'othree/jspc.vim', { 'for' : ['javascript', 'javascript.jsx', 'coffeescript'] }
 Plug 'reedes/vim-textobj-quote'
 Plug 'reedes/vim-textobj-sentence'
+Plug 'roalddevries/yaml.vim', { 'for' : 'yaml' }
 Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdtree', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
 Plug 'sheerun/vim-polyglot'
-" Plug 'ternjs/tern_for_vim', { 'for' : ['javascript', 'javascript.jsx'], 'do' : 'npm install --global tern' }
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-bundler', { 'for' : 'ruby' }
 Plug 'tpope/vim-commentary'
@@ -67,6 +68,7 @@ Plug 'tpope/vim-markdown', { 'for' : 'markdown' }
 Plug 'tpope/vim-projectionist'
 Plug 'tpope/vim-rails', { 'for' : ['ruby', 'eruby', 'haml'] }
 Plug 'tpope/vim-rake', { 'for' : ['ruby', 'eruby', 'haml'] }
+Plug 'tpope/vim-rhubarb'
 Plug 'tpope/vim-surround'
 Plug 'travisjeffery/vim-auto-mkdir'
 Plug 'vim-airline/vim-airline'
@@ -151,16 +153,13 @@ let g:NERDTreeIgnore=[
       \ '\.DS_Store$',
       \ '\.bundle$',
       \ '\.git$',
-      \ '\.idea',
-      \ '\.pyc$',
-      \ '\.rbc$',
       \ '\.sass-cache$',
       \ 'node_modules',
       \ '\.tern-port',
       \ '\.swp$',
-      \ '\.vagrant',
       \ '\~$',
-      \ 'tmp$'
+      \ 'tmp$',
+      \ '\.zwc$'
       \ ]
 
 " }}}2
@@ -170,6 +169,8 @@ let g:NERDTreeIgnore=[
 let g:fugitive_git_executable="LANG=en_US.UTF-8 git"
 
 " }}}2
+
+let g:ackhighlight=1
 
 " EditorConfig {{{2
 
@@ -518,3 +519,11 @@ autocmd BufNewFile,BufReadPost *.csv set filetype=csv
 let g:netrw_banner  = 0
 
 " autocmd BufWritePre <buffer> set et|retab
+
+" │ ║ ░ ▒ ❖ ⟨ ⟩ ⟪ ⟫                   ┊ ┋ ❖ ⬗ ⬖   
+
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
