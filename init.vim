@@ -16,7 +16,6 @@ call plug#begin('~/.local/share/nvim/site/plugged')
 Plug 'beautify-web/js-beautify', { 'do': 'npm install -g js-beautify', 'for': ['javascript', 'coffeescript', 'json'] }
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 
-
 " }}}2
 
 " Plug 'carlitux/deoplete-ternjs', { 'for' : ['javascript', 'javascript.jsx'] }
