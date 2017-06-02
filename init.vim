@@ -1,7 +1,5 @@
 " vim:set filetype=vim expandtab shiftwidth=2:
 
-set shell=/usr/local/bin/zsh
-
 " Python Integration {{{1
 
 let g:python_host_prog = '/Users/mike/.pyenv/versions/neovim2/bin/python'
