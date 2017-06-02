@@ -410,9 +410,9 @@ set infercase " Completion with case-mismatch matches case-insensitive if possib
 "Scrolling {{{1
 
 set scroll=8
-set scrolloff=1
+set scrolloff=4
 set sidescroll=4
-set sidescrolloff=1
+set sidescrolloff=4
 
 " }}}1
 
@@ -520,10 +520,10 @@ let g:netrw_banner  = 0
 
 " autocmd BufWritePre <buffer> set et|retab
 
-" │ ║ ░ ▒ ❖ ⟨ ⟩ ⟪ ⟫                   ┊ ┋ ❖ ⬗ ⬖   
+" │ ║ ░ ▒ ❖ ⟨ ⟩ ⟪ ⟫                   ┊ ┋ ❖ ⬗ ⬖    
 
 let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
+let g:airline_left_alt_sep = ''
 
 let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
+let g:airline_right_alt_sep = ''
