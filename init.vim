@@ -549,5 +549,3 @@ autocmd BufNewFile,BufReadPost *.csv set filetype=csv
 let g:netrw_banner  = 0
 
 " autocmd BufWritePre <buffer> set et|retab
-
-" autocmd FileType zsh set nolist noexpandtab tabstop=8 shiftwidth=8 softtabstop=8
