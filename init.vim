@@ -2,8 +2,8 @@
 
 " Python Integration {{{1
 
-let g:python_host_prog = '/Users/mike/.pyenv/versions/neovim2/bin/python'
-let g:python3_host_prog = '/Users/mike/.pyenv/versions/neovim3/bin/python'
+let g:python_host_prog = expand('$HOME') . '/.pyenv/versions/neovim2/bin/python'
+let g:python3_host_prog = expand('$HOME') .'/.pyenv/versions/neovim3/bin/python'
 
 " }}}1
 
@@ -23,7 +23,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 " Plug 'ternjs/tern_for_vim', { 'for' : ['javascript', 'javascript.jsx'], 'do' : 'npm install --global tern' }
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
 Plug 'SirVer/ultisnips'
-Plug 'Xuyuanp/nerdtree-git-plugin', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
+" Plug 'Xuyuanp/nerdtree-git-plugin', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
 Plug 'airblade/vim-gitgutter'
 Plug 'chrisbra/vim-zsh'
 Plug 'chriskempson/base16-vim'
@@ -86,6 +86,9 @@ call plug#end()
 
 " Plugin Configuration {{{1
 
+let g:webdevicons_enable_airline_tabline = 1
+let g:webdevicons_enable_airline_statusline = 1
+
 " JsBeautify {{{2
 
 autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
@@ -127,7 +130,7 @@ let g:airline#extensions#whitespace#checks = [
       \ ]
 let g:airline#extensions#whitespace#symbol = '!'
 
-let g:airline_section_y='%{substitute(getcwd(), expand("$HOME"), "~", "g")}' " Set relative path
+let g:airline_section_y='%{substitute(getcwd(), expand("~"), "~", "g")}' " Set relative path
 
 " }}}2
 
@@ -506,6 +509,8 @@ autocmd BufNewFile,BufReadPost .gitignore set filetype=text
 autocmd FileType markdown setlocal spell spelllang=en_us
 autocmd FileType srt setlocal spell spelllang=en_us
 autocmd FileType txt setlocal spell spelllang=en_us
+
+autocmd FileType zsh set nolist noexpandtab tabstop=8 shiftwidth=8 softtabstop=8
 
 " Automatically equalize window sizes when Vim window is resized
 autocmd VimResized * wincmd =
