@@ -18,12 +18,12 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 
 " }}}2
 
+" Plug 'Xuyuanp/nerdtree-git-plugin', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
 " Plug 'carlitux/deoplete-ternjs', { 'for' : ['javascript', 'javascript.jsx'] }
 " Plug 'mhinz/vim-startify'
 " Plug 'ternjs/tern_for_vim', { 'for' : ['javascript', 'javascript.jsx'], 'do' : 'npm install --global tern' }
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
 Plug 'SirVer/ultisnips'
-" Plug 'Xuyuanp/nerdtree-git-plugin', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
 Plug 'airblade/vim-gitgutter'
 Plug 'chrisbra/vim-zsh'
 Plug 'chriskempson/base16-vim'
