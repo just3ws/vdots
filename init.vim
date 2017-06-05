@@ -18,11 +18,6 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 
 " }}}2
 
-" Plug 'Xuyuanp/nerdtree-git-plugin', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
-" Plug 'carlitux/deoplete-ternjs', { 'for' : ['javascript', 'javascript.jsx'] }
-" Plug 'mhinz/vim-startify'
-" Plug 'ternjs/tern_for_vim', { 'for' : ['javascript', 'javascript.jsx'], 'do' : 'npm install --global tern' }
-" Plug 'tpope/vim-commentary'
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
 Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
@@ -60,6 +55,7 @@ Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-bundler', { 'for' : 'ruby' }
 Plug 'tpope/vim-cucumber', { 'for' : 'cucumber' }
+Plug 'vim-scripts/gitignore.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-haml', { 'for' : 'haml' }
 Plug 'tpope/vim-markdown', { 'for' : 'markdown' }
@@ -86,9 +82,6 @@ call plug#end()
 " }}}1
 
 " Plugin Configuration {{{1
-
-let g:webdevicons_enable_airline_tabline = 1
-let g:webdevicons_enable_airline_statusline = 1
 
 " JsBeautify {{{2
 
@@ -132,6 +125,27 @@ let g:airline#extensions#whitespace#checks = [
 let g:airline#extensions#whitespace#symbol = '!'
 
 let g:airline_section_y='%{substitute(getcwd(), expand("~"), "~", "g")}' " Set relative path
+
+" │ ║ ░ ▒ ❖ ⟨ ⟩ ⟪ ⟫                   ┊ ┋ ❖ ⬗ ⬖    
+
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+
+" }}}2
+
+" DevIcons {{{
+
+let g:webdevicons_enable_airline_tabline = 1
+let g:webdevicons_enable_airline_statusline = 1
+
+" }}}2
+
+" Tagbar {{{2
+
+nnoremap <leader>t :TagbarToggle<cr>
 
 " }}}2
 
@@ -187,6 +201,8 @@ let g:ctrlp_custom_ignore = {
       \ 'dir':  '\v[\/]\.(git|hg|svn)$\|node_modules$\|backups',
       \ 'file': '\v(tags|\.(exe|so|dll|tmp|example))$'
       \ }
+
+nnoremap <c-t>. :CtrlPTag<cr>
 
 " }}}2
 
@@ -286,6 +302,25 @@ let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit='vertical'
+
+" }}}2
+
+" nerdcommenter {{{
+
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
+
+" Set a language to use its alternate delimiters by default
+let g:NERDAltDelims_ruby = 1
+
+" Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
 
 " }}}2
 
@@ -482,14 +517,14 @@ augroup END
 autocmd vimrc BufWritePre * :call s:StripTrailingWhitespaces()              " Auto-remove trailing spaces
 " autocmd vimrc FileType html,javascript,coffee,ruby setlocal sw=2 sts=2 ts=2 " Set 2 indent for html
 " autocmd vimrc FileType javascript setlocal cc=80                            " Set right margin only for php and js
+autocmd vimrc FileType markdown setlocal spell spelllang=en_us
+autocmd vimrc FileType srt setlocal spell spelllang=en_us
+autocmd vimrc FileType txt setlocal spell spelllang=en_us
 autocmd vimrc VimEnter,BufNewFile,BufReadPost * call s:LoadLocalVimrc()     " Load per project vimrc (Used for custom test mappings, etc.)
 
 autocmd vimrc VimEnter * set vb t_vb=
 
 " }}}1
-
-nnoremap <leader>t :TagbarToggle<cr>
-nnoremap <c-t>. :CtrlPTag<cr>
 
  " Clear search on enter key
 nnoremap <cr> :nohlsearch<cr><cr>
@@ -504,14 +539,6 @@ nmap <leader><leader> V
 " Highlight last inserted text
 nnoremap gV `[v`]
 
-" if file name is `.gitignore`, be sure to set filetype to text
-autocmd BufNewFile,BufReadPost .gitignore set filetype=text
-
-autocmd FileType markdown setlocal spell spelllang=en_us
-autocmd FileType srt setlocal spell spelllang=en_us
-autocmd FileType txt setlocal spell spelllang=en_us
-
-autocmd FileType zsh set nolist noexpandtab tabstop=8 shiftwidth=8 softtabstop=8
 
 " Automatically equalize window sizes when Vim window is resized
 autocmd VimResized * wincmd =
@@ -523,10 +550,4 @@ let g:netrw_banner  = 0
 
 " autocmd BufWritePre <buffer> set et|retab
 
-" │ ║ ░ ▒ ❖ ⟨ ⟩ ⟪ ⟫                   ┊ ┋ ❖ ⬗ ⬖    
-
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
+" autocmd FileType zsh set nolist noexpandtab tabstop=8 shiftwidth=8 softtabstop=8
