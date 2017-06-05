@@ -22,6 +22,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 " Plug 'carlitux/deoplete-ternjs', { 'for' : ['javascript', 'javascript.jsx'] }
 " Plug 'mhinz/vim-startify'
 " Plug 'ternjs/tern_for_vim', { 'for' : ['javascript', 'javascript.jsx'], 'do' : 'npm install --global tern' }
+" Plug 'tpope/vim-commentary'
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
 Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
@@ -53,11 +54,11 @@ Plug 'reedes/vim-textobj-quote'
 Plug 'reedes/vim-textobj-sentence'
 Plug 'roalddevries/yaml.vim', { 'for' : 'yaml' }
 Plug 'ryanoasis/vim-devicons'
+Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
 Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-bundler', { 'for' : 'ruby' }
-Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-cucumber', { 'for' : 'cucumber' }
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-haml', { 'for' : 'haml' }
