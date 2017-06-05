@@ -547,5 +547,3 @@ autocmd VimResized * wincmd =
 autocmd BufNewFile,BufReadPost *.csv set filetype=csv
 
 let g:netrw_banner  = 0
-
-" autocmd BufWritePre <buffer> set et|retab
