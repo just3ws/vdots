@@ -9,6 +9,7 @@ let g:python3_host_prog = expand('$HOME') .'/.pyenv/versions/neovim3/bin/python'
 
 " Plugins {{{1
 
+"
 call plug#begin('~/.local/share/nvim/site/plugged')
 
 " Pre-requisites {{{2
@@ -31,6 +32,7 @@ Plug 'ervandew/supertab'
 Plug 'godlygeek/tabular'
 Plug 'honza/vim-snippets'
 Plug 'jceb/vim-textobj-uri'
+Plug 'jremmen/vim-ripgrep'
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/vim-easy-align'
 Plug 'justinmk/vim-sneak'
@@ -55,7 +57,6 @@ Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-bundler', { 'for' : 'ruby' }
 Plug 'tpope/vim-cucumber', { 'for' : 'cucumber' }
-Plug 'vim-scripts/gitignore.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-haml', { 'for' : 'haml' }
 Plug 'tpope/vim-markdown', { 'for' : 'markdown' }
@@ -185,7 +186,11 @@ let g:fugitive_git_executable="LANG=en_US.UTF-8 git"
 
 " }}}2
 
+" Ack {{{
+
 let g:ackhighlight=1
+
+" }}}
 
 " EditorConfig {{{2
 
@@ -266,19 +271,21 @@ let g:deoplete#enable_at_startup = 1
 
 " ripgrep {{{2
 
-" --column: Show column number
-" --line-number: Show line number
-" --no-heading: Do not show file headings in results
-" --fixed-strings: Search term as a literal string
-" --ignore-case: Case insensitive search
-" --no-ignore: Do not respect .gitignore, etc...
-" --hidden: Search hidden files and folders
-" --follow: Follow symlinks
-" --glob: Additional conditions for search (in this case ignore everything in the .git/ folder)
-" --color: Search color options
-command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
+" set g:rg_binary='/usr/local/bin/rg'
 
-set grepprg=rg\ --vimgrep
+" " --column: Show column number
+" " --line-number: Show line number
+" " --no-heading: Do not show file headings in results
+" " --fixed-strings: Search term as a literal string
+" " --ignore-case: Case insensitive search
+" " --no-ignore: Do not respect .gitignore, etc...
+" " --hidden: Search hidden files and folders
+" " --follow: Follow symlinks
+" " --glob: Additional conditions for search (in this case ignore everything in the .git/ folder)
+" " --color: Search color options
+" command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
+"
+" set grepprg=rg\ --vimgrep
 
 " }}}2
 
@@ -305,7 +312,7 @@ let g:UltiSnipsEditSplit='vertical'
 
 " }}}2
 
-" nerdcommenter {{{
+" nerdcommenter {{{2
 
 " Add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
@@ -364,59 +371,6 @@ highlight Comment cterm=italic gui=italic
 nnoremap <leader>rv :w<cr> :source $MYVIMRC<cr> :PlugInstall<cr>
 nnoremap <leader>ev :tabe $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
-
-" }}}1
-
-" Common Settings {{{1
-
-set foldmethod=marker
-
-set title " Change the terminal's title
-let &titlestring="%{substitute(expand('%:p'), $HOME, '$HOME', '')}"
-
-set relativenumber " Count based on the relative lines from the cursorline
-set number " Show the absolute line number for the cursorline
-
-set history=500 " Store lots of :cmdline history
-set showcmd " Show incomplete cmds down the bottom
-set noshowmode " Hide showmode because of the powerline plugin
-set nocursorline " Don’t use cursorline, as it causes constant redrawing, which, when combined with syntax highlighting, drops performance
-set smartcase " Smart case search if there is uppercase
-set ignorecase " case insensitive search
-set iskeyword+=?,!,@
-set mouse=a " Enable mouse usage
-set showmatch " Highlight matching bracket
-set fileencoding=utf-8 nobomb " Ensure utf-8 encoding on write
-set fileformats+=mac " Add mac format to list
-set nowrap
-set listchars=tab:␉\ \,trail:·,extends:… ",eol:¬ Set trails for tabs and spaces
-set list " Enable listchars
-set lazyredraw " Do not redraw on registers and macros
-set hidden " Hide buffers in background
-set path+=** " Allow recursive search
-set nojoinspaces " Use one space, not two, after punctuation.
-set virtualedit=block " Allow moving through empty space in virtual mode
-set shortmess=aI " Quieter messages and startup
-
-set sessionoptions=winpos,tabpages,help " Save configuration of all tabs and windows
-
-" Expire incomplete/partial key sequences after milliseconds
-set ttimeout
-set timeoutlen=500
-set ttimeoutlen=150
-
-" New buffers to the right and down
-set splitright
-set splitbelow
-
-set autoread " Read when a file has been changed even outside of Vim.
-
-" Delete comment character when joining commented lines
-set formatoptions+=j
-
-set novisualbell
-set belloff=all
-set vb t_vb=
 
 " }}}1
 
@@ -479,9 +433,6 @@ set undodir=~/.local/share/nvim/undo//
 
 " }}}1
 
-" Convert ; to : in modeline
-nnoremap ; :
-
 " Functions {{{1
 
 function! s:StripTrailingWhitespaces()
@@ -508,25 +459,12 @@ nnoremap N Nzz
 
 " }}}1
 
-" augroup vimrc {{{1
+" Common Settings {{{1
 
-augroup vimrc
-  autocmd!
-augroup END
+" Convert ; to : in modeline
+nnoremap ; :
 
-autocmd vimrc BufWritePre * :call s:StripTrailingWhitespaces()              " Auto-remove trailing spaces
-" autocmd vimrc FileType html,javascript,coffee,ruby setlocal sw=2 sts=2 ts=2 " Set 2 indent for html
-" autocmd vimrc FileType javascript setlocal cc=80                            " Set right margin only for php and js
-autocmd vimrc FileType markdown setlocal spell spelllang=en_us
-autocmd vimrc FileType srt setlocal spell spelllang=en_us
-autocmd vimrc FileType txt setlocal spell spelllang=en_us
-autocmd vimrc VimEnter,BufNewFile,BufReadPost * call s:LoadLocalVimrc()     " Load per project vimrc (Used for custom test mappings, etc.)
-
-autocmd vimrc VimEnter * set vb t_vb=
-
-" }}}1
-
- " Clear search on enter key
+" Clear search on enter key
 nnoremap <cr> :nohlsearch<cr><cr>
 
 " If a line is wrapping then step into the wrap line as well.
@@ -539,11 +477,76 @@ nmap <leader><leader> V
 " Highlight last inserted text
 nnoremap gV `[v`]
 
-
-" Automatically equalize window sizes when Vim window is resized
-autocmd VimResized * wincmd =
-
-" recognize files ending in .csv as csv files
-autocmd BufNewFile,BufReadPost *.csv set filetype=csv
-
 let g:netrw_banner  = 0
+
+set foldmethod=marker
+
+set title " Change the terminal's title
+let &titlestring="%{substitute(expand('%:p'), $HOME, '$HOME', '')}"
+
+set relativenumber " Count based on the relative lines from the cursorline
+set number " Show the absolute line number for the cursorline
+
+set history=500 " Store lots of :cmdline history
+set showcmd " Show incomplete cmds down the bottom
+set noshowmode " Hide showmode because of the powerline plugin
+set nocursorline " Don’t use cursorline, as it causes constant redrawing, which, when combined with syntax highlighting, drops performance
+set smartcase " Smart case search if there is uppercase
+set ignorecase " case insensitive search
+set iskeyword+=?,!,@
+set mouse=a " Enable mouse usage
+set showmatch " Highlight matching bracket
+set fileencoding=utf-8 nobomb " Ensure utf-8 encoding on write
+set fileformats+=mac " Add mac format to list
+set nowrap
+set listchars=tab:␉\ \,trail:·,extends:… ",eol:¬ Set trails for tabs and spaces
+set list " Enable listchars
+set lazyredraw " Do not redraw on registers and macros
+set hidden " Hide buffers in background
+set path+=** " Allow recursive search
+set nojoinspaces " Use one space, not two, after punctuation.
+set virtualedit=block " Allow moving through empty space in virtual mode
+set shortmess=aI " Quieter messages and startup
+
+set sessionoptions=winpos,tabpages,help " Save configuration of all tabs and windows
+
+" Expire incomplete/partial key sequences after milliseconds
+set ttimeout
+set timeoutlen=500
+set ttimeoutlen=150
+
+" New buffers to the right and down
+set splitright
+set splitbelow
+
+set autoread " Read when a file has been changed even outside of Vim.
+
+" Delete comment character when joining commented lines
+set formatoptions+=j
+
+set novisualbell
+set belloff=all
+set vb t_vb=
+
+" }}}1
+
+" augroup vimrc {{{1
+
+augroup vimrc
+  autocmd!
+augroup END
+
+autocmd vimrc BufWritePre * :call s:StripTrailingWhitespaces()              " Auto-remove trailing spaces
+" autocmd vimrc FileType html,javascript,coffee,ruby setlocal sw=2 sts=2 ts=2 " Set 2 indent for html
+" autocmd vimrc FileType javascript setlocal cc=80                            " Set right margin only for php and js
+autocmd vimrc FileType markdown setlocal spell spelllang=en_us
+autocmd vimrc FileType srt setlocal spell spelllang=en_us
+autocmd vimrc FileType txt setlocal spell spelllang=en_us
+autocmd vimrc VimEnter * set vb t_vb=
+" Automatically equalize window sizes when Vim window is resized
+autocmd vimrc VimResized * wincmd =
+" recognize files ending in .csv as csv files
+autocmd vimrc BufNewFile,BufReadPost *.csv set filetype=csv
+autocmd vimrc VimEnter,BufNewFile,BufReadPost * call s:LoadLocalVimrc()     " Load per project vimrc (Used for custom test mappings, etc.)
+
+" }}}1
