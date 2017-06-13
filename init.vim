@@ -19,6 +19,8 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 
 " }}}2
 
+" Plug 'vim-ruby/vim-ruby', { 'for' : ['ruby', 'eruby'] }
+Plug 'vim-scripts/Align'
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
 Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
@@ -68,7 +70,6 @@ Plug 'tpope/vim-surround'
 Plug 'travisjeffery/vim-auto-mkdir'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'vim-ruby/vim-ruby', { 'for' : ['ruby', 'eruby'] }
 Plug 'vim-scripts/mru.vim'
 Plug 'vim-scripts/ruby-matchit', { 'for' : ['ruby', 'eruby'] }
 Plug 'w0rp/ale'
@@ -224,11 +225,8 @@ nnoremap <c-t>. :CtrlPTag<cr>
 " ALE {{{2
 
 highlight clear ALEErrorSign
-highlight clear ALEWarningSign"
-" 🚑
-let g:ale_statusline_format = ['💢 %d', '💩 %d', '👌 ok']
-let g:ale_sign_error = '💢'
-let g:ale_sign_warning = '💩'
+highlight clear ALEWarningSign
+
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
@@ -257,9 +255,11 @@ let g:gitgutter_sign_modified_removed = 'ww'
 
 " EasyTags {{{2
 
-set tags=./tags;
+set tags=./.tags;
 " set tagcase=followscs
-let g:easytags_dynamic_files = 2
+let g:easytags_dynamic_files=2
+let g:easytags_async=1
+let g:easytags_always_enabled=1
 
 " }}}2
 
@@ -314,20 +314,11 @@ let g:UltiSnipsEditSplit='vertical'
 
 " nerdcommenter {{{2
 
-" Add spaces after comment delimiters by default
-let g:NERDSpaceDelims = 1
-
-" Use compact syntax for prettified multi-line comments
-let g:NERDCompactSexyComs = 1
-
-" Set a language to use its alternate delimiters by default
-let g:NERDAltDelims_ruby = 1
-
-" Allow commenting and inverting empty lines (useful when commenting a region)
-let g:NERDCommentEmptyLines = 1
-
-" Enable trimming of trailing whitespace when uncommenting
-let g:NERDTrimTrailingWhitespace = 1
+let g:NERDCommentEmptyLines=1
+let g:NERDCompactSexyComs=1
+let g:NERDDefaultAlign='left'
+let g:NERDSpaceDelims=1
+let g:NERDTrimTrailingWhitespace=1
 
 " }}}2
 
@@ -373,6 +364,7 @@ nnoremap <leader>ev :tabe $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
 " }}}1
+
 
 " Completion {{{1
 
@@ -550,3 +542,12 @@ autocmd vimrc BufNewFile,BufReadPost *.csv set filetype=csv
 autocmd vimrc VimEnter,BufNewFile,BufReadPost * call s:LoadLocalVimrc()     " Load per project vimrc (Used for custom test mappings, etc.)
 
 " }}}1
+"
+function! UseLocalBenchprepAssets()
+  %s/^\(gem\s\+['"]benchprep-assets['"]\)/\1, path: '\/Users\/mike\/bp\/benchprep-assets' #/
+endfunction
+
+autocmd FileType ruby noremap <buffer> <c-f> ggVG=<cr>
+
+" command! Zshrc expand('$HOME') . "/.config/zsh/.zshrc"
+" command! Zshenv expand('$HOME') . "/.config/zsh/.zshenv"
