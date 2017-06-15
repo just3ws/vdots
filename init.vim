@@ -549,5 +549,4 @@ endfunction
 
 autocmd FileType ruby noremap <buffer> <c-f> ggVG=<cr>
 
-" command! Zshrc expand('$HOME') . "/.config/zsh/.zshrc"
-" command! Zshenv expand('$HOME') . "/.config/zsh/.zshenv"
+nnoremap <leader>b :buffers<cr>
