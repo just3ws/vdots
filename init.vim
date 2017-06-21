@@ -20,12 +20,12 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
 " }}}2
 
 " Plug 'vim-ruby/vim-ruby', { 'for' : ['ruby', 'eruby'] }
+Plug 'tyrannicaltoucan/vim-quantum'
 Plug 'vim-scripts/Align'
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
 Plug 'SirVer/ultisnips'
 Plug 'airblade/vim-gitgutter'
 Plug 'chrisbra/vim-zsh'
-Plug 'chriskempson/base16-vim'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'dhruvasagar/vim-table-mode', { 'for': ['csv', 'xls', 'xlsx'] }
 Plug 'digitalrounin/vim-yaml-folds', { 'for' : 'yaml' }
@@ -330,19 +330,14 @@ let g:NERDTrimTrailingWhitespace=1
 
 set termguicolors " Enable 24-bit color mode
 set background=dark
-colorscheme base16-tomorrow-night
-
-" }}}2
-
-" base16 {{{2
-
-let base16colorspace=256
+let g:quantum_italics=1
+colorscheme quantum
 
 " }}}2
 
 " Airline {{{2
 
-let g:airline_theme="base16_tomorrow"
+let g:airline_theme="quantum"
 
 " }}}2
 
@@ -364,7 +359,6 @@ nnoremap <leader>ev :tabe $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
 " }}}1
-
 
 " Completion {{{1
 
@@ -405,9 +399,9 @@ set softtabstop=2
 set shiftround " Rounds the indentation to a multiple of shiftwidth
 set tabstop=2
 set expandtab
-set copyindent " Copy the structure of existing lines when autoindenting
-set cindent " Use C rules for indention
-set smartindent " Use language indentation rules where possible
+" set copyindent " Copy the structure of existing lines when autoindenting
+" set cindent " Use C rules for indention
+" set smartindent " Use language indentation rules where possible
 
 " }}}1
 "
