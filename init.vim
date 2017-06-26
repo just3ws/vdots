@@ -105,28 +105,30 @@ autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
 
 " Airline {{{2
 
-let g:airline#extensions#ctrlp#show_adjacent_modes = 1
+let g:airline#extensions#hunks#enabled = 0
+let g:airline#extensions#quickfix#location_text#enabled = 0
+let g:airline#extensions#quickfix#quickfix_text#enabled = 0
+let g:airline#extensions#tabline#enabled = 0
+let g:airline#extensions#tabline#formatter#enabled = 0
+let g:airline#extensions#tagbar#enabled = 0
+let g:airline#extensions#whitespace#enabled = 0
+let g:airline#extensions#windowswap#indicator_text#enabled = 0
+let g:airline#extensions#wordcount#filetypes#enabled = 0
 
-let g:airline#extensions#tagbar#enabled = 1
+" let g:airline#extensions#ctrlp#show_adjacent_modes = 1
+" let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
+" let g:airline#extensions#hunks#non_zero_only = 0
+" let g:airline#extensions#tabline#left_alt_sep='│' " Right separator for tabline
+" let g:airline#extensions#tabline#left_sep=' ' " Left separator for tabline
+" let g:airline#extensions#whitespace#checks = [
+"       \ 'indent',
+"       \ 'trailing',
+"       \ 'long',
+"       \ 'mixed-indent-file'
+"       \ ]
+" let g:airline#extensions#whitespace#symbol = '!'
 
-let g:airline#extensions#hunks#enabled = 1
-let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
-let g:airline#extensions#hunks#non_zero_only = 0
-
-let g:airline#extensions#tabline#enabled=1 " Enable tabline extension
-let g:airline#extensions#tabline#left_alt_sep='│' " Right separator for tabline
-let g:airline#extensions#tabline#left_sep=' ' " Left separator for tabline
-
-let g:airline#extensions#whitespace#enabled = 1
-let g:airline#extensions#whitespace#checks = [
-      \ 'indent',
-      \ 'trailing',
-      \ 'long',
-      \ 'mixed-indent-file'
-      \ ]
-let g:airline#extensions#whitespace#symbol = '!'
-
-let g:airline_section_y='%{substitute(getcwd(), expand("~"), "~", "g")}' " Set relative path
+" let g:airline_section_y='%{substitute(getcwd(), expand("~"), "~", "g")}' " Set relative path
 
 " │ ║ ░ ▒ ❖ ⟨ ⟩ ⟪ ⟫                   ┊ ┋ ❖ ⬗ ⬖    
 
