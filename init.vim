@@ -1,174 +1,151 @@
-" vim:set filetype=vim expandtab shiftwidth=2:
-
-" Python Integration {{{1
+" vim: ft=vim et sw=2:
 
 let g:python_host_prog = expand('$HOME') . '/.pyenv/versions/neovim2/bin/python'
 let g:python3_host_prog = expand('$HOME') .'/.pyenv/versions/neovim3/bin/python'
 
-" }}}1
-
-" Plugins {{{1
-
-"
 call plug#begin('~/.local/share/nvim/site/plugged')
 
-" Pre-requisites {{{2
+Plug 'beautify-web/js-beautify', { 'do': 'npm install --global js-beautify', 'for': ['javascript', 'coffeescript', 'json'] }
+Plug 'maksimr/vim-jsbeautify', { 'for' : ['javascript', 'json', 'javascript.jsx', 'html', 'css', 'scss'] }
 
-Plug 'beautify-web/js-beautify', { 'do': 'npm install -g js-beautify', 'for': ['javascript', 'coffeescript', 'json'] }
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install' }
+Plug 'arcticicestudio/nord-vim'
 
-" }}}2
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
-" Plug 'vim-ruby/vim-ruby', { 'for' : ['ruby', 'eruby'] }
-Plug 'tyrannicaltoucan/vim-quantum'
-Plug 'vim-scripts/Align'
 Plug 'Shougo/deoplete.nvim', { 'do' : ':UpdateRemotePlugins' }
+
 Plug 'SirVer/ultisnips'
-Plug 'airblade/vim-gitgutter'
+Plug 'honza/vim-snippets'
+
 Plug 'chrisbra/vim-zsh'
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'dhruvasagar/vim-table-mode', { 'for': ['csv', 'xls', 'xlsx'] }
-Plug 'digitalrounin/vim-yaml-folds', { 'for' : 'yaml' }
+
+Plug 'dhruvasagar/vim-table-mode', { 'for': ['csv', 'xls', 'xlsx'] } " VIM Table Mode for instant table creation.
+Plug 'digitalrounin/vim-yaml-folds', { 'for' : 'yaml' } " YAML, RAML & SaltStack SLS folding for Vim
+
 Plug 'editorconfig/editorconfig-vim'
+
 Plug 'ervandew/supertab'
 Plug 'godlygeek/tabular'
-Plug 'honza/vim-snippets'
-Plug 'jceb/vim-textobj-uri'
-Plug 'jremmen/vim-ripgrep'
-Plug 'junegunn/fzf.vim'
+
 Plug 'junegunn/vim-easy-align'
-Plug 'justinmk/vim-sneak'
-Plug 'kana/vim-textobj-indent'
-Plug 'kana/vim-textobj-line'
-Plug 'kana/vim-textobj-user'
-Plug 'kchmck/vim-coffee-script', { 'for' : 'coffeescript' }
-Plug 'lucapette/vim-textobj-underscore'
-Plug 'majutsushi/tagbar'
-Plug 'maksimr/vim-jsbeautify', { 'for' : ['javascript', 'json', 'javascript.jsx', 'html', 'css', 'scss'] }
-Plug 'mileszs/ack.vim'
-Plug 'nelstrom/vim-markdown-folding', { 'for': 'markdown' }
-Plug 'nelstrom/vim-textobj-rubyblock', { 'for' : ['ruby', 'eruby'] }
-Plug 'othree/jspc.vim', { 'for' : ['javascript', 'javascript.jsx', 'coffeescript'] }
-Plug 'reedes/vim-textobj-quote'
-Plug 'reedes/vim-textobj-sentence'
+Plug 'vim-scripts/Align'
+
+Plug 'kchmck/vim-coffee-script', { 'do': 'npm install --global coffeelint', 'for' : 'coffeescript' } " CoffeeScript support for Vim
 Plug 'roalddevries/yaml.vim', { 'for' : 'yaml' }
+
+Plug 'othree/jspc.vim', { 'for' : ['javascript', 'javascript.jsx', 'coffeescript'] } " JavaScript Parameter Complete
+
+Plug 'mileszs/ack.vim'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'vim-scripts/mru.vim'
+
+Plug 'tpope/vim-markdown', { 'for' : 'markdown' } " Vim Markdown runtime files
+Plug 'nelstrom/vim-markdown-folding', { 'for': 'markdown' } " Fold markdown documents by section.
+
+Plug 'rizzatti/dash.vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree', { 'on' : ['NERDTree', 'NERDTreeToggle', 'NERDTreeMirror', 'NERDTreeFind'] }
-Plug 'sheerun/vim-polyglot'
-Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-bundler', { 'for' : 'ruby' }
-Plug 'tpope/vim-cucumber', { 'for' : 'cucumber' }
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-haml', { 'for' : 'haml' }
-Plug 'tpope/vim-markdown', { 'for' : 'markdown' }
-Plug 'tpope/vim-projectionist'
-Plug 'tpope/vim-rails', { 'for' : ['ruby', 'eruby', 'haml'] }
-Plug 'tpope/vim-rake', { 'for' : ['ruby', 'eruby', 'haml'] }
-Plug 'tpope/vim-rhubarb'
-Plug 'tpope/vim-surround'
+Plug 'sheerun/vim-polyglot' " A solid language pack for Vim.
+Plug 'sjl/vitality.vim' " Make Vim play nicely with iTerm 2 and tmux.
+
+Plug 'tpope/vim-abolish' " Easily search for, substitute, and abbreviate multiple variants of a word
+
+Plug 'tpope/vim-bundler', { 'for' : 'ruby' } " Lightweight support for Ruby's Bundler
+Plug 'tpope/vim-cucumber', { 'for' : 'cucumber' } " Vim Cucumber runtime files
+Plug 'tpope/vim-haml', { 'for' : ['haml', 'sass', 'scss'] } " Vim runtime files for Haml, Sass, and SCSS
+Plug 'tpope/vim-projectionist' " Project configuration
+Plug 'tpope/vim-rails', { 'for' : ['ruby', 'eruby', 'haml'] } " Ruby on Rails power tools
+Plug 'tpope/vim-rake', { 'for' : ['ruby', 'eruby', 'haml'] } " It's like rails.vim without the rails
+Plug 'tpope/vim-surround' " Quoting/parenthesizing made simple
 Plug 'travisjeffery/vim-auto-mkdir'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'vim-scripts/mru.vim'
 Plug 'vim-scripts/ruby-matchit', { 'for' : ['ruby', 'eruby'] }
-Plug 'w0rp/ale'
-Plug 'wellle/targets.vim'
+Plug 'w0rp/ale', { 'do': 'npm install --global tern stylelint' }
+
+
 Plug 'wesQ3/vim-windowswap'
-Plug 'whatyouhide/vim-textobj-xmlattr'
-Plug 'xolox/vim-easytags'
 Plug 'xolox/vim-misc'
+
+Plug 'airblade/vim-gitgutter' " A Vim plugin which shows a git diff in the gutter (sign column) and stages/undoes hunks.
+Plug 'tpope/vim-fugitive' " A Git wrapper so awesome, it should be illegal
+Plug 'tpope/vim-rhubarb' " GitHub extension for fugitive.vim
+
+Plug 'majutsushi/tagbar'
+Plug 'xolox/vim-easytags'
+
+Plug 'coderifous/textobj-word-column.vim'     " Adds text-objects for word-based columns in Vim.
+Plug 'gilligan/textobj-gitgutter'             " Vim git change-hunk text object.
+Plug 'glts/vim-textobj-comment'               " Vim text objects for comments
+Plug 'h1mesuke/textobj-wiw'                   " Text object to select a range of words for humans.
+Plug 'jceb/vim-textobj-uri'                   " Text objects for dealing with URIs
+Plug 'kana/vim-textobj-datetime'              " Text objects for date and time
+Plug 'kana/vim-textobj-diff'                  " Text objects for ouputs of diff(1)
+Plug 'kana/vim-textobj-entire'                " Text objects for entire buffer
+Plug 'kana/vim-textobj-fold'                  " Text objects for foldings
+Plug 'kana/vim-textobj-function'              " Text objects for functions
+Plug 'kana/vim-textobj-help'                  " Text objects for Vim help documents
+Plug 'kana/vim-textobj-indent'                " Text objects for indented blocks of lines
+Plug 'kana/vim-textobj-lastpat'               " Text objects for the last searched pattern
+Plug 'kana/vim-textobj-line'                  " Text objects for the current line
+Plug 'kana/vim-textobj-syntax'                " Text objects for syntax highlighted items
+Plug 'kana/vim-textobj-user'                  " Create your own text objects
+Plug 'lucapette/vim-textobj-underscore'       " Underscore text-object for Vim
+Plug 'nelstrom/vim-textobj-rubyblock'         " A custom text object for selecting ruby blocks
+Plug 'paradigm/TextObjectify'                 " TextObjectify is a Vim plugin which improves text-objects
+Plug 'reedes/vim-textobj-quote'               " Use ‘curly’ quote characters in Vim
+Plug 'reedes/vim-textobj-sentence'            " Improving on Vim's native sentence text object and motion
+Plug 'rhysd/vim-textobj-anyblock'             " A text object for any of single-quote or double-quote pairs, (), {}, [] and <>.
+Plug 'rhysd/vim-textobj-ruby'                 " Make text objects with various Ruby block structures.
+Plug 'sgur/vim-textobj-parameter'             " Vim plugin to provide text objects for parameters of functions.
+Plug 'thinca/vim-textobj-between'             " Text objects for a range between a character.
+Plug 'thinca/vim-textobj-function-javascript' " Text objects for functions in javascript.
+Plug 'wellle/targets.vim'                     " Vim plugin that provides additional text objects
+Plug 'whatyouhide/vim-textobj-erb'            " A vim text object for erb blocks.
+Plug 'whatyouhide/vim-textobj-xmlattr'        " A vim text object for XML/HTML attributes.
 
 call plug#end()
 
-" }}}1
-
-" Plugin Configuration {{{1
-
-" JsBeautify {{{2
-
-autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
-
-" for json
-autocmd FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
-
-" for jsx
-autocmd FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
-
-" for html
-autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
-
-" for css or scss
-autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
-
-" }}}2
-
-" Airline {{{2
-
-let g:airline#extensions#hunks#enabled = 0
-let g:airline#extensions#quickfix#location_text#enabled = 0
-let g:airline#extensions#quickfix#quickfix_text#enabled = 0
-let g:airline#extensions#tabline#enabled = 0
-let g:airline#extensions#tabline#formatter#enabled = 0
-let g:airline#extensions#tagbar#enabled = 0
-let g:airline#extensions#whitespace#enabled = 0
+let g:airline#extensions#hunks#enabled                     = 0
+let g:airline#extensions#quickfix#location_text#enabled    = 0
+let g:airline#extensions#quickfix#quickfix_text#enabled    = 0
+let g:airline#extensions#tabline#enabled                   = 0
+let g:airline#extensions#tabline#formatter#enabled         = 0
+let g:airline#extensions#tagbar#enabled                    = 0
+let g:airline#extensions#whitespace#enabled                = 0
 let g:airline#extensions#windowswap#indicator_text#enabled = 0
-let g:airline#extensions#wordcount#filetypes#enabled = 0
+let g:airline#extensions#wordcount#filetypes#enabled       = 0
 
-" let g:airline#extensions#ctrlp#show_adjacent_modes = 1
-" let g:airline#extensions#hunks#hunk_symbols = ['+', '~', '-']
-" let g:airline#extensions#hunks#non_zero_only = 0
+" let g:airline#extensions#ctrlp#show_adjacent_modes=1
+" let g:airline#extensions#hunks#hunk_symbols=['+', '~', '-']
+" let g:airline#extensions#hunks#non_zero_only=0
 " let g:airline#extensions#tabline#left_alt_sep='│' " Right separator for tabline
 " let g:airline#extensions#tabline#left_sep=' ' " Left separator for tabline
-" let g:airline#extensions#whitespace#checks = [
-"       \ 'indent',
-"       \ 'trailing',
-"       \ 'long',
-"       \ 'mixed-indent-file'
-"       \ ]
-" let g:airline#extensions#whitespace#symbol = '!'
+" let g:airline#extensions#whitespace#checks=[ 'indent', 'trailing', 'long', 'mixed-indent-file' ]
+" let g:airline#extensions#whitespace#symbol='!'
 
 " let g:airline_section_y='%{substitute(getcwd(), expand("~"), "~", "g")}' " Set relative path
 
 " │ ║ ░ ▒ ❖ ⟨ ⟩ ⟪ ⟫                   ┊ ┋ ❖ ⬗ ⬖    
 
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-
-let g:airline_right_sep = ''
+let g:airline_left_alt_sep  = ''
+let g:airline_left_sep      = ''
 let g:airline_right_alt_sep = ''
-
-" }}}2
-
-" DevIcons {{{
-
-let g:webdevicons_enable_airline_tabline = 1
-let g:webdevicons_enable_airline_statusline = 1
-
-" }}}2
-
-" Tagbar {{{2
-
+let g:airline_right_sep     = ''
 nnoremap <leader>t :TagbarToggle<cr>
-
-" }}}2
-
-" NERDTree {{{2
-
-" Open NERDTree
 
 nnoremap <leader>n :NERDTreeToggle<cr>
 
-let g:NERDTreeChDirMode=2 " Always change the root directory
-let g:NERDTreeMinimalUI=1 " Disable help text and bookmark title
-let g:NERDTreeShowHidden=1 " Show hidden files in NERDTree
-let g:NERDTreeMouseMode=3 " Single click opens directory and file nodes
+let g:NERDTreeChDirMode  = 2 " Always change the root directory
+let g:NERDTreeMinimalUI  = 1 " Disable help text and bookmark title
+let g:NERDTreeShowHidden = 1 " Show hidden files in NERDTree
+let g:NERDTreeMouseMode  = 3 " Single click opens directory and file nodes
 
-let g:NERDTreeDirArrowExpandable = '▸'
-let g:NERDTreeDirArrowCollapsible = '▾'
+let g:NERDTreeDirArrowExpandable='▸'
+let g:NERDTreeDirArrowCollapsible='▾'
 
-let g:NERDTreeIgnore=[
-      \ 'tags',
+let g:NERDTreeIgnore = [
+      \ '\.tags',
       \ '\.DS_Store$',
       \ '\.bundle$',
       \ '\.git$',
@@ -181,50 +158,27 @@ let g:NERDTreeIgnore=[
       \ '\.zwc$'
       \ ]
 
-" }}}2
-
-" Fugitive {{{2
-
 let g:fugitive_git_executable="LANG=en_US.UTF-8 git"
-
-" }}}2
-
-" Ack {{{
 
 let g:ackhighlight=1
 
-" }}}
-
-" EditorConfig {{{2
-
-let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
-
-" }}}2
-
-" CtrlP {{{2
-
-let g:ctrlp_match_window = 'bottom,order:min:1,max:24,results:24'
-let g:ctrlp_prompt_mappings = { 'PrtDeleteEnt()': ['@'] } " Map delete buffer in CtrlP
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v[\/]\.(git|hg|svn)$\|node_modules$\|backups',
-      \ 'file': '\v(tags|\.(exe|so|dll|tmp|example))$'
-      \ }
+" let g:ctrlp_match_window='bottom,order:min:1,max:24,results:24'
+" let g:ctrlp_prompt_mappings={ 'PrtDeleteEnt()': ['@'] } " Map delete buffer in CtrlP
+" let g:ctrlp_custom_ignore={ 'dir':  '\v[\/]\.(git|hg|svn)$\|node_modules$\|backups', 'file': '\v(tags|\.(exe|so|dll|tmp|example))$' }
 
 nnoremap <c-t>. :CtrlPTag<cr>
 
-" }}}2
+" if executable('rg')
+"   set grepprg=rg\ --color=never
+"   let g:ctrlp_user_command='rg %s --files --color=never --glob ""'
+"   let g:ctrlp_use_caching=0
+" endif
 
-" Neomake {{{2
-
-" let g:neomake_ruby_enabled_makers = ['rubocop']
-" let g:neomake_coffeescript_enabled_makers = ['coffeelint']
-" let g:neomake_json_enabled_makers = ['jsonlint']
+" let g:neomake_ruby_enabled_makers=['rubocop']
+" let g:neomake_coffeescript_enabled_makers=['coffeelint']
+" let g:neomake_json_enabled_makers=['jsonlint']
 " let g:ruby_doc_command='open'
 " autocmd! BufWritePost * Neomake
-
-" }}}2
-
-" ALE {{{2
 
 highlight clear ALEErrorSign
 highlight clear ALEWarningSign
@@ -232,30 +186,22 @@ highlight clear ALEWarningSign
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
-" let g:ale_keep_list_window_open = 1
-" let g:ale_set_loclist = 0
-" let g:ale_set_quickfix = 1
-" let g:ale_sign_column_always = 1
-" let g:ale_open_list = 1
+" let g:ale_keep_list_window_open=1
+" let g:ale_set_loclist=0
+" let g:ale_set_quickfix=1
+" let g:ale_sign_column_always=1
+" let g:ale_open_list=1
 " nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 " nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
-" }}}2
+let g:gitgutter_realtime=0 " Disable GitGutter in realtime
+let g:gitgutter_eager=0 " Disable GitGutter to eager load on tab or buffer switch
 
-" GitGutter {{{2
-
-let g:gitgutter_realtime = 0 " Disable GitGutter in realtime
-let g:gitgutter_eager = 0 " Disable GitGutter to eager load on tab or buffer switch
-
-let g:gitgutter_sign_added = '++'
-let g:gitgutter_sign_modified = 'mm'
-let g:gitgutter_sign_removed = '--'
-let g:gitgutter_sign_removed_first_line = '^^'
-let g:gitgutter_sign_modified_removed = 'ww'
-
-" }}}2
-
-" EasyTags {{{2
+let g:gitgutter_sign_added='++'
+let g:gitgutter_sign_modified='mm'
+let g:gitgutter_sign_removed='--'
+let g:gitgutter_sign_removed_first_line='^^'
+let g:gitgutter_sign_modified_removed='ww'
 
 set tags=./.tags;
 " set tagcase=followscs
@@ -263,47 +209,9 @@ let g:easytags_dynamic_files=2
 let g:easytags_async=1
 let g:easytags_always_enabled=1
 
-" }}}2
+let g:deoplete#enable_at_startup=1
 
-" Deoplete {{{2
-
-let g:deoplete#enable_at_startup = 1
-
-" }}}2
-
-" ripgrep {{{2
-
-" set g:rg_binary='/usr/local/bin/rg'
-
-" " --column: Show column number
-" " --line-number: Show line number
-" " --no-heading: Do not show file headings in results
-" " --fixed-strings: Search term as a literal string
-" " --ignore-case: Case insensitive search
-" " --no-ignore: Do not respect .gitignore, etc...
-" " --hidden: Search hidden files and folders
-" " --follow: Follow symlinks
-" " --glob: Additional conditions for search (in this case ignore everything in the .git/ folder)
-" " --color: Search color options
-" command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>), 1, <bang>0)
-"
-" set grepprg=rg\ --vimgrep
-
-" }}}2
-
-" fzf {{{2
-
-set rtp+=/usr/local/opt/fzf
-
-" }}}2
-
-" EditorConfig {{{2
-
-let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
-
-" }}}2
-
-" UltiSnips {{{2
+let g:EditorConfig_exclude_patterns=['fugitive://.*', 'scp://.*']
 
 let g:UltiSnipsExpandTrigger='<tab>'
 let g:UltiSnipsJumpForwardTrigger='<tab>'
@@ -312,60 +220,29 @@ let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit='vertical'
 
-" }}}2
-
-" nerdcommenter {{{2
-
 let g:NERDCommentEmptyLines=1
 let g:NERDCompactSexyComs=1
 let g:NERDDefaultAlign='left'
 let g:NERDSpaceDelims=1
 let g:NERDTrimTrailingWhitespace=1
 
-" }}}2
-
-" }}}1
-
-" Theme {{{1
-
-" Colors {{{2
-
 set termguicolors " Enable 24-bit color mode
 set background=dark
-let g:quantum_italics=1
-colorscheme quantum
+colorscheme nord
 
-" }}}2
+let g:airline_theme='nord'
 
-" Airline {{{2
-
-let g:airline_theme="quantum"
-
-" }}}2
-
-" Font styles {{{2
-
-let g:enable_bold_font=1
-let g:airline_powerline_fonts=1
-highlight Comment cterm=italic gui=italic
-
-" }}}2
-
-
-" }}}1
-
-" Edit Vim settings {{{1
+let g:webdevicons_enable_airline_tabline=1
+let g:webdevicons_enable_airline_statusline=1
 
 nnoremap <leader>rv :w<cr> :source $MYVIMRC<cr> :PlugInstall<cr>
 nnoremap <leader>ev :tabe $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
-" }}}1
-
-" Completion {{{1
-
 set wildignorecase " Ignore case when completing file/dirnames except special characters
+
 set wildmode=list:longest,list:full " Greedy completion
+
 set wildignore=*~,*DS_Store*,*.swp,*.cache
 set wildignore+=*.avi,*.m4a,*.mp4,*.mov,*.mp3,*.ogg,*.wmv,*.swf,*part-Frag*
 set wildignore+=*.min.js
@@ -383,18 +260,10 @@ set complete=.,w,b,u,i,t
 set completeopt=menu,menuone,preview,noinsert,noselect
 set infercase " Completion with case-mismatch matches case-insensitive if possible
 
-" }}}1
-
-"Scrolling {{{1
-
 set scroll=8
 set scrolloff=4
 set sidescroll=4
 set sidescrolloff=4
-
-" }}}1
-
-" Indentation {{{1
 
 set shiftwidth=2
 set softtabstop=2
@@ -405,12 +274,7 @@ set expandtab
 " set cindent " Use C rules for indention
 " set smartindent " Use language indentation rules where possible
 
-" }}}1
-"
-" Undo {{{1
-
 " Keep undo history across sessions, by storing in file.
-
 silent execute '!mkdir -p ~/.local/share/nvim/backup/'
 silent execute '!mkdir -p ~/.local/share/nvim/swap/'
 silent execute '!mkdir -p ~/.local/share/nvim/undo/'
@@ -419,14 +283,10 @@ set backupdir=~/.local/share/nvim/backup//
 set directory=~/.local/share/nvim/swap//
 set undodir=~/.local/share/nvim/undo//
 
-" }}}1
-
-" Functions {{{1
-
 function! s:StripTrailingWhitespaces()
   let l:l=line(".")
   let l:c=col(".")
-  %s/\s\+$//e
+  %substitute/\s\+$//e
   call cursor(l:l, l:c)
 endfunction
 
@@ -436,18 +296,10 @@ function! s:LoadLocalVimrc()
   endif
 endfunction
 
-" }}}1
-
-" Find {{{1
-
 set gdefault " Set global flag for search and replace
 " Center highlighted search
 nnoremap n nzz
 nnoremap N Nzz
-
-" }}}1
-
-" Common Settings {{{1
 
 " Convert ; to : in modeline
 nnoremap ; :
@@ -465,7 +317,7 @@ nmap <leader><leader> V
 " Highlight last inserted text
 nnoremap gV `[v`]
 
-let g:netrw_banner  = 0
+let g:netrw_banner=0
 
 set foldmethod=marker
 
@@ -514,35 +366,43 @@ set formatoptions+=j
 
 set novisualbell
 set belloff=all
-set vb t_vb=
 
-" }}}1
-
-" augroup vimrc {{{1
+nnoremap <leader>b :buffers<cr>
 
 augroup vimrc
   autocmd!
 augroup END
 
-autocmd vimrc BufWritePre * :call s:StripTrailingWhitespaces()              " Auto-remove trailing spaces
-" autocmd vimrc FileType html,javascript,coffee,ruby setlocal sw=2 sts=2 ts=2 " Set 2 indent for html
-" autocmd vimrc FileType javascript setlocal cc=80                            " Set right margin only for php and js
-autocmd vimrc FileType markdown setlocal spell spelllang=en_us
-autocmd vimrc FileType srt setlocal spell spelllang=en_us
-autocmd vimrc FileType txt setlocal spell spelllang=en_us
-autocmd vimrc VimEnter * set vb t_vb=
-" Automatically equalize window sizes when Vim window is resized
-autocmd vimrc VimResized * wincmd =
-" recognize files ending in .csv as csv files
+autocmd vimrc BufNewFile,BufReadPost *.alfredappearance,.jsbeautifyrc,.jshintrc set filetype=json
 autocmd vimrc BufNewFile,BufReadPost *.csv set filetype=csv
-autocmd vimrc VimEnter,BufNewFile,BufReadPost * call s:LoadLocalVimrc()     " Load per project vimrc (Used for custom test mappings, etc.)
 
-" }}}1
-"
-function! UseLocalExampleAssets()
-  %s/^\(gem\s\+['"]example-assets['"]\)/\1, path: '\/Users\/mike\/bp\/example-assets' #/
-endfunction
+autocmd vimrc BufWritePre * :call s:StripTrailingWhitespaces()
 
-autocmd FileType ruby noremap <buffer> <c-f> ggVG=<cr>
+autocmd vimrc FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+autocmd vimrc FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+autocmd vimrc FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+autocmd vimrc FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
+autocmd vimrc FileType javascript noremap <buffer> <c-f> :call JsBeautify()<cr>
+autocmd vimrc FileType javascript vnoremap <buffer> <c-f> :call RangeJsBeautify()<cr>
+autocmd vimrc FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
+autocmd vimrc FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
+autocmd vimrc FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
+autocmd vimrc FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
+autocmd vimrc FileType ruby noremap <buffer> <c-f> ggVG=<cr>
 
-nnoremap <leader>b :buffers<cr>
+autocmd vimrc FileType markdown,txt setlocal spell spelllang=en_us
+
+autocmd vimrc VimEnter,BufNewFile,BufReadPost * call s:LoadLocalVimrc()
+
+autocmd vimrc VimResized * wincmd =
+
+augroup textobj_quote
+  autocmd!
+augroup END
+
+autocmd textobj_quote FileType markdown call textobj#quote#init()
+autocmd textobj_quote FileType textile call textobj#quote#init()
+autocmd textobj_quote FileType text call textobj#quote#init({'educate': 0})
+
+" autocmd vimrc vmap <leader>c <esc>:'<,'>:CoffeeCompile<CR>
+" autocmd vimrc map <leader>c :CoffeeCompile<CR>
