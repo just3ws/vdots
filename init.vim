@@ -1,4 +1,7 @@
-" vim: ft=vim et sw=2:
+set encoding=utf-8  " The encoding displayed.
+scriptencoding=utf-8
+set fileencoding=utf-8 nobomb " Ensure utf-8 encoding on write
+
 
 let g:python_host_prog = expand('$HOME') . '/.pyenv/versions/neovim2/bin/python'
 let g:python3_host_prog = expand('$HOME') .'/.pyenv/versions/neovim3/bin/python'
@@ -9,6 +12,8 @@ Plug 'beautify-web/js-beautify', { 'do': 'npm install --global js-beautify', 'fo
 Plug 'maksimr/vim-jsbeautify', { 'for' : ['javascript', 'json', 'javascript.jsx', 'html', 'css', 'scss'] }
 
 Plug 'arcticicestudio/nord-vim'
+
+Plug 'vim-scripts/DeleteTrailingWhitespace'
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -158,7 +163,7 @@ let g:NERDTreeIgnore = [
       \ '\.zwc$'
       \ ]
 
-let g:fugitive_git_executable="LANG=en_US.UTF-8 git"
+let g:fugitive_git_executable='LANG=en_US.UTF-8 git'
 
 let g:ackhighlight=1
 
@@ -283,13 +288,6 @@ set backupdir=~/.local/share/nvim/backup//
 set directory=~/.local/share/nvim/swap//
 set undodir=~/.local/share/nvim/undo//
 
-function! s:StripTrailingWhitespaces()
-  let l:l=line(".")
-  let l:c=col(".")
-  %substitute/\s\+$//e
-  call cursor(l:l, l:c)
-endfunction
-
 function! s:LoadLocalVimrc()
   if filereadable(glob(getcwd() . '/.vimrc.local'))
     :execute 'source '.fnameescape(glob(getcwd() . '/.vimrc.local'))
@@ -336,7 +334,6 @@ set ignorecase " case insensitive search
 set iskeyword+=?,!,@
 set mouse=a " Enable mouse usage
 set showmatch " Highlight matching bracket
-set fileencoding=utf-8 nobomb " Ensure utf-8 encoding on write
 set fileformats+=mac " Add mac format to list
 set nowrap
 set listchars=tab:␉\ \,trail:·,extends:… ",eol:¬ Set trails for tabs and spaces
@@ -376,7 +373,7 @@ augroup END
 autocmd vimrc BufNewFile,BufReadPost *.alfredappearance,.jsbeautifyrc,.jshintrc set filetype=json
 autocmd vimrc BufNewFile,BufReadPost *.csv set filetype=csv
 
-autocmd vimrc BufWritePre * :call s:StripTrailingWhitespaces()
+autocmd vimrc BufWritePre * :DeleteTrailingWhitespace
 
 autocmd vimrc FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
 autocmd vimrc FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
