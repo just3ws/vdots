@@ -1,0 +1,6 @@
+" vim:fdm=marker ft=vim:
+
+autocmd! Vimrc BufWritePre <buffer> :%s/\s\+$//e
+autocmd! Vimrc InsertLeave,WinEnter * setlocal cursorline
+autocmd! Vimrc InsertEnter,WinLeave * setlocal nocursorline
+autocmd! Vimrc VimResized * wincmd =
