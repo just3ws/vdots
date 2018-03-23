@@ -1,0 +1,116 @@
+" vim:fdm=marker ft=vim:
+
+" Saner command-line history
+cnoremap <c-n> <down>
+cnoremap <c-p> <up>
+
+" Edit file in new tab
+map <leader>ef :tabe <cfile><cr>
+
+" Double tap to select whole line
+nmap <leader><leader> V
+
+" Dash.app
+nmap <silent> <leader>d <Plug>DashSearch
+
+" ALE
+" nmap <silent> <leader>ff <Plug>(ale_fix)
+
+nmap <silent> <leader>j <Plug>(ale_next_wrap)
+nmap <silent> <leader>k <Plug>(ale_previous_wrap)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+" Saner line movements
+nnoremap $ g$
+nnoremap 0 g0
+
+" Convert ; to : in modeline
+nnoremap ; : " B
+
+" Clear highlight on enter
+nnoremap <cr> :nohlsearch<cr><cr>
+
+" Saner behavior of n and N
+nnoremap <expr> N 'nN'[v:searchforward]
+nnoremap <expr> n 'Nn'[v:searchforward]
+
+" ALE
+nnoremap <leader>ae :ALEDetail<cr>
+nnoremap <leader>al :ALEToggle<Cr>
+
+autocmd! Vimrc FileType css,scss,markdown,javascript,xml noremap <buffer> <leader>ff :ALEFix<cr>
+autocmd! Vimrc FileType html,liquid noremap <buffer> <leader>ff :call HtmlBeautify()<cr>
+
+" map <c-f> :call JsBeautify()<cr>
+" autocmd! Vimrc FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+" autocmd! Vimrc FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
+" autocmd! Vimrc FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
+" autocmd! Vimrc FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+" autocmd! Vimrc FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+" autocmd! Vimrc FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
+" autocmd! Vimrc FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
+" autocmd! Vimrc FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
+" autocmd! Vimrc FileType html,liquid vnoremap <buffer> <leader>ff :call RangeHtmlBeautify()<cr>
+" autocmd! Vimrc FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+
+" FZF
+nnoremap <c-p> :FZF<cr>
+nnoremap <leader>b :Buffers<cr>
+" nnoremap <c-c> :Colors<cr>
+" nnoremap <c-f> :BLines<cr>
+" nnoremap <c-g> :GitFiles<cr>
+" nnoremap <c-m> :Mru<cr>
+" nnoremap <c-h> :History<cr>
+" nnoremap <c-t> :Files<cr>
+" nnoremap ``` :Marks<cr>
+
+" Fugitive
+nnoremap <leader>gb :Gblame<cr>
+nnoremap <leader>gd :Gdiff<cr>
+nnoremap <leader>gs :Gstatus<cr>
+
+" Saner CTRL-L
+nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
+
+" NERDTree
+nnoremap <leader>n :NERDTreeToggle<cr>
+nnoremap <leader>nf :NERDTreeFind<cr>
+
+nnoremap <leader>tb :TagbarToggle<cr>
+
+" Center highlighted search
+nnoremap N Nzz
+nnoremap n nzz
+
+" Move current line
+nnoremap [e :<c-u>execute 'move -1-'. v:count1<cr>
+nnoremap ]e :<c-u>execute 'move +'. v:count1<cr>
+
+nnoremap ^ g^
+
+" Highlight last inserted text
+nnoremap gV `[v`]
+
+" Saner movement through wrapped lines
+nnoremap j gj
+nnoremap k gk
+
+" Startify
+nnoremap <leader>s :Startify<cr>
+
+" ALE
+noremap <leader>ad :ALEGoToDefinition<cr>
+
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Saner block shift
+xnoremap < <gv
+xnoremap > >gv
+
+" Change directory to project root
+nnoremap <leader>dp :ProjectRootCD<cr>
+" Open NERDTree at project root
+nnoremap <silent> <leader>dt :ProjectRootExe NERDTreeFind<cr>
