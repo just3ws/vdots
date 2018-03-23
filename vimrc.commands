@@ -1,0 +1,38 @@
+" vim:fdm=marker ft=vim:
+
+command! Vimrc Reload     :execute ':write ' . $MYVIMRC.' | :source ' . $MYVIMRC
+command! Vimrc PackUpdate :packadd minpac | :source $MYVIMRC | :call minpac#update()
+command! Vimrc PackClean  :packadd minpac | :source $MYVIMRC | :call minpac#clean()
+
+command! Vimrc Aliasrc   :edit $XDG_CONFIG_HOME/zsh/.aliasrc
+command! Vimrc Antigenrc :edit $XDG_CONFIG_HOME/zsh/.antigenrc
+command! Vimrc Vimrc     :edit $MYVIMRC
+command! Vimrc Zpromptrc :edit $XDG_CONFIG_HOME/zsh/.zpromptrc
+command! Vimrc Zshenv    :edit $HOME/.zshenv
+command! Vimrc Zshrc     :edit $XDG_CONFIG_HOME/zsh/.zshrc
+
+command! Vimrc Valiasrc   :vsplit $XDG_CONFIG_HOME/zsh/.aliasrc
+command! Vimrc Vantigenrc :vsplit $XDG_CONFIG_HOME/zsh/.antigenrc
+command! Vimrc Vvimrc     :vsplit $MYVIMRC
+command! Vimrc Vzpromptrc :vsplit $XDG_CONFIG_HOME/zsh/.zpromptrc
+command! Vimrc Vzshenv    :vsplit $HOME/.zshenv
+command! Vimrc Vzshrc     :vsplit $XDG_CONFIG_HOME/zsh/.zshrc
+
+command! Vimrc Saliasrc   :split $XDG_CONFIG_HOME/zsh/.aliasrc
+command! Vimrc Santigenrc :split $XDG_CONFIG_HOME/zsh/.antigenrc
+command! Vimrc Svimrc     :split $MYVIMRC
+command! Vimrc Szpromptrc :split $XDG_CONFIG_HOME/zsh/.zpromptrc
+command! Vimrc Szshenv    :split $HOME/.zshenv
+command! Vimrc Szshrc     :split $XDG_CONFIG_HOME/zsh/.zshrc
+
+command! Vimrc Taliasrc   :tabedit $XDG_CONFIG_HOME/zsh/.aliasrc
+command! Vimrc Tantigenrc :tabedit $XDG_CONFIG_HOME/zsh/.antigenrc
+command! Vimrc Tvimrc     :tabedit $MYVIMRC
+command! Vimrc Tzpromptrc :tabedit $XDG_CONFIG_HOME/zsh/.zpromptrc
+command! Vimrc Tzshenv    :tabedit $HOME/.zshenv
+command! Vimrc Tzshrc     :tabedit $XDG_CONFIG_HOME/zsh/.zshrc
+
+if has('gui_running')
+  command! Vimrc Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
+  command! Vimrc Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
+endif
