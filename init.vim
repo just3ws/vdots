@@ -28,133 +28,205 @@ let $UNDO_DIR = $VIM_HOME . '/undo'
 let $VIEW_DIR = $VIM_HOME . '/view'
 
 if has('nvim')
-  source $VDOTS_DIR/vimrc.neovim
+  let g:ruby_host_prog = '/usr/local/bin/ruby'
+  let g:python2_host_prog = '/usr/local/bin/python2'
+  let g:python3_host_prog = '/usr/local/bin/python3'
+
+  if !isdirectory($VIM_HOME . '/shada')
+    call mkdir($VIM_HOME . '/shada', 'p')
+  endif
+
+  " ' - Maximum number of previously edited files marks
+  " < - Maximum number of lines saved for each register
+  " @ - Maximum number of items in the input-line history to be
+  " s - Maximum size of an item contents in KiB
+  " h - Disable the effect of 'hlsearch' when loading the shada
+  set shada='300,<10,@50,s100,h
+
+  " Incremental everything
+  set inccommand=
+
+  " Write history on idle, for sharing among different sessions
+  autocmd! Vimrc CursorHold * if exists(':rshada') | rshada | wshada | endif
 else
-  source $VDOTS_DIR/vimrc.macvim
+  set viminfo='100,n$VIM_HOME/viminfo
 endif
 
-source $VDOTS_DIR/vimrc.directories
-source $VDOTS_DIR/vimrc.settings
+if !isdirectory($VIM_HOME)
+  call mkdir($VIM_HOME, 'p')
+endif
 
-" {{{ [LEADER]
+if !isdirectory($VIM_CACHE)
+  call mkdir(expand($VIM_CACHE), 'p')
+endif
+
+if !isdirectory($BACKUP_DIR)
+  call mkdir($BACKUP_DIR, 'p')
+endif
+
+if !isdirectory($SWAP_DIR)
+  call mkdir($SWAP_DIR, 'p')
+endif
+
+if !isdirectory($UNDO_DIR)
+  call mkdir($UNDO_DIR, 'p')
+endif
+
+if !isdirectory($VIEW_DIR)
+  call mkdir($VIEW_DIR, 'p')
+endif
+
+if !exists('g:syntax_on')
+  syntax enable
+endif
+
+filetype on
+filetype indent on
+filetype plugin on
+
+set backupdir=$BACKUP_DIR//
+set directory=$SWAP_DIR//
+set undodir=$UNDO_DIR//
+set viewdir=$VIEW_DIR//
+
+set autoindent " Overwritten by cindent or filetype rules
+set autoread " Read when a file has been changed even outside of Vim.
+set backup
+set backupskip+=*.log " Don't backup log files
+set belloff=all
+set cindent " Default to C style indentation
+set clipboard& clipboard+=unnamed,unnamedplus
+set complete-=i " disable scanning included files
+set complete-=t " disable searching tags
+set concealcursor=niv
+set conceallevel=2
+set display=lastline " Show as much as possible of a wrapped last line, not just '@'.
+set expandtab
+set fileformats=unix,dos,mac " Use Unix as the standard file type
+set fillchars="diff:⣿,fold: ,vert:│"
+set foldclose=all
+set foldcolumn=1
+set foldmethod=marker " Fold on the marker
+set formatoptions+=1 " Don't break lines after a one-letter word
+set formatoptions+=c " Autowrap comments using textwidth
+set formatoptions+=j " Delete comment character when joining commented lines
+set formatoptions+=j " Remove comment leader when joining lines
+set formatoptions+=l " do not wrap lines that have been longer when starting insert mode already
+set formatoptions+=n " Recognize numbered lists
+set formatoptions+=q " Allow formatting of comments with 'gq'.
+set formatoptions+=r " Insert comment leader after hitting <Enter>
+set formatoptions+=t " Auto-wrap text using textwidth
+set formatoptions-=t " Don't auto-wrap text
+set hidden " Hide buffers when abandoned instead of unloading
+set history=10000
+set hlsearch
+set ignorecase
+set infercase " Completion with case-mismatch matches case-insensitive if possible
+set iskeyword+=?,!,@
+set lazyredraw
+set linebreak
+set list
+set listchars=tab:␉\ \,trail:·,extends:…
+set magic
+set maxmempattern=2000000
+set modeline " Automatically setting options from modelines
+set modelines=1
+set mouse=a
+set noautochdir
+set nocursorcolumn
+set nocursorline " Don’t use cursorline, as it causes constant redrawing, which, when combined with syntax highlighting, drops performance
+set noerrorbells
+set noexrc
+set nojoinspaces " Only join lines with one space regardless of punctuation
+set norelativenumber
+set nostartofline
+set novisualbell
+set nowrap
+set number
+set path=.,** " Directories to search when using gf
+set previewheight=15
+set pumheight=25
+set regexpengine=2 " Use the new NFA engine
+set report=0 " Don't report on line changes
+set scroll=8
+set scrolljump=1
+set scrolloff=10
+set scrolloff=4
+set secure
+set shell=/usr/local/bin/zsh
+set shiftround
+set shiftwidth=2
+set shortmess+=c " default: shortmess=filnxtToO
+set showcmd " Show incomplete cmds down the bottom
+set showfulltag
+set showmatch
+set showmode
+set sidescroll=4
+set sidescrolloff=4
+set smartcase
+set smartindent " Use shiftwidth not tabstop
+set smarttab
+set softtabstop=2
+set splitbelow
+set splitright
+set suffixes+=.log,.zwc,.sw?,.rbc,.doc,.docx,.exe,.gif,.jpg,.mp3,.mp4,.dll,.dvi,.pdf,.rtf,.tmp,.py?
+set swapfile
+set switchbuf=useopen
+set synmaxcol=1000
+set t_vb=
+set tabstop=2
+set textwidth=0
+set timeout
+set timeoutlen=400
+set ttimeout
+set ttimeoutlen=10
+set undofile
+set undolevels=10000
+set updatecount=100
+set updatetime=2000 " Write swap files after 2 seconds of inactivity.
+set updatetime=500
+set virtualedit=block " Position cursor anywhere in visual block
+set wildignore+=%*,*~,._*
+set wildignore+=**/bower_modules/**,**/node_modules/**,*/.sass-cache/*
+set wildignore+=**/tmp/**
+set wildignore+=*.DS_Store,*.dmg
+set wildignore+=*.ai,*.bmp,*.gif,*.ico,*.jpeg,*.jpg,*.png,*.psd,*.svg,*.webp
+set wildignore+=*.aux,*.toc
+set wildignore+=*.bz2,*.gz,*.kgb,*.rar,*.tar,*.xz,*.zip
+set wildignore+=*.cbr,*.cbz,*.doc,*.docx,*.odf,*.pdf
+set wildignore+=*.class,*.dll,*.exe,*.jar,*.o,*.obj,*.out,*.so
+set wildignore+=*.divx,*.avi,*.mkv,*.mov,*.mp4,*.mpeg,*.mpg,*.m2ts,*.vob,*.webm
+set wildignore+=*.egg-info,__pycache__
+set wildignore+=*.eot,*.otf,*.ttf,*.woff,*.woff2
+set wildignore+=*.log
+set wildignore+=*.manifest
+set wildignore+=*.mp3,*.oga,*.ogg,*.wav,*.flac
+set wildignore+=*.pem
+set wildignore+=*.pyc
+set wildignore+=*.rbc,*/.bundle
+set wildignore+=*.spl
+set wildignore+=*.swn,*.swo,*.swp
+set wildignore+=*.tags,tags
+set wildignore+=*.ycm_extra_conf.py,*.ycm_extra_conf.pyc
+set wildignore+=*.zwc
+set wildignore+=*/.git,*/.git-metadata,*/.hg,*/.svn,.stversions
+set wildignore+=*/.idea,*/.vscode
+set wildignorecase
+set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
+set wildoptions=tagfile
+set wrapscan
+set writebackup " Make a backup of the original file when writing
+
 let g:mapleader=';'
 let g:maplocalleader=';'
-" }}}
 
-" {{{ [MINPAC]
 packadd minpac
 call minpac#init()
-
 call minpac#add('k-takata/minpac', { 'type': 'opt' })
-" }}}
 
-" [[ === CALL MINPAC ADD BELOW === ]]
-
-" {{{ [GENERAL PLUGINS]
-call minpac#add('chrisbra/NrrwRgn')
-call minpac#add('dbakker/vim-projectroot')
-call minpac#add('tpope/vim-abolish')
-call minpac#add('tpope/vim-commentary')
-call minpac#add('tpope/vim-dispatch')
-call minpac#add('tpope/vim-eunuch')
-call minpac#add('tpope/vim-projectionist')
-call minpac#add('tpope/vim-repeat')
-call minpac#add('tpope/vim-sensible')
-call minpac#add('tpope/vim-surround')
-call minpac#add('tpope/vim-unimpaired')
-call minpac#add('yegappan/mru')
-" }}}
-
-call minpac#add('Valloric/YouCompleteMe')
-call minpac#add('ervandew/supertab') " Use tab for autocompletion; supports both UltiSnips and YouCompleteMe
+source $VDOTS_DIR/000_bundles.vim
 
 set omnifunc=syntaxcomplete#Complete
-
-" {{{ [ALIGNMENT]
-call minpac#add('junegunn/vim-easy-align')
-call minpac#add('vim-scripts/Align')
-" }}}
-
-" {{{ [STARTIFY]
-call minpac#add('mhinz/vim-startify')
-
-autocmd! Vimrc FileType startify setlocal nofoldenable nolist
-
-let g:startify_change_to_dir = 1
-let g:startify_change_to_vcs_root = 1
-let g:startify_custom_header = []
-let g:startify_enable_unsafe = 1
-let g:startify_fortune_use_unicode = 1
-let g:startify_recursive_dir = 1
-let g:startify_relative_path = 1
-let g:startify_update_oldfiles = 1
-let g:startify_use_env = 1
-let g:startify_padding_left = 4
-let g:startify_show_files = 1
-let g:startify_files_number = 10
-let g:startify_show_sessions = 1
-let g:startify_session_autoload = 1
-let g:startify_session_delete_buffers = 1
-let g:startify_session_persistence = 1
-let g:startify_session_sort = 1
-let $STARTIFY_SESSION_DIR = $VIM_CACHE . '/startify/session'
-if !isdirectory($STARTIFY_SESSION_DIR)
-  call mkdir($STARTIFY_SESSION_DIR, 'p')
-endif
-
-let g:startify_session_dir = $STARTIFY_SESSION_DIR
-let g:startify_list_order = [
-      \ [' === Last modified files in: ' . getcwd() ], 'dir',
-      \ [' === Recent files:'], 'files',
-      \ [' === Bookmarks:'], 'bookmarks',
-      \ [' === Commands:'], 'commands',
-      \ [' === Sessions:'], 'sessions'
-      \ ]
-let g:startify_skiplist = [
-      \ $HOME . '/private/*',
-      \ $VIMRUNTIME . '/doc',
-      \ '/Desktop/',
-      \ '/doots/',
-      \ '/dooty/',
-      \ '/repos/',
-      \ '/tmp/',
-      \ 'COMMIT_EDITMSG',
-      \ '\.\(jpg\|png\|jpeg\|txt\)',
-      \ '\.git',
-      \ '\.gvimrc$',
-      \ '\.log$',
-      \ '\.vimrc$',
-      \ '\init.vim$',
-      \ 'bundle/.*/doc',
-      \ 'vimpager',
-      \ escape(fnamemodify(resolve($VIMRUNTIME), ':p'), '\').'doc'
-      \ ]
-let g:startify_bookmarks = [
-      \  { 'z': '~/.config/zsh/.zshrc' },
-      \  { 'Z': '~/.zshenv'            },
-      \  { 't': '~/.tmux.conf'         },
-      \  { 'v': $MYVIMRC               }
-      \ ]
-let g:startify_commands = [
-      \ {'p': ':PackUpdate'},
-      \ {'P': ':PackClean'},
-      \ ]
-function! ToStartify()
-  if winnr('$') == 1 && buffer_name(winbufnr(winnr())) !=? ''
-    vsplit
-    Startify
-    exec "normal \<c-w>w"
-  endif
-endfunction
-autocmd! Vimrc QuitPre * call ToStartify()
-" }}}
-
-" {{{ [ALE]
-call minpac#add('w0rp/ale')
-call minpac#add('maksimr/vim-jsbeautify')
-call minpac#add('google/vim-maktaba')
-call minpac#add('google/vim-codefmt')
-call minpac#add('google/vim-glaive')
 
 let g:ale_change_sign_column_color = 1
 let g:ale_completion_enabled = 1
@@ -177,20 +249,21 @@ let g:ale_linters = {
       \ 'scss': ['stylelint'],
       \ 'vim': ['vint'],
       \ }
+
 let g:ale_fixers = {
       \ 'css': ['prettier'],
       \ 'go': ['gofmt'],
       \ 'javascript': ['prettier'],
       \ 'json': ['prettier'],
       \ 'markdown': ['prettier'],
-      \ 'python': ['remove_trailing_lines', 'trim_whitespace', 'autopep8', 'isort'],
+      \ 'python': ['autopep8', 'isort'],
       \ 'ruby': ['rubocop'],
       \ 'sass': ['prettier'],
       \ 'scss': ['prettier'],
       \ 'vim': ['remove_trailing_lines', 'trim_whitespace'],
       \ 'xml': ['prettier']
       \ }
-      " \ 'yaml': ['yamllint'],
+" \ 'yaml': ['yamllint'],
 let g:ale_pattern_options = {
       \ '\.min\.js$': { 'ale_linters': [], 'ale_fixers': [] },
       \ '\.min\.css$': { 'ale_linters': [], 'ale_fixers': [] },
@@ -203,25 +276,12 @@ highlight clear ALEErrorSign
 highlight clear ALEWarningSign
 " Automatically close corresponding loclist when quitting a window
 autocmd! Vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
-" }}}
-
-" {{{ [SCRATCH BUFFER]
-call minpac#add('mtth/scratch.vim')
 
 let g:scratch_persistence_file = $VIM_CACHE . '/scratch.vim'
 let g:scratch_filetype = 'text'
 let g:scratch_insert_autohide = 0
 let g:scratch_autohide = 0
-" }}}
 
-" {{{ [GIT]
-call minpac#add('tpope/vim-git')
-call minpac#add('tpope/vim-fugitive')
-" }}}
-
-" {{{ [FZF]
-call minpac#add('junegunn/fzf.vim')
-call minpac#add('fszymanski/fzf-gitignore')
 
 set runtimepath+=/usr/local/opt/fzf
 
@@ -235,49 +295,13 @@ let g:fzf_history_dir = $FZF_HISTORY_DIR
 
 let g:fzf_layout = { 'window': 'new' }
 let g:fzf_action = {
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit'
-  \ }
-" }}}
+      \ 'ctrl-t': 'tab split',
+      \ 'ctrl-x': 'split',
+      \ 'ctrl-v': 'vsplit'
+      \ }
 
-" {{{ [VIMGREPPER]
-call minpac#add('mhinz/vim-grepper')
-" }}}
 
-" {{{ [ACK]
-call minpac#add('mileszs/ack.vim')
-" }}}
 
-" {{{ [NERDTREE]
-call minpac#add('scrooloose/nerdtree')
-call minpac#add('Xuyuanp/nerdtree-git-plugin')
-
-autocmd! Vimrc FileType nerdtree setlocal nofoldenable nolist
-
-let g:NERDTreeDirArrows = 1
-let g:NERDTreeHighlightCursorline = 1
-let g:NERDTreeHighlightFolders = 1
-let g:NERDTreeHijackNetrw = 1
-let g:NERDTreeMapOpenSplit = 's'
-let g:NERDTreeMapOpenVSplit = 'v'
-let g:NERDTreeMapRefreshRoot = 'R'
-let g:NERDTreeMapToggleHidden = 'h'
-let g:NERDTreeMinimalUI = 1
-let g:NERDTreeMouseMode = 3 " Click to open all node types
-let g:NERDTreeQuitOnOpen = 0
-let g:NERDTreeRespectWildIgnore = 1
-let g:NERDTreeShowBookmarks = 0
-let g:NERDTreeShowHidden = 1
-let g:NERDTreeSortHiddenFirst = 1
-" }}}
-
-" {{{ [SNIPPETS]
-" call minpac#add('MarcWeber/vim-addon-mw-utils')
-" call minpac#add('tomtom/tlib_vim')
-" call minpac#add('garbas/vim-snipmate')
-call minpac#add('honza/vim-snippets')
-call minpac#add('sirver/ultisnips')
 " let g:UltiSnipsExpandTrigger = '<tab>'
 " let g:UltiSnipsListSnippets = '<tab>'
 " let g:UltiSnipsJumpForwardTrigger = '<tab>'
@@ -289,14 +313,8 @@ call minpac#add('sirver/ultisnips')
 " let g:snipMate.scope_aliases['scss'] = 'scss,css'
 " let g:snipMate.scope_aliases['javascript'] = 'javascript'
 " let g:snipMate.scope_aliases['javascript.jsx'] = 'javascript,jsx'
-" }}}
 
-" {{{ [DASH]
-call minpac#add('rizzatti/dash.vim')
-" }}}
 
-" {{{ [INDENT GUIDES]
-call minpac#add('nathanaelkane/vim-indent-guides')
 
 let g:indent_guides_auto_colors = 1
 let g:indent_guides_default_mapping = 1
@@ -304,12 +322,6 @@ let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'startify', 'markdown', 'tagbar']
 let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 2
-" }}}
-
-" {{{ [TAGS]
-call minpac#add('ludovicchabant/vim-gutentags')
-call minpac#add('majutsushi/tagbar')
-
 let g:tagbar_autofocus = 1
 let g:tagbar_type_ruby = {
       \ 'kinds' : [
@@ -337,36 +349,9 @@ if executable('ripper-tags')
         \ 'ctagsargs': ['-f', '-']
         \ }
 endif
-" }}}
 
-" {{{ [EDITORCONFIG]
-call minpac#add('editorconfig/editorconfig-vim')
 
 let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
-" }}}
-
-" {{{ [TEXTOBJS]
-call minpac#add('kana/vim-textobj-user')
-call minpac#add('reedes/vim-textobj-sentence')
-call minpac#add('reedes/vim-textobj-quote')
-" }}}
-
-" {{{ [SYNTAX]
-call minpac#add('sheerun/vim-polyglot')
-" }}}
-
-" {{{ [C#]
-call minpac#add('OmniSharp/omnisharp-vim')
-" }}}
-
-" {{{ [XML]
-autocmd! Vimrc FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-" }}}
-
-" {{{ [HTML]
-call minpac#add('tpope/vim-ragtag')
-
-autocmd! Vimrc FileType html setlocal omnifunc=htmlcomplete#CompleteTags
 
 let g:html_dynamic_folds = 1
 let g:html_no_pre = 1
@@ -374,115 +359,224 @@ let g:html_use_css = 1
 let g:html_use_encoding = 'UTF-8'
 let g:html_no_rendering = 0 " Don't render italic, bold, links in HTML
 let g:html_number_lines = 0 " TOhtml don't show line numbers
-" }}}
 
-" {{{ [CSS/SCSS]
 autocmd! Vimrc FileType css,scss setlocal omnifunc=csscomplete#CompleteCSS
-" }}}
-
-" {{{ [RUBY]
-call minpac#add('tpope/vim-rails')
-call minpac#add('tpope/vim-bundler')
-call minpac#add('tpope/vim-rake')
-call minpac#add('tpope/vim-rbenv')
-call minpac#add('vim-ruby/vim-ruby')
-call minpac#add('tpope/vim-endwise')
-call minpac#add('nelstrom/vim-textobj-rubyblock')
-call minpac#add('vim-scripts/ruby-matchit')
-call minpac#add('joker1007/vim-ruby-heredoc-syntax')
-call minpac#add('bootleq/vim-textobj-rubysymbol')
-
-autocmd! Vimrc FileType ruby setlocal omnifunc=rubycomplete#Complete
-
-let g:ruby_fold = 1
-let g:ruby_foldable_groups = 'if def do begin case for {  [ % string # << __END__'
-let g:ruby_minlines = 1000
-let g:ruby_operators = 1
-let g:ruby_space_errors = 1
-let g:ruby_spellcheck_strings = 0
-let g:rubycomplete_buffer_loading = 1
-let g:rubycomplete_classes_in_global = 1
-let g:rubycomplete_include_object = 1
-let g:rubycomplete_include_objectspace = 1
-let g:rubycomplete_load_gemfile = 1
-let g:rubycomplete_rails = 1
-let g:rubycomplete_rails_proactive = 1
-let g:rubycomplete_use_bundler = 1
-let g:rails_projections = {
-  \   'app/admin/*.rb': { 'command': 'admin' },
-  \   'app/decorators/*_decorator.rb': { 'command': 'decorator' },
-  \   'app/inputs/*_input.rb': { 'command': 'input' },
-  \   'app/services/*_service.rb': { 'command': 'service' },
-  \   'app/uploaders/*_uploader.rb': {
-  \     'command': 'uploader',
-  \     'template': 'class %SUploader < CarrierWave::Uploader::Base\nend',
-  \     'test': [
-  \       'test/unit/%s_uploader_test.rb',
-  \       'spec/models/%s_uploader_spec.rb'
-  \     ],
-  \     'keywords': 'process version'
-  \   },
-  \   'app/workers/*_worker.rb': { 'command': 'worker' },
-  \   'features/support/*.rb': { 'command': 'support' },
-  \   'features/support/env.rb': { 'command': 'support' },
-  \   'spec/factories/*.rb': { 'command': 'factory' }
-  \ }
-let g:ruby_heredoc_syntax_filetypes = {
-      \ 'xml': { 'start' : 'XML' },
-      \ 'html': { 'start' : 'HTML' },
-      \ 'eruby': { 'start' : 'ERB' },
-      \ 'pgsql': { 'start' : 'SQL' }
-      \ }
-" }}}
-
-" {{{ [PYTHON]
-call minpac#add('Vimjas/vim-python-pep8-indent')
-" }}}
-
-" {{{ [CLOJURE]
-" call minpac#add('tpope/vim-leiningen')
-" call minpac#add('tpope/vim-fireplace')
-" call minpac#add('tpope/vim-classpath')
-" call minpac#add('tpope/vim-salve')
-" call minpac#add('guns/vim-sexp')
-" call minpac#add('tpope/vim-sexp-mappings-for-regular-people')
-" }}}
-
-" {{{ [ELIXIR/ERLANG]
-call minpac#add('vim-erlang/vim-erlang-runtime')
-call minpac#add('vim-erlang/vim-erlang-compiler')
-call minpac#add('vim-erlang/vim-erlang-omnicomplete')
-call minpac#add('vim-erlang/vim-erlang-tags')
-call minpac#add('elixir-editors/vim-elixir')   " Better language support (more than polyglot)
-call minpac#add('slashmili/alchemist.vim')     " Enhanced Elixir integration for Vim
-call minpac#add('andyl/vim-textobj-elixir')    " Add text object for Elixir blocks
 
 let g:elixir_use_markdown_for_docs = 1
-" }}}
-
-" {{{ [JSON]
-call minpac#add('tpope/vim-jdaddy')
-" }}}
-
-" {{{ [MARKDOWN]
-call minpac#add('plasticboy/vim-markdown')
 let g:vim_markdown_folding_disabled = 1
-" }}}
 
-" {{{ [JEKYLL]
-call minpac#add('tpope/vim-liquid')
-call minpac#add('parkr/vim-jekyll')
-" }}}
+command! Vimrc Reload     :execute ':write ' . $MYVIMRC.' | :source ' . $MYVIMRC
+command! Vimrc PackUpdate :packadd minpac | :source $MYVIMRC | :call minpac#update()
+command! Vimrc PackClean  :packadd minpac | :source $MYVIMRC | :call minpac#clean()
 
-" {{{ [JAVASCRIPT]
-autocmd! Vimrc FileType javascript setlocal omnifunc=tern#Complete
-" }}}
+command! Vimrc Aliasrc   :edit $XDG_CONFIG_HOME/zsh/.aliasrc
+command! Vimrc Antigenrc :edit $XDG_CONFIG_HOME/zsh/.antigenrc
+command! Vimrc Vimrc     :edit $MYVIMRC
+command! Vimrc Zpromptrc :edit $XDG_CONFIG_HOME/zsh/.zpromptrc
+command! Vimrc Zshenv    :edit $HOME/.zshenv
+command! Vimrc Zshrc     :edit $XDG_CONFIG_HOME/zsh/.zshrc
 
-" {{{ [GOLANG]
-call minpac#add('fatih/vim-go')
-" }}}
+command! Vimrc Valiasrc   :vsplit $XDG_CONFIG_HOME/zsh/.aliasrc
+command! Vimrc Vantigenrc :vsplit $XDG_CONFIG_HOME/zsh/.antigenrc
+command! Vimrc Vvimrc     :vsplit $MYVIMRC
+command! Vimrc Vzpromptrc :vsplit $XDG_CONFIG_HOME/zsh/.zpromptrc
+command! Vimrc Vzshenv    :vsplit $HOME/.zshenv
+command! Vimrc Vzshrc     :vsplit $XDG_CONFIG_HOME/zsh/.zshrc
 
-source $VDOTS_DIR/vimrc.commands
-source $VDOTS_DIR/vimrc.autocmds
-source $VDOTS_DIR/vimrc.mappings
-source $VDOTS_DIR/vimrc.theme
+command! Vimrc Saliasrc   :split $XDG_CONFIG_HOME/zsh/.aliasrc
+command! Vimrc Santigenrc :split $XDG_CONFIG_HOME/zsh/.antigenrc
+command! Vimrc Svimrc     :split $MYVIMRC
+command! Vimrc Szpromptrc :split $XDG_CONFIG_HOME/zsh/.zpromptrc
+command! Vimrc Szshenv    :split $HOME/.zshenv
+command! Vimrc Szshrc     :split $XDG_CONFIG_HOME/zsh/.zshrc
+
+command! Vimrc Taliasrc   :tabedit $XDG_CONFIG_HOME/zsh/.aliasrc
+command! Vimrc Tantigenrc :tabedit $XDG_CONFIG_HOME/zsh/.antigenrc
+command! Vimrc Tvimrc     :tabedit $MYVIMRC
+command! Vimrc Tzpromptrc :tabedit $XDG_CONFIG_HOME/zsh/.zpromptrc
+command! Vimrc Tzshenv    :tabedit $HOME/.zshenv
+command! Vimrc Tzshrc     :tabedit $XDG_CONFIG_HOME/zsh/.zshrc
+
+if has('gui_running')
+  command! Vimrc Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
+  command! Vimrc Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
+endif
+autocmd! Vimrc BufWritePre <buffer> :%s/\s\+$//e
+autocmd! Vimrc InsertLeave,WinEnter * setlocal cursorline
+autocmd! Vimrc InsertEnter,WinLeave * setlocal nocursorline
+autocmd! Vimrc VimResized * wincmd =
+" Saner command-line history
+cnoremap <c-n> <down>
+cnoremap <c-p> <up>
+
+" Edit file in new tab
+map <leader>ef :tabe <cfile><cr>
+
+" Double tap to select whole line
+nmap <leader><leader> V
+
+" Dash.app
+nmap <silent> <leader>d <Plug>DashSearch
+
+" ALE
+" nmap <silent> <leader>ff <Plug>(ale_fix)
+
+nmap <silent> <leader>j <Plug>(ale_next_wrap)
+nmap <silent> <leader>k <Plug>(ale_previous_wrap)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
+" Saner line movements
+nnoremap $ g$
+nnoremap 0 g0
+
+" Avoid accidentally launching Ex mode
+nnoremap Q <nop>
+
+" Convert ; to : in modeline
+nnoremap ; : " B
+
+" Clear highlight on enter
+nnoremap <cr> :nohlsearch<cr><cr>
+
+" Saner behavior of n and N
+nnoremap <expr> N 'nN'[v:searchforward]
+nnoremap <expr> n 'Nn'[v:searchforward]
+
+" ALE
+nnoremap <leader>ae :ALEDetail<cr>
+nnoremap <leader>al :ALEToggle<Cr>
+
+autocmd! Vimrc FileType css,scss,markdown,javascript,xml noremap <buffer> <leader>ff :ALEFix<cr>
+autocmd! Vimrc FileType html,liquid noremap <buffer> <leader>ff :call HtmlBeautify()<cr>
+
+" map <c-f> :call JsBeautify()<cr>
+" autocmd! Vimrc FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+" autocmd! Vimrc FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
+" autocmd! Vimrc FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
+" autocmd! Vimrc FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+" autocmd! Vimrc FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+" autocmd! Vimrc FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
+" autocmd! Vimrc FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
+" autocmd! Vimrc FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
+" autocmd! Vimrc FileType html,liquid vnoremap <buffer> <leader>ff :call RangeHtmlBeautify()<cr>
+" autocmd! Vimrc FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+
+" FZF
+nnoremap <c-p> :FZF<cr>
+nnoremap <leader>b :Buffers<cr>
+" nnoremap <c-c> :Colors<cr>
+" nnoremap <c-f> :BLines<cr>
+" nnoremap <c-g> :GitFiles<cr>
+" nnoremap <c-m> :Mru<cr>
+" nnoremap <c-h> :History<cr>
+" nnoremap <c-t> :Files<cr>
+" nnoremap ``` :Marks<cr>
+
+" Fugitive
+nnoremap <leader>gb :Gblame<cr>
+nnoremap <leader>gd :Gdiff<cr>
+nnoremap <leader>gs :Gstatus<cr>
+
+" Saner CTRL-L
+nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
+
+" NERDTree
+nnoremap <leader>n :NERDTreeToggle<cr>
+nnoremap <leader>nf :NERDTreeFind<cr>
+
+nnoremap <leader>tb :TagbarToggle<cr>
+
+" Center highlighted search
+nnoremap N Nzz
+nnoremap n nzz
+
+" Move current line
+nnoremap [e :<c-u>execute 'move -1-'. v:count1<cr>
+nnoremap ]e :<c-u>execute 'move +'. v:count1<cr>
+
+nnoremap ^ g^
+
+" Highlight last inserted text
+nnoremap gV `[v`]
+
+" Saner movement through wrapped lines
+nnoremap j gj
+nnoremap k gk
+
+" Startify
+nnoremap <leader>s :Startify<cr>
+
+" ALE
+noremap <leader>ad :ALEGoToDefinition<cr>
+
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Saner block shift
+xnoremap < <gv
+xnoremap > >gv
+
+" Change directory to project root
+nnoremap <leader>dp :ProjectRootCD<cr>
+" Open NERDTree at project root
+nnoremap <silent> <leader>dt :ProjectRootExe NERDTreeFind<cr>
+
+set background=dark
+
+if has('gui_running')
+  set guifont=Sauce\ Code\ Pro\ Nerd\ Font\ Complete:h18
+endif
+
+if has('termguicolors')
+  set termguicolors
+else
+  set t_Co=256
+endif
+
+call minpac#add('skywind3000/asyncrun.vim')
+call minpac#add('vim-airline/vim-airline')
+call minpac#add('vim-airline/vim-airline-themes')
+call minpac#add('ryanoasis/vim-devicons')
+call minpac#add('chriskempson/base16-vim')
+
+if exists('g:loaded_webdevicons')
+  let g:webdevicons_enable = 1
+
+  if exists('g:loaded_nerd_tree')
+    let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
+    let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
+    let g:webdevicons_enable_nerdtree = 1
+    let g:webdevicons_conceal_nerdtree_brackets = 1
+  endif
+
+  let g:WebDevIconsUnicodeDecorateFileNodes = 1
+  let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
+endif
+
+if exists('g:loaded_nerd_tree')
+  let g:NERDTreeDirArrowCollapsible = '▾'
+  let g:NERDTreeDirArrowExpandable = '▸'
+end
+
+if exists('g:loaded_airline')
+  let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+  let g:airline_highlighting_cache = 1
+  let g:airline_powerline_fonts = 1
+
+  if exists('g:loaded_webdevicons')
+    let g:webdevicons_enable_airline_statusline = 1
+    let g:webdevicons_enable_airline_tabline = 1
+  endif
+
+  if exists('g:loaded_airline_themes')
+    let g:airline_theme = 'base16_tomorrow'
+  endif
+endif
+
+let g:base16colorspace = 256
+
+colorscheme base16-tomorrow-night
+
+" autocmd! User Startified setlocal nocursorline nofoldenable nolist
