@@ -9,6 +9,9 @@ if has('vim_starting')
   scriptencoding utf-8
 endif
 
+command! -bar PackUpdate call plugins#reload() | call minpac#update()
+command! -bar PackClean  call plugins#reload() | call minpac#clean()
+
 if has('nvim')
   let $VIM_DIR = '/nvim'
 else
@@ -89,10 +92,49 @@ set directory=$SWAP_DIR//
 set undodir=$UNDO_DIR//
 set viewdir=$VIEW_DIR//
 
+" === BACKUP SETTINGS ===
+" turn backup OFF
+" Normally we would want to have it turned on. See bug and workaround below.
+" OBS: It's a known-bug that backupdir is not supporting
+" the correct double slash filename expansion
+" see: https://code.google.com/p/vim/issues/detail?id=179
+set nobackup
+
+" set a centralized backup directory
+" set backupdir=~/.vim/backup//
+" set writebackup " Make a backup of the original file when writing
+" set backup
+set backupskip+=*.log " Don't backup log files
+
+" This is the workaround for the backup filename expansion problem.
+autocmd! Vimrc BufWritePre * :call SaveBackups()
+
+function! SaveBackups()
+if expand('%:p') =~ &backupskip | return | endif
+
+" If this is a newly created file, don't try to create a backup
+if !filereadable(@%) | return | endif
+
+for l:backupdir in split(&backupdir, ',')
+  :call SaveBackup(l:backupdir)
+endfor
+endfunction
+
+function! SaveBackup(backupdir)
+let l:filename = expand('%:p')
+if a:backupdir =~? '//$'
+  let l:backup = escape(substitute(l:filename, '/', '%', 'g')  . &backupext, '%')
+else
+  let l:backup = escape(expand('%') . &backupext, '%')
+endif
+
+let l:backup_path = a:backupdir . l:backup
+
+:silent! execute '!cp ' . resolve(l:filename) . ' ' . l:backup_path
+endfunction
+
 set autoindent " Overwritten by cindent or filetype rules
 set autoread " Read when a file has been changed even outside of Vim.
-set backup
-set backupskip+=*.log " Don't backup log files
 set belloff=all
 set cindent " Default to C style indentation
 set clipboard& clipboard+=unnamed,unnamedplus
@@ -215,7 +257,6 @@ set wildignorecase
 set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
 set wildoptions=tagfile
 set wrapscan
-set writebackup " Make a backup of the original file when writing
 
 let g:mapleader=';'
 let g:maplocalleader=';'
@@ -223,10 +264,6 @@ let g:maplocalleader=';'
 packadd minpac
 call minpac#init()
 call minpac#add('k-takata/minpac', { 'type': 'opt' })
-
-source $VDOTS_DIR/000_bundles.vim
-
-set omnifunc=syntaxcomplete#Complete
 
 let g:ale_change_sign_column_color = 1
 let g:ale_completion_enabled = 1
@@ -314,8 +351,6 @@ let g:fzf_action = {
 " let g:snipMate.scope_aliases['javascript'] = 'javascript'
 " let g:snipMate.scope_aliases['javascript.jsx'] = 'javascript,jsx'
 
-
-
 let g:indent_guides_auto_colors = 1
 let g:indent_guides_default_mapping = 1
 let g:indent_guides_enable_on_vim_startup = 1
@@ -360,7 +395,6 @@ let g:html_use_encoding = 'UTF-8'
 let g:html_no_rendering = 0 " Don't render italic, bold, links in HTML
 let g:html_number_lines = 0 " TOhtml don't show line numbers
 
-autocmd! Vimrc FileType css,scss setlocal omnifunc=csscomplete#CompleteCSS
 
 let g:elixir_use_markdown_for_docs = 1
 let g:vim_markdown_folding_disabled = 1
@@ -526,7 +560,7 @@ nnoremap <silent> <leader>dt :ProjectRootExe NERDTreeFind<cr>
 set background=dark
 
 if has('gui_running')
-  set guifont=Sauce\ Code\ Pro\ Nerd\ Font\ Complete:h18
+  set guifont=FiraCode-Retina:h18
 endif
 
 if has('termguicolors')
@@ -535,48 +569,21 @@ else
   set t_Co=256
 endif
 
-call minpac#add('skywind3000/asyncrun.vim')
-call minpac#add('vim-airline/vim-airline')
-call minpac#add('vim-airline/vim-airline-themes')
-call minpac#add('ryanoasis/vim-devicons')
-call minpac#add('chriskempson/base16-vim')
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline_highlighting_cache = 1
+let g:airline_powerline_fonts = 1
+let g:airline_left_sep='' " 
+let g:airline_left_alt_sep='' " 
+let g:airline_right_sep='' " 
+let g:airline_right_alt_sep='' " 
 
-if exists('g:loaded_webdevicons')
-  let g:webdevicons_enable = 1
-
-  if exists('g:loaded_nerd_tree')
-    let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
-    let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
-    let g:webdevicons_enable_nerdtree = 1
-    let g:webdevicons_conceal_nerdtree_brackets = 1
-  endif
-
-  let g:WebDevIconsUnicodeDecorateFileNodes = 1
-  let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
-endif
-
-if exists('g:loaded_nerd_tree')
-  let g:NERDTreeDirArrowCollapsible = '▾'
-  let g:NERDTreeDirArrowExpandable = '▸'
-end
-
-if exists('g:loaded_airline')
-  let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-  let g:airline_highlighting_cache = 1
-  let g:airline_powerline_fonts = 1
-
-  if exists('g:loaded_webdevicons')
-    let g:webdevicons_enable_airline_statusline = 1
-    let g:webdevicons_enable_airline_tabline = 1
-  endif
-
-  if exists('g:loaded_airline_themes')
-    let g:airline_theme = 'base16_tomorrow'
-  endif
-endif
+let g:airline_theme = 'base16_tomorrow'
 
 let g:base16colorspace = 256
 
 colorscheme base16-tomorrow-night
 
+set omnifunc=syntaxcomplete#Complete
+
 " autocmd! User Startified setlocal nocursorline nofoldenable nolist
+" rgb(35,35,35) == #232323 the color of MacOS dark menu
