@@ -4,7 +4,7 @@ let g:startify_change_to_dir = 1
 let g:startify_change_to_vcs_root = 1
 let g:startify_custom_header = []
 let g:startify_enable_unsafe = 1
-let g:startify_fortune_use_unicode = 1
+let g:startify_fortune_use_unicode = 0
 let g:startify_recursive_dir = 1
 let g:startify_relative_path = 1
 let g:startify_update_oldfiles = 1
@@ -72,10 +72,6 @@ function! ToStartify()
     exec 'normal \<c-w>w'
   endif
 endfunction
-
-" function! StartifyEntryFormat()
-"   return 'WebDevIconsGetFileTypeSymbol(absolute_path) . " " . entry_path'
-" endfunction
 
 autocmd! Vimrc User Startified setlocal buftype= cursorline nofoldenable nolist
 autocmd! Vimrc QuitPre * call ToStartify()
