@@ -18,11 +18,6 @@ let g:startify_session_delete_buffers = 1
 let g:startify_session_persistence = 1
 let g:startify_session_sort = 1
 
-let $STARTIFY_SESSION_DIR = $VIM_CACHE . '/startify/session'
-if !isdirectory($STARTIFY_SESSION_DIR)
-  call mkdir($STARTIFY_SESSION_DIR, 'p')
-endif
-
 let g:startify_session_dir = $STARTIFY_SESSION_DIR
 
 let g:startify_list_order = [

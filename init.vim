@@ -9,35 +9,40 @@ if has('vim_starting')
   scriptencoding utf-8
 endif
 
-command! -bar PackUpdate call plugins#reload() | call minpac#update()
-command! -bar PackClean  call plugins#reload() | call minpac#clean()
+function! Mkdir_p(directory)
+  if isdirectory(a:directory)
+  else
+    call mkdir(a:directory, 'p')
+  endif
+endfunction
 
-if has('nvim')
-  let $VIM_DIR = '/nvim'
-else
-  let $VIM_DIR = '/vim'
-endif
+function! Vim_dir()
+  if has('nvim')
+    return 'nvim'
+  else
+    return 'vim'
+  endif
+endfunction
 
-let $XDG_CACHE_HOME = expand($HOME . '/.cache')
-let $XDG_CONFIG_HOME = expand($HOME . '/.config')
-let $XDG_DATA_HOME = expand($HOME . '/.local/share')
-let $VDOTS_DIR = expand($XDG_CONFIG_HOME . '/vdots')
-let $VIM_HOME = expand($XDG_DATA_HOME . $VIM_DIR)
-let $VIM_CACHE = expand($XDG_CACHE_HOME . $VIM_DIR)
+function! Init_app_dir(path)
+  let l:directory = expand($XDG_DATA_HOME . Vim_dir()) . a:path
+  call Mkdir_p(l:directory)
+  return l:directory
+endfunction
 
-let $BACKUP_DIR = $VIM_HOME . '/backup'
-let $SWAP_DIR = $VIM_HOME . '/swap'
-let $UNDO_DIR = $VIM_HOME . '/undo'
-let $VIEW_DIR = $VIM_HOME . '/view'
+let $DATA_DIR = Init_app_dir('')
+let $BACKUP_DIR = Init_app_dir('/backup')
+let $SWAP_DIR = Init_app_dir('/swap')
+let $UNDO_DIR = Init_app_dir('/undo')
+let $VIEW_DIR = Init_app_dir('/view')
+let $SHADA_DIR = Init_app_dir('/shada')
+let $FZF_HISTORY_DIR = Init_app_dir('/fzf/history')
+let $STARTIFY_SESSION_DIR = Init_app_dir('/startify/session')
 
 if has('nvim')
   let g:ruby_host_prog = '/usr/local/bin/ruby'
   let g:python2_host_prog = '/usr/local/bin/python2'
   let g:python3_host_prog = '/usr/local/bin/python3'
-
-  if !isdirectory($VIM_HOME . '/shada')
-    call mkdir($VIM_HOME . '/shada', 'p')
-  endif
 
   " ' - Maximum number of previously edited files marks
   " < - Maximum number of lines saved for each register
@@ -52,31 +57,7 @@ if has('nvim')
   " Write history on idle, for sharing among different sessions
   autocmd! Vimrc CursorHold * if exists(':rshada') | rshada | wshada | endif
 else
-  set viminfo='100,n$VIM_HOME/viminfo
-endif
-
-if !isdirectory($VIM_HOME)
-  call mkdir($VIM_HOME, 'p')
-endif
-
-if !isdirectory($VIM_CACHE)
-  call mkdir(expand($VIM_CACHE), 'p')
-endif
-
-if !isdirectory($BACKUP_DIR)
-  call mkdir($BACKUP_DIR, 'p')
-endif
-
-if !isdirectory($SWAP_DIR)
-  call mkdir($SWAP_DIR, 'p')
-endif
-
-if !isdirectory($UNDO_DIR)
-  call mkdir($UNDO_DIR, 'p')
-endif
-
-if !isdirectory($VIEW_DIR)
-  call mkdir($VIEW_DIR, 'p')
+  set viminfo='100,n$DATA_DIR/viminfo
 endif
 
 if !exists('g:syntax_on')
@@ -107,30 +88,30 @@ set nobackup
 set backupskip+=*.log " Don't backup log files
 
 " This is the workaround for the backup filename expansion problem.
-autocmd! Vimrc BufWritePre * :call SaveBackups()
+autocmd! Vimrc BufWritePre * call SaveBackups()
 
 function! SaveBackups()
-if expand('%:p') =~ &backupskip | return | endif
+  if expand('%:p') =~ &backupskip | return | endif
 
-" If this is a newly created file, don't try to create a backup
-if !filereadable(@%) | return | endif
+  " If this is a newly created file, don't try to create a backup
+  if !filereadable(@%) | return | endif
 
-for l:backupdir in split(&backupdir, ',')
-  :call SaveBackup(l:backupdir)
-endfor
+  for l:backupdir in split(&backupdir, ',')
+    call SaveBackup(l:backupdir)
+  endfor
 endfunction
 
 function! SaveBackup(backupdir)
-let l:filename = expand('%:p')
-if a:backupdir =~? '//$'
-  let l:backup = escape(substitute(l:filename, '/', '%', 'g')  . &backupext, '%')
-else
-  let l:backup = escape(expand('%') . &backupext, '%')
-endif
+  let l:filename = expand('%:p')
+  if a:backupdir =~? '//$'
+    let l:backup = escape(substitute(l:filename, '/', '%', 'g')  . &backupext, '%')
+  else
+    let l:backup = escape(expand('%') . &backupext, '%')
+  endif
 
-let l:backup_path = a:backupdir . l:backup
+  let l:backup_path = a:backupdir . l:backup
 
-:silent! execute '!cp ' . resolve(l:filename) . ' ' . l:backup_path
+  :silent! execute '!cp ' . resolve(l:filename) . ' ' . l:backup_path
 endfunction
 
 set autoindent " Overwritten by cindent or filetype rules
@@ -261,9 +242,9 @@ set wrapscan
 let g:mapleader=';'
 let g:maplocalleader=';'
 
-packadd minpac
-call minpac#init()
-call minpac#add('k-takata/minpac', { 'type': 'opt' })
+" packadd minpac
+" call minpac#init()
+" call minpac#add('k-takata/minpac', { 'type': 'opt' })
 
 let g:ale_change_sign_column_color = 1
 let g:ale_completion_enabled = 1
@@ -314,7 +295,7 @@ highlight clear ALEWarningSign
 " Automatically close corresponding loclist when quitting a window
 autocmd! Vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
 
-let g:scratch_persistence_file = $VIM_CACHE . '/scratch.vim'
+let g:scratch_persistence_file = $DATA_DIR . '/scratch.vim'
 let g:scratch_filetype = 'text'
 let g:scratch_insert_autohide = 0
 let g:scratch_autohide = 0
@@ -322,11 +303,6 @@ let g:scratch_autohide = 0
 
 set runtimepath+=/usr/local/opt/fzf
 
-let $FZF_HISTORY_DIR = $VIM_CACHE . '/fzf/history'
-
-if !isdirectory($FZF_HISTORY_DIR)
-  call mkdir($FZF_HISTORY_DIR, 'p')
-endif
 
 let g:fzf_history_dir = $FZF_HISTORY_DIR
 
@@ -395,50 +371,52 @@ let g:html_use_encoding = 'UTF-8'
 let g:html_no_rendering = 0 " Don't render italic, bold, links in HTML
 let g:html_number_lines = 0 " TOhtml don't show line numbers
 
-
 let g:elixir_use_markdown_for_docs = 1
 let g:vim_markdown_folding_disabled = 1
 
-command! Vimrc Reload     :execute ':write ' . $MYVIMRC.' | :source ' . $MYVIMRC
-command! Vimrc PackUpdate :packadd minpac | :source $MYVIMRC | :call minpac#update()
-command! Vimrc PackClean  :packadd minpac | :source $MYVIMRC | :call minpac#clean()
+command! -bar PackUpdate call plugins#reload() | call minpac#update()
+command! -bar PackClean  call plugins#reload() | call minpac#clean()
 
-command! Vimrc Aliasrc   :edit $XDG_CONFIG_HOME/zsh/.aliasrc
-command! Vimrc Antigenrc :edit $XDG_CONFIG_HOME/zsh/.antigenrc
-command! Vimrc Vimrc     :edit $MYVIMRC
-command! Vimrc Zpromptrc :edit $XDG_CONFIG_HOME/zsh/.zpromptrc
-command! Vimrc Zshenv    :edit $HOME/.zshenv
-command! Vimrc Zshrc     :edit $XDG_CONFIG_HOME/zsh/.zshrc
+command! Aliasrc  :edit $ZDOTDIR/.aliasrc
+command! Saliasrc :split $ZDOTDIR/.aliasrc
+command! Taliasrc :tabedit $ZDOTDIR/.aliasrc
+command! Valiasrc :vsplit $ZDOTDIR/.aliasrc
 
-command! Vimrc Valiasrc   :vsplit $XDG_CONFIG_HOME/zsh/.aliasrc
-command! Vimrc Vantigenrc :vsplit $XDG_CONFIG_HOME/zsh/.antigenrc
-command! Vimrc Vvimrc     :vsplit $MYVIMRC
-command! Vimrc Vzpromptrc :vsplit $XDG_CONFIG_HOME/zsh/.zpromptrc
-command! Vimrc Vzshenv    :vsplit $HOME/.zshenv
-command! Vimrc Vzshrc     :vsplit $XDG_CONFIG_HOME/zsh/.zshrc
+command! Antigenrc  :edit $ZDOTDIR/.antigenrc
+command! Santigenrc :split $ZDOTDIR/.antigenrc
+command! Tantigenrc :tabedit $ZDOTDIR/.antigenrc
+command! Vantigenrc :vsplit $ZDOTDIR/.antigenrc
 
-command! Vimrc Saliasrc   :split $XDG_CONFIG_HOME/zsh/.aliasrc
-command! Vimrc Santigenrc :split $XDG_CONFIG_HOME/zsh/.antigenrc
-command! Vimrc Svimrc     :split $MYVIMRC
-command! Vimrc Szpromptrc :split $XDG_CONFIG_HOME/zsh/.zpromptrc
-command! Vimrc Szshenv    :split $HOME/.zshenv
-command! Vimrc Szshrc     :split $XDG_CONFIG_HOME/zsh/.zshrc
+command! Vimrc  :edit $MYVIMRC
+command! Svimrc :split $MYVIMRC
+command! Tvimrc :tabedit $MYVIMRC
+command! Vvimrc :vsplit $MYVIMRC
 
-command! Vimrc Taliasrc   :tabedit $XDG_CONFIG_HOME/zsh/.aliasrc
-command! Vimrc Tantigenrc :tabedit $XDG_CONFIG_HOME/zsh/.antigenrc
-command! Vimrc Tvimrc     :tabedit $MYVIMRC
-command! Vimrc Tzpromptrc :tabedit $XDG_CONFIG_HOME/zsh/.zpromptrc
-command! Vimrc Tzshenv    :tabedit $HOME/.zshenv
-command! Vimrc Tzshrc     :tabedit $XDG_CONFIG_HOME/zsh/.zshrc
+command! Zpromptrc  :edit $ZDOTDIR/.zpromptrc
+command! Szpromptrc :split $ZDOTDIR/.zpromptrc
+command! Vzpromptrc :vsplit $ZDOTDIR/.zpromptrc
+command! Tzpromptrc :tabedit $ZDOTDIR/.zpromptrc
+
+command! Zshenv  :edit $ZDOTDIR/.zshenv
+command! Szshenv :split $ZDOTDIR/.zshenv
+command! Tzshenv :tabedit $ZDOTDIR/.zshenv
+command! Vzshenv :vsplit $ZDOTDIR/.zshenv
+
+command! Zshrc  :edit $ZDOTDIR/.zshrc
+command! Szshrc :split $ZDOTDIR/.zshrc
+command! Tzshrc :tabedit $ZDOTDIR/.zshrc
+command! Vzshrc :vsplit $ZDOTDIR/.zshrc
 
 if has('gui_running')
   command! Vimrc Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
   command! Vimrc Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
 endif
+
 autocmd! Vimrc BufWritePre <buffer> :%s/\s\+$//e
 autocmd! Vimrc InsertLeave,WinEnter * setlocal cursorline
 autocmd! Vimrc InsertEnter,WinLeave * setlocal nocursorline
 autocmd! Vimrc VimResized * wincmd =
+
 " Saner command-line history
 cnoremap <c-n> <down>
 cnoremap <c-p> <up>
@@ -483,19 +461,19 @@ nnoremap <leader>ae :ALEDetail<cr>
 nnoremap <leader>al :ALEToggle<Cr>
 
 autocmd! Vimrc FileType css,scss,markdown,javascript,xml noremap <buffer> <leader>ff :ALEFix<cr>
-autocmd! Vimrc FileType html,liquid noremap <buffer> <leader>ff :call HtmlBeautify()<cr>
+autocmd! Vimrc FileType html,liquid noremap <buffer> <leader>ff call HtmlBeautify()<cr>
 
-" map <c-f> :call JsBeautify()<cr>
-" autocmd! Vimrc FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
-" autocmd! Vimrc FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
-" autocmd! Vimrc FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
-" autocmd! Vimrc FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
-" autocmd! Vimrc FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
-" autocmd! Vimrc FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
-" autocmd! Vimrc FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
-" autocmd! Vimrc FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
-" autocmd! Vimrc FileType html,liquid vnoremap <buffer> <leader>ff :call RangeHtmlBeautify()<cr>
-" autocmd! Vimrc FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+" map <c-f> call JsBeautify()<cr>
+" autocmd! Vimrc FileType javascript noremap <buffer>  <c-f> call JsBeautify()<cr>
+" autocmd! Vimrc FileType json noremap <buffer> <c-f> call JsonBeautify()<cr>
+" autocmd! Vimrc FileType jsx noremap <buffer> <c-f> call JsxBeautify()<cr>
+" autocmd! Vimrc FileType html noremap <buffer> <c-f> call HtmlBeautify()<cr>
+" autocmd! Vimrc FileType css noremap <buffer> <c-f> call CSSBeautify()<cr>
+" autocmd! Vimrc FileType javascript vnoremap <buffer>  <c-f> call RangeJsBeautify()<cr>
+" autocmd! Vimrc FileType json vnoremap <buffer> <c-f> call RangeJsonBeautify()<cr>
+" autocmd! Vimrc FileType jsx vnoremap <buffer> <c-f> call RangeJsxBeautify()<cr>
+" autocmd! Vimrc FileType html,liquid vnoremap <buffer> <leader>ff call RangeHtmlBeautify()<cr>
+" autocmd! Vimrc FileType css vnoremap <buffer> <c-f> call RangeCSSBeautify()<cr>
 
 " FZF
 nnoremap <c-p> :FZF<cr>
@@ -584,6 +562,3 @@ let g:base16colorspace = 256
 colorscheme base16-tomorrow-night
 
 set omnifunc=syntaxcomplete#Complete
-
-" autocmd! User Startified setlocal nocursorline nofoldenable nolist
-" rgb(35,35,35) == #232323 the color of MacOS dark menu
