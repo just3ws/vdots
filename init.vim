@@ -114,6 +114,7 @@ function! SaveBackup(backupdir)
   :silent! execute '!cp ' . resolve(l:filename) . ' ' . l:backup_path
 endfunction
 
+set noexrc
 set autoindent " Overwritten by cindent or filetype rules
 set autoread " Read when a file has been changed even outside of Vim.
 set belloff=all
