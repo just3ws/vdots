@@ -242,10 +242,6 @@ set wrapscan
 let g:mapleader=';'
 let g:maplocalleader=';'
 
-" packadd minpac
-" call minpac#init()
-" call minpac#add('k-takata/minpac', { 'type': 'opt' })
-
 let g:ale_change_sign_column_color = 1
 let g:ale_completion_enabled = 1
 let g:ale_fix_on_save = 1
@@ -532,6 +528,7 @@ xnoremap > >gv
 
 " Change directory to project root
 nnoremap <leader>dp :ProjectRootCD<cr>
+
 " Open NERDTree at project root
 nnoremap <silent> <leader>dt :ProjectRootExe NERDTreeFind<cr>
 
