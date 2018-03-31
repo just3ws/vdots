@@ -10,18 +10,15 @@ if has('vim_starting')
 endif
 
 function! Mkdir_p(directory)
-  if isdirectory(a:directory)
-  else
+  if isdirectory(a:directory) | else
     call mkdir(a:directory, 'p')
   endif
 endfunction
 
 function! Vim_dir()
-  if has('nvim')
-    return 'nvim'
-  else
-    return 'vim'
-  endif
+  if has('nvim') | return '/nvim' | endif
+
+  return '/vim'
 endfunction
 
 function! Init_app_dir(path)
@@ -60,7 +57,7 @@ else
   set viminfo='100,n$DATA_DIR/viminfo
 endif
 
-if !exists('g:syntax_on')
+if exists('g:syntax_on') | else
   syntax enable
 endif
 
@@ -404,10 +401,15 @@ command! Szshrc :split $ZDOTDIR/.zshrc
 command! Tzshrc :tabedit $ZDOTDIR/.zshrc
 command! Vzshrc :vsplit $ZDOTDIR/.zshrc
 
-if has('gui_running')
-  command! Vimrc Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
-  command! Vimrc Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
-endif
+command! Plugins :edit $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
+command! Splugins :split $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
+command! Tplugins :tabedit $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
+command! Vplugins :vsplit $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
+
+" if has('gui_running')
+"   command! Vimrc Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
+"   command! Vimrc Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
+" endif
 
 autocmd! Vimrc BufWritePre <buffer> :%s/\s\+$//e
 autocmd! Vimrc InsertLeave,WinEnter * setlocal cursorline
