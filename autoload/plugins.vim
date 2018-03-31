@@ -2,148 +2,170 @@
 
 let s:current_file = expand('<sfile>')
 
-if !exists('*plugins#reload')
+if exists('*plugins#reload') | else
   function! plugins#reload() abort
     exec 'source ' . s:current_file
 
     call plugins#spec()
   endfunction
+
+  function! plugins#start(plugin)
+    call minpac#add(a:plugin, { 'type': 'start' })
+  endfunction
+
+  function! plugins#opt(plugin)
+    call minpac#add(a:plugin, { 'type': 'opt' })
+  endfunction
+
+  function! plugins#colorscheme(plugin)
+    call plugins#opt(a:plugin)
+  endfunction
+
+  function! plugins#colorschemes(plugins)
+    for l:plugin in a:plugins
+      call plugins#colorscheme(l:plugin)
+    endfor
+  endfunction
 endif
 
 function! plugins#spec() abort
+  " {{{ [MINPAC]
   packadd minpac
 
   call minpac#init()
   call minpac#add('k-takata/minpac', { 'type': 'opt' })
+  " }}}
 
-  call minpac#add('bootleq/vim-textobj-rubysymbol', { 'type': 'opt' })
-  call minpac#add('chriskempson/base16-vim')
-  call minpac#add('joker1007/vim-ruby-heredoc-syntax')
-  call minpac#add('junegunn/fzf.vim')
-  call minpac#add('junegunn/vim-easy-align')
-  call minpac#add('kana/vim-textobj-user', { 'type': 'opt' })
-  call minpac#add('ludovicchabant/vim-gutentags')
-  call minpac#add('majutsushi/tagbar')
-  call minpac#add('maksimr/vim-jsbeautify')
-  call minpac#add('mhinz/vim-startify')
-  call minpac#add('mileszs/ack.vim')
-  call minpac#add('mtth/scratch.vim')
-  call minpac#add('nathanaelkane/vim-indent-guides')
-  call minpac#add('nelstrom/vim-textobj-rubyblock', { 'type': 'opt' })
-  call minpac#add('plasticboy/vim-markdown')
-  call minpac#add('reedes/vim-textobj-quote', { 'type': 'opt' })
-  call minpac#add('reedes/vim-textobj-sentence', { 'type': 'opt' })
-  call minpac#add('scrooloose/nerdtree')
-  call minpac#add('sheerun/vim-polyglot')
-  call minpac#add('tpope/vim-abolish')
-  call minpac#add('tpope/vim-bundler')
-  call minpac#add('tpope/vim-commentary', { 'type': 'opt'})
-  call minpac#add('tpope/vim-dispatch')
-  call minpac#add('tpope/vim-endwise', { 'type': 'opt'})
-  call minpac#add('tpope/vim-eunuch', { 'type': 'opt'})
-  call minpac#add('tpope/vim-fugitive')
-  call minpac#add('tpope/vim-git')
-  call minpac#add('tpope/vim-projectionist')
-  call minpac#add('tpope/vim-ragtag')
-  call minpac#add('tpope/vim-rails')
-  call minpac#add('tpope/vim-rake')
-  call minpac#add('tpope/vim-rbenv')
-  call minpac#add('tpope/vim-repeat', { 'type': 'opt' })
-  call minpac#add('tpope/vim-sensible')
-  call minpac#add('tpope/vim-surround', { 'type': 'opt'})
-  call minpac#add('tpope/vim-unimpaired', { 'type': 'opt' })
-  call minpac#add('vim-airline/vim-airline')
-  call minpac#add('vim-airline/vim-airline-themes')
-  call minpac#add('vim-ruby/vim-ruby')
-  call minpac#add('vim-scripts/Align')
-  call minpac#add('vim-scripts/ruby-matchit')
-  call minpac#add('w0rp/ale')
-  call minpac#add('wellle/targets.vim', { 'type': 'opt' })
-  call minpac#add('yegappan/mru')
+  call plugins#colorschemes([
+        \   'chriskempson/base16-vim',
+        \   'ewilazarus/preto',
+        \   'fxn/vim-monochrome',
+        \   'owickstrom/vim-colors-paramount',
+        \   'reedes/vim-colors-pencil',
+        \   'xero/blaquemagick.vim',
+        \ ] )
+
+  call plugins#opt('reedes/vim-thematic')
+  call plugins#opt('bootleq/vim-textobj-rubysymbol')
+  call plugins#opt('dbmrq/vim-ditto')
+  call plugins#opt('joker1007/vim-ruby-heredoc-syntax')
+  call plugins#opt('ludovicchabant/vim-gutentags')
+  call plugins#opt('majutsushi/tagbar')
+  call plugins#opt('maksimr/vim-jsbeautify')
+  call plugins#opt('nelstrom/vim-textobj-rubyblock')
+  call plugins#opt('plasticboy/vim-markdown')
+  call plugins#opt('reedes/vim-textobj-quote')
+  call plugins#opt('reedes/vim-textobj-sentence')
+  call plugins#opt('reedes/vim-wordy')
+  call plugins#opt('tpope/vim-bundler')
+  call plugins#opt('tpope/vim-endwise')
+  call plugins#opt('tpope/vim-rails')
+  call plugins#opt('tpope/vim-rake')
+  call plugins#opt('tpope/vim-rbenv')
+  call plugins#opt('vim-ruby/vim-ruby')
+  call plugins#opt('vim-scripts/ruby-matchit')
+  call plugins#opt('wellle/targets.vim')
+
+  call plugins#start('junegunn/fzf.vim')
+  call plugins#start('junegunn/vim-easy-align')
+  call plugins#start('kana/vim-textobj-user')
+  call plugins#start('mhinz/vim-startify')
+  call plugins#start('mileszs/ack.vim')
+  call plugins#start('mtth/scratch.vim')
+  call plugins#start('nathanaelkane/vim-indent-guides')
+  call plugins#start('scrooloose/nerdtree')
+  call plugins#start('sheerun/vim-polyglot')
+  call plugins#start('sjl/vitality.vim')
+  call plugins#start('tpope/vim-abolish')
+  call plugins#start('tpope/vim-commentary')
+  call plugins#start('tpope/vim-dispatch')
+  call plugins#start('tpope/vim-eunuch')
+  call plugins#start('tpope/vim-fugitive')
+  call plugins#start('tpope/vim-git')
+  call plugins#start('tpope/vim-projectionist')
+  call plugins#start('tpope/vim-ragtag')
+  call plugins#start('tpope/vim-repeat')
+  call plugins#start('tpope/vim-sensible')
+  call plugins#start('tpope/vim-surround')
+  call plugins#start('tpope/vim-unimpaired')
+  call plugins#start('vim-airline/vim-airline')
+  call plugins#start('vim-airline/vim-airline-themes')
+  call plugins#start('vim-scripts/Align')
+  call plugins#start('w0rp/ale')
+  call plugins#start('yegappan/mru')
 endfunction
 
-" function! s:youcompleteme_hook(hooktype, name)
-"   echomsg a:hooktype
-"   " You can use `minpac#getpluginfo()` to get the information about the plugin.
-"   echomsg 'Directory:' minpac#getpluginfo(a:name).dir
-"   " call system('make')
-" endfunction
-
-" call minpac#add('AndrewRadev/splitjoin.vim')
-" call minpac#add('MarcWeber/vim-addon-mw-utils')
-" call minpac#add('OmniSharp/omnisharp-vim')
-" call minpac#add('Shougo/neco-vim')
-" call minpac#add('Valloric/YouCompleteMe', { 'do': function('s:youcompleteme_hook') })
-" call minpac#add('Vimjas/vim-python-pep8-indent')
-" call minpac#add('Xuyuanp/nerdtree-git-plugin')
-" call minpac#add('andyl/vim-textobj-elixir')
-" call minpac#add('andymass/vim-matchup', {'type': 'opt'})
-" call minpac#add('cespare/vim-toml')
-" call minpac#add('chrisbra/NrrwRgn')
-" call minpac#add('dag/vim-fish')
-" call minpac#add('dbakker/vim-projectroot')
-" call minpac#add('direnv/direnv.vim')
-" call minpac#add('editorconfig/editorconfig-vim')
-" call minpac#add('elixir-editors/vim-elixir')
-" call minpac#add('elixir-lang/vim-elixir')
-" call minpac#add('ervandew/supertab')
-" call minpac#add('fatih/vim-go')
-" call minpac#add('fszymanski/fzf-gitignore')
-" call minpac#add('garbas/vim-snipmate')
-" call minpac#add('google/vim-codefmt')
-" call minpac#add('google/vim-glaive')
-" call minpac#add('google/vim-maktaba')
-" call minpac#add('guns/vim-sexp')
-" call minpac#add('hauleth/asyncdo.vim')
-" call minpac#add('hauleth/blame.vim')
-" call minpac#add('hauleth/sad.vim')
-" call minpac#add('honza/vim-snippets')
-" call minpac#add('idanarye/vim-merginal')
-" call minpac#add('jiangmiao/auto-pairs')
-" call minpac#add('junegunn/fzf')
-" call minpac#add('junegunn/fzf.vim')
-" call minpac#add('justinmk/vim-dirvish')
-" call minpac#add('kassio/neoterm')
-" call minpac#add('keremc/asyncomplete-racer.vim')
-" call minpac#add('kopischke/vim-fetch')
-" call minpac#add('mbbill/undotree')
-" call minpac#add('mhinz/vim-grepper')
-" call minpac#add('mhinz/vim-startify')
-" call minpac#add('mjbrownie/swapit')
-" call minpac#add('pangloss/vim-javascript')
-" call minpac#add('parkr/vim-jekyll')
-" call minpac#add('prabirshrestha/async.vim')
-" call minpac#add('prabirshrestha/asyncomplete-necovim.vim')
-" call minpac#add('prabirshrestha/asyncomplete.vim')
-" call minpac#add('rizzatti/dash.vim')
-" call minpac#add('romainl/vim-qf')
-" call minpac#add('romainl/vim-qlist')
-" call minpac#add('rust-lang/rust.vim')
-" call minpac#add('ryanoasis/vim-devicons')
-" call minpac#add('sirver/ultisnips')
-" call minpac#add('skywind3000/asyncrun.vim')
-" call minpac#add('slashmili/alchemist.vim')
-" call minpac#add('t9md/vim-choosewin')
-" call minpac#add('tommcdo/vim-exchange')
-" call minpac#add('tommcdo/vim-lion')
-" call minpac#add('tomtom/tlib_vim')
-" call minpac#add('tpope/vim-classpath')
-" call minpac#add('tpope/vim-commentary')
-" call minpac#add('tpope/vim-endwise')
-" call minpac#add('tpope/vim-eunuch')
-" call minpac#add('tpope/vim-fireplace')
-" call minpac#add('tpope/vim-fugitive')
-" call minpac#add('tpope/vim-jdaddy')
-" call minpac#add('tpope/vim-leiningen')
-" call minpac#add('tpope/vim-liquid')
-" call minpac#add('tpope/vim-projectionist')
-" call minpac#add('tpope/vim-repeat')
-" call minpac#add('tpope/vim-salve')
-" call minpac#add('tpope/vim-sexp-mappings-for-regular-people')
-" call minpac#add('tpope/vim-surround')
-" call minpac#add('tpope/vim-unimpaired')
-" call minpac#add('vim-erlang/vim-erlang-compiler')
-" call minpac#add('vim-erlang/vim-erlang-omnicomplete')
-" call minpac#add('vim-erlang/vim-erlang-runtime')
-" call minpac#add('vim-erlang/vim-erlang-tags')
-" call minpac#add('yami-beta/asyncomplete-omni.vim')
+" {{{ [OTHER PLUGINS]
+" AndrewRadev/splitjoin.vim
+" MarcWeber/vim-addon-mw-utils
+" OmniSharp/omnisharp-vim
+" Shougo/neco-vim
+" Valloric/YouCompleteMe'
+" Vimjas/vim-python-pep8-indent
+" Xuyuanp/nerdtree-git-plugin
+" andyl/vim-textobj-elixir
+" andymass/vim-matchup'
+" cespare/vim-toml
+" chrisbra/NrrwRgn
+" dag/vim-fish
+" dbakker/vim-projectroot
+" direnv/direnv.vim
+" editorconfig/editorconfig-vim
+" elixir-editors/vim-elixir
+" elixir-lang/vim-elixir
+" ervandew/supertab
+" fatih/vim-go
+" fszymanski/fzf-gitignore
+" garbas/vim-snipmate
+" google/vim-codefmt
+" google/vim-glaive
+" google/vim-maktaba
+" guns/vim-sexp
+" hauleth/asyncdo.vim
+" hauleth/blame.vim
+" hauleth/sad.vim
+" honza/vim-snippets
+" idanarye/vim-merginal
+" jiangmiao/auto-pairs
+" justinmk/vim-dirvish
+" kassio/neoterm
+" keremc/asyncomplete-racer.vim
+" kopischke/vim-fetch
+" mbbill/undotree
+" mhinz/vim-grepper
+" mhinz/vim-startify
+" mjbrownie/swapit
+" pangloss/vim-javascript
+" parkr/vim-jekyll
+" prabirshrestha/async.vim
+" prabirshrestha/asyncomplete-necovim.vim
+" prabirshrestha/asyncomplete.vim
+" rizzatti/dash.vim
+" romainl/vim-qf
+" romainl/vim-qlist
+" rust-lang/rust.vim
+" ryanoasis/vim-devicons
+" sirver/ultisnips
+" skywind3000/asyncrun.vim
+" slashmili/alchemist.vim
+" t9md/vim-choosewin
+" tommcdo/vim-exchange
+" tommcdo/vim-lion
+" tomtom/tlib_vim
+" tpope/vim-classpath
+" tpope/vim-fireplace
+" tpope/vim-jdaddy
+" tpope/vim-leiningen
+" tpope/vim-liquid
+" tpope/vim-projectionist
+" tpope/vim-repeat
+" tpope/vim-salve
+" tpope/vim-sexp-mappings-for-regular-people
+" tpope/vim-surround
+" tpope/vim-unimpaired
+" vim-erlang/vim-erlang-compiler
+" vim-erlang/vim-erlang-omnicomplete
+" vim-erlang/vim-erlang-runtime
+" vim-erlang/vim-erlang-tags
+" yami-beta/asyncomplete-omni.vim
+" }}}
