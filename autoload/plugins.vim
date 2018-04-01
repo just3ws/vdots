@@ -26,6 +26,12 @@ if exists('*plugins#reload') | else
       call plugins#colorscheme(l:plugin)
     endfor
   endfunction
+
+  function! plugins#opts(plugins)
+    for l:plugin in a:plugins
+      call plugins#opt(l:plugin)
+    endfor
+  endfunction
 endif
 
 function! plugins#spec() abort
@@ -35,36 +41,48 @@ function! plugins#spec() abort
   call minpac#init()
   call minpac#add('k-takata/minpac', { 'type': 'opt' })
   " }}}
-
+" \   'flazz/vim-colorschemes',
   call plugins#colorschemes([
+        \   'NLKNguyen/papercolor-theme',
+        \   'arcticicestudio/nord-vim',
         \   'chriskempson/base16-vim',
         \   'ewilazarus/preto',
         \   'fxn/vim-monochrome',
+        \   'jacoborus/tender.vim',
+        \   'kristijanhusak/vim-hybrid-material',
         \   'owickstrom/vim-colors-paramount',
+        \   'rafi/awesome-vim-colorschemes',
         \   'reedes/vim-colors-pencil',
-        \   'xero/blaquemagick.vim',
-        \ ] )
+        \   'robertmeta/nofrils',
+        \   'sonph/onehalf',
+        \   'tyrannicaltoucan/vim-deep-space',
+        \   'tyrannicaltoucan/vim-quantum',
+        \   'whatyouhide/vim-gotham',
+        \   'xero/blaquemagick.vim'
+        \ ])
 
-  call plugins#opt('reedes/vim-thematic')
-  call plugins#opt('bootleq/vim-textobj-rubysymbol')
-  call plugins#opt('dbmrq/vim-ditto')
-  call plugins#opt('joker1007/vim-ruby-heredoc-syntax')
-  call plugins#opt('ludovicchabant/vim-gutentags')
-  call plugins#opt('majutsushi/tagbar')
-  call plugins#opt('maksimr/vim-jsbeautify')
-  call plugins#opt('nelstrom/vim-textobj-rubyblock')
-  call plugins#opt('plasticboy/vim-markdown')
-  call plugins#opt('reedes/vim-textobj-quote')
-  call plugins#opt('reedes/vim-textobj-sentence')
-  call plugins#opt('reedes/vim-wordy')
-  call plugins#opt('tpope/vim-bundler')
-  call plugins#opt('tpope/vim-endwise')
-  call plugins#opt('tpope/vim-rails')
-  call plugins#opt('tpope/vim-rake')
-  call plugins#opt('tpope/vim-rbenv')
-  call plugins#opt('vim-ruby/vim-ruby')
-  call plugins#opt('vim-scripts/ruby-matchit')
-  call plugins#opt('wellle/targets.vim')
+  call plugins#opts([
+        \   'bootleq/vim-textobj-rubysymbol',
+        \   'dbmrq/vim-ditto',
+        \   'joker1007/vim-ruby-heredoc-syntax',
+        \   'ludovicchabant/vim-gutentags',
+        \   'majutsushi/tagbar',
+        \   'maksimr/vim-jsbeautify',
+        \   'nelstrom/vim-textobj-rubyblock',
+        \   'plasticboy/vim-markdown',
+        \   'reedes/vim-textobj-quote',
+        \   'reedes/vim-textobj-sentence',
+        \   'reedes/vim-thematic',
+        \   'reedes/vim-wordy',
+        \   'tpope/vim-bundler',
+        \   'tpope/vim-endwise',
+        \   'tpope/vim-rails',
+        \   'tpope/vim-rake',
+        \   'tpope/vim-rbenv',
+        \   'vim-ruby/vim-ruby',
+        \   'vim-scripts/ruby-matchit',
+        \   'wellle/targets.vim'
+        \ ])
 
   call plugins#start('junegunn/fzf.vim')
   call plugins#start('junegunn/vim-easy-align')

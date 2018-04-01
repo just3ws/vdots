@@ -9,32 +9,14 @@ if has('vim_starting')
   scriptencoding utf-8
 endif
 
-function! Mkdir_p(directory)
-  if isdirectory(a:directory) | else
-    call mkdir(a:directory, 'p')
-  endif
-endfunction
-
-function! Vim_dir()
-  if has('nvim') | return '/nvim' | endif
-
-  return '/vim'
-endfunction
-
-function! Init_app_dir(path)
-  let l:directory = expand($XDG_DATA_HOME . Vim_dir()) . a:path
-  call Mkdir_p(l:directory)
-  return l:directory
-endfunction
-
-let $DATA_DIR = Init_app_dir('')
-let $BACKUP_DIR = Init_app_dir('/backup')
-let $SWAP_DIR = Init_app_dir('/swap')
-let $UNDO_DIR = Init_app_dir('/undo')
-let $VIEW_DIR = Init_app_dir('/view')
-let $SHADA_DIR = Init_app_dir('/shada')
-let $FZF_HISTORY_DIR = Init_app_dir('/fzf/history')
-let $STARTIFY_SESSION_DIR = Init_app_dir('/startify/session')
+let $DATA_DIR = file_utils#init_app_dir('')
+let $BACKUP_DIR = file_utils#init_app_dir('/backup')
+let $SWAP_DIR = file_utils#init_app_dir('/swap')
+let $UNDO_DIR = file_utils#init_app_dir('/undo')
+let $VIEW_DIR = file_utils#init_app_dir('/view')
+let $SHADA_DIR = file_utils#init_app_dir('/shada')
+let $FZF_HISTORY_DIR = file_utils#init_app_dir('/fzf/history')
+let $STARTIFY_SESSION_DIR = file_utils#init_app_dir('/startify/session')
 
 if has('nvim')
   let g:ruby_host_prog = '/usr/local/bin/ruby'
@@ -52,7 +34,10 @@ if has('nvim')
   set inccommand=
 
   " Write history on idle, for sharing among different sessions
-  autocmd! Vimrc CursorHold * if exists(':rshada') | rshada | wshada | endif
+  autocmd! Vimrc CursorHold * if exists(':rshada') |
+        \   rshada |
+        \   wshada |
+        \ endif
 else
   set viminfo='100,n$DATA_DIR/viminfo
 endif
@@ -112,6 +97,7 @@ function! SaveBackup(backupdir)
 endfunction
 
 set noexrc
+set signcolumn=yes
 set autoindent " Overwritten by cindent or filetype rules
 set autoread " Read when a file has been changed even outside of Vim.
 set belloff=all
@@ -155,15 +141,12 @@ set modelines=1
 set mouse=a
 set noautochdir
 set nocursorcolumn
-set nocursorline " Don’t use cursorline, as it causes constant redrawing, which, when combined with syntax highlighting, drops performance
 set noerrorbells
 set noexrc
 set nojoinspaces " Only join lines with one space regardless of punctuation
-set norelativenumber
 set nostartofline
 set novisualbell
 set nowrap
-set number
 set path=.,** " Directories to search when using gf
 set previewheight=15
 set pumheight=25
@@ -246,10 +229,18 @@ let g:ale_fix_on_save = 1
 let g:ale_lint_delay = 1500
 let g:ale_lint_on_insert_leave = 0
 let g:ale_lint_on_save = 1
-let g:ale_lint_on_text_changed = 'never'
+" let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 1
 let g:ale_open_list = 0
 let g:ale_pattern_options_enabled = 1
-let g:ale_sign_column_always = 0
+
+let g:ale_sign_error = ''
+let g:ale_sign_warning = ''
+let g:ale_sign_style_error = ''
+let g:ale_sign_style_warning = ''
+
+nnoremap <C-l> :lopen<CR>
+
 let g:ale_linters = {
       \ 'css': ['csslint', 'stylelint'],
       \ 'html': ['htmlhint', 'tidy'],
@@ -276,16 +267,18 @@ let g:ale_fixers = {
       \ 'xml': ['prettier']
       \ }
 " \ 'yaml': ['yamllint'],
+
 let g:ale_pattern_options = {
       \ '\.min\.js$': { 'ale_linters': [], 'ale_fixers': [] },
       \ '\.min\.css$': { 'ale_linters': [], 'ale_fixers': [] },
       \ }
+
 let g:ale_python_autopep8_options = '-aa'
 let g:ale_javascript_prettier_options = '--single-quote --trailing-comma es6'
 let g:ale_javascript_prettier_use_local_config = 1
 let g:ale_html_tidy_options = '-q -e -language en -utf8 --show-body-only 1'
-highlight clear ALEErrorSign
-highlight clear ALEWarningSign
+
+
 " Automatically close corresponding loclist when quitting a window
 autocmd! Vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
 
@@ -550,15 +543,34 @@ endif
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 let g:airline_highlighting_cache = 1
 let g:airline_powerline_fonts = 1
-let g:airline_left_sep='' " 
-let g:airline_left_alt_sep='' " 
-let g:airline_right_sep='' " 
-let g:airline_right_alt_sep='' " 
+let g:airline_left_sep=''
+let g:airline_left_alt_sep=''
+let g:airline_right_sep=''
+let g:airline_right_alt_sep=''
 
-let g:airline_theme = 'base16_tomorrow'
+let g:airline_theme = 'monochrome'
 
-let g:base16colorspace = 256
+" let g:base16colorspace = 256
+" colorscheme base16-tomorrow-night
 
-colorscheme base16-tomorrow-night
+set number
+set relativenumber
+set cursorline
+
+function! NoFrils()
+  if has('termguicolors') | set notermguicolors | endif
+  set t_Co=256
+  let g:nofrils_strbackgrounds = 0
+  " let g:nofrils_heavylinenumbers = 1
+  colorscheme nofrils-dark
+endfunction
+
+function! BlaqueMagick()
+  if has('termguicolors') | set notermguicolors | endif
+  set t_Co=256
+  colorscheme blaquemagick
+endfunction
+
+call BlaqueMagick()
 
 set omnifunc=syntaxcomplete#Complete
