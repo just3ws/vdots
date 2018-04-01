@@ -534,12 +534,6 @@ if has('gui_running')
   set guifont=FiraCode-Retina:h18
 endif
 
-if has('termguicolors')
-  set termguicolors
-else
-  set t_Co=256
-endif
-
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 let g:airline_highlighting_cache = 1
 let g:airline_powerline_fonts = 1
@@ -548,29 +542,15 @@ let g:airline_left_alt_sep=''
 let g:airline_right_sep=''
 let g:airline_right_alt_sep=''
 
-let g:airline_theme = 'monochrome'
-
-" let g:base16colorspace = 256
-" colorscheme base16-tomorrow-night
-
-set number
-set relativenumber
+set number relativenumber
 set cursorline
 
-function! NoFrils()
-  if has('termguicolors') | set notermguicolors | endif
-  set t_Co=256
-  let g:nofrils_strbackgrounds = 0
-  " let g:nofrils_heavylinenumbers = 1
-  colorscheme nofrils-dark
-endfunction
+let g:webdevicons_enable = 1
+let g:webdevicons_enable_nerdtree = 1
+let g:webdevicons_enable_airline_tabline = 1
+let g:webdevicons_enable_airline_statusline = 1
+let g:WebDevIconsOS = 'Darwin'
 
-function! BlaqueMagick()
-  if has('termguicolors') | set notermguicolors | endif
-  set t_Co=256
-  colorscheme blaquemagick
-endfunction
-
-call BlaqueMagick()
+call themes#nord()
 
 set omnifunc=syntaxcomplete#Complete
