@@ -32,6 +32,12 @@ if exists('*plugins#reload') | else
       call plugins#opt(l:plugin)
     endfor
   endfunction
+
+  function! plugins#starts(plugins)
+    for l:plugin in a:plugins
+      call plugins#start(l:plugin)
+    endfor
+  endfunction
 endif
 
 function! plugins#spec() abort
@@ -41,7 +47,8 @@ function! plugins#spec() abort
   call minpac#init()
   call minpac#add('k-takata/minpac', { 'type': 'opt' })
   " }}}
-" \   'flazz/vim-colorschemes',
+
+  " 'rafi/awesome-vim-colorschemes',
   call plugins#colorschemes([
         \   'NLKNguyen/papercolor-theme',
         \   'arcticicestudio/nord-vim',
@@ -51,14 +58,13 @@ function! plugins#spec() abort
         \   'jacoborus/tender.vim',
         \   'kristijanhusak/vim-hybrid-material',
         \   'owickstrom/vim-colors-paramount',
-        \   'rafi/awesome-vim-colorschemes',
         \   'reedes/vim-colors-pencil',
         \   'robertmeta/nofrils',
         \   'sonph/onehalf',
         \   'tyrannicaltoucan/vim-deep-space',
         \   'tyrannicaltoucan/vim-quantum',
         \   'whatyouhide/vim-gotham',
-        \   'xero/blaquemagick.vim'
+        \   'xero/blaquemagick.vim',
         \ ])
 
   call plugins#opts([
@@ -81,36 +87,39 @@ function! plugins#spec() abort
         \   'tpope/vim-rbenv',
         \   'vim-ruby/vim-ruby',
         \   'vim-scripts/ruby-matchit',
-        \   'wellle/targets.vim'
+        \   'wellle/targets.vim',
         \ ])
 
-  call plugins#start('junegunn/fzf.vim')
-  call plugins#start('junegunn/vim-easy-align')
-  call plugins#start('kana/vim-textobj-user')
-  call plugins#start('mhinz/vim-startify')
-  call plugins#start('mileszs/ack.vim')
-  call plugins#start('mtth/scratch.vim')
-  call plugins#start('nathanaelkane/vim-indent-guides')
-  call plugins#start('scrooloose/nerdtree')
-  call plugins#start('sheerun/vim-polyglot')
-  call plugins#start('sjl/vitality.vim')
-  call plugins#start('tpope/vim-abolish')
-  call plugins#start('tpope/vim-commentary')
-  call plugins#start('tpope/vim-dispatch')
-  call plugins#start('tpope/vim-eunuch')
-  call plugins#start('tpope/vim-fugitive')
-  call plugins#start('tpope/vim-git')
-  call plugins#start('tpope/vim-projectionist')
-  call plugins#start('tpope/vim-ragtag')
-  call plugins#start('tpope/vim-repeat')
-  call plugins#start('tpope/vim-sensible')
-  call plugins#start('tpope/vim-surround')
-  call plugins#start('tpope/vim-unimpaired')
-  call plugins#start('vim-airline/vim-airline')
-  call plugins#start('vim-airline/vim-airline-themes')
-  call plugins#start('vim-scripts/Align')
-  call plugins#start('w0rp/ale')
-  call plugins#start('yegappan/mru')
+  call plugins#starts([
+        \   'junegunn/fzf.vim',
+        \   'junegunn/vim-easy-align',
+        \   'ryanoasis/vim-devicons',
+        \   'kana/vim-textobj-user',
+        \   'mhinz/vim-startify',
+        \   'mileszs/ack.vim',
+        \   'mtth/scratch.vim',
+        \   'nathanaelkane/vim-indent-guides',
+        \   'scrooloose/nerdtree',
+        \   'sheerun/vim-polyglot',
+        \   'sjl/vitality.vim',
+        \   'tpope/vim-abolish',
+        \   'tpope/vim-commentary',
+        \   'tpope/vim-dispatch',
+        \   'tpope/vim-eunuch',
+        \   'tpope/vim-fugitive',
+        \   'tpope/vim-git',
+        \   'tpope/vim-projectionist',
+        \   'tpope/vim-ragtag',
+        \   'tpope/vim-repeat',
+        \   'tpope/vim-sensible',
+        \   'tpope/vim-surround',
+        \   'tpope/vim-unimpaired',
+        \   'vim-airline/vim-airline',
+        \   'vim-airline/vim-airline-themes',
+        \   'vim-scripts/Align',
+        \   'w0rp/ale',
+        \   'yegappan/mru',
+        \ ])
 endfunction
 
 " {{{ [OTHER PLUGINS]
