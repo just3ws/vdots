@@ -100,3 +100,5 @@ autocmd! BufRead,BufNewFile *.zsh setfiletype zsh
 autocmd! BufRead,BufNewFile *.zsh setfiletype zsh
 
 " }}}
+
+autocmd! BufRead,BufNewFile *.alfredappearance setfiletype json
