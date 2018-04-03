@@ -11,9 +11,11 @@ function! file_utils#vim_dir()
 endfunction
 
 function! file_utils#init_app_dir(path)
+
   let l:directory = expand($XDG_DATA_HOME . file_utils#vim_dir()) . a:path
 
   call file_utils#mkdir_p(l:directory)
+
   return l:directory
 endfunction
 

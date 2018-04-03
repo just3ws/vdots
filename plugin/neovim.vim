@@ -1,0 +1,21 @@
+if has('nvim')
+  let g:ruby_host_prog = '/usr/local/bin/ruby'
+  let g:python2_host_prog = '/usr/local/bin/python2'
+  let g:python3_host_prog = '/usr/local/bin/python3'
+
+  " ' - Maximum number of previously edited files marks
+  " < - Maximum number of lines saved for each register
+  " @ - Maximum number of items in the input-line history to be
+  " s - Maximum size of an item contents in KiB
+  " h - Disable the effect of 'hlsearch' when loading the shada
+  set shada='300,<10,@50,s100,h
+
+  " Incremental everything
+  set inccommand=
+
+  " Write history on idle, for sharing among different sessions
+  autocmd! Vimrc CursorHold * if exists(':rshada') |
+        \   rshada |
+        \   wshada |
+        \ endif
+endif

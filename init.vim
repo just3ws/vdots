@@ -9,6 +9,9 @@ if has('vim_starting')
   scriptencoding utf-8
 endif
 
+let g:mapleader=';'
+let g:maplocalleader=';'
+
 let $DATA_DIR = file_utils#init_app_dir('')
 let $BACKUP_DIR = file_utils#init_app_dir('/backup')
 let $SWAP_DIR = file_utils#init_app_dir('/swap')
@@ -17,30 +20,6 @@ let $VIEW_DIR = file_utils#init_app_dir('/view')
 let $SHADA_DIR = file_utils#init_app_dir('/shada')
 let $FZF_HISTORY_DIR = file_utils#init_app_dir('/fzf/history')
 let $STARTIFY_SESSION_DIR = file_utils#init_app_dir('/startify/session')
-
-if has('nvim')
-  let g:ruby_host_prog = '/usr/local/bin/ruby'
-  let g:python2_host_prog = '/usr/local/bin/python2'
-  let g:python3_host_prog = '/usr/local/bin/python3'
-
-  " ' - Maximum number of previously edited files marks
-  " < - Maximum number of lines saved for each register
-  " @ - Maximum number of items in the input-line history to be
-  " s - Maximum size of an item contents in KiB
-  " h - Disable the effect of 'hlsearch' when loading the shada
-  set shada='300,<10,@50,s100,h
-
-  " Incremental everything
-  set inccommand=
-
-  " Write history on idle, for sharing among different sessions
-  autocmd! Vimrc CursorHold * if exists(':rshada') |
-        \   rshada |
-        \   wshada |
-        \ endif
-else
-  set viminfo='100,n$DATA_DIR/viminfo
-endif
 
 if exists('g:syntax_on') | else
   syntax enable
@@ -54,47 +33,6 @@ set backupdir=$BACKUP_DIR//
 set directory=$SWAP_DIR//
 set undodir=$UNDO_DIR//
 set viewdir=$VIEW_DIR//
-
-" === BACKUP SETTINGS ===
-" turn backup OFF
-" Normally we would want to have it turned on. See bug and workaround below.
-" OBS: It's a known-bug that backupdir is not supporting
-" the correct double slash filename expansion
-" see: https://code.google.com/p/vim/issues/detail?id=179
-set nobackup
-
-" set a centralized backup directory
-" set backupdir=~/.vim/backup//
-" set writebackup " Make a backup of the original file when writing
-" set backup
-set backupskip+=*.log " Don't backup log files
-
-" This is the workaround for the backup filename expansion problem.
-autocmd! Vimrc BufWritePre * call SaveBackups()
-
-function! SaveBackups()
-  if expand('%:p') =~ &backupskip | return | endif
-
-  " If this is a newly created file, don't try to create a backup
-  if !filereadable(@%) | return | endif
-
-  for l:backupdir in split(&backupdir, ',')
-    call SaveBackup(l:backupdir)
-  endfor
-endfunction
-
-function! SaveBackup(backupdir)
-  let l:filename = expand('%:p')
-  if a:backupdir =~? '//$'
-    let l:backup = escape(substitute(l:filename, '/', '%', 'g')  . &backupext, '%')
-  else
-    let l:backup = escape(expand('%') . &backupext, '%')
-  endif
-
-  let l:backup_path = a:backupdir . l:backup
-
-  :silent! execute '!cp ' . resolve(l:filename) . ' ' . l:backup_path
-endfunction
 
 set noexrc
 set signcolumn=yes
@@ -220,16 +158,12 @@ set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
 set wildoptions=tagfile
 set wrapscan
 
-let g:mapleader=';'
-let g:maplocalleader=';'
-
 let g:ale_change_sign_column_color = 1
 let g:ale_completion_enabled = 1
 let g:ale_fix_on_save = 1
 let g:ale_lint_delay = 1500
 let g:ale_lint_on_insert_leave = 0
 let g:ale_lint_on_save = 1
-" let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 1
 let g:ale_open_list = 0
 let g:ale_pattern_options_enabled = 1
@@ -278,7 +212,6 @@ let g:ale_javascript_prettier_options = '--single-quote --trailing-comma es6'
 let g:ale_javascript_prettier_use_local_config = 1
 let g:ale_html_tidy_options = '-q -e -language en -utf8 --show-body-only 1'
 
-
 " Automatically close corresponding loclist when quitting a window
 autocmd! Vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
 
@@ -287,9 +220,7 @@ let g:scratch_filetype = 'text'
 let g:scratch_insert_autohide = 0
 let g:scratch_autohide = 0
 
-
 set runtimepath+=/usr/local/opt/fzf
-
 
 let g:fzf_history_dir = $FZF_HISTORY_DIR
 
@@ -299,20 +230,6 @@ let g:fzf_action = {
       \ 'ctrl-x': 'split',
       \ 'ctrl-v': 'vsplit'
       \ }
-
-
-
-" let g:UltiSnipsExpandTrigger = '<tab>'
-" let g:UltiSnipsListSnippets = '<tab>'
-" let g:UltiSnipsJumpForwardTrigger = '<tab>'
-" let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
-" let g:UltiSnipsEditSplit = 'vertical'
-" let g:snipMate.scope_aliases = {}
-" let g:snipMate.scope_aliases['ruby'] = 'ruby,rails,rspec'
-" let g:snipMate.scope_aliases['eruby'] = 'eruby,html'
-" let g:snipMate.scope_aliases['scss'] = 'scss,css'
-" let g:snipMate.scope_aliases['javascript'] = 'javascript'
-" let g:snipMate.scope_aliases['javascript.jsx'] = 'javascript,jsx'
 
 let g:indent_guides_auto_colors = 1
 let g:indent_guides_default_mapping = 1
@@ -331,6 +248,7 @@ let g:tagbar_type_ruby = {
       \ 'F:singleton methods'
       \ ]
       \ }
+
 if executable('ripper-tags')
   let g:tagbar_type_ruby = {
         \ 'kinds': [
@@ -363,6 +281,8 @@ let g:vim_markdown_folding_disabled = 1
 
 command! -bar PackUpdate call plugins#reload() | call minpac#update()
 command! -bar PackClean  call plugins#reload() | call minpac#clean()
+
+command! Reload :source $MYVIMRC
 
 command! Aliasrc  :edit $ZDOTDIR/.aliasrc
 command! Saliasrc :split $ZDOTDIR/.aliasrc
@@ -553,4 +473,41 @@ let g:WebDevIconsOS = 'Darwin'
 
 call themes#nord()
 
+" Align current paragraph with Leader + a
+noremap <leader>a =ip
+
+" Toggle paste mode
+set pastetoggle=<leader>z
+
+" Apply macro using Q
+nnoremap Q @q
+vnoremap Q :norm @q<cr>
+
+" Swap the case for changing tabs
+noremap <S-l> gt
+noremap <S-h> gT
+
+" Change panes without w
+noremap <C-l> <C-w>l
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+
+" Quit file with Leader + q
+noremap <leader>q :q<cr>
+
+" Save file with Leader + s
+nnoremap <leader>s :w<cr>
+inoremap <leader>s <C-c>:w<cr>
+
 set omnifunc=syntaxcomplete#Complete
+
+let g:loaded_2html_plugin = 1
+let g:loaded_getscriptPlugin = 1
+let g:loaded_gzip = 1
+let g:loaded_netrwPlugin = 1
+let g:loaded_rrhelper = 1
+let g:loaded_tarPlugin = 1
+let g:loaded_spellfile_plugin = 1
+let g:loaded_vimballPlugin = 1
+let g:loaded_zipPlugin = 1

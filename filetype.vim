@@ -1,26 +1,22 @@
 " {{{ [Ruby, Rake, and RSpec]
 
-autocmd! BufRead,BufNewFile *.[cC]apfile,[cC]apfile,*.cap setfiletype ruby
-autocmd! BufRead,BufNewFile *.builder,*.rxml,*.rjs,*.jbuilder,*.prawn setfiletype ruby
-autocmd! BufRead,BufNewFile *.cr setfiletype ruby
-autocmd! BufRead,BufNewFile *.gemspec setfiletype ruby
-autocmd! BufRead,BufNewFile *.rb,*.rbw setfiletype ruby
-autocmd! BufRead,BufNewFile *.ru setfiletype ruby
-autocmd! BufRead,BufNewFile Berksfile,Berksfile.lock setfiletype ruby
-autocmd! BufRead,BufNewFile COMMIT_EDITMSG setfiletype gitcommit
-autocmd! BufRead,BufNewFile Gemfile setfiletype ruby
-autocmd! BufRead,BufNewFile Guardfile setfiletype ruby
-autocmd! BufRead,BufNewFile Puppetfile setfiletype ruby
-autocmd! BufRead,BufNewFile Thorfile,Vagrantfile setfiletype ruby
-autocmd! BufRead,BufNewFile [rR]antfile,*.rant setfiletype ruby
-autocmd! BufRead,BufNewFile {.,}irbrc setfiletype ruby
-autocmd! BufRead,BufNewFile {.,}pryrc setfiletype ruby
+augroup FT_RUBY
+  autocmd!
+augroup END
 
-autocmd! BufRead,BufNewFile *.erb,*.rhtml setfiletype eruby
+autocmd! FT_RUBY BufRead,BufNewFile [rR]akefile,*.rake setfiletype ruby.rake
 
-autocmd! BufRead,BufNewFile [rR]akefile,*.rake setfiletype rake
+autocmd! FT_RUBY BufNewFile,BufRead Gemfile,Gemfile.lock setfiletype ruby.rails.bundler
+autocmd! FT_RUBY BufEnter Gemfile,Gemfile.lock setfiletype ruby.rails.bundler
 
-autocmd! BufRead,BufNewFile *_spec.rb set syntax=rspec
+autocmd! FT_RUBY BufRead,BufNewFile *_spec.rb setfiletype ruby.rspec
+
+autocmd! FT_RUBY BufNewFile,BufRead *.{erb,rhtml,ecr,mobile*} setfiletype eruby
+autocmd! FT_RUBY BufEnter,BufNewFile *.{arb,builder,cap,gem,gemspec,god,jbuilder,opal,podspec,rabl,rb,rb2,rbw,rjs,ru,ruby,rxml,step,thor} setfiletype ruby
+autocmd! FT_RUBY BufEnter,BufNewFile .{autotest,simplecov} setfiletype ruby
+autocmd! FT_RUBY BufEnter,BufNewFile {.,}pryrc,{.,}irbrc  setfiletype ruby
+autocmd! FT_RUBY BufEnter,BufNewFile {[cC]apfile,[tT]horfile} setfiletype ruby
+autocmd! FT_RUBY BufEnter,BufNewFile {Appraisals,Berksfile,Brewfile,Buildfile,Cheffile,Guardfile,KitchenSink,Podfile,Puppetfile,Thorfile,Vagrantfile} setfiletype ruby
 
 " }}}
 "
@@ -34,6 +30,7 @@ autocmd! BufRead,BufNewFile *.haml setfiletype haml
 
 autocmd! BufRead,BufNewFile MERGE_MSG setfiletype gitcommit
 autocmd! BufRead,BufNewFile *.gitconfig setfiletype gitconfig
+autocmd! BufRead,BufNewFile COMMIT_EDITMSG setfiletype gitcommit
 
 " }}}
 
