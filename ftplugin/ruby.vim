@@ -1,5 +1,3 @@
-" vim:fdm=marker ft=vim:
-
 setlocal omnifunc=rubycomplete#Complete
 
 let g:ruby_fold = 1
