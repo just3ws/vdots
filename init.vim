@@ -52,15 +52,16 @@ set fillchars="diff:⣿,fold: ,vert:│"
 set foldclose=all
 set foldcolumn=1
 set foldmethod=marker " Fold on the marker
-" set formatoptions+=1 " Don't break lines after a one-letter word
-" set formatoptions+=c " Auto-wrap comments using textwidth
-" set formatoptions+=j " Remove comment leader when joining lines
-" set formatoptions+=l " Don't wrap lines that are too long when starting Insert mode
-" set formatoptions+=n " Recognize numbered lists
-" set formatoptions+=q " Allow formatting of comments with 'gq'.
-" set formatoptions+=r " Insert comment leader after hitting <Enter>
-" set formatoptions+=t " Auto-wrap text using textwidth
-" set formatoptions-=t " Don't auto-wrap text
+
+" {{{ Unset formatoptions defaults
+" autocmd Vimrc FileType * set formatoptions-=j " DISABLE Remove comment leader when joining lines
+" autocmd Vimrc FileType * set formatoptions-=c " DISABLE Auto-wrap comments using textwidth
+" autocmd Vimrc FileType * set formatoptions-=r " DISABLE Insert comment leader after hitting <Enter>
+" autocmd Vimrc FileType * set formatoptions-=o " DISABLE Set cursor when inserting a new line from Normal mode
+" autocmd Vimrc FileType * set formatoptions-=q " DISABLE Allow formatting of comments with 'gq'.
+" autocmd Vimrc FileType * set formatoptions-=l " DISABLE Don't wrap lines that are too long when starting Insert mode
+" }}}
+
 set hidden " Hide buffers when abandoned instead of unloading
 set history=10000
 set hlsearch
@@ -498,6 +499,9 @@ noremap <leader>q :q<cr>
 " Save file with Leader + s
 nnoremap <leader>s :w<cr>
 inoremap <leader>s <C-c>:w<cr>
+
+" Clone paragrapha with cp
+noremap cp yap<S-}>p
 
 set omnifunc=syntaxcomplete#Complete
 

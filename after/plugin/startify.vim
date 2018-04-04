@@ -1,4 +1,6 @@
-" vim:fdm=marker ft=vim:
+augroup FT_STARTIFY
+  autocmd!
+augroup END
 
 let g:startify_change_to_dir = 1
 let g:startify_change_to_vcs_root = 1
@@ -68,5 +70,5 @@ function! ToStartify()
   endif
 endfunction
 
-autocmd! Vimrc User Startified setlocal buftype= cursorline nofoldenable nolist
-autocmd! Vimrc QuitPre * call ToStartify()
+autocmd! FT_STARTIFY User Startified setlocal buftype= cursorline nofoldenable nolist
+autocmd! FT_STARTIFY QuitPre * call ToStartify()

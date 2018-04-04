@@ -1,0 +1,18 @@
+" Press ? for help
+
+.. (up a dir)
+</Dropbox/mike/.config/vdots/
+▸ after/
+▸ autoload/
+▸ doc/
+▸ ftplugin/
+▸ pack/
+▾ plugin/
+    [  ]backup.vim
+    [  ]neovim.vim
+    [  ]vim.vim
+  [  ]filetype.vim
+  [  ]init.vim
+  [  ]NERD_tree_1
+  [  ]README.md
+  [  ]tags
