@@ -1,4 +1,4 @@
-setlocal buftype=
+" setlocal buftype=
 setlocal cursorline
 setlocal nofoldenable
 setlocal nolist
