@@ -1,5 +1,3 @@
-" vim:fdm=marker ft=vim:
-
 augroup Vimrc
   autocmd!
 augroup END
@@ -51,17 +49,7 @@ set fileformats=unix,dos,mac " Use Unix as the standard file type
 set fillchars="diff:⣿,fold: ,vert:│"
 set foldclose=all
 set foldcolumn=1
-set foldmethod=marker " Fold on the marker
-
-" {{{ Unset formatoptions defaults
-" autocmd Vimrc FileType * set formatoptions-=j " DISABLE Remove comment leader when joining lines
-" autocmd Vimrc FileType * set formatoptions-=c " DISABLE Auto-wrap comments using textwidth
-" autocmd Vimrc FileType * set formatoptions-=r " DISABLE Insert comment leader after hitting <Enter>
-" autocmd Vimrc FileType * set formatoptions-=o " DISABLE Set cursor when inserting a new line from Normal mode
-" autocmd Vimrc FileType * set formatoptions-=q " DISABLE Allow formatting of comments with 'gq'.
-" autocmd Vimrc FileType * set formatoptions-=l " DISABLE Don't wrap lines that are too long when starting Insert mode
-" }}}
-
+" set foldmethod=marker " Fold on the marker
 set hidden " Hide buffers when abandoned instead of unloading
 set history=10000
 set hlsearch
