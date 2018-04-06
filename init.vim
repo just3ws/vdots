@@ -32,30 +32,30 @@ set directory=$SWAP_DIR//
 set undodir=$UNDO_DIR//
 set viewdir=$VIEW_DIR//
 
-set noexrc
-set signcolumn=yes
+set smartindent " Use shiftwidth not tabstop
 set autoindent " Overwritten by cindent or filetype rules
+" set cindent " Default to C style indentation
+
 set autoread " Read when a file has been changed even outside of Vim.
 set belloff=all
-set cindent " Default to C style indentation
 set clipboard& clipboard+=unnamed,unnamedplus
-set complete-=i " disable scanning included files
-set complete-=t " disable searching tags
+set complete-=i " Disable scanning included files
+set complete-=t " Disable searching tags
 set concealcursor=niv
 set conceallevel=2
 set display=lastline " Show as much as possible of a wrapped last line, not just '@'.
-set expandtab
 set fileformats=unix,dos,mac " Use Unix as the standard file type
 set fillchars="diff:⣿,fold: ,vert:│"
 set foldclose=all
 set foldcolumn=1
-" set foldmethod=marker " Fold on the marker
 set hidden " Hide buffers when abandoned instead of unloading
 set history=10000
 set hlsearch
 set ignorecase
 set infercase " Completion with case-mismatch matches case-insensitive if possible
-set iskeyword+=?,!,@
+" set iskeyword+=?,!,@
+set iskeyword+=- " Remove - as a word boundary
+set iskeyword+=$
 set lazyredraw
 set linebreak
 set list
@@ -68,7 +68,6 @@ set mouse=a
 set noautochdir
 set nocursorcolumn
 set noerrorbells
-set noexrc
 set nojoinspaces " Only join lines with one space regardless of punctuation
 set nostartofline
 set novisualbell
@@ -84,8 +83,6 @@ set scrolloff=10
 set scrolloff=4
 set secure
 set shell=/usr/local/bin/zsh
-set shiftround
-set shiftwidth=2
 set shortmess+=c " default: shortmess=filnxtToO
 set showcmd " Show incomplete cmds down the bottom
 set showfulltag
@@ -94,9 +91,6 @@ set showmode
 set sidescroll=4
 set sidescrolloff=4
 set smartcase
-set smartindent " Use shiftwidth not tabstop
-set smarttab
-set softtabstop=2
 set splitbelow
 set splitright
 set suffixes+=.log,.zwc,.sw?,.rbc,.doc,.docx,.exe,.gif,.jpg,.mp3,.mp4,.dll,.dvi,.pdf,.rtf,.tmp,.py?
@@ -104,7 +98,6 @@ set swapfile
 set switchbuf=useopen
 set synmaxcol=1000
 set t_vb=
-set tabstop=2
 set textwidth=0
 set timeout
 set timeoutlen=400

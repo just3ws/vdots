@@ -1,5 +1,16 @@
 setlocal omnifunc=rubycomplete#Complete
 
+setlocal iskeyword+=!
+setlocal iskeyword+=?
+setlocal iskeyword+=:
+
+setlocal smarttab
+setlocal expandtab
+setlocal shiftwidth=2
+setlocal softtabstop=2
+setlocal tabstop=2
+setlocal shiftround
+
 let g:ruby_fold = 1
 let g:ruby_foldable_groups = 'if def do begin case for {  [ % string # << __END__'
 let g:ruby_minlines = 1000
@@ -15,6 +26,8 @@ let g:rubycomplete_load_gemfile = 1
 let g:rubycomplete_rails = 1
 let g:rubycomplete_rails_proactive = 1
 let g:rubycomplete_use_bundler = 1
+
+
 
 let g:ruby_heredoc_syntax_filetypes = {
       \ 'xml': { 'start' : 'XML' },

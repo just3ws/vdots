@@ -92,6 +92,8 @@ call plugins#opts([
 
 call plugins#starts([
       \   'Shougo/deoplete.nvim',
+      \   'Shougo/neco-syntax',
+      \   'Shougo/neco-vim',
       \   'roxma/nvim-yarp',
       \   'roxma/vim-hug-neovim-rpc',
       \   'uplus/deoplete-solargraph',
@@ -99,6 +101,7 @@ call plugins#starts([
       \ ])
 
 call plugins#starts([
+      \   'editorconfig/editorconfig-vim',
       \   'junegunn/fzf.vim',
       \   'junegunn/vim-easy-align',
       \   'ryanoasis/vim-devicons',
