@@ -34,7 +34,6 @@ set viewdir=$VIEW_DIR//
 
 set smartindent " Use shiftwidth not tabstop
 set autoindent " Overwritten by cindent or filetype rules
-" set cindent " Default to C style indentation
 
 set autoread " Read when a file has been changed even outside of Vim.
 set belloff=all
@@ -48,12 +47,12 @@ set fileformats=unix,dos,mac " Use Unix as the standard file type
 set fillchars="diff:⣿,fold: ,vert:│"
 set foldclose=all
 set foldcolumn=1
+set foldlevelstart=3
 set hidden " Hide buffers when abandoned instead of unloading
 set history=10000
 set hlsearch
 set ignorecase
 set infercase " Completion with case-mismatch matches case-insensitive if possible
-" set iskeyword+=?,!,@
 set iskeyword+=- " Remove - as a word boundary
 set iskeyword+=$
 set lazyredraw
@@ -69,7 +68,7 @@ set noautochdir
 set nocursorcolumn
 set noerrorbells
 set nojoinspaces " Only join lines with one space regardless of punctuation
-set nostartofline
+" set nostartofline
 set novisualbell
 set nowrap
 set path=.,** " Directories to search when using gf
@@ -333,8 +332,8 @@ nmap <silent> <leader>k <Plug>(ale_previous_wrap)
 nmap ga <Plug>(EasyAlign)
 
 " Saner line movements
-nnoremap $ g$
-nnoremap 0 g0
+" nnoremap $ g$
+" nnoremap 0 g0
 
 " Avoid accidentally launching Ex mode
 nnoremap Q <nop>
