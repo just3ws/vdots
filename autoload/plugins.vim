@@ -101,6 +101,7 @@ call plugins#starts([
       \ ])
 
 call plugins#starts([
+      \   'tpope/vim-scriptease',
       \   'editorconfig/editorconfig-vim',
       \   'junegunn/fzf.vim',
       \   'junegunn/vim-easy-align',
