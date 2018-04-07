@@ -19,83 +19,105 @@ autocmd! FT_RUBY BufEnter,BufNewFile {[cC]apfile,[tT]horfile} setfiletype ruby
 autocmd! FT_RUBY BufEnter,BufNewFile {Appraisals,Berksfile,Brewfile,Buildfile,Cheffile,Guardfile,KitchenSink,Podfile,Puppetfile,Thorfile,Vagrantfile} setfiletype ruby
 
 " }}}
-"
-" {{{ [Haml]
-
-autocmd! BufRead,BufNewFile *.haml setfiletype haml
-
-" }}}
 
 " {{{ [Git]
 
-autocmd! BufRead,BufNewFile MERGE_MSG setfiletype gitcommit
-autocmd! BufRead,BufNewFile *.gitconfig setfiletype gitconfig
-autocmd! BufRead,BufNewFile COMMIT_EDITMSG setfiletype gitcommit
+augroup FT_GIT
+  autocmd!
+augroup END
 
-" }}}
-
-" {{{ [AppleScript]
-
-autocmd! BufRead,BufNewFile *.scpt,*.scptd,*.applescript, setfiletype applescript
+autocmd! FT_GIT BufRead,BufNewFile MERGE_MSG setfiletype gitcommit
+autocmd! FT_GIT BufRead,BufNewFile *.gitconfig setfiletype gitconfig
+autocmd! FT_GIT BufRead,BufNewFile COMMIT_EDITMSG setfiletype gitcommit
 
 " }}}
 
 " {{{ [HOSTS]
 
-autocmd! BufRead,BufNewFile */etc/host.conf setfiletype hostconf
-autocmd! BufRead,BufNewFile /private/etc/hosts,/etc/hosts setfiletype hostaccess
+augroup FT_HOSTS
+  autocmd!
+augroup END
+
+autocmd! FT_HOSTS BufRead,BufNewFile */etc/host.conf setfiletype hostconf
+autocmd! FT_HOSTS BufRead,BufNewFile /private/etc/hosts,/etc/hosts setfiletype hostaccess
 
 " }}}
 
 " {{{ [tmux]
 
-autocmd! BufRead,BufNewFile {.,}tmux*.conf* setfiletype tmux
+augroup FT_TMUX
+  autocmd!
+augroup END
+
+autocmd! FT_TMUX BufRead,BufNewFile {.,}tmux*.conf* setfiletype tmux
 
 " }}}
 
 " {{{ [Markdown]
 
-autocmd! BufRead,BufNewFile *.{md,mkd,markdown*} setfiletype markdown
-autocmd! BufRead,BufNewFile TODO,README setfiletype markdown
+augroup FT_MARKDOWN
+  autocmd!
+augroup END
+
+autocmd! FT_MARKDOWN BufRead,BufNewFile *.{md,mkd,markdown*} setfiletype markdown
+autocmd! FT_MARKDOWN BufRead,BufNewFile TODO,README setfiletype markdown
 
 " }}}
 
 " {{{ [Nginx]
 
-autocmd! BufRead,BufNewFile nginx.conf,nginx*.conf setfiletype nginx
-autocmd! BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif
+augroup FT_NGINX
+  autocmd!
+augroup END
+
+autocmd! FT_NGINX BufRead,BufNewFile nginx.conf,nginx*.conf setfiletype nginx
+autocmd! FT_NGINX BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif
 
 " }}}
 
 " {{{ [Delimited Files]
 
-autocmd! BufRead,BufNewFile *.csv,*.tsv setfiletype csv
+augroup FT_DELIMITED
+  autocmd!
+augroup END
 
-" }}}
-
-" {{{ [CoffeeScript]
-
-autocmd! BufRead,BufNewFile *.coffee setfiletype coffee
+autocmd! FT_DELIMITED BufRead,BufNewFile *.csv,*.tsv setfiletype csv
 
 " }}}
 
 " {{{ [Postgres]
 
-autocmd! BufRead,BufNewFile *.psql,*.pgsql,*.plpgsql setfiletype pgsql
-autocmd! BufRead,BufNewFile *.sql setfiletype pgsql
-autocmd! BufRead,BufNewFile .psqlrc setfiletype pgsql
+augroup FT_POSTGRES
+  autocmd!
+augroup END
+
+autocmd! FT_POSTGRES BufRead,BufNewFile *.psql,*.pgsql,*.plpgsql setfiletype pgsql
+autocmd! FT_POSTGRES BufRead,BufNewFile *.sql setfiletype pgsql
+autocmd! FT_POSTGRES BufRead,BufNewFile .psqlrc setfiletype pgsql
 
 " }}}
 
 " {{{ [Zsh]
 
-autocmd! BufRead,BufNewFile *zsh/functions* setfiletype zsh
-autocmd! BufRead,BufNewFile *zsh/*rc setfiletype zsh
-autocmd! BufRead,BufNewFile .zprofile setfiletype zsh
-autocmd! BufRead,BufNewFile .antigenrc setfiletype zsh
-autocmd! BufRead,BufNewFile *.zsh setfiletype zsh
-autocmd! BufRead,BufNewFile *.zsh setfiletype zsh
+augroup FT_ZSH
+  autocmd!
+augroup END
+
+autocmd! FT_ZSH BufRead,BufNewFile *zsh/functions* setfiletype zsh
+autocmd! FT_ZSH BufRead,BufNewFile *zsh/*rc setfiletype zsh
+autocmd! FT_ZSH BufRead,BufNewFile .zprofile setfiletype zsh
+autocmd! FT_ZSH BufRead,BufNewFile .antigenrc setfiletype zsh
+autocmd! FT_ZSH BufRead,BufNewFile *.zsh setfiletype zsh
+autocmd! FT_ZSH BufRead,BufNewFile *.zsh setfiletype zsh
 
 " }}}
 
-autocmd! BufRead,BufNewFile *.alfredappearance setfiletype json
+" {{{ [JSON]
+
+augroup FT_JSON
+  autocmd!
+augroup END
+
+autocmd! FT_JSON BufRead,BufNewFile *.alfredappearance setfiletype json
+
+" }}}

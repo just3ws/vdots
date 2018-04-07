@@ -1,0 +1,1 @@
+echomsg 'menu.vim'
