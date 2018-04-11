@@ -46,7 +46,7 @@ set display=lastline " Show as much as possible of a wrapped last line, not just
 set fileformats=unix,dos,mac " Use Unix as the standard file type
 set fillchars="diff:⣿,fold: ,vert:│"
 set foldclose=all
-set foldcolumn=1
+set foldcolumn=2 " Side-column to show info on open and closed folds
 set foldlevelstart=3
 set hidden " Hide buffers when abandoned instead of unloading
 set history=10000
@@ -68,7 +68,6 @@ set noautochdir
 set nocursorcolumn
 set noerrorbells
 set nojoinspaces " Only join lines with one space regardless of punctuation
-" set nostartofline
 set novisualbell
 set nowrap
 set path=.,** " Directories to search when using gf
@@ -84,7 +83,7 @@ set secure
 set shell=/usr/local/bin/zsh
 set shortmess+=c " default: shortmess=filnxtToO
 set showcmd " Show incomplete cmds down the bottom
-set showfulltag
+" set showfulltag
 set showmatch
 set showmode
 set sidescroll=4
@@ -153,7 +152,7 @@ let g:ale_sign_warning = ''
 let g:ale_sign_style_error = ''
 let g:ale_sign_style_warning = ''
 
-nnoremap <C-l> :lopen<CR>
+nnoremap <c-l> :lopen<cr>
 
 let g:ale_linters = {
       \ 'css': ['csslint', 'stylelint'],
@@ -320,16 +319,16 @@ map <leader>ef :tabe <cfile><cr>
 nmap <leader><leader> V
 
 " Dash.app
-nmap <silent> <leader>d <Plug>DashSearch
+nmap <silent> <leader>d <plug>DashSearch
 
 " ALE
-" nmap <silent> <leader>ff <Plug>(ale_fix)
+" nmap <silent> <leader>ff <plug>(ale_fix)
 
-nmap <silent> <leader>j <Plug>(ale_next_wrap)
-nmap <silent> <leader>k <Plug>(ale_previous_wrap)
+nmap <silent> <leader>j <plug>(ale_next_wrap)
+nmap <silent> <leader>k <plug>(ale_previous_wrap)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
+nmap ga <plug>(EasyAlign)
 
 " Saner line movements
 " nnoremap $ g$
@@ -350,7 +349,7 @@ nnoremap <expr> n 'Nn'[v:searchforward]
 
 " ALE
 nnoremap <leader>ae :ALEDetail<cr>
-nnoremap <leader>al :ALEToggle<Cr>
+nnoremap <leader>al :ALEToggle<cr>
 
 autocmd! Vimrc FileType css,scss,markdown,javascript,xml noremap <buffer> <leader>ff :ALEFix<cr>
 autocmd! Vimrc FileType html,liquid noremap <buffer> <leader>ff call HtmlBeautify()<cr>
@@ -416,7 +415,7 @@ nnoremap <leader>s :Startify<cr>
 noremap <leader>ad :ALEGoToDefinition<cr>
 
 " Start interactive EasyAlign in visual mode (e.g. vipga)
-xmap ga <Plug>(EasyAlign)
+xmap ga <plug>(EasyAlign)
 
 " Saner block shift
 xnoremap < <gv
@@ -442,7 +441,9 @@ let g:airline_left_alt_sep=''
 let g:airline_right_sep=''
 let g:airline_right_alt_sep=''
 
+set numberwidth=3
 set number relativenumber
+" set relativenumberformat='%*ld '
 set cursorline
 
 let g:webdevicons_enable = 1
@@ -464,24 +465,24 @@ nnoremap Q @q
 vnoremap Q :norm @q<cr>
 
 " Swap the case for changing tabs
-noremap <S-l> gt
-noremap <S-h> gT
+noremap <s-l> gt
+noremap <s-h> gT
 
 " Change panes without w
-noremap <C-l> <C-w>l
-noremap <C-h> <C-w>h
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
+noremap <c-l> <c-w>l
+noremap <c-h> <c-w>h
+noremap <c-j> <c-w>j
+noremap <c-k> <c-w>k
 
 " Quit file with Leader + q
 noremap <leader>q :q<cr>
 
 " Save file with Leader + s
 nnoremap <leader>s :w<cr>
-inoremap <leader>s <C-c>:w<cr>
+inoremap <leader>s <c-c>:w<cr>
 
 " Clone paragrapha with cp
-noremap cp yap<S-}>p
+noremap cp yap<s-}>p
 
 set omnifunc=syntaxcomplete#Complete
 
@@ -494,3 +495,15 @@ let g:loaded_tarPlugin = 1
 let g:loaded_spellfile_plugin = 1
 let g:loaded_vimballPlugin = 1
 let g:loaded_zipPlugin = 1
+
+inoremap <tab> <c-r>=tab#complete()<cr>
+
+highlight CursorLineNr ctermfg=0 guifg=white
+
+set sessionoptions-=tabpages " Only save the current tab page in session.
+set sessionoptions-=help " Don't save help windows in sessions.
+set sessionoptions-=buffers " Don't save hidden and unloaded buffers in sessions.
+set sessionoptions-=options " Don't persist options and mappings because it can corrupt sessions.
+
+
+highlight! rubyGlobalVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
