@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+brew bundle install
+
+brew unlink neovim
+brew unlink macvim
+brew unlink vim
+
+brew link --overwrite neovim
+brew link --overwrite macvim
+brew link --overwrite vim
