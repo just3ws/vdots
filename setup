@@ -3,9 +3,9 @@
 brew bundle install
 
 brew unlink neovim
-brew unlink macvim
 brew unlink vim
+brew unlink macvim
 
 brew link --overwrite neovim
-brew link --overwrite macvim
 brew link --overwrite vim
+brew link --overwrite macvim

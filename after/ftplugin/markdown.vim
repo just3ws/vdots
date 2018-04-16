@@ -12,5 +12,4 @@ setlocal formatoptions+=w " Whitespace at EOL signifies next line continues para
 setlocal formatoptions-=2 " Auto-wrap based on 2nd line of paragraph
 setlocal formatoptions-=c " Insert comment character when auto-wrapping a comment
 
-" setlocal formatoptions=1abjlnoqrtw
 let g:markdown_syntax_conceal = 0
