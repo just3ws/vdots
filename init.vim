@@ -1,4 +1,5 @@
 " vim:fdm=marker
+
 augroup Vimrc
   autocmd!
 augroup END
@@ -443,7 +444,6 @@ nnoremap <leader>dp :ProjectRootCD<cr>
 " Open NERDTree at project root
 nnoremap <silent> <leader>dt :ProjectRootExe NERDTreeFind<cr>
 
-
 if has('gui_running')
   set guifont=FiraCode-Retina:h18
 endif
@@ -460,13 +460,13 @@ let g:webdevicons_enable = 1
 let g:webdevicons_enable_nerdtree = 1
 let g:webdevicons_enable_airline_tabline = 1
 let g:webdevicons_enable_airline_statusline = 1
+
 let g:WebDevIconsOS = 'Darwin'
 
 call themes#nord()
 
 " Align current paragraph with Leader + a
 noremap <leader>a =ip
-
 
 " Apply macro using Q
 nnoremap Q @q
@@ -509,3 +509,5 @@ highlight CursorLineNr ctermfg=0 guifg=white
 " highlight! rubyClassVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
 " highlight! rubyGlobalVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
 highlight! rubyInterpolation term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
+
+map <c-f> :call JsBeautify()<cr>
