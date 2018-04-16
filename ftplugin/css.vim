@@ -5,3 +5,6 @@ setlocal shiftwidth=2
 setlocal smarttab
 setlocal softtabstop=2
 setlocal tabstop=2
+
+noremap <buffer> <c-f> :call CSSBeautify()<cr>
+vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
