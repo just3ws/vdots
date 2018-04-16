@@ -1,4 +1,4 @@
-" vim:foldmethod=marker
+" vim:fdm=marker
 
 " {{{ [PLUGINS]
 let s:current_file = expand('<sfile>')
@@ -28,13 +28,16 @@ if exists('*plugins#reload') | else
     endfor
   endfunction
 
-  function! plugins#opts(plugins)
+  function! plugins#opts(message, plugins)
+    echomsg '[OPT] ' . a:message
     for l:plugin in a:plugins
       call plugins#opt(l:plugin)
     endfor
   endfunction
 
-  function! plugins#starts(plugins)
+  function! plugins#starts(message, plugins)
+    echomsg '[STARTS] ' . a:message
+
     for l:plugin in a:plugins
       call plugins#start(l:plugin)
     endfor
@@ -50,22 +53,26 @@ function! plugins#spec() abort
   call minpac#add('k-takata/minpac', { 'type': 'opt' })
   " }}}
 
-  call plugins#colorscheme('just3ws/nord-vim')
-
-  " \   'sheerun/vim-polyglot',
-  call plugins#opts([
-        \   'bootleq/vim-textobj-rubysymbol',
+  " 'sheerun/vim-polyglot',
+  " moll/vim-node
+  call plugins#opts('General Plugins', [
         \   'dbmrq/vim-ditto',
-        \   'joker1007/vim-ruby-heredoc-syntax',
         \   'ludovicchabant/vim-gutentags',
         \   'majutsushi/tagbar',
         \   'maksimr/vim-jsbeautify',
-        \   'nelstrom/vim-textobj-rubyblock',
         \   'plasticboy/vim-markdown',
         \   'reedes/vim-textobj-quote',
         \   'reedes/vim-textobj-sentence',
         \   'reedes/vim-thematic',
         \   'reedes/vim-wordy',
+        \   'wellle/targets.vim',
+        \   'chrisbra/vim-zsh',
+        \ ])
+
+  call plugins#opts('Ruby Plugins', [
+        \   'nelstrom/vim-textobj-rubyblock',
+        \   'bootleq/vim-textobj-rubysymbol',
+        \   'joker1007/vim-ruby-heredoc-syntax',
         \   'tpope/vim-bundler',
         \   'tpope/vim-endwise',
         \   'tpope/vim-rails',
@@ -73,12 +80,10 @@ function! plugins#spec() abort
         \   'tpope/vim-rbenv',
         \   'vim-ruby/vim-ruby',
         \   'vim-scripts/ruby-matchit',
-        \   'wellle/targets.vim',
-	\   'vim-ruby/vim-ruby',
-	\   'chrisbra/vim-zsh',
+        \   'vim-ruby/vim-ruby',
         \ ])
 
-  call plugins#starts([
+  call plugins#starts('Completion Plugins', [
         \   'Shougo/deoplete.nvim',
         \   'Shougo/neco-syntax',
         \   'Shougo/neco-vim',
@@ -88,7 +93,14 @@ function! plugins#spec() abort
         \   'zchee/deoplete-zsh',
         \ ])
 
-  call plugins#starts([
+  call plugins#starts('JavaScript/JSON Plugins', [
+        \   'leshill/vim-json',
+        \   'mxw/vim-jsx',
+        \   'pangloss/vim-javascript',
+        \   'ternjs/tern_for_vim',
+        \ ])
+
+  call plugins#starts('General Plugins', [
         \   'tpope/vim-scriptease',
         \   'editorconfig/editorconfig-vim',
         \   'junegunn/fzf.vim',
@@ -100,7 +112,6 @@ function! plugins#spec() abort
         \   'mtth/scratch.vim',
         \   'nathanaelkane/vim-indent-guides',
         \   'scrooloose/nerdtree',
-        \   'ternjs/tern_for_vim',
         \   'sjl/vitality.vim',
         \   'tpope/vim-abolish',
         \   'tpope/vim-commentary',
@@ -115,9 +126,10 @@ function! plugins#spec() abort
         \   'tpope/vim-surround',
         \   'tpope/vim-unimpaired',
         \   'vim-airline/vim-airline',
-        \   'vim-airline/vim-airline-themes',
         \   'vim-scripts/Align',
         \   'w0rp/ale',
         \   'yegappan/mru',
         \ ])
 endfunction
+
+        " \   'vim-airline/vim-airline-themes',

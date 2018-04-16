@@ -11,7 +11,7 @@ function! themes#best_term_colors()
 endfunction
 
 function! themes#nord()
-  packadd nord-vim
+  " packadd nord-vim
   call themes#best_colors()
 
   let g:nord_uniform_diff_background = 0

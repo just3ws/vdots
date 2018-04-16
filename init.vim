@@ -1,3 +1,4 @@
+" vim:fdm=marker
 augroup Vimrc
   autocmd!
 augroup END
@@ -10,6 +11,7 @@ endif
 let g:mapleader=';'
 let g:maplocalleader=';'
 
+" {{{ [APP DIRS]
 let $DATA_DIR = file_utils#init_app_dir('')
 let $BACKUP_DIR = file_utils#init_app_dir('/backup')
 let $SWAP_DIR = file_utils#init_app_dir('/swap')
@@ -18,6 +20,7 @@ let $VIEW_DIR = file_utils#init_app_dir('/view')
 let $SHADA_DIR = file_utils#init_app_dir('/shada')
 let $FZF_HISTORY_DIR = file_utils#init_app_dir('/fzf/history')
 let $STARTIFY_SESSION_DIR = file_utils#init_app_dir('/startify/session')
+" }}}
 
 if exists('g:syntax_on') | else
   syntax enable
@@ -27,13 +30,24 @@ filetype on
 filetype indent on
 filetype plugin on
 
+" {{{
 set backupdir=$BACKUP_DIR//
 set directory=$SWAP_DIR//
 set undodir=$UNDO_DIR//
 set viewdir=$VIEW_DIR//
+" }}}
+
+set omnifunc=syntaxcomplete#Complete
+
+set pastetoggle=<leader>z " Toggle paste mode
 
 set smartindent " Use shiftwidth not tabstop
 set autoindent " Overwritten by cindent or filetype rules
+
+set sessionoptions-=tabpages " Only save the current tab page in session.
+set sessionoptions-=help " Don't save help windows in sessions.
+set sessionoptions-=buffers " Don't save hidden and unloaded buffers in sessions.
+set sessionoptions-=options " Don't persist options and mappings because it can corrupt sessions.
 
 set autoread " Read when a file has been changed even outside of Vim.
 set belloff=all
@@ -107,6 +121,7 @@ set updatecount=100
 set updatetime=2000 " Write swap files after 2 seconds of inactivity.
 set updatetime=500
 set virtualedit=block " Position cursor anywhere in visual block
+" {{{ [WILDIGNORE]
 set wildignore+=%*,*~,._*
 set wildignore+=**/bower_modules/**,**/node_modules/**,*/.sass-cache/*
 set wildignore+=**/tmp/**
@@ -133,9 +148,16 @@ set wildignore+=*.zwc
 set wildignore+=*/.git,*/.git-metadata,*/.hg,*/.svn,.stversions
 set wildignore+=*/.idea,*/.vscode
 set wildignorecase
+" }}}
 set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
 set wildoptions=tagfile
 set wrapscan
+
+set background=dark
+
+set numberwidth=3
+set number relativenumber
+set cursorline
 
 let g:ale_change_sign_column_color = 1
 let g:ale_completion_enabled = 1
@@ -152,8 +174,6 @@ let g:ale_sign_warning = ''
 let g:ale_sign_style_error = ''
 let g:ale_sign_style_warning = ''
 
-nnoremap <c-l> :lopen<cr>
-
 let g:ale_linters = {
       \ 'css': ['csslint', 'stylelint'],
       \ 'html': ['htmlhint', 'tidy'],
@@ -161,9 +181,7 @@ let g:ale_linters = {
       \ 'javascript': ['standard'],
       \ 'markdown': ['mdl', 'alex'],
       \ 'go': ['golint', 'go vet'],
-      \ 'ruby': ['rubocop', 'ruby'],
       \ 'scss': ['stylelint'],
-      \ 'vim': ['vint'],
       \ }
 
 let g:ale_fixers = {
@@ -173,10 +191,8 @@ let g:ale_fixers = {
       \ 'json': ['prettier'],
       \ 'markdown': ['prettier'],
       \ 'python': ['autopep8', 'isort'],
-      \ 'ruby': ['rubocop'],
       \ 'sass': ['prettier'],
       \ 'scss': ['prettier'],
-      \ 'vim': ['remove_trailing_lines', 'trim_whitespace'],
       \ 'xml': ['prettier']
       \ }
 " \ 'yaml': ['yamllint'],
@@ -427,7 +443,6 @@ nnoremap <leader>dp :ProjectRootCD<cr>
 " Open NERDTree at project root
 nnoremap <silent> <leader>dt :ProjectRootExe NERDTreeFind<cr>
 
-set background=dark
 
 if has('gui_running')
   set guifont=FiraCode-Retina:h18
@@ -441,11 +456,6 @@ let g:airline_left_alt_sep=''
 let g:airline_right_sep=''
 let g:airline_right_alt_sep=''
 
-set numberwidth=3
-set number relativenumber
-" set relativenumberformat='%*ld '
-set cursorline
-
 let g:webdevicons_enable = 1
 let g:webdevicons_enable_nerdtree = 1
 let g:webdevicons_enable_airline_tabline = 1
@@ -457,8 +467,6 @@ call themes#nord()
 " Align current paragraph with Leader + a
 noremap <leader>a =ip
 
-" Toggle paste mode
-set pastetoggle=<leader>z
 
 " Apply macro using Q
 nnoremap Q @q
@@ -484,8 +492,6 @@ inoremap <leader>s <c-c>:w<cr>
 " Clone paragrapha with cp
 noremap cp yap<s-}>p
 
-set omnifunc=syntaxcomplete#Complete
-
 let g:loaded_2html_plugin = 1
 let g:loaded_getscriptPlugin = 1
 let g:loaded_gzip = 1
@@ -500,10 +506,6 @@ inoremap <tab> <c-r>=tab#complete()<cr>
 
 highlight CursorLineNr ctermfg=0 guifg=white
 
-set sessionoptions-=tabpages " Only save the current tab page in session.
-set sessionoptions-=help " Don't save help windows in sessions.
-set sessionoptions-=buffers " Don't save hidden and unloaded buffers in sessions.
-set sessionoptions-=options " Don't persist options and mappings because it can corrupt sessions.
-
-
-highlight! rubyGlobalVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
+" highlight! rubyClassVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
+" highlight! rubyGlobalVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
+highlight! rubyInterpolation term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440

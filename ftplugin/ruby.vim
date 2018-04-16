@@ -1,15 +1,13 @@
-setlocal omnifunc=rubycomplete#Complete
-
-setlocal iskeyword+=!
-setlocal iskeyword+=?
-setlocal iskeyword+=:
-
-setlocal smarttab
 setlocal expandtab
+setlocal iskeyword+=!
+setlocal iskeyword+=:
+setlocal iskeyword+=?
+setlocal omnifunc=rubycomplete#Complete
+setlocal shiftround
 setlocal shiftwidth=2
+setlocal smarttab
 setlocal softtabstop=2
 setlocal tabstop=2
-setlocal shiftround
 
 let g:ruby_fold = 1
 let g:ruby_foldable_groups = 'if def do begin case for {  [ % string # << __END__'
@@ -33,3 +31,6 @@ let g:ruby_heredoc_syntax_filetypes = {
       \ 'eruby': { 'start' : 'ERB' },
       \ 'pgsql': { 'start' : 'SQL' }
       \ }
+
+let g:ale_linters.ruby = ['rubocop', 'ruby']
+let g:ale_fixers.ruby = ['rubocop']
