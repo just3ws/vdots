@@ -1,4 +1,4 @@
-" vim:fdm=marker
+" vim:foldmethod=marker
 
 " {{{ [PLUGINS]
 let s:current_file = expand('<sfile>')
@@ -28,16 +28,13 @@ if exists('*plugins#reload') | else
     endfor
   endfunction
 
-  function! plugins#opts(message, plugins)
-    echomsg '[OPT] ' . a:message
+  function! plugins#opts(plugins, ...)
     for l:plugin in a:plugins
       call plugins#opt(l:plugin)
     endfor
   endfunction
 
-  function! plugins#starts(message, plugins)
-    echomsg '[STARTS] ' . a:message
-
+  function! plugins#starts(plugins, ...)
     for l:plugin in a:plugins
       call plugins#start(l:plugin)
     endfor
@@ -53,83 +50,69 @@ function! plugins#spec() abort
   call minpac#add('k-takata/minpac', { 'type': 'opt' })
   " }}}
 
-  " 'sheerun/vim-polyglot',
-  " moll/vim-node
-  call plugins#opts('General Plugins', [
-        \   'dbmrq/vim-ditto',
-        \   'ludovicchabant/vim-gutentags',
-        \   'majutsushi/tagbar',
-        \   'maksimr/vim-jsbeautify',
-        \   'plasticboy/vim-markdown',
-        \   'reedes/vim-textobj-quote',
-        \   'reedes/vim-textobj-sentence',
-        \   'reedes/vim-thematic',
-        \   'reedes/vim-wordy',
-        \   'wellle/targets.vim',
-        \   'chrisbra/vim-zsh',
+  call plugins#opts([
+        \ 'bootleq/vim-textobj-rubysymbol',
+        \ 'chrisbra/vim-zsh',
+        \ 'dbmrq/vim-ditto',
+        \ 'joker1007/vim-ruby-heredoc-syntax',
+        \ 'leshill/vim-json',
+        \ 'ludovicchabant/vim-gutentags',
+        \ 'majutsushi/tagbar',
+        \ 'maksimr/vim-jsbeautify',
+        \ 'mxw/vim-jsx',
+        \ 'nelstrom/vim-textobj-rubyblock',
+        \ 'pangloss/vim-javascript',
+        \ 'plasticboy/vim-markdown',
+        \ 'reedes/vim-textobj-quote',
+        \ 'reedes/vim-textobj-sentence',
+        \ 'reedes/vim-thematic',
+        \ 'reedes/vim-wordy',
+        \ 'ternjs/tern_for_vim',
+        \ 'tpope/vim-bundler',
+        \ 'tpope/vim-endwise',
+        \ 'tpope/vim-rails',
+        \ 'tpope/vim-rake',
+        \ 'tpope/vim-rbenv',
+        \ 'vim-ruby/vim-ruby',
+        \ 'vim-scripts/ruby-matchit',
+        \ 'wellle/targets.vim',
         \ ])
 
-  call plugins#opts('Ruby Plugins', [
-        \   'nelstrom/vim-textobj-rubyblock',
-        \   'bootleq/vim-textobj-rubysymbol',
-        \   'joker1007/vim-ruby-heredoc-syntax',
-        \   'tpope/vim-bundler',
-        \   'tpope/vim-endwise',
-        \   'tpope/vim-rails',
-        \   'tpope/vim-rake',
-        \   'tpope/vim-rbenv',
-        \   'vim-ruby/vim-ruby',
-        \   'vim-scripts/ruby-matchit',
-        \   'vim-ruby/vim-ruby',
-        \ ])
-
-  call plugins#starts('Completion Plugins', [
-        \   'Shougo/deoplete.nvim',
-        \   'Shougo/neco-syntax',
-        \   'Shougo/neco-vim',
-        \   'roxma/nvim-yarp',
-        \   'roxma/vim-hug-neovim-rpc',
-        \   'uplus/deoplete-solargraph',
-        \   'zchee/deoplete-zsh',
-        \ ])
-
-  call plugins#starts('JavaScript/JSON Plugins', [
-        \   'leshill/vim-json',
-        \   'mxw/vim-jsx',
-        \   'pangloss/vim-javascript',
-        \   'ternjs/tern_for_vim',
-        \ ])
-
-  call plugins#starts('General Plugins', [
-        \   'tpope/vim-scriptease',
-        \   'editorconfig/editorconfig-vim',
-        \   'junegunn/fzf.vim',
-        \   'junegunn/vim-easy-align',
-        \   'ryanoasis/vim-devicons',
-        \   'kana/vim-textobj-user',
-        \   'mhinz/vim-startify',
-        \   'mileszs/ack.vim',
-        \   'mtth/scratch.vim',
-        \   'nathanaelkane/vim-indent-guides',
-        \   'scrooloose/nerdtree',
-        \   'sjl/vitality.vim',
-        \   'tpope/vim-abolish',
-        \   'tpope/vim-commentary',
-        \   'tpope/vim-dispatch',
-        \   'tpope/vim-eunuch',
-        \   'tpope/vim-fugitive',
-        \   'tpope/vim-git',
-        \   'tpope/vim-projectionist',
-        \   'tpope/vim-ragtag',
-        \   'tpope/vim-repeat',
-        \   'tpope/vim-sensible',
-        \   'tpope/vim-surround',
-        \   'tpope/vim-unimpaired',
-        \   'vim-airline/vim-airline',
-        \   'vim-scripts/Align',
-        \   'w0rp/ale',
-        \   'yegappan/mru',
+  call plugins#starts([
+        \ 'Shougo/deoplete.nvim',
+        \ 'Shougo/neco-syntax',
+        \ 'Shougo/neco-vim',
+        \ 'editorconfig/editorconfig-vim',
+        \ 'junegunn/fzf.vim',
+        \ 'junegunn/vim-easy-align',
+        \ 'kana/vim-textobj-user',
+        \ 'mhinz/vim-startify',
+        \ 'mileszs/ack.vim',
+        \ 'mtth/scratch.vim',
+        \ 'nathanaelkane/vim-indent-guides',
+        \ 'roxma/nvim-yarp',
+        \ 'roxma/vim-hug-neovim-rpc',
+        \ 'ryanoasis/vim-devicons',
+        \ 'scrooloose/nerdtree',
+        \ 'sjl/vitality.vim',
+        \ 'tpope/vim-abolish',
+        \ 'tpope/vim-commentary',
+        \ 'tpope/vim-dispatch',
+        \ 'tpope/vim-eunuch',
+        \ 'tpope/vim-fugitive',
+        \ 'tpope/vim-git',
+        \ 'tpope/vim-projectionist',
+        \ 'tpope/vim-ragtag',
+        \ 'tpope/vim-repeat',
+        \ 'tpope/vim-scriptease',
+        \ 'tpope/vim-sensible',
+        \ 'tpope/vim-surround',
+        \ 'tpope/vim-unimpaired',
+        \ 'uplus/deoplete-solargraph',
+        \ 'vim-airline/vim-airline',
+        \ 'vim-scripts/Align',
+        \ 'w0rp/ale',
+        \ 'yegappan/mru',
+        \ 'zchee/deoplete-zsh',
         \ ])
 endfunction
-
-        " \   'vim-airline/vim-airline-themes',
