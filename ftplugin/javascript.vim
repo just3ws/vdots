@@ -1,3 +1,9 @@
+augroup FT_JAVASCRIPT
+  autocmd!
+augroup END
+
+packadd vim-jsbeautify
+
 " setlocal omnifunc=tern#Complete
 setlocal expandtab
 setlocal omnifunc=javascriptcomplete#CompleteJS

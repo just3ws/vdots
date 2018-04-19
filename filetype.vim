@@ -119,5 +119,16 @@ augroup FT_JSON
 augroup END
 
 autocmd! FT_JSON BufRead,BufNewFile *.alfredappearance setfiletype json
+autocmd! FT_JSON BufRead,BufNewFile .alex setfiletype json
+
+" }}}
+
+" {{{ [CLOJURE]
+
+augroup FT_CLOJURE
+  autocmd!
+augroup END
+
+autocmd! FT_CLOJURE BufRead,BufNewFile .joker setfiletype clojure
 
 " }}}
