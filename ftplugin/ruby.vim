@@ -1,3 +1,7 @@
+augroup FT_RUBY
+  augroup!
+augroup END
+
 setlocal expandtab
 setlocal iskeyword+=!
 setlocal iskeyword+=:
