@@ -1,3 +1,7 @@
+augroup FT_VIM
+  autocmd!
+augroup END
+
 setlocal expandtab
 setlocal foldmethod=marker
 setlocal shiftround

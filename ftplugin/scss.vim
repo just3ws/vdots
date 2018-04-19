@@ -1,3 +1,9 @@
+augroup FT_SCSS
+  autocmd!
+augroup END
+
+packadd vim-jsbeautify
+
 setlocal expandtab
 setlocal omnifunc=csscomplete#CompleteCSS
 setlocal shiftround
