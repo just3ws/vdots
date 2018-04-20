@@ -1,6 +1,9 @@
-augroup FT_VIM
-  autocmd!
-augroup END
+augroup ft_vim
+  autocmd! * <buffer>
+augroup end
+
+packadd deoplete.nvim
+packadd neco-vim
 
 setlocal expandtab
 setlocal foldmethod=marker
@@ -10,7 +13,7 @@ setlocal smarttab
 setlocal softtabstop=2
 setlocal tabstop=2
 
-" let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_at_startup = 0
 call deoplete#enable()
 
 inoremap <silent><expr> <TAB>

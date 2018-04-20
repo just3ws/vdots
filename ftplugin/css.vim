@@ -1,6 +1,6 @@
-augroup FT_CSS
-  autocmd!
-augroup END
+augroup ft_css
+  autocmd! * <buffer>
+augroup end
 
 packadd vim-jsbeautify
 
