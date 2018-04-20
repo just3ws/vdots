@@ -1,5 +1,5 @@
-augroup FT_PYTHON
-  autocmd!
-augroup END
+augroup ft_python
+  autocmd! * <buffer>
+augroup end
 
 setlocal omnifunc=pythoncomplete#Complete

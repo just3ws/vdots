@@ -1,6 +1,6 @@
-augroup FT_JAVA
-  autocmd!
-augroup END
+augroup ft_java
+  autocmd! * <buffer>
+augroup end
 
 packadd vim-classpath
 

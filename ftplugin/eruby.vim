@@ -1,5 +1,5 @@
-augroup FT_ERUBY
-  augroup!
-augroup END
+augroup ft_eruby
+  autocmd! * <buffer>
+augroup end
 
 setlocal omnifunc=rubycomplete#Complete

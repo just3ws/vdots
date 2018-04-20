@@ -1,6 +1,6 @@
-augroup FT_STARTIFY
-  autocmd!
-augroup END
+augroup ft_startify
+  autocmd! * <buffer>
+augroup end
 
 setlocal cursorline
 setlocal foldcolumn=0

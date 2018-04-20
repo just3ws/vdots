@@ -1,6 +1,6 @@
-augroup FT_JSX
-  autocmd!
-augroup END
+augroup ft_jsx
+  autocmd! * <buffer>
+augroup end
 
 packadd vim-jsbeautify
 

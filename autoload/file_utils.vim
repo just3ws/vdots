@@ -1,24 +1,21 @@
-function! file_utils#mkdir_p(directory)
+function! file_utils#mkdir_p(directory) abort
   if !isdirectory(a:directory)
     call mkdir(a:directory, 'p')
   endif
 endfunction
 
-function! file_utils#vim_dir()
+function! file_utils#vim_dir() abort
   if has('nvim')
     return '/nvim'
-  else
-    return '/vim'
   endif
+
+  return '/vim'
 endfunction
 
-function! file_utils#init_app_dir(path)
+function! file_utils#init_app_dir(path) abort
   let l:directory = expand($XDG_DATA_HOME . file_utils#vim_dir()) . a:path
 
   call file_utils#mkdir_p(l:directory)
 
   return l:directory
-endfunction
-
-function file_utils#init_app_dirs(directories)
 endfunction

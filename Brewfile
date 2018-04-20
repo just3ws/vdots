@@ -3,9 +3,9 @@
 tap 'neovim/neovim'
 brew 'neovim'
 
-brew 'macvim', args: %w[with-lua with-override-system-vim]
+brew 'vim', args: %w[with-lua with-override-system-vi with-python@2 HEAD]
 
-brew 'vim', args: %w[with-client-server with-gettext with-lua with-override-system-vi with-tcl HEAD]
+brew 'macvim', args: %w[with-lua with-override-system-vim with-python@2 HEAD]
 
 # tap 'universal-ctags/universal-ctags'
 # brew 'universal-ctags'

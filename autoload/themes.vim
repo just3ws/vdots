@@ -1,17 +1,18 @@
-function! themes#best_colors()
+function! themes#best_colors() abort
+  if exists('$TMUX')
+    set t_Co=256
+    return
+  endif
+
   if has('termguicolors')
     set termguicolors
-  else
-    call themes#best_term_colors()
+    return
   endif
-endfunction
 
-function! themes#best_term_colors()
   set t_Co=256
 endfunction
 
-function! themes#nord()
-  " packadd nord-vim
+function! themes#nord() abort
   call themes#best_colors()
 
   let g:nord_uniform_diff_background = 0
@@ -22,24 +23,4 @@ function! themes#nord()
   let g:airline_theme = 'nord'
 
   colorscheme nord
-endfunction
-
-function! themes#blaquemagick()
-  packadd blaquemagick.vim
-  call themes#best_term_colors()
-
-  let g:airline_theme = 'monochrome'
-
-  colorscheme blaquemagick
-endfunction
-
-function! themes#nofrils()
-  packadd nofrils
-  call themes#best_term_colors()
-
-  let g:nofrils_strbackgrounds = 0
-  let g:nofrils_heavylinenumbers = 1
-  let g:airline_theme = 'monochrome'
-
-  colorscheme nofrils-dark
 endfunction

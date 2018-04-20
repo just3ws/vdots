@@ -1,6 +1,6 @@
-augroup FT_HTML
-  autocmd!
-augroup END
+augroup ft_html
+  autocmd! * <buffer>
+augroup end
 
 packadd vim-jsbeautify
 
