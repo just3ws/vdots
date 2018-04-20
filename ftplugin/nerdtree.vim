@@ -1,6 +1,6 @@
-augroup FT_NERDTREE
-  autocmd!
-augroup END
+augroup ft_nerdtree
+  autocmd! * <buffer>
+augroup end
 
 setlocal cursorline
 setlocal foldcolumn=0

@@ -88,7 +88,7 @@ if !exists('g:nord_uniform_diff_background')
   let g:nord_uniform_diff_background = 0
 endif
 
-function! s:build_highlight(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
+function! s:build_highlight(group, guifg, guibg, ctermfg, ctermbg, attr, guisp) abort
   if a:guifg !=? ''
     exec 'highlight! ' . a:group . ' guifg=' . a:guifg
   endif

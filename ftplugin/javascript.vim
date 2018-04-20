@@ -1,6 +1,6 @@
-augroup FT_JAVASCRIPT
-  autocmd!
-augroup END
+augroup ft_javascript
+  autocmd! * <buffer>
+augroup end
 
 packadd vim-jsbeautify
 

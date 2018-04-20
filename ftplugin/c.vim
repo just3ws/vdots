@@ -1,6 +1,6 @@
-augroup FT_C
-  autocmd!
-augroup END
+augroup ft_c
+  autocmd! * <buffer>
+augroup end
 
 setlocal omnifunc=ccomplete#Complete
 setlocal shiftwidth=4

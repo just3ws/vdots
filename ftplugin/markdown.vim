@@ -1,3 +1,7 @@
+augroup ft_markdown
+  autocmd! * <buffer>
+augroup end
+
 setlocal textwidth=144
 
 let g:vim_markdown_autowrite = 1

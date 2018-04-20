@@ -1,6 +1,6 @@
-augroup FT_JSON
-  autocmd!
-augroup END
+augroup ft_json
+  autocmd! * <buffer>
+augroup end
 
 packadd vim-jsbeautify
 

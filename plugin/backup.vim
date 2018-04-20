@@ -13,7 +13,7 @@ set nobackup
 set backupskip+=*.log " Don't backup log files
 
 " This is the workaround for the backup filename expansion problem.
-autocmd! Vimrc BufWritePre * call backup#save_backups()
+autocmd! vimrc BufWritePre * call backup#save_backups()
 
 function! backup#save_backups()
   if expand('%:p') =~ &backupskip | return | endif

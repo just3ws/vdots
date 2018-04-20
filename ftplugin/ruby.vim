@@ -1,6 +1,6 @@
-augroup FT_RUBY
-  augroup!
-augroup END
+augroup ft_ruby
+  autocmd! * <buffer>
+augroup end
 
 setlocal expandtab
 setlocal iskeyword+=!

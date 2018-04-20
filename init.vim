@@ -1,13 +1,21 @@
 " vim:fdm=marker
 
-augroup Vimrc
-  autocmd!
-augroup END
-
 if has('vim_starting')
   set encoding=utf-8
   scriptencoding utf-8
 endif
+
+if !exists('g:syntax_on')
+  syntax enable
+endif
+
+filetype on
+filetype indent on
+filetype plugin on
+
+augroup vimrc
+  autocmd!
+augroup end
 
 let g:mapleader=';'
 let g:maplocalleader=';'
@@ -23,27 +31,16 @@ let $FZF_HISTORY_DIR = file_utils#init_app_dir('/fzf/history')
 let $STARTIFY_SESSION_DIR = file_utils#init_app_dir('/startify/session')
 " }}}
 
-if exists('g:syntax_on') | else
-  syntax enable
-endif
-
-filetype on
-filetype indent on
-filetype plugin on
-
-" {{{
 set backupdir=$BACKUP_DIR//
 set directory=$SWAP_DIR//
 set undodir=$UNDO_DIR//
 set viewdir=$VIEW_DIR//
-" }}}
 
 set omnifunc=syntaxcomplete#Complete
 
 set pastetoggle=<leader>z " Toggle paste mode
 
-set smartindent " Use shiftwidth not tabstop
-set autoindent " Overwritten by cindent or filetype rules
+set autoindent
 
 set sessionoptions-=tabpages " Only save the current tab page in session.
 set sessionoptions-=help " Don't save help windows in sessions.
@@ -209,7 +206,7 @@ let g:ale_javascript_prettier_use_local_config = 1
 let g:ale_html_tidy_options = '-q -e -language en -utf8 --show-body-only 1'
 
 " Automatically close corresponding loclist when quitting a window
-autocmd! Vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
+autocmd! vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
 
 let g:scratch_persistence_file = $DATA_DIR . '/scratch.vim'
 let g:scratch_filetype = 'text'
@@ -261,7 +258,6 @@ if executable('ripper-tags')
         \ 'ctagsargs': ['-f', '-']
         \ }
 endif
-
 
 let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
 
@@ -316,14 +312,14 @@ command! Tplugins :tabedit $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
 command! Vplugins :vsplit $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
 
 " if has('gui_running')
-"   command! Vimrc Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
-"   command! Vimrc Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
+"   command! vimrc Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
+"   command! vimrc Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
 " endif
 
-autocmd! Vimrc BufWritePre <buffer> :%s/\s\+$//e
-autocmd! Vimrc InsertLeave,WinEnter * setlocal cursorline
-autocmd! Vimrc InsertEnter,WinLeave * setlocal nocursorline
-autocmd! Vimrc VimResized * wincmd =
+" autocmd! vimrc BufWritePre <buffer> :%s/\s\+$//e
+" autocmd! vimrc InsertLeave,WinEnter * setlocal cursorline
+" autocmd! vimrc InsertEnter,WinLeave * setlocal nocursorline
+autocmd! vimrc VimResized * wincmd =
 
 " Saner command-line history
 cnoremap <c-n> <down>
@@ -368,20 +364,20 @@ nnoremap <expr> n 'Nn'[v:searchforward]
 nnoremap <leader>ae :ALEDetail<cr>
 nnoremap <leader>al :ALEToggle<cr>
 
-autocmd! Vimrc FileType css,scss,markdown,javascript,xml noremap <buffer> <leader>ff :ALEFix<cr>
-autocmd! Vimrc FileType html,liquid noremap <buffer> <leader>ff call HtmlBeautify()<cr>
+autocmd! vimrc FileType css,scss,markdown,javascript,xml noremap <buffer> <leader>ff :ALEFix<cr>
+autocmd! vimrc FileType html,liquid noremap <buffer> <leader>ff call HtmlBeautify()<cr>
 
 " map <c-f> call JsBeautify()<cr>
-" autocmd! Vimrc FileType javascript noremap <buffer>  <c-f> call JsBeautify()<cr>
-" autocmd! Vimrc FileType json noremap <buffer> <c-f> call JsonBeautify()<cr>
-" autocmd! Vimrc FileType jsx noremap <buffer> <c-f> call JsxBeautify()<cr>
-" autocmd! Vimrc FileType html noremap <buffer> <c-f> call HtmlBeautify()<cr>
-" autocmd! Vimrc FileType css noremap <buffer> <c-f> call CSSBeautify()<cr>
-" autocmd! Vimrc FileType javascript vnoremap <buffer>  <c-f> call RangeJsBeautify()<cr>
-" autocmd! Vimrc FileType json vnoremap <buffer> <c-f> call RangeJsonBeautify()<cr>
-" autocmd! Vimrc FileType jsx vnoremap <buffer> <c-f> call RangeJsxBeautify()<cr>
-" autocmd! Vimrc FileType html,liquid vnoremap <buffer> <leader>ff call RangeHtmlBeautify()<cr>
-" autocmd! Vimrc FileType css vnoremap <buffer> <c-f> call RangeCSSBeautify()<cr>
+" autocmd! vimrc FileType javascript noremap <buffer>  <c-f> call JsBeautify()<cr>
+" autocmd! vimrc FileType json noremap <buffer> <c-f> call JsonBeautify()<cr>
+" autocmd! vimrc FileType jsx noremap <buffer> <c-f> call JsxBeautify()<cr>
+" autocmd! vimrc FileType html noremap <buffer> <c-f> call HtmlBeautify()<cr>
+" autocmd! vimrc FileType css noremap <buffer> <c-f> call CSSBeautify()<cr>
+" autocmd! vimrc FileType javascript vnoremap <buffer>  <c-f> call RangeJsBeautify()<cr>
+" autocmd! vimrc FileType json vnoremap <buffer> <c-f> call RangeJsonBeautify()<cr>
+" autocmd! vimrc FileType jsx vnoremap <buffer> <c-f> call RangeJsxBeautify()<cr>
+" autocmd! vimrc FileType html,liquid vnoremap <buffer> <leader>ff call RangeHtmlBeautify()<cr>
+" autocmd! vimrc FileType css vnoremap <buffer> <c-f> call RangeCSSBeautify()<cr>
 
 " FZF
 nnoremap <c-p> :FZF<cr>
@@ -438,12 +434,6 @@ xmap ga <plug>(EasyAlign)
 xnoremap < <gv
 xnoremap > >gv
 
-" Change directory to project root
-nnoremap <leader>dp :ProjectRootCD<cr>
-
-" Open NERDTree at project root
-nnoremap <silent> <leader>dt :ProjectRootExe NERDTreeFind<cr>
-
 if has('gui_running')
   set guifont=FiraCode-Retina:h18
 endif
@@ -491,16 +481,6 @@ inoremap <leader>s <c-c>:w<cr>
 
 " Clone paragrapha with cp
 noremap cp yap<s-}>p
-
-let g:loaded_2html_plugin = 1
-let g:loaded_getscriptPlugin = 1
-let g:loaded_gzip = 1
-let g:loaded_netrwPlugin = 1
-let g:loaded_rrhelper = 1
-let g:loaded_tarPlugin = 1
-let g:loaded_spellfile_plugin = 1
-let g:loaded_vimballPlugin = 1
-let g:loaded_zipPlugin = 1
 
 inoremap <tab> <c-r>=tab#complete()<cr>
 
