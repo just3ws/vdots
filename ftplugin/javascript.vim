@@ -6,11 +6,13 @@ packadd vim-jsbeautify
 
 " setlocal omnifunc=tern#Complete
 setlocal expandtab
+setlocal include=require(
 setlocal omnifunc=javascriptcomplete#CompleteJS
 setlocal shiftround
 setlocal shiftwidth=2
 setlocal smarttab
 setlocal softtabstop=2
+setlocal suffixesadd=.js
 setlocal tabstop=2
 
 let g:ale_javascript_prettier_use_local_config = 1
