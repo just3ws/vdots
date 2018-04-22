@@ -1,6 +1,8 @@
 " vim:foldmethod=marker
 
 let g:start_plugins = [
+      \ 'ktonga/vim-follow-my-lead',
+      \ 'hecal3/vim-leader-guide',
       \ 'tmux-plugins/vim-tmux',
       \ 'christoomey/vim-tmux-navigator',
       \ 'editorconfig/editorconfig-vim',
@@ -36,16 +38,17 @@ let g:start_plugins = [
       \ 'yegappan/mru',
       \ ]
 
+      " \ 'Shougo/deoplete.nvim',
+      " \ 'zchee/deoplete-zsh',
+      " \ 'uplus/deoplete-solargraph',
+      " \ 'Shougo/neco-syntax',
+      " \ 'Shougo/neco-vim',
+
 let g:opt_plugins = [
-      \ 'Shougo/deoplete.nvim',
       \ 'venantius/vim-cljfmt',
-      \ 'zchee/deoplete-zsh',
       \ 'venantius/vim-eastwood',
       \ 'bhurlow/vim-parinfer',
-      \ 'uplus/deoplete-solargraph',
       \ 'bootleq/vim-textobj-rubysymbol',
-      \ 'Shougo/neco-syntax',
-      \ 'Shougo/neco-vim',
       \ 'chrisbra/vim-zsh',
       \ 'dbmrq/vim-ditto',
       \ 'guns/vim-clojure-highlight',
