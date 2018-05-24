@@ -2,7 +2,7 @@ augroup ft_css
   autocmd! * <buffer>
 augroup end
 
-packadd vim-jsbeautify
+" packadd vim-jsbeautify
 
 setlocal expandtab
 setlocal omnifunc=csscomplete#CompleteCSS
