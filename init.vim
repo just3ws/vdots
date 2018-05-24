@@ -1,5 +1,15 @@
 " vim:fdm=marker
 
+if has('gui_running')
+  set guifont=Fira\ Mono:h14
+  set guioptions+=c " Use console dialogs instead of popups if possible
+  set guioptions-=L " Remove left-hand scroll bar
+  set guioptions-=M " Do not source menu.vim
+  set guioptions-=T " Remove toolbar
+  set guioptions-=m " Remove menu bar
+  set guioptions-=r " Remove right-hand scroll bar
+endif
+
 if has('vim_starting')
   set encoding=utf-8
   scriptencoding utf-8
@@ -35,6 +45,78 @@ set backupdir=$BACKUP_DIR//
 set directory=$SWAP_DIR//
 set undodir=$UNDO_DIR//
 set viewdir=$VIEW_DIR//
+
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/bundle')
+
+" Plug 'hdima/python-syntax', { 'for': ['python'] }
+Plug 'airblade/vim-gitgutter'
+Plug 'chrisbra/vim-zsh'
+Plug 'davidhalter/jedi-vim', { 'for': ['python'] }
+Plug 'dbmrq/vim-ditto'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'google/yapf', { 'for': ['python'] } " eg.: <leader> = # Format Python code
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/vim-easy-align'
+Plug 'junegunn/vim-github-dashboard', { 'on': ['GHDashboard', 'GHActivity'] }
+Plug 'kana/vim-textobj-user'
+Plug 'leshill/vim-json'
+Plug 'majutsushi/tagbar'
+Plug 'maksimr/vim-jsbeautify', { 'for': ['javascript', 'jsx', 'javascript.jsx'] }
+Plug 'mhinz/vim-startify'
+Plug 'mileszs/ack.vim'
+Plug 'mtth/scratch.vim'
+Plug 'mxw/vim-jsx', { 'for': ['javascript', 'jsx', 'javascript.jsx'] }
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'nelstrom/vim-textobj-rubyblock', { 'for': ['ruby'] }
+Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'jsx', 'javascript.jsx'] }
+Plug 'plasticboy/vim-markdown', { 'for': ['markdown'] }
+Plug 'reedes/vim-textobj-quote'
+Plug 'reedes/vim-textobj-sentence'
+Plug 'reedes/vim-thematic'
+Plug 'reedes/vim-wordy'
+Plug 'roxma/nvim-yarp'
+Plug 'roxma/vim-hug-neovim-rpc'
+Plug 'ryanoasis/vim-devicons'
+Plug 'scrooloose/nerdtree', { 'on':  ['NERDTree', 'NERDTreeToggle'] }
+Plug 'sjl/vitality.vim'
+Plug 'ternjs/tern_for_vim', { 'for': ['javascript'] }
+Plug 'timothycrosley/isort', { 'for': ['python'] } " eg.: <leader>i # isort your Python imports
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-bundler', { 'for': ['ruby'] }
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-git'
+Plug 'tpope/vim-projectionist'
+Plug 'tpope/vim-ragtag'
+Plug 'tpope/vim-rails', { 'for': ['ruby'] }
+Plug 'tpope/vim-rake', { 'for': ['ruby'] }
+Plug 'tpope/vim-rbenv', { 'for': ['ruby'] }
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-scriptease'
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-ruby/vim-ruby', { 'for': ['ruby'] }
+Plug 'vim-scripts/Align'
+Plug 'vim-scripts/ruby-matchit', { 'for': ['ruby'] }
+Plug 'w0rp/ale'
+Plug 'wakatime/vim-wakatime'
+Plug 'wellle/targets.vim'
+Plug 'yegappan/mru'
+
+" Initialize plugin system
+call plug#end()
 
 set omnifunc=syntaxcomplete#Complete
 
@@ -182,28 +264,43 @@ let g:ale_linters = {
       \ 'html': ['htmlhint', 'tidy'],
       \ 'liquid': ['htmlhint', 'tidy'],
       \ 'javascript': ['standard'],
-      \ 'markdown': ['mdl', 'alex'],
       \ 'go': ['golint', 'go vet'],
       \ 'scss': ['stylelint'],
+      \ 'markdown': ['mdl'],
       \ }
+
+" \ 'markdown': ['mdl', 'alex'],
 
 let g:ale_fixers = {
       \ 'css': ['prettier'],
       \ 'go': ['gofmt'],
+      \ 'html': [
+      \     'remove_trailing_lines',
+      \     'trim_whitespace',
+      \     'FixDeTabs'
+      \ ],
       \ 'javascript': ['prettier'],
       \ 'json': ['prettier'],
       \ 'markdown': ['prettier'],
       \ 'python': ['autopep8', 'isort'],
       \ 'sass': ['prettier'],
       \ 'scss': ['prettier'],
-      \ 'xml': ['prettier']
+      \ 'xml': ['prettier'],
       \ }
-" \ 'yaml': ['yamllint'],
 
+function! FixDeTabs(a,b) abort
+  retab
+endfunction
+
+" \   { buffer, lines -> filter(lines, 'v:val' ) },
+" \ 'yaml': ['yamllint'],
+" ['remove_trailing_lines', 'trim_whitespace']
 let g:ale_pattern_options = {
       \ '\.min\.js$': { 'ale_linters': [], 'ale_fixers': [] },
       \ '\.min\.css$': { 'ale_linters': [], 'ale_fixers': [] },
       \ }
+
+" nmap <F8> <Plug>(ale_fix)
 
 let g:ale_python_autopep8_options = '-aa'
 let g:ale_javascript_prettier_options = '--single-quote --trailing-comma es6'
@@ -231,40 +328,49 @@ let g:fzf_action = {
 
 let g:indent_guides_auto_colors = 1
 let g:indent_guides_default_mapping = 1
-let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'startify', 'markdown', 'tagbar']
+let g:indent_guides_enable_on_vim_startup = 0
+let g:indent_guides_exclude_filetypes = [
+      \ 'help',
+      \ 'markdown',
+      \ 'nerdtree',
+      \ 'startify',
+      \ 'tagbar',
+      \ ]
 let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 2
 let g:tagbar_autofocus = 1
 let g:tagbar_type_ruby = {
-      \ 'kinds' : [
-      \ 'm:modules',
-      \ 'c:classes',
-      \ 'd:describes',
-      \ 'C:contexts',
-      \ 'f:methods',
-      \ 'F:singleton methods'
-      \ ]
+      \   'kinds': [
+      \     'm:modules',
+      \     'c:classes',
+      \     'd:describes',
+      \     'C:contexts',
+      \     'f:methods',
+      \     'F:singleton methods'
+      \   ]
       \ }
 
 if executable('ripper-tags')
   let g:tagbar_type_ruby = {
-        \ 'kinds': [
-        \   'm:modules',
-        \   'c:classes',
-        \   'C:constants',
-        \   'F:singleton methods',
-        \   'f:methods',
-        \   'a:aliases'
-        \ ],
-        \ 'kind2scope': { 'c': 'class', 'm': 'class' },
-        \ 'scope2kind': { 'class': 'c' },
-        \ 'ctagsbin': 'ripper-tags',
-        \ 'ctagsargs': ['-f', '-']
+        \   'kinds': [
+        \     'm:modules',
+        \     'c:classes',
+        \     'C:constants',
+        \     'F:singleton methods',
+        \     'f:methods',
+        \     'a:aliases'
+        \   ],
+        \   'kind2scope': { 'c': 'class', 'm': 'class' },
+        \   'scope2kind': { 'class': 'c' },
+        \   'ctagsbin': 'ripper-tags',
+        \   'ctagsargs': ['-f', '-']
         \ }
 endif
 
-let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
+let g:EditorConfig_exclude_patterns = [
+      \ 'fugitive://.*',
+      \ 'scp://.*',
+      \ ]
 
 let g:html_dynamic_folds = 1
 let g:html_no_pre = 1
@@ -439,10 +545,6 @@ xmap ga <plug>(EasyAlign)
 xnoremap < <gv
 xnoremap > >gv
 
-if has('gui_running')
-  set guifont=FiraCode-Retina:h18
-endif
-
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 let g:airline_highlighting_cache = 1
 let g:airline_powerline_fonts = 1
@@ -497,49 +599,8 @@ highlight! rubyInterpolation term=bold cterm=reverse ctermfg=1 gui=reverse guifg
 
 map <c-f> :call JsBeautify()<cr>
 
-" {{{ [ROLODEX TABS]
-" TODO: Move to plugin or autoload
-"This function turns Rolodex Vim on or off for the current tab
-"If turning off, it sets all windows to equal height
-function! ToggleRolodexTab() abort
-    if exists('t:rolodex_tab') > 0
-        unlet t:rolodex_tab
-        call ClearRolodexSettings()
-        execute "normal \<C-W>="
-    else
-        let t:rolodex_tab = 1
-        call SetRolodexSettings()
-    endif
-endfunction
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
-"This function clears the Rolodex Vim settings and restores the previous values
-function! ClearRolodexSettings() abort
-    "Assume if one exists they all will
-    if exists('g:remember_ea') > 0
-        let &equalalways=g:remember_ea
-        let &winheight=g:remember_wh
-        let &winminheight=g:remember_wmh
-        let &helpheight=g:remember_hh
-    endif
-endfunction
-
-"This function set the Rolodex Vim settings and remembers the previous values for later
-function! SetRolodexSettings() abort
-    if exists('t:rolodex_tab') > 0
-        let g:remember_ea=&equalalways
-        let g:remember_wh=&winheight
-        let g:remember_wmh=&winminheight
-        let g:remember_hh=&helpheight
-        set noequalalways winminheight=0 winheight=9999 helpheight=9999
-    endif
-endfunction
-
-"These two autocmds make Vim change the settings whenever a new tab is selected
-"We have to use TabLeave to always clear them.  If we try and turn them off
-"in TabEnter, it is too late ( I think, since WinEnter has already been called and triggered the display)
-au TabLeave * call ClearRolodexSettings()
-au TabEnter * call SetRolodexSettings()
-
-"With this mapping, F2 toggles a tab to be Rolodex style
-noremap <F2> :call ToggleRolodexTab()<CR>
-" }}} [ROLODEX TABS]
+let g:jsx_ext_required = 0
+let g:jedi#auto_initialization = 0
