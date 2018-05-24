@@ -14,7 +14,7 @@ autocmd! ftdetect BufRead,BufNewFile *_spec.rb setfiletype ruby.rspec
 autocmd! ftdetect BufNewFile,BufRead *.{erb,rhtml,ecr,mobile*} setfiletype eruby
 autocmd! ftdetect BufEnter,BufNewFile *.{arb,builder,cap,gem,gemspec,god,jbuilder,opal,podspec,rabl,rb,rb2,rbw,rjs,ru,ruby,rxml,step,thor} setfiletype ruby
 autocmd! ftdetect BufEnter,BufNewFile .{autotest,simplecov} setfiletype ruby
-autocmd! ftdetect BufEnter,BufNewFile {.,}pryrc,{.,}irbrc  setfiletype ruby
+autocmd! ftdetect BufEnter,BufNewFile {.,}guardrc,{.,}pryrc,{.,}irbrc  setfiletype ruby
 autocmd! ftdetect BufEnter,BufNewFile {[cC]apfile,[tT]horfile} setfiletype ruby
 autocmd! ftdetect BufEnter,BufNewFile {Appraisals,Berksfile,Brewfile,Buildfile,Cheffile,Guardfile,KitchenSink,Podfile,Puppetfile,Thorfile,Vagrantfile} setfiletype ruby
 
@@ -84,6 +84,7 @@ autocmd! ftdetect BufRead,BufNewFile *.zsh setfiletype zsh
 
 autocmd! ftdetect BufRead,BufNewFile *.alfredappearance setfiletype json
 autocmd! ftdetect BufRead,BufNewFile .alex setfiletype json
+autocmd! ftdetect BufRead,BufNewFile .firebaserc setfiletype json
 
 " }}}
 

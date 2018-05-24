@@ -29,12 +29,12 @@ let g:rubycomplete_rails = 1
 let g:rubycomplete_rails_proactive = 1
 let g:rubycomplete_use_bundler = 1
 
-let g:ruby_heredoc_syntax_filetypes = {
-      \ 'xml': { 'start' : 'XML' },
-      \ 'html': { 'start' : 'HTML' },
-      \ 'eruby': { 'start' : 'ERB' },
-      \ 'pgsql': { 'start' : 'SQL' }
-      \ }
+" let g:ruby_heredoc_syntax_filetypes = {
+"       \ 'xml': { 'start' : 'XML' },
+"       \ 'html': { 'start' : 'HTML' },
+"       \ 'eruby': { 'start' : 'ERB' },
+"       \ 'pgsql': { 'start' : 'SQL' }
+"       \ }
 
 let g:ale_linters.ruby = ['rubocop', 'ruby']
 let g:ale_fixers.ruby = ['rubocop']
