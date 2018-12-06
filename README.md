@@ -1,3 +1,3 @@
-# vdots
+# nvim
 
-- [Understanding VIMRUNTIME](http://vim.wikia.com/wiki/Understanding_VIMRUNTIME)
+$HOME/.config/nvim

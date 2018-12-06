@@ -18,6 +18,7 @@ let g:NERDTreeShowHidden = 0
 let g:NERDTreeShowBookmarks = 0
 let g:NERDTreeIgnore = [
       \ '\.bzr$',
+      \ '\.ico$',
       \ '\.py[cd]$',
       \ '\.swo$',
       \ '\.swp$',
@@ -26,6 +27,9 @@ let g:NERDTreeIgnore = [
       \ '^\.hg$',
       \ '^\.svn$',
       \ '^coverage$',
-      \ '^sandi_meter',
-      \ '^tags',
+      \ '^sandi_meter$',
+      \ '^node_modules$',
+      \ '^tmp$',
+      \ '^vendor$',
+      \ '^tags$',
       \ ]

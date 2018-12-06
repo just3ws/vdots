@@ -33,7 +33,7 @@ iab resposne response
 iab /} //}}}
 iab /{ //{{{
 
-iab dt <c-r>=strftime("%Y-%m-%d %H:%M:%S")<cr>
+iab dt <C-r>=strftime("%Y-%m-%d %H:%M:%S")<CR>
 
 iab pu public
 iab pr private

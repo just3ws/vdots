@@ -1,95 +1,42 @@
-augroup ftdetect
-  autocmd!
-augroup end
+" setfiletype will not overwrite the filetype if already set
 
-" {{{ [Ruby, Rake, and RSpec]
+augroup filetypedetect
+  " autocmd BufNewFile,BufRead [rR]akefile,*.rake setfiletype ruby.rake
+  " autocmd BufNewFile,BufRead Gemfile,Gemfile.lock setfiletype ruby.rails.bundler
+  " autocmd BufEnter Gemfile,Gemfile.lock setfiletype ruby.rails.bundler
+  " autocmd BufNewFile,BufRead *_spec.rb setfiletype ruby.rspec
+  " autocmd BufNewFile,BufRead *.{erb,rhtml,ecr,mobile*} setfiletype eruby
+  " autocmd BufEnter,BufNewFile *.{arb,builder,cap,gem,gemspec,god,jbuilder,opal,podspec,rabl,rb,rb2,rbw,rjs,ru,ruby,rxml,step,thor} setfiletype ruby
+  " autocmd BufEnter,BufNewFile .{autotest,simplecov} setfiletype ruby
+  " autocmd BufEnter,BufNewFile {.,}guardrc,{.,}pryrc,{.,}irbrc  setfiletype ruby
+  " autocmd BufEnter,BufNewFile {[cC]apfile,[tT]horfile} setfiletype ruby
+  " autocmd BufEnter,BufNewFile {Appraisals,Berksfile,Brewfile,Buildfile,Cheffile,Guardfile,KitchenSink,Podfile,Puppetfile,Thorfile,Vagrantfile} setfiletype ruby
+  " autocmd BufNewFile,BufRead MERGE_MSG setfiletype gitcommit
+  " autocmd BufNewFile,BufRead *.gitconfig setfiletype gitconfig
+  " autocmd BufNewFile,BufRead COMMIT_EDITMSG setfiletype gitcommit
+  " autocmd BufNewFile,BufRead */etc/host.conf setfiletype hostconf
+  " autocmd BufNewFile,BufRead /private/etc/hosts,/etc/hosts setfiletype hostaccess
+  " autocmd BufNewFile,BufRead {.,}tmux*.conf* setfiletype tmux
+  " autocmd BufNewFile,BufRead *.{md,mkd,markdown*} setfiletype markdown
+  " autocmd BufNewFile,BufRead TODO,README setfiletype markdown
+  " autocmd BufNewFile,BufRead nginx.conf,nginx*.conf setfiletype nginx
+  " autocmd BufNewFile,BufRead /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif
+  " autocmd BufNewFile,BufRead *.csv,*.tsv,*.dat setfiletype csv
+  " autocmd BufNewFile,BufRead *.psql,*.pgsql,*.plpgsql setfiletype pgsql
+  " autocmd BufNewFile,BufRead *.sql setfiletype pgsql
+  " autocmd BufNewFile,BufRead .psqlrc setfiletype pgsql
+  " autocmd BufNewFile,BufRead *zsh/functions* setfiletype zsh
+  " autocmd BufNewFile,BufRead *zsh/*rc setfiletype zsh
+  " autocmd BufNewFile,BufRead .zprofile setfiletype zsh
+  " autocmd BufNewFile,BufRead .antigenrc setfiletype zsh
+  " autocmd BufNewFile,BufRead *.zsh setfiletype zsh
+  " autocmd BufNewFile,BufRead *.alfredappearance,.alex,.firebaserc,.babelrc,.prettierrc,.eslintrc,.stylelintrc setfiletype json
+  " autocmd BufNewFile,BufRead .joker setfiletype clojure
 
-autocmd! ftdetect BufRead,BufNewFile [rR]akefile,*.rake setfiletype ruby.rake
+  autocmd BufNewFile,BufRead */Hosted/admin/templates/**.htm set filetype=smarty
+  autocmd BufNewFile,BufRead */Hosted/admin/templates/**.txt set filetype=smarty
+  autocmd BufNewFile,BufRead */Hosted/templates/**.htm set filetype=smarty
+  autocmd BufNewFile,BufRead */Hosted/templates/**.txt set filetype=smarty
 
-autocmd! ftdetect BufNewFile,BufRead Gemfile,Gemfile.lock setfiletype ruby.rails.bundler
-autocmd! ftdetect BufEnter Gemfile,Gemfile.lock setfiletype ruby.rails.bundler
-
-autocmd! ftdetect BufRead,BufNewFile *_spec.rb setfiletype ruby.rspec
-
-autocmd! ftdetect BufNewFile,BufRead *.{erb,rhtml,ecr,mobile*} setfiletype eruby
-autocmd! ftdetect BufEnter,BufNewFile *.{arb,builder,cap,gem,gemspec,god,jbuilder,opal,podspec,rabl,rb,rb2,rbw,rjs,ru,ruby,rxml,step,thor} setfiletype ruby
-autocmd! ftdetect BufEnter,BufNewFile .{autotest,simplecov} setfiletype ruby
-autocmd! ftdetect BufEnter,BufNewFile {.,}guardrc,{.,}pryrc,{.,}irbrc  setfiletype ruby
-autocmd! ftdetect BufEnter,BufNewFile {[cC]apfile,[tT]horfile} setfiletype ruby
-autocmd! ftdetect BufEnter,BufNewFile {Appraisals,Berksfile,Brewfile,Buildfile,Cheffile,Guardfile,KitchenSink,Podfile,Puppetfile,Thorfile,Vagrantfile} setfiletype ruby
-
-" }}}
-
-" {{{ [Git]
-
-autocmd! ftdetect BufRead,BufNewFile MERGE_MSG setfiletype gitcommit
-autocmd! ftdetect BufRead,BufNewFile *.gitconfig setfiletype gitconfig
-autocmd! ftdetect BufRead,BufNewFile COMMIT_EDITMSG setfiletype gitcommit
-
-" }}}
-
-" {{{ [HOSTS]
-
-autocmd! ftdetect BufRead,BufNewFile */etc/host.conf setfiletype hostconf
-autocmd! ftdetect BufRead,BufNewFile /private/etc/hosts,/etc/hosts setfiletype hostaccess
-
-" }}}
-
-" {{{ [tmux]
-
-autocmd! ftdetect BufRead,BufNewFile {.,}tmux*.conf* setfiletype tmux
-
-" }}}
-
-" {{{ [Markdown]
-
-autocmd! ftdetect BufRead,BufNewFile *.{md,mkd,markdown*} setfiletype markdown
-autocmd! ftdetect BufRead,BufNewFile TODO,README setfiletype markdown
-
-" }}}
-
-" {{{ [Nginx]
-
-autocmd! ftdetect BufRead,BufNewFile nginx.conf,nginx*.conf setfiletype nginx
-autocmd! ftdetect BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif
-
-" }}}
-
-" {{{ [Delimited Files]
-
-autocmd! ftdetect BufRead,BufNewFile *.csv,*.tsv setfiletype csv
-
-" }}}
-
-" {{{ [Postgres]
-
-autocmd! ftdetect BufRead,BufNewFile *.psql,*.pgsql,*.plpgsql setfiletype pgsql
-autocmd! ftdetect BufRead,BufNewFile *.sql setfiletype pgsql
-autocmd! ftdetect BufRead,BufNewFile .psqlrc setfiletype pgsql
-
-" }}}
-
-" {{{ [Zsh]
-
-autocmd! ftdetect BufRead,BufNewFile *zsh/functions* setfiletype zsh
-autocmd! ftdetect BufRead,BufNewFile *zsh/*rc setfiletype zsh
-autocmd! ftdetect BufRead,BufNewFile .zprofile setfiletype zsh
-autocmd! ftdetect BufRead,BufNewFile .antigenrc setfiletype zsh
-autocmd! ftdetect BufRead,BufNewFile *.zsh setfiletype zsh
-autocmd! ftdetect BufRead,BufNewFile *.zsh setfiletype zsh
-
-" }}}
-
-" {{{ [JSON]
-
-autocmd! ftdetect BufRead,BufNewFile *.alfredappearance setfiletype json
-autocmd! ftdetect BufRead,BufNewFile .alex setfiletype json
-autocmd! ftdetect BufRead,BufNewFile .firebaserc setfiletype json
-
-" }}}
-
-" {{{ [CLOJURE]
-
-autocmd! ftdetect BufRead,BufNewFile .joker setfiletype clojure
-
-" }}}
+  autocmd BufNewFile,BufRead *.lst set filetype=text
+augroup END
