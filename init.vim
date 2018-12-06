@@ -1,36 +1,27 @@
-" vim:fdm=marker
-
-if has('gui_running')
-  set guifont=Fira\ Mono:h14
-  set guioptions+=c " Use console dialogs instead of popups if possible
-  set guioptions-=L " Remove left-hand scroll bar
-  set guioptions-=M " Do not source menu.vim
-  set guioptions-=T " Remove toolbar
-  set guioptions-=m " Remove menu bar
-  set guioptions-=r " Remove right-hand scroll bar
-endif
-
 if has('vim_starting')
   set encoding=utf-8
   scriptencoding utf-8
-endif
-
-if !exists('g:syntax_on')
-  syntax enable
 endif
 
 filetype on
 filetype indent on
 filetype plugin on
 
+if !exists('g:syntax_on')
+  syntax enable
+endif
+
 augroup vimrc
-  autocmd!
+  autocmd! * <buffer>
 augroup end
+
+let g:loaded_netrwPlugin = 1
 
 let g:mapleader=';'
 let g:maplocalleader=';'
 
-" {{{ [APP DIRS]
+call env#load()
+
 let $DATA_DIR = file_utils#init_app_dir('')
 let $BACKUP_DIR = file_utils#init_app_dir('/backup')
 let $SWAP_DIR = file_utils#init_app_dir('/swap')
@@ -39,28 +30,36 @@ let $VIEW_DIR = file_utils#init_app_dir('/view')
 let $SHADA_DIR = file_utils#init_app_dir('/shada')
 let $FZF_HISTORY_DIR = file_utils#init_app_dir('/fzf/history')
 let $STARTIFY_SESSION_DIR = file_utils#init_app_dir('/startify/session')
-" }}}
+" let $GUTENTAGS_CACHE_DIR = file_utils#init_app_dir('/gutentags')
+let $MRU_DIR = $DATA_DIR
+let $NVIM_RUBY_LOG_FILE = $DATA_DIR . '/ruby.log'
 
 set backupdir=$BACKUP_DIR//
 set directory=$SWAP_DIR//
 set undodir=$UNDO_DIR//
 set viewdir=$VIEW_DIR//
 
+call plugins#init()
+
 set omnifunc=syntaxcomplete#Complete
 
-set pastetoggle=<leader>z " Toggle paste mode
+set pastetoggle=<Leader>z " Toggle paste mode
 
 set autoindent
-
-set tabstop=8
-set softtabstop=4
-set shiftwidth=4
-set expandtab
 
 set sessionoptions-=tabpages " Only save the current tab page in session.
 set sessionoptions-=help " Don't save help windows in sessions.
 set sessionoptions-=buffers " Don't save hidden and unloaded buffers in sessions.
 set sessionoptions-=options " Don't persist options and mappings because it can corrupt sessions.
+
+" Whitespace {{{
+set expandtab
+set shiftround
+set shiftwidth=2
+set smarttab
+set softtabstop=2
+set tabstop=2
+" }}}
 
 set autoread " Read when a file has been changed even outside of Vim.
 set belloff=all
@@ -68,7 +67,7 @@ set clipboard& clipboard+=unnamed,unnamedplus
 set complete-=i " Disable scanning included files
 set complete-=t " Disable searching tags
 set concealcursor=niv
-set conceallevel=2
+set conceallevel=0
 set display=lastline " Show as much as possible of a wrapped last line, not just '@'.
 set fileformats=unix,dos,mac " Use Unix as the standard file type
 set fillchars="diff:⣿,fold: ,vert:│"
@@ -85,7 +84,8 @@ set iskeyword+=$
 set lazyredraw
 set linebreak
 set list
-set listchars=tab:␉\ \,trail:·,extends:…
+" set listchars=tab:␉\ \,trail:·,extends:…
+set listchars=tab:\ \,trail:·,extends:…
 set magic
 set maxmempattern=2000000
 set modeline " Automatically setting options from modelines
@@ -107,7 +107,9 @@ set scrolljump=1
 set scrolloff=10
 set scrolloff=4
 set secure
-set shell=/usr/local/bin/zsh
+" set shell=/usr/local/bin/zsh
+" set shell=/usr/local/bin/bash
+set shell=/bin/bash
 set shortmess+=c " default: shortmess=filnxtToO
 set showcmd " Show incomplete cmds down the bottom
 " set showfulltag
@@ -123,7 +125,7 @@ set swapfile
 set switchbuf=useopen
 set synmaxcol=1000
 set t_vb=
-set textwidth=0
+" set textwidth=0
 set timeout
 set timeoutlen=400
 set ttimeout
@@ -132,8 +134,8 @@ set undofile
 set undolevels=10000
 set updatecount=100
 set updatetime=2000 " Write swap files after 2 seconds of inactivity.
-set updatetime=500
 set virtualedit=block " Position cursor anywhere in visual block
+
 " {{{ [WILDIGNORE]
 set wildignore+=%*,*~,._*
 set wildignore+=**/bower_modules/**,**/node_modules/**,*/.sass-cache/*
@@ -162,156 +164,21 @@ set wildignore+=*/.git,*/.git-metadata,*/.hg,*/.svn,.stversions
 set wildignore+=*/.idea,*/.vscode
 set wildignorecase
 " }}}
+
 set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
 set wildoptions=tagfile
 set wrapscan
-
-set background=dark
 
 set numberwidth=3
 set number relativenumber
 set cursorline
 
-let g:ale_change_sign_column_color = 1
-let g:ale_completion_enabled = 1
-let g:ale_fix_on_save = 1
-let g:ale_lint_delay = 1500
-let g:ale_lint_on_insert_leave = 0
-let g:ale_lint_on_save = 1
-let g:ale_lint_on_insert_leave = 1
-let g:ale_open_list = 0
-let g:ale_pattern_options_enabled = 1
-
-let g:ale_sign_error = ''
-let g:ale_sign_warning = ''
-let g:ale_sign_style_error = ''
-let g:ale_sign_style_warning = ''
-
-let g:ale_linters = {
-      \ 'css': ['csslint', 'stylelint'],
-      \ 'html': ['htmlhint', 'tidy'],
-      \ 'liquid': ['htmlhint', 'tidy'],
-      \ 'javascript': ['standard'],
-      \ 'go': ['golint', 'go vet'],
-      \ 'scss': ['stylelint'],
-      \ 'markdown': ['mdl'],
-      \ }
-
-" \ 'markdown': ['mdl', 'alex'],
-
-let g:ale_fixers = {
-      \ 'css': ['prettier'],
-      \ 'go': ['gofmt'],
-      \ 'html': [
-      \     'remove_trailing_lines',
-      \     'trim_whitespace',
-      \     'FixDeTabs'
-      \ ],
-      \ 'javascript': ['prettier'],
-      \ 'json': ['prettier'],
-      \ 'markdown': ['prettier'],
-      \ 'python': ['autopep8', 'isort'],
-      \ 'sass': ['prettier'],
-      \ 'scss': ['prettier'],
-      \ 'xml': ['prettier'],
-      \ }
-
-function! FixDeTabs(a,b) abort
-  retab
-endfunction
-
-" \   { buffer, lines -> filter(lines, 'v:val' ) },
-" \ 'yaml': ['yamllint'],
-" ['remove_trailing_lines', 'trim_whitespace']
-let g:ale_pattern_options = {
-      \ '\.min\.js$': { 'ale_linters': [], 'ale_fixers': [] },
-      \ '\.min\.css$': { 'ale_linters': [], 'ale_fixers': [] },
-      \ }
-
-" nmap <F8> <Plug>(ale_fix)
-
-let g:ale_python_autopep8_options = '-aa'
-let g:ale_javascript_prettier_options = '--single-quote --trailing-comma es6'
-let g:ale_javascript_prettier_use_local_config = 1
-let g:ale_html_tidy_options = '-q -e -language en -utf8 --show-body-only 1'
-
 " Automatically close corresponding loclist when quitting a window
 autocmd! vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
 
-let g:scratch_persistence_file = $DATA_DIR . '/scratch.vim'
-let g:scratch_filetype = 'text'
-let g:scratch_insert_autohide = 0
-let g:scratch_autohide = 0
+let g:neosnippet#disable_runtime_snippets = { 'go': 1 }
 
-set runtimepath+=/usr/local/opt/fzf
-
-let g:fzf_history_dir = $FZF_HISTORY_DIR
-
-let g:fzf_layout = { 'window': 'new' }
-let g:fzf_action = {
-      \ 'ctrl-t': 'tab split',
-      \ 'ctrl-x': 'split',
-      \ 'ctrl-v': 'vsplit'
-      \ }
-
-let g:indent_guides_auto_colors = 1
-let g:indent_guides_default_mapping = 1
-let g:indent_guides_enable_on_vim_startup = 0
-let g:indent_guides_exclude_filetypes = [
-      \ 'help',
-      \ 'markdown',
-      \ 'nerdtree',
-      \ 'startify',
-      \ 'tagbar',
-      \ ]
-let g:indent_guides_guide_size = 1
-let g:indent_guides_start_level = 2
 let g:tagbar_autofocus = 1
-let g:tagbar_type_ruby = {
-      \   'kinds': [
-      \     'm:modules',
-      \     'c:classes',
-      \     'd:describes',
-      \     'C:contexts',
-      \     'f:methods',
-      \     'F:singleton methods'
-      \   ]
-      \ }
-
-if executable('ripper-tags')
-  let g:tagbar_type_ruby = {
-        \   'kinds': [
-        \     'm:modules',
-        \     'c:classes',
-        \     'C:constants',
-        \     'F:singleton methods',
-        \     'f:methods',
-        \     'a:aliases'
-        \   ],
-        \   'kind2scope': { 'c': 'class', 'm': 'class' },
-        \   'scope2kind': { 'class': 'c' },
-        \   'ctagsbin': 'ripper-tags',
-        \   'ctagsargs': ['-f', '-']
-        \ }
-endif
-
-let g:EditorConfig_exclude_patterns = [
-      \ 'fugitive://.*',
-      \ 'scp://.*',
-      \ ]
-
-let g:html_dynamic_folds = 1
-let g:html_no_pre = 1
-let g:html_use_css = 1
-let g:html_use_encoding = 'UTF-8'
-let g:html_no_rendering = 0 " Don't render italic, bold, links in HTML
-let g:html_number_lines = 0 " TOhtml don't show line numbers
-
-let g:elixir_use_markdown_for_docs = 1
-let g:vim_markdown_folding_disabled = 1
-
-command! -bar PackUpdate call plugins#reload() | call minpac#update()
-command! -bar PackClean  call plugins#reload() | call minpac#clean()
 
 command! Reload :source $MYVIMRC
 
@@ -345,133 +212,56 @@ command! Szshrc :split $ZDOTDIR/.zshrc
 command! Tzshrc :tabedit $ZDOTDIR/.zshrc
 command! Vzshrc :vsplit $ZDOTDIR/.zshrc
 
-command! Plugins :edit $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
-command! Splugins :split $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
-command! Tplugins :tabedit $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
-command! Vplugins :vsplit $XDG_CONFIG_HOME/vdots/autoload/plugins.vim
-
-" if has('gui_running')
-"   command! vimrc Bigger  :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)+1', '')
-"   command! vimrc Smaller :let &guifont = substitute(&guifont, '\d\+$', '\=submatch(0)-1', '')
-" endif
-
-" autocmd! vimrc BufWritePre <buffer> :%s/\s\+$//e
-" autocmd! vimrc InsertLeave,WinEnter * setlocal cursorline
-" autocmd! vimrc InsertEnter,WinLeave * setlocal nocursorline
-autocmd! vimrc VimResized * wincmd =
-
 " Saner command-line history
-cnoremap <c-n> <down>
-cnoremap <c-p> <up>
-
-" Edit file in new tab
-map <leader>ef :tabe <cfile><cr>
+cnoremap <C-n> <down>
+cnoremap <C-p> <up>
 
 " Double tap to select whole line
-nmap <leader><leader> V
-
-" Dash.app
-nmap <silent> <leader>d <plug>DashSearch
-
-" ALE
-" nmap <silent> <leader>ff <plug>(ale_fix)
-
-nmap <silent> <leader>j <plug>(ale_next_wrap)
-nmap <silent> <leader>k <plug>(ale_previous_wrap)
-
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <plug>(EasyAlign)
-
-" Saner line movements
-" nnoremap $ g$
-" nnoremap 0 g0
+nmap <Leader><Leader> V
 
 " Avoid accidentally launching Ex mode
 nnoremap Q <nop>
 
 " Convert ; to : in modeline
-nnoremap ; : " B
+" nnoremap ; :
 
 " Clear highlight on enter
-nnoremap <cr> :nohlsearch<cr><cr>
+nnoremap <CR> :nohlsearch<CR><CR>
 
 " Saner behavior of n and N
 nnoremap <expr> N 'nN'[v:searchforward]
 nnoremap <expr> n 'Nn'[v:searchforward]
 
-" ALE
-nnoremap <leader>ae :ALEDetail<cr>
-nnoremap <leader>al :ALEToggle<cr>
-
-autocmd! vimrc FileType css,scss,markdown,javascript,xml noremap <buffer> <leader>ff :ALEFix<cr>
-autocmd! vimrc FileType html,liquid noremap <buffer> <leader>ff call HtmlBeautify()<cr>
-
-" map <c-f> call JsBeautify()<cr>
-" autocmd! vimrc FileType javascript noremap <buffer>  <c-f> call JsBeautify()<cr>
-" autocmd! vimrc FileType json noremap <buffer> <c-f> call JsonBeautify()<cr>
-" autocmd! vimrc FileType jsx noremap <buffer> <c-f> call JsxBeautify()<cr>
-" autocmd! vimrc FileType html noremap <buffer> <c-f> call HtmlBeautify()<cr>
-" autocmd! vimrc FileType css noremap <buffer> <c-f> call CSSBeautify()<cr>
-" autocmd! vimrc FileType javascript vnoremap <buffer>  <c-f> call RangeJsBeautify()<cr>
-" autocmd! vimrc FileType json vnoremap <buffer> <c-f> call RangeJsonBeautify()<cr>
-" autocmd! vimrc FileType jsx vnoremap <buffer> <c-f> call RangeJsxBeautify()<cr>
-" autocmd! vimrc FileType html,liquid vnoremap <buffer> <leader>ff call RangeHtmlBeautify()<cr>
-" autocmd! vimrc FileType css vnoremap <buffer> <c-f> call RangeCSSBeautify()<cr>
-
-" FZF
-nnoremap <c-p> :FZF<cr>
-nnoremap <leader>b :Buffers<cr>
-" nnoremap <c-c> :Colors<cr>
-" nnoremap <c-f> :BLines<cr>
-" nnoremap <c-g> :GitFiles<cr>
-" nnoremap <c-m> :Mru<cr>
-" nnoremap <c-h> :History<cr>
-" nnoremap <c-t> :Files<cr>
-" nnoremap ``` :Marks<cr>
-
-" Fugitive
-nnoremap <leader>gb :Gblame<cr>
-nnoremap <leader>gd :Gdiff<cr>
-nnoremap <leader>gs :Gstatus<cr>
-
-" Saner CTRL-L
-nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
+nnoremap <C-p> :FZF<CR>
+nnoremap <C-b> :Buffers<CR>
+" nnoremap <C-c> :Colors<CR>
+" nnoremap <C-f> :BLines<CR>
+" nnoremap <C-g> :GitFiles<CR>
+" nnoremap <C-m> :Mru<CR>
+" nnoremap <C-h> :History<CR>
+" nnoremap <C-t> :Files<CR>
+" nnoremap <C-p> :Tags<CR>
+" nnoremap ``` :Marks<CR>
 
 " NERDTree
-nnoremap <leader>n :NERDTreeToggle<cr>
-nnoremap <leader>nf :NERDTreeFind<cr>
-
-nnoremap <leader>tb :TagbarToggle<cr>
-
-" Center highlighted search
-nnoremap N Nzz
-nnoremap n nzz
-
-" Move current line
-nnoremap [e :<c-u>execute 'move -1-'. v:count1<cr>
-nnoremap ]e :<c-u>execute 'move +'. v:count1<cr>
-
-nnoremap ^ g^
-
-" Highlight last inserted text
-nnoremap gV `[v`]
+nnoremap <Leader>n :NERDTreeToggle<CR>
+nnoremap <Leader>nf :NERDTreeFind<CR>
 
 " Saner movement through wrapped lines
 nnoremap j gj
 nnoremap k gk
 
-" Startify
-nnoremap <leader>s :Startify<cr>
+" Swap the case for changing tabs
+noremap <S-l> gt
+noremap <S-h> gT
 
-" ALE
-noremap <leader>ad :ALEGoToDefinition<cr>
-
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-xmap ga <plug>(EasyAlign)
+autocmd! vimrc VimResized * wincmd =
 
 " Saner block shift
 xnoremap < <gv
 xnoremap > >gv
+
+let g:airline_extensions = []
 
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
 let g:airline_highlighting_cache = 1
@@ -488,47 +278,85 @@ let g:webdevicons_enable_airline_statusline = 1
 
 let g:WebDevIconsOS = 'Darwin'
 
+let g:ale_linters_explicit = 1
+let g:ale_change_sign_column_color = 0
+let g:ale_completion_enabled = 1
+let g:ale_fix_on_save = 1
+let g:ale_lint_delay = 1500
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_insert_leave = 1
+let g:ale_open_list = 0
+let g:ale_pattern_options_enabled = 1
+let g:ale_sign_error = ''
+let g:ale_sign_warning = ''
+let g:ale_sign_style_error = ''
+let g:ale_sign_style_warning = ''
+let g:ale_linters = {}
+let g:ale_fixers = {}
+let g:ale_pattern_options = {
+      \ '\.min\.js$': { 'ale_linters': [], 'ale_fixers': [] },
+      \ '\.min\.css$': { 'ale_linters': [], 'ale_fixers': [] },
+      \ }
+
+let g:MRU_File = $MRU_DIR . '/mru_files'
+let g:MRU_Max_Entries = 10000
+let g:MRU_Exclude_Files = '^/tmp/.*\|^/var/tmp/.*'
+
+let g:fzf_history_dir = $FZF_HISTORY_DIR
+let g:fzf_layout = { 'window': 'new' }
+let g:fzf_action = { 'ctrl-t': 'tab split', 'ctrl-x': 'split', 'ctrl-v': 'vsplit' }
+
+let g:ack_default_options = ' -s -H --nopager --nocolor --nogroup --column'
+let g:ack_use_dispatch = 0
+let g:ackhighlight = 1
+let g:ackpreview = 0
+let g:ack_mappings = {
+      \ 't': '<C-w><CR><C-w>T',
+      \ 'T': '<C-w><CR><C-w>TgT<C-w>j',
+      \ 'o': '<CR>zz',
+      \ 'O': '<CR><C-w><C-w>:ccl<CR>',
+      \ 'go': '<CR><C-w>j',
+      \ 'h': '<C-w><CR><C-w>K',
+      \ 'H': '<C-w><CR><C-w>K<C-w>b',
+      \ 'v': '<C-w><CR><C-w>H<C-w>b<C-w>J<C-w>t',
+      \ 'gv': '<C-w><CR><C-w>H<C-w>b<C-w>J',
+      \ }
+
+" cnoreabbrev Ack LAck!
+" nnoremap <Leader>a :LAck!<Space>
+
+let g:gutentags_cache_dir = $GUTENTAGS_CACHE_DIR
+let g:gutentags_ctags_exclude = ['*.css', '*.html', '*.js', '*.json', '*.xml',
+      \ '*.phar', '*.ini', '*.rst', '*.md',
+      \ '*vendor/*/test*', '*vendor/*/Test*',
+      \ '*vendor/*/fixture*', '*vendor/*/Fixture*',
+      \ '*var/cache*', '*var/log*'
+      \ ]
+
+let g:scratch_persistence_file = $DATA_DIR . '/scratch.vim'
+let g:scratch_filetype = 'text'
+let g:scratch_insert_autohide = 0
+let g:scratch_autohide = 0
+
+let g:indent_guides_auto_colors = 1
+let g:indent_guides_default_mapping = 1
+let g:indent_guides_enable_on_vim_startup = 0
+let g:indent_guides_exclude_filetypes = ['help', 'markdown', 'nerdtree', 'startify', 'tagbar',]
+let g:indent_guides_guide_size = 1
+let g:indent_guides_start_level = 3
+
+let g:tagbar_autofocus = 1
+
+let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
+
+" Quote textobj helpers
+xmap q iq
+omap q iq
+
+let g:vimwiki_list = [{ 'path': $VIMWIKI_HOME }]
+let g:vimwiki_use_mouse=1
+
+let g:deoplete#enable_at_startup = 1
+
 call themes#nord()
-
-" Align current paragraph with Leader + a
-noremap <leader>a =ip
-
-" Apply macro using Q
-nnoremap Q @q
-vnoremap Q :norm @q<cr>
-
-" Swap the case for changing tabs
-noremap <s-l> gt
-noremap <s-h> gT
-
-" Change panes without w
-noremap <c-l> <c-w>l
-noremap <c-h> <c-w>h
-noremap <c-j> <c-w>j
-noremap <c-k> <c-w>k
-
-" Quit file with Leader + q
-noremap <leader>q :q<cr>
-
-" Save file with Leader + s
-nnoremap <leader>s :w<cr>
-inoremap <leader>s <c-c>:w<cr>
-
-" Clone paragrapha with cp
-noremap cp yap<s-}>p
-
-inoremap <tab> <c-r>=tab#complete()<cr>
-
-highlight CursorLineNr ctermfg=0 guifg=white
-
-" highlight! rubyClassVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
-" highlight! rubyGlobalVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
-highlight! rubyInterpolation term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
-
-map <c-f> :call JsBeautify()<cr>
-
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-
-" let g:jsx_ext_required = 0
-" let g:jedi#auto_initialization = 0

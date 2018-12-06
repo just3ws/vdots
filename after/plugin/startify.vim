@@ -53,11 +53,11 @@ let g:startify_bookmarks = [
       \ ]
 
 let g:startify_commands = [
-      \ {'p': ':PackUpdate'},
-      \ {'P': ':PackClean'},
+      \ {'p': ':PlugUpdate'},
+      \ {'P': ':PlugClean'},
       \ ]
 
-function! ToStartify()
+function! ToStartify() abort
   if winnr('$') == 1 && buffer_name(winbufnr(winnr())) !=? ''
     vsplit
     Startify
