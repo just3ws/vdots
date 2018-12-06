@@ -1,5 +1,5 @@
 if has('nvim')
-  let g:ruby_host_prog = '/usr/local/bin/ruby'
+  let g:ruby_host_prog = '/usr/local/opt/ruby/bin/ruby'
   let g:python2_host_prog = '/usr/local/bin/python2'
   let g:python3_host_prog = '/usr/local/bin/python3'
 
@@ -14,7 +14,7 @@ if has('nvim')
   set inccommand=
 
   " Write history on idle, for sharing among different sessions
-  autocmd! Vimrc CursorHold * if exists(':rshada') |
+  autocmd! vimrc CursorHold * if exists(':rshada') |
         \   rshada |
         \   wshada |
         \ endif

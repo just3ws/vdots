@@ -14,3 +14,6 @@ setlocal tabstop=2
 
 noremap <buffer> <c-f> :call CSSBeautify()<cr>
 vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+
+let g:ale_linters.scss = ['stylelint']
+let g:ale_fixers.scss = ['prettier']

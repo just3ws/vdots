@@ -28,3 +28,11 @@ let g:clj_fmt_autosave = 0
 
 noremap <buffer>  <c-f> :Cljfmt<cr>
 vnoremap <buffer>  <c-f> :CljfmtRange<cr>
+
+
+" autocmd! ft_clojure Syntax clojure EnableSyntaxExtension
+" autocmd! ft_clojure VimEnter * RainbowParenthesesToggle
+
+" autocmd! ft_clojure Syntax clojure RainbowParenthesesLoadRound
+" autocmd! ft_clojure Syntax clojure RainbowParenthesesLoadSquare
+" autocmd! ft_clojure Syntax clojure RainbowParenthesesLoadBraces

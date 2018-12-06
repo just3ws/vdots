@@ -1,111 +1,102 @@
-" vim:foldmethod=marker
+function plugins#init() abort
+  call plug#begin($DATA_DIR . '/plugged')
 
-let g:opt_plugins = [
-      \ ]
+  Plug 'arcticicestudio/nord-vim', { 'branch': 'develop' }
+  Plug 'editorconfig/editorconfig-vim'
+  Plug 'sjl/vitality.vim'
+  Plug 'tpope/vim-sensible'
 
-let g:start_plugins = [
-      \ 'editorconfig/editorconfig-vim',
-      \ 'wakatime/vim-wakatime'
-      \ 'airblade/vim-gitgutter',
-      \ 'junegunn/fzf.vim',
-      \ 'junegunn/vim-easy-align',
-      \ 'kana/vim-textobj-user',
-      \ 'mhinz/vim-startify',
-      \ 'mileszs/ack.vim',
-      \ 'mtth/scratch.vim',
-      \ 'nathanaelkane/vim-indent-guides',
-      \ 'roxma/nvim-yarp',
-      \ 'roxma/vim-hug-neovim-rpc',
-      \ 'ryanoasis/vim-devicons',
-      \ 'scrooloose/nerdtree',
-      \ 'sjl/vitality.vim',
-      \ 'tpope/vim-abolish',
-      \ 'tpope/vim-commentary',
-      \ 'tpope/vim-dispatch',
-      \ 'tpope/vim-eunuch',
-      \ 'tpope/vim-fugitive',
-      \ 'tpope/vim-git',
-      \ 'tpope/vim-projectionist',
-      \ 'tpope/vim-ragtag',
-      \ 'tpope/vim-repeat',
-      \ 'tpope/vim-scriptease',
-      \ 'tpope/vim-sensible',
-      \ 'tpope/vim-surround',
-      \ 'tpope/vim-unimpaired',
-      \ 'vim-airline/vim-airline',
-      \ 'vim-scripts/Align',
-      \ 'w0rp/ale',
-      \ 'yegappan/mru',
-      \ 'chrisbra/vim-zsh',
-      \ 'dbmrq/vim-ditto',
-      \ 'leshill/vim-json',
-      \ 'majutsushi/tagbar',
-      \ 'maksimr/vim-jsbeautify',
-      \ 'nelstrom/vim-textobj-rubyblock',
-      \ 'pangloss/vim-javascript',
-      \ 'plasticboy/vim-markdown',
-      \ 'reedes/vim-textobj-quote',
-      \ 'reedes/vim-textobj-sentence',
-      \ 'reedes/vim-thematic',
-      \ 'reedes/vim-wordy',
-      \ 'ternjs/tern_for_vim',
-      \ 'tpope/vim-bundler',
-      \ 'tpope/vim-endwise',
-      \ 'tpope/vim-rails',
-      \ 'tpope/vim-rake',
-      \ 'tpope/vim-rbenv',
-      \ 'vim-ruby/vim-ruby',
-      \ 'vim-scripts/ruby-matchit',
-      \ 'wellle/targets.vim',
-      \ ]
+  Plug 'ervandew/supertab'
 
-function! plugins#spec() abort
-  packadd minpac
+  Plug 'mhinz/vim-startify'
+  Plug 'mileszs/ack.vim'
+  Plug 'ryanoasis/vim-devicons'
+  Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+  Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-dispatch'
+  Plug 'tpope/vim-eunuch'
+  Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-git'
+  Plug 'tpope/vim-projectionist'
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-unimpaired'
+  Plug 'vim-scripts/align'
+  Plug 'w0rp/ale'
+  Plug 'yegappan/mru'
 
-  call minpac#init()
-  call minpac#add('k-takata/minpac', { 'type': 'opt' })
+  Plug 'gorodinskiy/vim-coloresque'
 
-  call plugins#opts(g:opt_plugins)
-  call plugins#starts(g:start_plugins)
+  Plug 'elzr/vim-json', { 'for': 'json' }
+  Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+  Plug 'sebdah/vim-delve', { 'for': 'go' }
+  Plug 'tpope/vim-bundler', { 'for': 'ruby' }
+  Plug 'tpope/vim-endwise', { 'for': ['ruby', 'sh', 'snippets', 'vim', 'zsh'] }
+  Plug 'tpope/vim-ragtag', { 'for': ['html', 'eruby', 'liquid', 'javascript.jsx', 'jsx'] }
+  Plug 'tpope/vim-rails', { 'for': 'ruby' }
+  Plug 'tpope/vim-rake', { 'for': 'ruby' }
+  Plug 'tpope/vim-rbenv'
+  Plug 'vim-ruby/vim-ruby', { 'for': 'ruby' }
+  Plug 'vim-scripts/ruby-matchit', { 'for': 'ruby' }
+  Plug 'wellle/targets.vim'
+
+  Plug 'kien/rainbow_parentheses.vim', { 'for': 'clojure' }
+  Plug 'tpope/vim-classpath', { 'for': ['clojure', 'groovy', 'java', 'scala'] }
+  Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+  Plug 'venantius/vim-cljfmt', { 'for': 'clojure' }
+  Plug 'tpope/vim-salve', { 'for': 'clojure' }
+  Plug 'guns/vim-clojure-static', { 'for': 'clojure' }
+  Plug 'guns/vim-clojure-highlight', { 'for': 'clojure' }
+
+  Plug 'kana/vim-textobj-user'
+        \ | Plug 'beloglazov/vim-textobj-quotes'
+        \ | Plug 'nelstrom/vim-textobj-rubyblock', { 'for': 'ruby' }
+
+  Plug '/usr/local/opt/fzf'
+        \ | Plug 'junegunn/fzf.vim'
+
+  Plug 'vim-airline/vim-airline'
+        \ | Plug 'vim-airline/vim-airline-themes'
+
+
+  call plug#end()
 endfunction
 
 
-let s:current_file = expand('<sfile>')
+" Plug 'chrisbra/csv.vim'
 
-if !exists('*plugins#reload')
-  function! plugins#reload() abort
-    exec 'source ' . s:current_file
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+"       \ | Plug 'zchee/deoplete-go', { 'for': 'go', 'do': 'make' }
+"       \ | Plug 'Shougo/neco-vim', { 'for': 'vim' }
+"       " \ | Plug 'uplus/deoplete-solargraph', { 'for': 'ruby' }
 
-    call plugins#spec()
-  endfunction
+" Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh', }
+"       \ | Plug 'hackhowtofaq/vim-solargraph', { 'for': 'ruby' } " Depends on: vim-projectroot
 
-  function! plugins#start(plugin) abort
-    call minpac#add(a:plugin, { 'type': 'start' })
-  endfunction
+" Plug 'itchyny/lightline.vim'
 
-  function! plugins#opt(plugin) abort
-    call minpac#add(a:plugin, { 'type': 'opt' })
-  endfunction
+" Plug 'Shougo/neocomplcache'
+"       \ | Plug 'Shougo/neosnippet.vim'
+"       \ | Plug 'Shougo/neosnippet-snippets'
 
-  function! plugins#colorscheme(plugin) abort
-    call plugins#opt(a:plugin)
-  endfunction
+" Plug 'wakatime/vim-wakatime'
 
-  function! plugins#colorschemes(plugins) abort
-    for l:plugin in a:plugins
-      call plugins#colorscheme(l:plugin)
-    endfor
-  endfunction
+" Plug 'cespare/vim-toml', { 'for': 'toml' }
+" Plug 'ekalinin/Dockerfile.vim', { 'for': 'Dockerfile' }
+" Plug 'fatih/vim-go', { 'for': 'go', 'tag': '*', 'do': ':GoInstallBinaries'  }
+" Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
+" Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'vim', 'do': $DATA_DIR .'/plugged/gocode/vim/symlink.sh' }
+" Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
+" Plug 'reedes/vim-wordy', { 'for': ['text', 'markdown'] }
 
-  function! plugins#opts(plugins, ...) abort
-    for l:plugin in a:plugins
-      call plugins#opt(l:plugin)
-    endfor
-  endfunction
+" Plug 'sjl/badwolf/'
+" Plug 'w0ng/vim-hybrid'
+" Plug 'kristijanhusak/vim-hybrid-material'
+" Plug 'andreasvc/vim-256noir'
+" Plug 'vimwiki/vimwiki'
+" Plug 'tpope/vim-sleuth'
 
-  function! plugins#starts(plugins, ...) abort
-    for l:plugin in a:plugins
-      call plugins#start(l:plugin)
-    endfor
-  endfunction
-endif
+" Plug 'dbakker/vim-projectroot'
+" Plug 'ludovicchabant/vim-gutentags'
+" Plug 'majutsushi/tagbar'
+" Plug 'mtth/scratch.vim'
+" Plug 'nathanaelkane/vim-indent-guides'

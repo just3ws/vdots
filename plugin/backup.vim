@@ -15,7 +15,7 @@ set backupskip+=*.log " Don't backup log files
 " This is the workaround for the backup filename expansion problem.
 autocmd! vimrc BufWritePre * call backup#save_backups()
 
-function! backup#save_backups()
+function! backup#save_backups() abort
   if expand('%:p') =~ &backupskip | return | endif
 
   " If this is a newly created file, don't try to create a backup
@@ -26,7 +26,7 @@ function! backup#save_backups()
   endfor
 endfunction
 
-function! backup#save_backup(backupdir)
+function! backup#save_backup(backupdir) abort
   let l:filename = expand('%:p')
   if a:backupdir =~? '//$'
     let l:backup = escape(substitute(l:filename, '/', '%', 'g')  . &backupext, '%')
