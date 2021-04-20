@@ -119,9 +119,6 @@ let g:airline_theme = 'nord'
 colorscheme nord
 highlight Conceal guifg=#616E88 ctermfg=8
 
-" colorscheme onehalflight
-" let g:airline_theme='onehalfdark'
-
 " Convert ; to : in modeline
 nnoremap ; :
 
