@@ -15,202 +15,327 @@ augroup vimrc
   autocmd! * <buffer>
 augroup end
 
-let g:loaded_netrwPlugin = 1
+let g:mapleader = ';'
+let g:maplocalleader = ';'
 
-let g:mapleader=';'
-let g:maplocalleader=';'
+set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
+set rtp+=/usr/local/opt/fzf
 
-call env#load()
+if dein#load_state('~/.cache/dein')
+  call dein#begin('~/.cache/dein')
+  call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
-let $DATA_DIR = file_utils#init_app_dir('')
-let $BACKUP_DIR = file_utils#init_app_dir('/backup')
-let $SWAP_DIR = file_utils#init_app_dir('/swap')
-let $UNDO_DIR = file_utils#init_app_dir('/undo')
-let $VIEW_DIR = file_utils#init_app_dir('/view')
-let $SHADA_DIR = file_utils#init_app_dir('/shada')
-let $FZF_HISTORY_DIR = file_utils#init_app_dir('/fzf/history')
-let $STARTIFY_SESSION_DIR = file_utils#init_app_dir('/startify/session')
-" let $GUTENTAGS_CACHE_DIR = file_utils#init_app_dir('/gutentags')
-let $MRU_DIR = $DATA_DIR
-let $NVIM_RUBY_LOG_FILE = $DATA_DIR . '/ruby.log'
+  call dein#add('sonph/onehalf', {'rtp': 'vim/'})
 
-set backupdir=$BACKUP_DIR//
-set directory=$SWAP_DIR//
-set undodir=$UNDO_DIR//
-set viewdir=$VIEW_DIR//
+  call dein#add('/usr/local/opt/fzf')
+  call dein#add('prettier/vim-prettier', { 'build': '/usr/local/bin/brew reinstall prettier' })
+  call dein#add('arcticicestudio/nord-vim')
+  call dein#add('beloglazov/vim-textobj-quotes')
+  call dein#add('christoomey/vim-run-interactive')
+  call dein#add('dense-analysis/ale')
+  call dein#add('editorconfig/editorconfig-vim')
+  call dein#add('fatih/vim-go', { 'build': '/usr/local/bin/brew reinstall go', 'hook_post_update': ':GoUpdateBinaries' })
+  call dein#add('junegunn/fzf.vim', { 'build': '/usr/local/bin/brew reinstall fzf' })
+  call dein#add('kana/vim-textobj-user')
+  " call dein#add('majutsushi/tagbar')
+  call dein#add('mhinz/vim-startify')
+  call dein#add('mileszs/ack.vim')
+  call dein#add('nelstrom/vim-textobj-rubyblock')
+  call dein#add('pbrisbin/vim-mkdir')
+  call dein#add('preservim/nerdtree')
+  call dein#add('ryanoasis/vim-devicons')
+  call dein#add('sheerun/vim-polyglot')
+  call dein#add('sjl/vitality.vim')
+  call dein#add('tek/vim-textobj-ruby')
+  call dein#add('tpope/vim-bundler')
+  call dein#add('tpope/vim-commentary')
+  call dein#add('tpope/vim-dispatch')
+  call dein#add('tpope/vim-endwise')
+  call dein#add('tpope/vim-eunuch')
+  call dein#add('tpope/vim-fugitive')
+  call dein#add('tpope/vim-git')
+  call dein#add('tpope/vim-projectionist')
+  call dein#add('tpope/vim-ragtag')
+  call dein#add('tpope/vim-rails')
+  call dein#add('tpope/vim-rake')
+  call dein#add('tpope/vim-rbenv')
+  call dein#add('tpope/vim-repeat')
+  call dein#add('tpope/vim-rhubarb')
+  call dein#add('tpope/vim-sensible')
+  call dein#add('tpope/vim-surround')
+  call dein#add('vim-airline/vim-airline')
+  call dein#add('vim-airline/vim-airline-themes')
+  call dein#add('vim-ruby/vim-ruby')
+  call dein#add('vim-scripts/align')
+  call dein#add('vitalk/vim-shebang')
+  call dein#add('wellle/targets.vim')
 
-call plugins#init()
+  call dein#end()
+  call dein#save_state()
+endif
 
-set omnifunc=syntaxcomplete#Complete
+filetype plugin indent on
+syntax enable
 
-set pastetoggle=<Leader>z " Toggle paste mode
+if dein#check_install()
+  call dein#install()
+endif
 
-set autoindent
+runtime! plugin/sensible.vim
 
-set sessionoptions-=tabpages " Only save the current tab page in session.
-set sessionoptions-=help " Don't save help windows in sessions.
-set sessionoptions-=buffers " Don't save hidden and unloaded buffers in sessions.
-set sessionoptions-=options " Don't persist options and mappings because it can corrupt sessions.
+if has('nvim')
+  " ' - Maximum number of previously edited files marks
+  " < - Maximum number of lines saved for each register
+  " @ - Maximum number of items in the input-line history to be
+  " s - Maximum size of an item contents in KiB
+  " h - Disable the effect of 'hlsearch' when loading the shada
+  set shada='300,<10,@50,s100,h
 
-" Whitespace {{{
-set expandtab
-set shiftround
-set shiftwidth=2
-set smarttab
-set softtabstop=2
-set tabstop=2
-" }}}
 
-set autoread " Read when a file has been changed even outside of Vim.
-set belloff=all
-set clipboard& clipboard+=unnamed,unnamedplus
-set complete-=i " Disable scanning included files
-set complete-=t " Disable searching tags
-set concealcursor=niv
-set conceallevel=0
-set display=lastline " Show as much as possible of a wrapped last line, not just '@'.
-set fileformats=unix,dos,mac " Use Unix as the standard file type
-set fillchars="diff:⣿,fold: ,vert:│"
-set foldclose=all
-set foldcolumn=2 " Side-column to show info on open and closed folds
-set foldlevelstart=3
-set hidden " Hide buffers when abandoned instead of unloading
-set history=10000
-set hlsearch
-set ignorecase
-set infercase " Completion with case-mismatch matches case-insensitive if possible
-set iskeyword+=- " Remove - as a word boundary
-set iskeyword+=$
-set lazyredraw
-set linebreak
-set list
-" set listchars=tab:␉\ \,trail:·,extends:…
-set listchars=tab:\ \,trail:·,extends:…
-set magic
-set maxmempattern=2000000
-set modeline " Automatically setting options from modelines
-set modelines=1
-set mouse=a
-set noautochdir
-set nocursorcolumn
-set noerrorbells
-set nojoinspaces " Only join lines with one space regardless of punctuation
-set novisualbell
+  " Write history on idle, for sharing among different sessions
+  autocmd! vimrc CursorHold * if exists(':rshada') |
+        \   rshada |
+        \   wshada |
+        \ endif
+endif
+
+function! s:themes_best_colors() abort
+  if exists('$TMUX')
+    set t_Co=256
+    return
+  endif
+
+  if has('termguicolors')
+    set termguicolors
+    return
+  endif
+
+  set t_Co=256
+endfunction
+
+" set background=dark
+call s:themes_best_colors()
+let g:airline_theme = 'nord'
+colorscheme nord
+highlight Conceal guifg=#616E88 ctermfg=8
+
+" colorscheme onehalflight
+" let g:airline_theme='onehalfdark'
+
+" Convert ; to : in modeline
+nnoremap ; :
+
+set backspace=2   " Backspace deletes like most programs in insert mode
+set autowrite     " Automatically :write before running commands
 set nowrap
-set path=.,** " Directories to search when using gf
-set previewheight=15
-set pumheight=25
-set regexpengine=2 " Use the new NFA engine
-set report=0 " Don't report on line changes
-set scroll=8
-set scrolljump=1
-set scrolloff=10
-set scrolloff=4
-set secure
-" set shell=/usr/local/bin/zsh
-" set shell=/usr/local/bin/bash
-set shell=/bin/bash
-set shortmess+=c " default: shortmess=filnxtToO
-set showcmd " Show incomplete cmds down the bottom
-" set showfulltag
-set showmatch
-set showmode
-set sidescroll=4
-set sidescrolloff=4
-set smartcase
+
+set backupdir=$XDG_CONFIG_HOME/nvim/tmp,.
+set directory=$XDG_CONFIG_HOME/nvim/tmp,.
+
+set hlsearch
+nnoremap <CR> :nohlsearch<CR><CR>
+
+" Incremental everything
+set inccommand=
+
+augroup vimrcEx
+  autocmd!
+
+  autocmd VimResized * wincmd =
+
+  " When editing a file, always jump to the last known cursor position. Don't
+  " do it for commit messages, when the position is invalid, or when inside an
+  " event handler (happens when dropping a file on gvim).
+  autocmd BufReadPost *
+        \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+        \   exe "normal g`\"" |
+        \ endif
+
+  " Set syntax highlighting for specific file types
+  autocmd BufRead,BufNewFile *.md set filetype=markdown
+  autocmd BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
+  autocmd BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
+  autocmd BufRead,BufNewFile aliases.local,zshrc.local,*/zsh/configs/* set filetype=sh
+  autocmd BufRead,BufNewFile gitconfig.local set filetype=gitconfig
+  autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
+  autocmd BufRead,BufNewFile vimrc.local set filetype=vim
+  " autocmd BufRead,BufNewFile *.md setlocal spell
+  " autocmd FileType gitcommit setlocal spell
+
+  autocmd BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
+
+  " Automatically close corresponding loclist when quitting a window
+  autocmd QuitPre * if &filetype != 'qf' | silent! lclose | endif
+augroup END
+
+" ALE linting events
+augroup ale
+  autocmd!
+
+  autocmd VimEnter *
+        \ set updatetime=1000 |
+        \ let g:ale_lint_on_text_changed = 0
+
+  autocmd CursorHold * call ale#Queue(0)
+  autocmd CursorHoldI * call ale#Queue(0)
+  autocmd InsertEnter * call ale#Queue(0)
+  autocmd InsertLeave * call ale#Queue(0)
+augroup END
+
+let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
+
+set number
+set numberwidth=3
+
+" Quote textobj helpers
+xmap q iq
+omap q iq
+
+" Move between linting errors
+nnoremap ]r :ALENextWrap<CR>
+nnoremap [r :ALEPreviousWrap<CR>
+
+let g:ale_enabled = 0
+
+let g:ale_shell = '/usr/local/bin/zsh'
+
+let g:ale_change_sign_column_color = 0
+let g:ale_completion_enabled = 1
+
+let g:ale_echo_msg_error_str = 'ERR'
+let g:ale_echo_msg_warning_str = 'WRN'
+let g:ale_fix_on_save = 0
+let g:ale_lint_delay = 500
+let g:ale_lint_on_enter = 1
+let g:ale_lint_on_insert_leave = 1
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_text_changed = 1
+let g:ale_set_balloons = 1
+let g:ale_set_highlights = 1
+let g:ale_sign_error = ''
+let g:ale_sign_style_error = ''
+let g:ale_sign_style_warning = ''
+let g:ale_sign_warning = ''
+
+let g:airline#extensions#ale#enabled = 1
+
+let g:ale_fixers = {
+      \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+      \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
+      \ }
+
+" When the type of shell script is /bin/sh, assume a POSIX-compatible
+" shell for syntax highlighting purposes.
+let g:is_posix = 1
+
+" Softtabs, 2 spaces
+set tabstop=2
+set shiftwidth=2
+set shiftround
+set expandtab
+
+" Use one space, not two, after punctuation.
+set nojoinspaces
+
+let g:webdevicons_enable = 1
+let g:webdevicons_enable_nerdtree = 1
+
+let g:WebDevIconsOS = 'Darwin'
+
+let g:fzf_history_dir = $FZF_HISTORY_DIR
+
+" let g:fzf_layout = { 'window': 'new' }
+" Default fzf layout
+" - down / up / left / right
+let g:fzf_layout = { 'down': '~40%' }
+
+" In Neovim, you can set up fzf window using a Vim command
+let g:fzf_layout = { 'window': 'enew' }
+let g:fzf_layout = { 'window': '-tabnew' }
+let g:fzf_layout = { 'window': '10new' }
+let g:fzf_action = {
+      \ 'ctrl-t': 'tab split',
+      \ 'ctrl-x': 'split',
+      \ 'ctrl-v': 'vsplit' }
+
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+if executable('ag')
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in fzf for listing files. Lightning fast and respects .gitignore
+  let $FZF_DEFAULT_COMMAND = 'ag --literal --files-with-matches --nocolor --hidden -g ""'
+
+  if !exists(":Ag")
+    command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
+    nnoremap \ :Ag<SPACE>
+  endif
+endif
+
+
+" Tab completion
+" will insert tab at beginning of line,
+" will use completion if not at beginning
+set wildmode=list:longest,list:full
+function! InsertTabWrapper()
+  let col = col('.') - 1
+  if !col || getline('.')[col - 1] !~ '\k'
+    return "\<Tab>"
+  else
+    return "\<C-p>"
+  endif
+endfunction
+inoremap <Tab> <C-r>=InsertTabWrapper()<CR>
+inoremap <S-Tab> <C-n>
+
+" Switch between the last two files
+nnoremap <Leader><Leader> <C-^>
+
+
+" Saner movement through wrapped lines
+nnoremap j gj
+nnoremap k gk
+
+" Swap the case for changing tabs
+noremap <S-l> gt
+noremap <S-h> gT
+
+" " vim-test mappings
+" nnoremap <silent> <Leader>t :TestFile<CR>
+" nnoremap <silent> <Leader>s :TestNearest<CR>
+" nnoremap <silent> <Leader>l :TestLast<CR>
+" nnoremap <silent> <Leader>a :TestSuite<CR>
+" nnoremap <silent> <Leader>gt :TestVisit<CR>
+
+" Run commands that require an interactive shell
+nnoremap <Leader>r :RunInInteractiveShell<Space>
+
+" Treat <li> and <p> tags like the block tags they are
+let g:html_indent_tags = 'li\|p'
+
+" Set tags for vim-fugitive
+set tags^=.git/tags
+
+" Open new split panes to right and bottom, which feels more natural
 set splitbelow
 set splitright
-set suffixes+=.log,.zwc,.sw?,.rbc,.doc,.docx,.exe,.gif,.jpg,.mp3,.mp4,.dll,.dvi,.pdf,.rtf,.tmp,.py?
-set swapfile
-set switchbuf=useopen
-set synmaxcol=1000
-set t_vb=
-" set textwidth=0
-set timeout
-set timeoutlen=400
-set ttimeout
-set ttimeoutlen=10
-set undofile
-set undolevels=10000
-set updatecount=100
-set updatetime=2000 " Write swap files after 2 seconds of inactivity.
-set virtualedit=block " Position cursor anywhere in visual block
 
-" {{{ [WILDIGNORE]
-set wildignore+=%*,*~,._*
-set wildignore+=**/bower_modules/**,**/node_modules/**,*/.sass-cache/*
-set wildignore+=**/tmp/**
-set wildignore+=*.DS_Store,*.dmg
-set wildignore+=*.ai,*.bmp,*.gif,*.ico,*.jpeg,*.jpg,*.png,*.psd,*.svg,*.webp
-set wildignore+=*.aux,*.toc
-set wildignore+=*.bz2,*.gz,*.kgb,*.rar,*.tar,*.xz,*.zip
-set wildignore+=*.cbr,*.cbz,*.doc,*.docx,*.odf,*.pdf
-set wildignore+=*.class,*.dll,*.exe,*.jar,*.o,*.obj,*.out,*.so
-set wildignore+=*.divx,*.avi,*.mkv,*.mov,*.mp4,*.mpeg,*.mpg,*.m2ts,*.vob,*.webm
-set wildignore+=*.egg-info,__pycache__
-set wildignore+=*.eot,*.otf,*.ttf,*.woff,*.woff2
-set wildignore+=*.log
-set wildignore+=*.manifest
-set wildignore+=*.mp3,*.oga,*.ogg,*.wav,*.flac
-set wildignore+=*.pem
-set wildignore+=*.pyc
-set wildignore+=*.rbc,*/.bundle
-set wildignore+=*.spl
-set wildignore+=*.swn,*.swo,*.swp
-set wildignore+=*.tags,tags
-set wildignore+=*.ycm_extra_conf.py,*.ycm_extra_conf.pyc
-set wildignore+=*.zwc
-set wildignore+=*/.git,*/.git-metadata,*/.hg,*/.svn,.stversions
-set wildignore+=*/.idea,*/.vscode
-set wildignorecase
-" }}}
+" Quicker window movement
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
 
-set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
-set wildoptions=tagfile
-set wrapscan
+" Map Ctrl + p to open fuzzy find (FZF)
+nnoremap <c-p> :Files<cr>
 
-set numberwidth=3
-set number relativenumber
-set cursorline
+" Always use vertical diffs
+set diffopt+=vertical
 
-" Automatically close corresponding loclist when quitting a window
-autocmd! vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
+set clipboard& clipboard+=unnamed,unnamedplus
 
-let g:neosnippet#disable_runtime_snippets = { 'go': 1 }
-
-let g:tagbar_autofocus = 1
-
-command! Reload :source $MYVIMRC
-
-command! Aliasrc  :edit $ZDOTDIR/.aliasrc
-command! Saliasrc :split $ZDOTDIR/.aliasrc
-command! Taliasrc :tabedit $ZDOTDIR/.aliasrc
-command! Valiasrc :vsplit $ZDOTDIR/.aliasrc
-
-command! Antigenrc  :edit $ZDOTDIR/.antigenrc
-command! Santigenrc :split $ZDOTDIR/.antigenrc
-command! Tantigenrc :tabedit $ZDOTDIR/.antigenrc
-command! Vantigenrc :vsplit $ZDOTDIR/.antigenrc
-
-command! Vimrc  :edit $MYVIMRC
-command! Svimrc :split $MYVIMRC
-command! Tvimrc :tabedit $MYVIMRC
-command! Vvimrc :vsplit $MYVIMRC
-
-command! Zpromptrc  :edit $ZDOTDIR/.zpromptrc
-command! Szpromptrc :split $ZDOTDIR/.zpromptrc
-command! Vzpromptrc :vsplit $ZDOTDIR/.zpromptrc
-command! Tzpromptrc :tabedit $ZDOTDIR/.zpromptrc
-
-command! Zshenv  :edit $ZDOTDIR/.zshenv
-command! Szshenv :split $ZDOTDIR/.zshenv
-command! Tzshenv :tabedit $ZDOTDIR/.zshenv
-command! Vzshenv :vsplit $ZDOTDIR/.zshenv
-
-command! Zshrc  :edit $ZDOTDIR/.zshrc
-command! Szshrc :split $ZDOTDIR/.zshrc
-command! Tzshrc :tabedit $ZDOTDIR/.zshrc
-command! Vzshrc :vsplit $ZDOTDIR/.zshrc
+set ignorecase
+set smartcase
 
 " Saner command-line history
 cnoremap <C-n> <down>
@@ -222,30 +347,35 @@ nmap <Leader><Leader> V
 " Avoid accidentally launching Ex mode
 nnoremap Q <nop>
 
-" Convert ; to : in modeline
-" nnoremap ; :
+nnoremap <Leader>nf :NERDTreeFind<CR>
+nnoremap <Leader>n :NERDTreeFocus<CR>
 
-" Clear highlight on enter
-nnoremap <CR> :nohlsearch<CR><CR>
+" Saner block shift
+xnoremap < <gv
+xnoremap > >gv
 
 " Saner behavior of n and N
 nnoremap <expr> N 'nN'[v:searchforward]
 nnoremap <expr> n 'Nn'[v:searchforward]
 
-nnoremap <C-p> :FZF<CR>
-nnoremap <C-b> :Buffers<CR>
-" nnoremap <C-c> :Colors<CR>
-" nnoremap <C-f> :BLines<CR>
-" nnoremap <C-g> :GitFiles<CR>
-" nnoremap <C-m> :Mru<CR>
-" nnoremap <C-h> :History<CR>
-" nnoremap <C-t> :Files<CR>
-" nnoremap <C-p> :Tags<CR>
-" nnoremap ``` :Marks<CR>
+let g:ack_default_options = ' -s -H --nopager --nocolor --nogroup --column'
+let g:ack_use_dispatch = 0
+let g:ackhighlight = 1
+let g:ackpreview = 0
+let g:ack_mappings = {
+      \   't': '<C-w><CR><C-w>T',
+      \   'T': '<C-w><CR><C-w>TgT<C-w>j',
+      \   'o': '<CR>zz',
+      \   'O': '<CR><C-w><C-w>:ccl<CR>',
+      \   'go': '<CR><C-w>j',
+      \   'h': '<C-w><CR><C-w>K',
+      \   'H': '<C-w><CR><C-w>K<C-w>b',
+      \   'v': '<C-w><CR><C-w>H<C-w>b<C-w>J<C-w>t',
+      \   'gv': '<C-w><CR><C-w>H<C-w>b<C-w>J',
+      \ }
 
-" NERDTree
-nnoremap <Leader>n :NERDTreeToggle<CR>
-nnoremap <Leader>nf :NERDTreeFind<CR>
+" nnoremap <leader>ct :silent ! ctags -R --languages=ruby --exclude=.git --exclude=log -f .git/tags<cr>
+" nnoremap <leader>ct :silent ! ripper-tags --tag-relative=always --recurse=yes --exclude=vendor --exclude=.git --exclude=log --tag-file .git/tags<cr><cr>
 
 " Saner movement through wrapped lines
 nnoremap j gj
@@ -255,108 +385,7 @@ nnoremap k gk
 noremap <S-l> gt
 noremap <S-h> gT
 
-autocmd! vimrc VimResized * wincmd =
-
-" Saner block shift
-xnoremap < <gv
-xnoremap > >gv
+nnoremap <C-p> :FZF<CR>
+nnoremap <C-b> :Buffers<CR>
 
 let g:airline_extensions = []
-
-let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-let g:airline_highlighting_cache = 1
-let g:airline_powerline_fonts = 1
-let g:airline_left_sep=''
-let g:airline_left_alt_sep=''
-let g:airline_right_sep=''
-let g:airline_right_alt_sep=''
-
-let g:webdevicons_enable = 1
-let g:webdevicons_enable_nerdtree = 1
-let g:webdevicons_enable_airline_tabline = 1
-let g:webdevicons_enable_airline_statusline = 1
-
-let g:WebDevIconsOS = 'Darwin'
-
-let g:ale_linters_explicit = 1
-let g:ale_change_sign_column_color = 0
-let g:ale_completion_enabled = 1
-let g:ale_fix_on_save = 1
-let g:ale_lint_delay = 1500
-let g:ale_lint_on_insert_leave = 0
-let g:ale_lint_on_save = 1
-let g:ale_lint_on_insert_leave = 1
-let g:ale_open_list = 0
-let g:ale_pattern_options_enabled = 1
-let g:ale_sign_error = ''
-let g:ale_sign_warning = ''
-let g:ale_sign_style_error = ''
-let g:ale_sign_style_warning = ''
-let g:ale_linters = {}
-let g:ale_fixers = {}
-let g:ale_pattern_options = {
-      \ '\.min\.js$': { 'ale_linters': [], 'ale_fixers': [] },
-      \ '\.min\.css$': { 'ale_linters': [], 'ale_fixers': [] },
-      \ }
-
-let g:MRU_File = $MRU_DIR . '/mru_files'
-let g:MRU_Max_Entries = 10000
-let g:MRU_Exclude_Files = '^/tmp/.*\|^/var/tmp/.*'
-
-let g:fzf_history_dir = $FZF_HISTORY_DIR
-let g:fzf_layout = { 'window': 'new' }
-let g:fzf_action = { 'ctrl-t': 'tab split', 'ctrl-x': 'split', 'ctrl-v': 'vsplit' }
-
-let g:ack_default_options = ' -s -H --nopager --nocolor --nogroup --column'
-let g:ack_use_dispatch = 0
-let g:ackhighlight = 1
-let g:ackpreview = 0
-let g:ack_mappings = {
-      \ 't': '<C-w><CR><C-w>T',
-      \ 'T': '<C-w><CR><C-w>TgT<C-w>j',
-      \ 'o': '<CR>zz',
-      \ 'O': '<CR><C-w><C-w>:ccl<CR>',
-      \ 'go': '<CR><C-w>j',
-      \ 'h': '<C-w><CR><C-w>K',
-      \ 'H': '<C-w><CR><C-w>K<C-w>b',
-      \ 'v': '<C-w><CR><C-w>H<C-w>b<C-w>J<C-w>t',
-      \ 'gv': '<C-w><CR><C-w>H<C-w>b<C-w>J',
-      \ }
-
-" cnoreabbrev Ack LAck!
-" nnoremap <Leader>a :LAck!<Space>
-
-let g:gutentags_cache_dir = $GUTENTAGS_CACHE_DIR
-let g:gutentags_ctags_exclude = ['*.css', '*.html', '*.js', '*.json', '*.xml',
-      \ '*.phar', '*.ini', '*.rst', '*.md',
-      \ '*vendor/*/test*', '*vendor/*/Test*',
-      \ '*vendor/*/fixture*', '*vendor/*/Fixture*',
-      \ '*var/cache*', '*var/log*'
-      \ ]
-
-let g:scratch_persistence_file = $DATA_DIR . '/scratch.vim'
-let g:scratch_filetype = 'text'
-let g:scratch_insert_autohide = 0
-let g:scratch_autohide = 0
-
-let g:indent_guides_auto_colors = 1
-let g:indent_guides_default_mapping = 1
-let g:indent_guides_enable_on_vim_startup = 0
-let g:indent_guides_exclude_filetypes = ['help', 'markdown', 'nerdtree', 'startify', 'tagbar',]
-let g:indent_guides_guide_size = 1
-let g:indent_guides_start_level = 3
-
-let g:tagbar_autofocus = 1
-
-let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
-
-" Quote textobj helpers
-xmap q iq
-omap q iq
-
-let g:vimwiki_list = [{ 'path': $VIMWIKI_HOME }]
-let g:vimwiki_use_mouse=1
-
-let g:deoplete#enable_at_startup = 1
-
-call themes#nord()
