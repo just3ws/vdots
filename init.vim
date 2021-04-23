@@ -19,56 +19,52 @@ let g:mapleader = ';'
 let g:maplocalleader = ';'
 
 set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
-set rtp+=/usr/local/opt/fzf
+set runtimepath+=/usr/local/opt/fzf
 
 if dein#load_state('~/.cache/dein')
   call dein#begin('~/.cache/dein')
   call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
+
   call dein#add('/usr/local/opt/fzf')
-  call dein#add('prettier/vim-prettier', { 'build': '/usr/local/bin/brew reinstall prettier' })
   call dein#add('arcticicestudio/nord-vim')
   call dein#add('beloglazov/vim-textobj-quotes')
   call dein#add('christoomey/vim-run-interactive')
   call dein#add('dense-analysis/ale')
   call dein#add('editorconfig/editorconfig-vim')
-  call dein#add('fatih/vim-go', { 'build': '/usr/local/bin/brew reinstall go', 'hook_post_update': ':GoUpdateBinaries' })
-  call dein#add('junegunn/fzf.vim', { 'build': '/usr/local/bin/brew reinstall fzf' })
+  call dein#add('fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' })
+  call dein#add('junegunn/fzf.vim')
   call dein#add('kana/vim-textobj-user')
   call dein#add('mhinz/vim-startify')
   call dein#add('mileszs/ack.vim')
+  call dein#add('nelstrom/vim-textobj-rubyblock')
   call dein#add('pbrisbin/vim-mkdir')
   call dein#add('preservim/nerdtree')
   call dein#add('ryanoasis/vim-devicons')
   call dein#add('sheerun/vim-polyglot')
   call dein#add('sjl/vitality.vim')
+  call dein#add('tek/vim-textobj-ruby')
   call dein#add('tpope/vim-bundler')
   call dein#add('tpope/vim-commentary')
   call dein#add('tpope/vim-dispatch')
   call dein#add('tpope/vim-endwise')
   call dein#add('tpope/vim-eunuch')
+  call dein#add('tpope/vim-fugitive')
+  call dein#add('tpope/vim-git')
   call dein#add('tpope/vim-projectionist')
   call dein#add('tpope/vim-ragtag')
   call dein#add('tpope/vim-rails')
   call dein#add('tpope/vim-rake')
-  call dein#add('tpope/vim-rbenv')
   call dein#add('tpope/vim-repeat')
+  call dein#add('tpope/vim-rhubarb')
   call dein#add('tpope/vim-sensible')
   call dein#add('tpope/vim-surround')
   call dein#add('vim-airline/vim-airline')
   call dein#add('vim-airline/vim-airline-themes')
+  call dein#add('vim-ruby/vim-ruby')
   call dein#add('vim-scripts/align')
   call dein#add('vitalk/vim-shebang')
   call dein#add('wellle/targets.vim')
-
-  call dein#add('nelstrom/vim-textobj-rubyblock')
-  call dein#add('tek/vim-textobj-ruby')
-  call dein#add('vim-ruby/vim-ruby')
-
-  call dein#add('tpope/vim-git')
-  call dein#add('tpope/vim-fugitive')
-  " github integration
-  call dein#add('tpope/vim-rhubarb')
 
   call dein#end()
   call dein#save_state()
@@ -166,18 +162,18 @@ augroup vimrcEx
 augroup END
 
 " ALE linting events
-augroup ale
-  autocmd!
-
-  autocmd VimEnter *
-        \ set updatetime=1000 |
-        \ let g:ale_lint_on_text_changed = 0
-
-  autocmd CursorHold * call ale#Queue(0)
-  autocmd CursorHoldI * call ale#Queue(0)
-  autocmd InsertEnter * call ale#Queue(0)
-  autocmd InsertLeave * call ale#Queue(0)
-augroup END
+" augroup ale
+"   autocmd!
+" 
+"   autocmd VimEnter *
+"         \ set updatetime=1000 |
+"         \ let g:ale_lint_on_text_changed = 0
+" 
+"   autocmd CursorHold * call ale#Queue(0)
+"   autocmd CursorHoldI * call ale#Queue(0)
+"   autocmd InsertEnter * call ale#Queue(0)
+"   autocmd InsertLeave * call ale#Queue(0)
+" augroup END
 
 let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
 
@@ -189,26 +185,28 @@ xmap q iq
 omap q iq
 
 " Move between linting errors
-nnoremap ]r :ALENextWrap<CR>
-nnoremap [r :ALEPreviousWrap<CR>
+" nnoremap ]r :ALENextWrap<CR>
+" nnoremap [r :ALEPreviousWrap<CR>
+nmap <silent> <leader>aj :ALENext<cr>
+nmap <silent> <leader>ak :ALEPrevious<cr>
 
-let g:ale_enabled = 0
+" let g:ale_enabled = 1
 
-let g:ale_shell = '/usr/local/bin/zsh'
+" let g:ale_shell = '/usr/local/bin/zsh'
 
-let g:ale_change_sign_column_color = 0
+let g:ale_change_sign_column_color = 1
 let g:ale_completion_enabled = 1
 
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
-let g:ale_fix_on_save = 0
-let g:ale_lint_delay = 500
-let g:ale_lint_on_enter = 1
-let g:ale_lint_on_insert_leave = 1
-let g:ale_lint_on_save = 1
-let g:ale_lint_on_text_changed = 1
-let g:ale_set_balloons = 1
-let g:ale_set_highlights = 1
+" let g:ale_fix_on_save = 0
+" let g:ale_lint_delay = 500
+" let g:ale_lint_on_enter = 1
+" let g:ale_lint_on_insert_leave = 1
+" let g:ale_lint_on_save = 1
+" let g:ale_lint_on_text_changed = 1
+" let g:ale_set_balloons = 1
+" let g:ale_set_highlights = 1
 let g:ale_sign_error = ''
 let g:ale_sign_style_error = ''
 let g:ale_sign_style_warning = ''
@@ -219,6 +217,9 @@ let g:airline#extensions#ale#enabled = 1
 let g:ale_fixers = {
       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
       \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
+      \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+      \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+      \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
       \ }
 
 " When the type of shell script is /bin/sh, assume a POSIX-compatible
@@ -263,12 +264,11 @@ if executable('ag')
   " Use ag in fzf for listing files. Lightning fast and respects .gitignore
   let $FZF_DEFAULT_COMMAND = 'ag --literal --files-with-matches --nocolor --hidden -g ""'
 
-  if !exists(":Ag")
+  if !exists(':Ag')
     command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
     nnoremap \ :Ag<SPACE>
   endif
 endif
-
 
 " Tab completion
 " will insert tab at beginning of line,
@@ -276,7 +276,7 @@ endif
 set wildmode=list:longest,list:full
 function! InsertTabWrapper()
   let col = col('.') - 1
-  if !col || getline('.')[col - 1] !~ '\k'
+  if !col || getline('.')[col - 1] !~# '\k'
     return "\<Tab>"
   else
     return "\<C-p>"
@@ -288,7 +288,6 @@ inoremap <S-Tab> <C-n>
 " Switch between the last two files
 nnoremap <Leader><Leader> <C-^>
 
-
 " Saner movement through wrapped lines
 nnoremap j gj
 nnoremap k gk
@@ -296,13 +295,6 @@ nnoremap k gk
 " Swap the case for changing tabs
 noremap <S-l> gt
 noremap <S-h> gT
-
-" " vim-test mappings
-" nnoremap <silent> <Leader>t :TestFile<CR>
-" nnoremap <silent> <Leader>s :TestNearest<CR>
-" nnoremap <silent> <Leader>l :TestLast<CR>
-" nnoremap <silent> <Leader>a :TestSuite<CR>
-" nnoremap <silent> <Leader>gt :TestVisit<CR>
 
 " Run commands that require an interactive shell
 nnoremap <Leader>r :RunInInteractiveShell<Space>
@@ -385,4 +377,4 @@ noremap <S-h> gT
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-b> :Buffers<CR>
 
-let g:airline_extensions = []
+" let g:airline_extensions = []
