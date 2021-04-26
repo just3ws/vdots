@@ -25,7 +25,6 @@ if dein#load_state('~/.cache/dein')
   call dein#begin('~/.cache/dein')
   call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
-
   call dein#add('/usr/local/opt/fzf')
   call dein#add('arcticicestudio/nord-vim')
   call dein#add('beloglazov/vim-textobj-quotes')
@@ -152,28 +151,12 @@ augroup vimrcEx
   autocmd BufRead,BufNewFile gitconfig.local set filetype=gitconfig
   autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
   autocmd BufRead,BufNewFile vimrc.local set filetype=vim
-  " autocmd BufRead,BufNewFile *.md setlocal spell
-  " autocmd FileType gitcommit setlocal spell
 
   autocmd BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
 
   " Automatically close corresponding loclist when quitting a window
   autocmd QuitPre * if &filetype != 'qf' | silent! lclose | endif
 augroup END
-
-" ALE linting events
-" augroup ale
-"   autocmd!
-" 
-"   autocmd VimEnter *
-"         \ set updatetime=1000 |
-"         \ let g:ale_lint_on_text_changed = 0
-" 
-"   autocmd CursorHold * call ale#Queue(0)
-"   autocmd CursorHoldI * call ale#Queue(0)
-"   autocmd InsertEnter * call ale#Queue(0)
-"   autocmd InsertLeave * call ale#Queue(0)
-" augroup END
 
 let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
 
@@ -185,10 +168,8 @@ xmap q iq
 omap q iq
 
 " Move between linting errors
-" nnoremap ]r :ALENextWrap<CR>
-" nnoremap [r :ALEPreviousWrap<CR>
-nmap <silent> <leader>aj :ALENext<cr>
-nmap <silent> <leader>ak :ALEPrevious<cr>
+nmap <silent> <Leader>aj :ALENext<cr>
+nmap <silent> <Leader>ak :ALEPrevious<cr>
 
 " let g:ale_enabled = 1
 
@@ -199,14 +180,6 @@ let g:ale_completion_enabled = 1
 
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
-" let g:ale_fix_on_save = 0
-" let g:ale_lint_delay = 500
-" let g:ale_lint_on_enter = 1
-" let g:ale_lint_on_insert_leave = 1
-" let g:ale_lint_on_save = 1
-" let g:ale_lint_on_text_changed = 1
-" let g:ale_set_balloons = 1
-" let g:ale_set_highlights = 1
 let g:ale_sign_error = ''
 let g:ale_sign_style_error = ''
 let g:ale_sign_style_warning = ''
@@ -274,13 +247,15 @@ endif
 " will insert tab at beginning of line,
 " will use completion if not at beginning
 set wildmode=list:longest,list:full
-function! InsertTabWrapper()
+
+function! InsertTabWrapper() abort
   let col = col('.') - 1
+
   if !col || getline('.')[col - 1] !~# '\k'
     return "\<Tab>"
-  else
-    return "\<C-p>"
   endif
+
+  return "\<C-p>"
 endfunction
 inoremap <Tab> <C-r>=InsertTabWrapper()<CR>
 inoremap <S-Tab> <C-n>
@@ -363,9 +338,6 @@ let g:ack_mappings = {
       \   'gv': '<C-w><CR><C-w>H<C-w>b<C-w>J',
       \ }
 
-" nnoremap <leader>ct :silent ! ctags -R --languages=ruby --exclude=.git --exclude=log -f .git/tags<cr>
-" nnoremap <leader>ct :silent ! ripper-tags --tag-relative=always --recurse=yes --exclude=vendor --exclude=.git --exclude=log --tag-file .git/tags<cr><cr>
-
 " Saner movement through wrapped lines
 nnoremap j gj
 nnoremap k gk
@@ -376,5 +348,3 @@ noremap <S-h> gT
 
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-b> :Buffers<CR>
-
-" let g:airline_extensions = []
