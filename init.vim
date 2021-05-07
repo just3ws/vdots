@@ -26,6 +26,7 @@ if dein#load_state('~/.cache/dein')
   call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
   call dein#add('/usr/local/opt/fzf')
+  call dein#add('itchyny/lightline.vim')
   call dein#add('arcticicestudio/nord-vim')
   call dein#add('beloglazov/vim-textobj-quotes')
   call dein#add('christoomey/vim-run-interactive')
@@ -58,8 +59,6 @@ if dein#load_state('~/.cache/dein')
   call dein#add('tpope/vim-rhubarb')
   call dein#add('tpope/vim-sensible')
   call dein#add('tpope/vim-surround')
-  call dein#add('vim-airline/vim-airline')
-  call dein#add('vim-airline/vim-airline-themes')
   call dein#add('vim-ruby/vim-ruby')
   call dein#add('vim-scripts/align')
   call dein#add('vitalk/vim-shebang')
@@ -77,6 +76,7 @@ if dein#check_install()
 endif
 
 runtime! plugin/sensible.vim
+
 
 if has('nvim')
   " ' - Maximum number of previously edited files marks
@@ -108,14 +108,19 @@ function! s:themes_best_colors() abort
   set t_Co=256
 endfunction
 
-" set background=dark
+set laststatus=2
+set noshowmode
+
+set background=dark
 call s:themes_best_colors()
-let g:airline_theme = 'nord'
+" let g:airline_theme = 'nord'
 colorscheme nord
 highlight Conceal guifg=#616E88 ctermfg=8
 
 " Convert ; to : in modeline
 nnoremap ; :
+
+nnoremap <leader>ri :RunInInteractiveShell<space>
 
 set backspace=2   " Backspace deletes like most programs in insert mode
 set autowrite     " Automatically :write before running commands
@@ -185,7 +190,7 @@ let g:ale_sign_style_error = ''
 let g:ale_sign_style_warning = ''
 let g:ale_sign_warning = ''
 
-let g:airline#extensions#ale#enabled = 1
+" let g:airline#extensions#ale#enabled = 1
 
 let g:ale_fixers = {
       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
@@ -348,3 +353,5 @@ noremap <S-h> gT
 
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-b> :Buffers<CR>
+
+let g:lightline = { 'colorscheme': 'nord' }
