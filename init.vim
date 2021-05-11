@@ -26,6 +26,8 @@ if dein#load_state('~/.cache/dein')
   call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
   call dein#add('/usr/local/opt/fzf')
+  call dein#add('neoclide/coc.nvim', { 'merged': 0 })
+  call dein#add('ap/vim-buftabline')
   call dein#add('itchyny/lightline.vim')
   call dein#add('arcticicestudio/nord-vim')
   call dein#add('beloglazov/vim-textobj-quotes')
@@ -355,3 +357,16 @@ nnoremap <C-p> :FZF<CR>
 nnoremap <C-b> :Buffers<CR>
 
 let g:lightline = { 'colorscheme': 'nord' }
+
+" CoC
+" GoTo code navigation.
+nmap <leader>gd <Plug>(coc-definition)
+nmap <leader>gy <Plug>(coc-type-definition)
+nmap <leader>gi <Plug>(coc-implementation)
+nmap <leader>gr <Plug>(coc-references)
+nmap <leader>rr <Plug>(coc-rename)
+nmap <leader>g[ <Plug>(coc-diagnostic-prev)
+nmap <leader>g] <Plug>(coc-diagnostic-next)
+nmap <silent> <leader>gp <Plug>(coc-diagnostic-prev-error)
+nmap <silent> <leader>gn <Plug>(coc-diagnostic-next-error)
+nnoremap <leader>cr :CocRestart
