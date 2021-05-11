@@ -26,20 +26,20 @@ if dein#load_state('~/.cache/dein')
   call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
 
   call dein#add('/usr/local/opt/fzf')
-  call dein#add('neoclide/coc.nvim', { 'merged': 0 })
   call dein#add('ap/vim-buftabline')
-  call dein#add('itchyny/lightline.vim')
   call dein#add('arcticicestudio/nord-vim')
   call dein#add('beloglazov/vim-textobj-quotes')
   call dein#add('christoomey/vim-run-interactive')
   call dein#add('dense-analysis/ale')
   call dein#add('editorconfig/editorconfig-vim')
   call dein#add('fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' })
+  call dein#add('itchyny/lightline.vim')
   call dein#add('junegunn/fzf.vim')
   call dein#add('kana/vim-textobj-user')
   call dein#add('mhinz/vim-startify')
   call dein#add('mileszs/ack.vim')
   call dein#add('nelstrom/vim-textobj-rubyblock')
+  call dein#add('neoclide/coc.nvim', { 'merged': 0 })
   call dein#add('pbrisbin/vim-mkdir')
   call dein#add('preservim/nerdtree')
   call dein#add('ryanoasis/vim-devicons')
@@ -63,6 +63,7 @@ if dein#load_state('~/.cache/dein')
   call dein#add('tpope/vim-surround')
   call dein#add('vim-ruby/vim-ruby')
   call dein#add('vim-scripts/align')
+  call dein#add('vim-test/vim-test')
   call dein#add('vitalk/vim-shebang')
   call dein#add('wellle/targets.vim')
 
@@ -370,3 +371,22 @@ nmap <leader>g] <Plug>(coc-diagnostic-next)
 nmap <silent> <leader>gp <Plug>(coc-diagnostic-prev-error)
 nmap <silent> <leader>gn <Plug>(coc-diagnostic-next-error)
 nnoremap <leader>cr :CocRestart
+
+" :TestNearest	In a test file runs the test nearest to the cursor, otherwise
+" runs the last nearest test. In test frameworks that don't support line
+" numbers it will polyfill this functionality with regexes.
+nmap <silent> t<C-n> :TestNearest<CR>
+" :TestFile	In a test file runs all tests in the current file, otherwise runs
+" the last file tests.
+nmap <silent> t<C-f> :TestFile<CR>
+" :TestSuite	Runs the whole test suite (if the current file is a test file,
+" runs that framework's test suite, otherwise determines the test framework
+" from the last run test).
+nmap <silent> t<C-s> :TestSuite<CR>
+" :TestLast	Runs the last test.
+nmap <silent> t<C-l> :TestLast<CR>
+" :TestVisit	Visits the test file from which you last run your tests (useful
+" when you're trying to make a test pass, and you dive deep into application
+" code and close your test buffer to make more space, and once you've made it
+" pass you want to go back to the test file to write more tests).
+nmap <silent> t<C-g> :TestVisit<CR>
