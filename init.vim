@@ -18,68 +18,54 @@ augroup end
 let g:mapleader = ';'
 let g:maplocalleader = ';'
 
-set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 set runtimepath+=/usr/local/opt/fzf
 
-if dein#load_state('~/.cache/dein')
-  call dein#begin('~/.cache/dein')
-  call dein#add('~/.cache/dein/repos/github.com/Shougo/dein.vim')
-
-  call dein#add('/usr/local/opt/fzf')
-  call dein#add('ap/vim-buftabline')
-  call dein#add('arcticicestudio/nord-vim')
-  call dein#add('beloglazov/vim-textobj-quotes')
-  call dein#add('christoomey/vim-run-interactive')
-  call dein#add('dense-analysis/ale')
-  call dein#add('editorconfig/editorconfig-vim')
-  call dein#add('fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' })
-  call dein#add('itchyny/lightline.vim')
-  call dein#add('junegunn/fzf.vim')
-  call dein#add('kana/vim-textobj-user')
-  call dein#add('mhinz/vim-startify')
-  call dein#add('mileszs/ack.vim')
-  call dein#add('nelstrom/vim-textobj-rubyblock')
-  call dein#add('neoclide/coc.nvim', { 'merged': 0 })
-  call dein#add('pbrisbin/vim-mkdir')
-  call dein#add('preservim/nerdtree')
-  call dein#add('ryanoasis/vim-devicons')
-  call dein#add('sheerun/vim-polyglot')
-  call dein#add('sjl/vitality.vim')
-  call dein#add('tek/vim-textobj-ruby')
-  call dein#add('tpope/vim-bundler')
-  call dein#add('tpope/vim-commentary')
-  call dein#add('tpope/vim-dispatch')
-  call dein#add('tpope/vim-endwise')
-  call dein#add('tpope/vim-eunuch')
-  call dein#add('tpope/vim-fugitive')
-  call dein#add('tpope/vim-git')
-  call dein#add('tpope/vim-projectionist')
-  call dein#add('tpope/vim-ragtag')
-  call dein#add('tpope/vim-rails')
-  call dein#add('tpope/vim-rake')
-  call dein#add('tpope/vim-repeat')
-  call dein#add('tpope/vim-rhubarb')
-  call dein#add('tpope/vim-sensible')
-  call dein#add('tpope/vim-surround')
-  call dein#add('vim-ruby/vim-ruby')
-  call dein#add('vim-scripts/align')
-  call dein#add('vim-test/vim-test')
-  call dein#add('vitalk/vim-shebang')
-  call dein#add('wellle/targets.vim')
-
-  call dein#end()
-  call dein#save_state()
-endif
+call plug#begin(stdpath('data') . '/plugged')
+  Plug '/usr/local/opt/fzf'
+  Plug 'ap/vim-buftabline'
+  Plug 'arcticicestudio/nord-vim'
+  Plug 'beloglazov/vim-textobj-quotes'
+  Plug 'christoomey/vim-run-interactive'
+  Plug 'dense-analysis/ale'
+  Plug 'editorconfig/editorconfig-vim'
+  Plug 'fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' }
+  Plug 'itchyny/lightline.vim'
+  Plug 'junegunn/fzf.vim'
+  Plug 'kana/vim-textobj-user'
+  Plug 'mhinz/vim-startify'
+  Plug 'nelstrom/vim-textobj-rubyblock'
+  Plug 'pbrisbin/vim-mkdir'
+  Plug 'preservim/nerdtree'
+  Plug 'ryanoasis/vim-devicons'
+  Plug 'sheerun/vim-polyglot'
+  Plug 'sjl/vitality.vim'
+  Plug 'tek/vim-textobj-ruby'
+  Plug 'tpope/vim-bundler'
+  Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-dispatch'
+  Plug 'tpope/vim-endwise'
+  Plug 'tpope/vim-eunuch'
+  Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-git'
+  Plug 'tpope/vim-projectionist'
+  Plug 'tpope/vim-ragtag'
+  Plug 'tpope/vim-rails'
+  Plug 'tpope/vim-rake'
+  Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-rhubarb'
+  Plug 'tpope/vim-sensible'
+  Plug 'tpope/vim-surround'
+  Plug 'vim-ruby/vim-ruby'
+  Plug 'vim-scripts/align'
+  Plug 'vim-test/vim-test'
+  Plug 'vitalk/vim-shebang'
+  Plug 'wellle/targets.vim'
+call plug#end()
 
 filetype plugin indent on
 syntax enable
 
-if dein#check_install()
-  call dein#install()
-endif
-
 runtime! plugin/sensible.vim
-
 
 if has('nvim')
   " ' - Maximum number of previously edited files marks
@@ -116,9 +102,9 @@ set noshowmode
 
 set background=dark
 call s:themes_best_colors()
-" let g:airline_theme = 'nord'
 colorscheme nord
 highlight Conceal guifg=#616E88 ctermfg=8
+let g:lightline = { 'colorscheme': 'nord' }
 
 " Convert ; to : in modeline
 nnoremap ; :
@@ -129,8 +115,9 @@ set backspace=2   " Backspace deletes like most programs in insert mode
 set autowrite     " Automatically :write before running commands
 set nowrap
 
-set backupdir=$XDG_CONFIG_HOME/nvim/tmp,.
-set directory=$XDG_CONFIG_HOME/nvim/tmp,.
+" set backupdir=stdpath('data').'/nvim/backup'
+set backupdir=$XDG_DATA_HOME/nvim/backup 
+set directory=$XDG_DATA_HOME/nvim/tmp
 
 set hlsearch
 nnoremap <CR> :nohlsearch<CR><CR>
@@ -237,19 +224,19 @@ let g:fzf_action = {
       \ 'ctrl-x': 'split',
       \ 'ctrl-v': 'vsplit' }
 
-" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
-if executable('ag')
-  " Use Ag over Grep
-  set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in fzf for listing files. Lightning fast and respects .gitignore
-  let $FZF_DEFAULT_COMMAND = 'ag --literal --files-with-matches --nocolor --hidden -g ""'
-
-  if !exists(':Ag')
-    command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
-    nnoremap \ :Ag<SPACE>
-  endif
-endif
+" " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+" if executable('ag')
+"   " Use Ag over Grep
+"   set grepprg=ag\ --nogroup\ --nocolor
+" 
+"   " Use ag in fzf for listing files. Lightning fast and respects .gitignore
+"   let $FZF_DEFAULT_COMMAND = 'ag --literal --files-with-matches --nocolor --hidden -g ""'
+" 
+"   if !exists(':Ag')
+"     command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
+"     nnoremap \ :Ag<SPACE>
+"   endif
+" endif
 
 " Tab completion
 " will insert tab at beginning of line,
@@ -330,22 +317,6 @@ xnoremap > >gv
 nnoremap <expr> N 'nN'[v:searchforward]
 nnoremap <expr> n 'Nn'[v:searchforward]
 
-let g:ack_default_options = ' -s -H --nopager --nocolor --nogroup --column'
-let g:ack_use_dispatch = 0
-let g:ackhighlight = 1
-let g:ackpreview = 0
-let g:ack_mappings = {
-      \   't': '<C-w><CR><C-w>T',
-      \   'T': '<C-w><CR><C-w>TgT<C-w>j',
-      \   'o': '<CR>zz',
-      \   'O': '<CR><C-w><C-w>:ccl<CR>',
-      \   'go': '<CR><C-w>j',
-      \   'h': '<C-w><CR><C-w>K',
-      \   'H': '<C-w><CR><C-w>K<C-w>b',
-      \   'v': '<C-w><CR><C-w>H<C-w>b<C-w>J<C-w>t',
-      \   'gv': '<C-w><CR><C-w>H<C-w>b<C-w>J',
-      \ }
-
 " Saner movement through wrapped lines
 nnoremap j gj
 nnoremap k gk
@@ -357,20 +328,6 @@ noremap <S-h> gT
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-b> :Buffers<CR>
 
-let g:lightline = { 'colorscheme': 'nord' }
-
-" CoC
-" GoTo code navigation.
-nmap <leader>gd <Plug>(coc-definition)
-nmap <leader>gy <Plug>(coc-type-definition)
-nmap <leader>gi <Plug>(coc-implementation)
-nmap <leader>gr <Plug>(coc-references)
-nmap <leader>rr <Plug>(coc-rename)
-nmap <leader>g[ <Plug>(coc-diagnostic-prev)
-nmap <leader>g] <Plug>(coc-diagnostic-next)
-nmap <silent> <leader>gp <Plug>(coc-diagnostic-prev-error)
-nmap <silent> <leader>gn <Plug>(coc-diagnostic-next-error)
-nnoremap <leader>cr :CocRestart
 
 " :TestNearest	In a test file runs the test nearest to the cursor, otherwise
 " runs the last nearest test. In test frameworks that don't support line
