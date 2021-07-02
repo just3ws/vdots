@@ -27,6 +27,7 @@ let g:startify_list_order = [
 
 let g:startify_skiplist = [
       \ $HOME . '/private/*',
+      \ $HOME . '/\.private/*',
       \ $VIMRUNTIME . '/doc',
       \ '/Desktop',
       \ '/tmp',
@@ -41,14 +42,14 @@ let g:startify_skiplist = [
       \ ]
 
 let g:startify_bookmarks = [
-      \  { 'z': '~/.config/zsh/.zshrc'            },
-      \  { 'Z': '~/.zshenv'                       },
-      \  { 't': '~/.config/tmux/tmux.conf'        },
-      \  { 'v': $MYVIMRC                          }
+      \  { 'z': '~/.config/zsh/.zshrc'     },
+      \  { 'Z': '~/.config/zsh/.zshenv'    },
+      \  { 't': '~/.config/tmux/tmux.conf' },
+      \  { 'v': $MYVIMRC                   }
       \ ]
 
 let g:startify_commands = [
-      \ {'p': 'call dein#update()'},
+      \ {'p': ':PlugUpdate'},
       \ ]
 
 function! ToStartify() abort

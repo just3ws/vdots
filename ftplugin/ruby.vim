@@ -46,33 +46,33 @@ let g:ale_fixers.ruby = ['rubocop']
 " highlight! rubyGlobalVariable term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
 " highlight! rubyInterpolation term=bold cterm=reverse ctermfg=1 gui=reverse guifg=#BF616A guibg=#2E3440
 
-let g:tagbar_type_ruby = {
-      \   'kinds': [
-      \     'm:modules',
-      \     'c:classes',
-      \     'd:describes',
-      \     'C:contexts',
-      \     'f:methods',
-      \     'F:singleton methods'
-      \   ]
-      \ }
-if executable('ripper-tags')
-  let g:tagbar_type_ruby = {
-        \   'kinds': [
-        \     'm:modules',
-        \     'c:classes',
-        \     'C:constants',
-        \     'F:singleton methods',
-        \     'f:methods',
-        \     'a:aliases'
-        \   ],
-        \   'kind2scope': { 'c': 'class', 'm': 'class' },
-        \   'scope2kind': { 'class': 'c' },
-        \   'ctagsbin': 'ripper-tags',
-        \   'ctagsargs': ['-f', '-']
-        \ }
-
-endif
+" let g:tagbar_type_ruby = {
+"       \   'kinds': [
+"       \     'm:modules',
+"       \     'c:classes',
+"       \     'd:describes',
+"       \     'C:contexts',
+"       \     'f:methods',
+"       \     'F:singleton methods'
+"       \   ]
+"       \ }
+" if executable('ripper-tags')
+"   let g:tagbar_type_ruby = {
+"         \   'kinds': [
+"         \     'm:modules',
+"         \     'c:classes',
+"         \     'C:constants',
+"         \     'F:singleton methods',
+"         \     'f:methods',
+"         \     'a:aliases'
+"         \   ],
+"         \   'kind2scope': { 'c': 'class', 'm': 'class' },
+"         \   'scope2kind': { 'class': 'c' },
+"         \   'ctagsbin': 'ripper-tags',
+"         \   'ctagsargs': ['-f', '-']
+"         \ }
+" 
+" endif
 
 " imap <S-CR> <CR><CR>end<Esc>-cc
 
