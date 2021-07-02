@@ -33,10 +33,10 @@ augroup filetypedetect
   " autocmd BufNewFile,BufRead *.alfredappearance,.alex,.firebaserc,.babelrc,.prettierrc,.eslintrc,.stylelintrc setfiletype json
   " autocmd BufNewFile,BufRead .joker setfiletype clojure
 
-  autocmd BufNewFile,BufRead */Hosted/admin/templates/**.htm set filetype=smarty
-  autocmd BufNewFile,BufRead */Hosted/admin/templates/**.txt set filetype=smarty
-  autocmd BufNewFile,BufRead */Hosted/templates/**.htm set filetype=smarty
-  autocmd BufNewFile,BufRead */Hosted/templates/**.txt set filetype=smarty
+  " autocmd BufNewFile,BufRead */Hosted/admin/templates/**.htm set filetype=smarty
+  " autocmd BufNewFile,BufRead */Hosted/admin/templates/**.txt set filetype=smarty
+  " autocmd BufNewFile,BufRead */Hosted/templates/**.htm set filetype=smarty
+  " autocmd BufNewFile,BufRead */Hosted/templates/**.txt set filetype=smarty
 
   autocmd BufNewFile,BufRead *.lst set filetype=text
 augroup END

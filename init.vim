@@ -22,10 +22,9 @@ set runtimepath+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
   Plug '/usr/local/opt/fzf'
-  Plug 'ap/vim-buftabline'
+  Plug 'mileszs/ack.vim'
   Plug 'arcticicestudio/nord-vim'
   Plug 'beloglazov/vim-textobj-quotes'
-  Plug 'christoomey/vim-run-interactive'
   Plug 'dense-analysis/ale'
   Plug 'editorconfig/editorconfig-vim'
   Plug 'fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' }
@@ -57,7 +56,6 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'tpope/vim-surround'
   Plug 'vim-ruby/vim-ruby'
   Plug 'vim-scripts/align'
-  Plug 'vim-test/vim-test'
   Plug 'vitalk/vim-shebang'
   Plug 'wellle/targets.vim'
 call plug#end()
@@ -66,6 +64,20 @@ filetype plugin indent on
 syntax enable
 
 runtime! plugin/sensible.vim
+
+let $BACKUP_DIR = file_utils#init_app_dir('/backup')
+set backupdir=$BACKUP_DIR//
+
+let $SWAP_DIR = file_utils#init_app_dir('/swap')
+set directory=$SWAP_DIR//
+
+let $UNDO_DIR = file_utils#init_app_dir('/undo')
+set undodir=$UNDO_DIR//
+
+let $VIEW_DIR = file_utils#init_app_dir('/view')
+set viewdir=$VIEW_DIR//
+
+let $SHADA_DIR = file_utils#init_app_dir('/shada')
 
 if has('nvim')
   " ' - Maximum number of previously edited files marks
@@ -115,10 +127,6 @@ set backspace=2   " Backspace deletes like most programs in insert mode
 set autowrite     " Automatically :write before running commands
 set nowrap
 
-" set backupdir=stdpath('data').'/nvim/backup'
-set backupdir=$XDG_DATA_HOME/nvim/backup 
-set directory=$XDG_DATA_HOME/nvim/tmp
-
 set hlsearch
 nnoremap <CR> :nohlsearch<CR><CR>
 
@@ -163,15 +171,12 @@ xmap q iq
 omap q iq
 
 " Move between linting errors
-nmap <silent> <Leader>aj :ALENext<cr>
-nmap <silent> <Leader>ak :ALEPrevious<cr>
+nnoremap ]r :ALENextWrap<CR>
+nnoremap [r :ALEPreviousWrap<CR>
 
-" let g:ale_enabled = 1
+let g:ale_enabled = 0
 
-" let g:ale_shell = '/usr/local/bin/zsh'
-
-let g:ale_change_sign_column_color = 1
-let g:ale_completion_enabled = 1
+let g:ale_shell = '/usr/local/bin/zsh'
 
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
@@ -180,10 +185,9 @@ let g:ale_sign_style_error = ''
 let g:ale_sign_style_warning = ''
 let g:ale_sign_warning = ''
 
-" let g:airline#extensions#ale#enabled = 1
-
 let g:ale_fixers = {
       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+      \   'yaml': ['remove_trailing_lines', 'trim_whitespace'],
       \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
       \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
       \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
@@ -224,20 +228,6 @@ let g:fzf_action = {
       \ 'ctrl-x': 'split',
       \ 'ctrl-v': 'vsplit' }
 
-" " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
-" if executable('ag')
-"   " Use Ag over Grep
-"   set grepprg=ag\ --nogroup\ --nocolor
-" 
-"   " Use ag in fzf for listing files. Lightning fast and respects .gitignore
-"   let $FZF_DEFAULT_COMMAND = 'ag --literal --files-with-matches --nocolor --hidden -g ""'
-" 
-"   if !exists(':Ag')
-"     command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
-"     nnoremap \ :Ag<SPACE>
-"   endif
-" endif
-
 " Tab completion
 " will insert tab at beginning of line,
 " will use completion if not at beginning
@@ -265,9 +255,6 @@ nnoremap k gk
 " Swap the case for changing tabs
 noremap <S-l> gt
 noremap <S-h> gT
-
-" Run commands that require an interactive shell
-nnoremap <Leader>r :RunInInteractiveShell<Space>
 
 " Treat <li> and <p> tags like the block tags they are
 let g:html_indent_tags = 'li\|p'
@@ -328,22 +315,34 @@ noremap <S-h> gT
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-b> :Buffers<CR>
 
+command! Reload :source $MYVIMRC
 
-" :TestNearest	In a test file runs the test nearest to the cursor, otherwise
-" runs the last nearest test. In test frameworks that don't support line
-" numbers it will polyfill this functionality with regexes.
-nmap <silent> t<C-n> :TestNearest<CR>
-" :TestFile	In a test file runs all tests in the current file, otherwise runs
-" the last file tests.
-nmap <silent> t<C-f> :TestFile<CR>
-" :TestSuite	Runs the whole test suite (if the current file is a test file,
-" runs that framework's test suite, otherwise determines the test framework
-" from the last run test).
-nmap <silent> t<C-s> :TestSuite<CR>
-" :TestLast	Runs the last test.
-nmap <silent> t<C-l> :TestLast<CR>
-" :TestVisit	Visits the test file from which you last run your tests (useful
-" when you're trying to make a test pass, and you dive deep into application
-" code and close your test buffer to make more space, and once you've made it
-" pass you want to go back to the test file to write more tests).
-nmap <silent> t<C-g> :TestVisit<CR>
+" command! Aliasrc  :edit $ZDOTDIR/.aliasrc
+" command! Saliasrc :split $ZDOTDIR/.aliasrc
+" command! Taliasrc :tabedit $ZDOTDIR/.aliasrc
+" command! Valiasrc :vsplit $ZDOTDIR/.aliasrc
+
+" command! Antigenrc  :edit $ZDOTDIR/.antigenrc
+" command! Santigenrc :split $ZDOTDIR/.antigenrc
+" command! Tantigenrc :tabedit $ZDOTDIR/.antigenrc
+" command! Vantigenrc :vsplit $ZDOTDIR/.antigenrc
+
+command! Vimrc  :edit $MYVIMRC
+command! Svimrc :split $MYVIMRC
+command! Tvimrc :tabedit $MYVIMRC
+command! Vvimrc :vsplit $MYVIMRC
+
+" command! Zpromptrc  :edit $ZDOTDIR/.zpromptrc
+" command! Szpromptrc :split $ZDOTDIR/.zpromptrc
+" command! Vzpromptrc :vsplit $ZDOTDIR/.zpromptrc
+" command! Tzpromptrc :tabedit $ZDOTDIR/.zpromptrc
+
+command! Zshenv  :edit $ZDOTDIR/.zshenv
+command! Szshenv :split $ZDOTDIR/.zshenv
+command! Tzshenv :tabedit $ZDOTDIR/.zshenv
+command! Vzshenv :vsplit $ZDOTDIR/.zshenv
+
+" command! Zshrc  :edit $ZDOTDIR/.zshrc
+" command! Szshrc :split $ZDOTDIR/.zshrc
+" command! Tzshrc :tabedit $ZDOTDIR/.zshrc
+" command! Vzshrc :vsplit $ZDOTDIR/.zshrc
