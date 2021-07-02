@@ -35,7 +35,6 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'nelstrom/vim-textobj-rubyblock'
   Plug 'pbrisbin/vim-mkdir'
   Plug 'preservim/nerdtree'
-  Plug 'ryanoasis/vim-devicons'
   Plug 'sheerun/vim-polyglot'
   Plug 'sjl/vitality.vim'
   Plug 'tek/vim-textobj-ruby'
@@ -150,10 +149,6 @@ augroup vimrcEx
   autocmd BufRead,BufNewFile *.md set filetype=markdown
   autocmd BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
   autocmd BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
-  autocmd BufRead,BufNewFile aliases.local,zshrc.local,*/zsh/configs/* set filetype=sh
-  autocmd BufRead,BufNewFile gitconfig.local set filetype=gitconfig
-  autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
-  autocmd BufRead,BufNewFile vimrc.local set filetype=vim
 
   autocmd BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
 
@@ -174,16 +169,14 @@ omap q iq
 nnoremap ]r :ALENextWrap<CR>
 nnoremap [r :ALEPreviousWrap<CR>
 
-let g:ale_enabled = 0
-
 let g:ale_shell = '/usr/local/bin/zsh'
 
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
-let g:ale_sign_error = ''
-let g:ale_sign_style_error = ''
-let g:ale_sign_style_warning = ''
-let g:ale_sign_warning = ''
+let g:ale_sign_error = 'E'
+let g:ale_sign_style_error = 'e'
+let g:ale_sign_warning = 'W'
+let g:ale_sign_style_warning = 'w'
 
 let g:ale_fixers = {
       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
@@ -194,32 +187,23 @@ let g:ale_fixers = {
       \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
       \ }
 
-" When the type of shell script is /bin/sh, assume a POSIX-compatible
-" shell for syntax highlighting purposes.
+" When the type of shell script is /bin/sh, assume a POSIX-compatible shell
+" for syntax highlighting purposes.
 let g:is_posix = 1
 
-" Softtabs, 2 spaces
 set tabstop=2
 set shiftwidth=2
 set shiftround
 set expandtab
 
-" Use one space, not two, after punctuation.
 set nojoinspaces
-
-let g:webdevicons_enable = 1
-let g:webdevicons_enable_nerdtree = 1
-
-let g:WebDevIconsOS = 'Darwin'
 
 let g:fzf_history_dir = $FZF_HISTORY_DIR
 
-" let g:fzf_layout = { 'window': 'new' }
 " Default fzf layout
 " - down / up / left / right
 let g:fzf_layout = { 'down': '~40%' }
 
-" In Neovim, you can set up fzf window using a Vim command
 let g:fzf_layout = { 'window': 'enew' }
 let g:fzf_layout = { 'window': '-tabnew' }
 let g:fzf_layout = { 'window': '10new' }
@@ -317,32 +301,12 @@ nnoremap <C-b> :Buffers<CR>
 
 command! Reload :source $MYVIMRC
 
-" command! Aliasrc  :edit $ZDOTDIR/.aliasrc
-" command! Saliasrc :split $ZDOTDIR/.aliasrc
-" command! Taliasrc :tabedit $ZDOTDIR/.aliasrc
-" command! Valiasrc :vsplit $ZDOTDIR/.aliasrc
-
-" command! Antigenrc  :edit $ZDOTDIR/.antigenrc
-" command! Santigenrc :split $ZDOTDIR/.antigenrc
-" command! Tantigenrc :tabedit $ZDOTDIR/.antigenrc
-" command! Vantigenrc :vsplit $ZDOTDIR/.antigenrc
-
 command! Vimrc  :edit $MYVIMRC
 command! Svimrc :split $MYVIMRC
 command! Tvimrc :tabedit $MYVIMRC
 command! Vvimrc :vsplit $MYVIMRC
 
-" command! Zpromptrc  :edit $ZDOTDIR/.zpromptrc
-" command! Szpromptrc :split $ZDOTDIR/.zpromptrc
-" command! Vzpromptrc :vsplit $ZDOTDIR/.zpromptrc
-" command! Tzpromptrc :tabedit $ZDOTDIR/.zpromptrc
-
 command! Zshenv  :edit $ZDOTDIR/.zshenv
 command! Szshenv :split $ZDOTDIR/.zshenv
 command! Tzshenv :tabedit $ZDOTDIR/.zshenv
 command! Vzshenv :vsplit $ZDOTDIR/.zshenv
-
-" command! Zshrc  :edit $ZDOTDIR/.zshrc
-" command! Szshrc :split $ZDOTDIR/.zshrc
-" command! Tzshrc :tabedit $ZDOTDIR/.zshrc
-" command! Vzshrc :vsplit $ZDOTDIR/.zshrc
