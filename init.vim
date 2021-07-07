@@ -74,16 +74,16 @@ syntax enable
 runtime! plugin/sensible.vim
 
 set backupskip=*.log,/tmp/*
-set backupdir=/Users/mike.hall.ce/.local/share/nvim/backup//
+set backupdir=/Users/mike/.local/share/nvim/backup//
 set backupext=.bak
-set directory=/Users/mike.hall.ce/.local/share/nvim/swap//
-set undodir=/Users/mike.hall.ce/.local/share/nvim/undo//
-set viewdir=/Users/mike.hall.ce/.local/share/nvim/view//
+set directory=/Users/mike/.local/share/nvim/swap//
+set undodir=/Users/mike/.local/share/nvim/undo//
+set viewdir=/Users/mike/.local/share/nvim/view//
 
 if has('nvim')
-  let g:ruby_host_prog = '/Users/mike.hall.ce/.asdf/shims/ruby'
+  let g:ruby_host_prog = expand($HOST .'/.asdf/shims/ruby')
   let g:python2_host_prog = expand($HOST . '/.asdf/shims/python2')
-  let g:python3_host_prog = '/Users/mike.hall.ce/.asdf/shims/python3'
+  let g:python3_host_prog = expand($HOST .'/.asdf/shims/python3')
 
   " ' - Maximum number of previously edited files marks
   " < - Maximum number of lines saved for each register
