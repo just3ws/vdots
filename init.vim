@@ -22,7 +22,6 @@ set runtimepath+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
   Plug '/usr/local/opt/fzf'
-  Plug 'mileszs/ack.vim'
   Plug 'arcticicestudio/nord-vim'
   Plug 'beloglazov/vim-textobj-quotes'
   Plug 'dense-analysis/ale'
@@ -32,6 +31,7 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'junegunn/fzf.vim'
   Plug 'kana/vim-textobj-user'
   Plug 'mhinz/vim-startify'
+  Plug 'mileszs/ack.vim'
   Plug 'nelstrom/vim-textobj-rubyblock'
   Plug 'pbrisbin/vim-mkdir'
   Plug 'preservim/nerdtree'
