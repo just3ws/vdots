@@ -81,9 +81,9 @@ set undodir=/Users/mike/.local/share/nvim/undo//
 set viewdir=/Users/mike/.local/share/nvim/view//
 
 if has('nvim')
-  let g:ruby_host_prog = expand($HOST .'/.asdf/shims/ruby')
-  let g:python2_host_prog = expand($HOST . '/.asdf/shims/python2')
-  let g:python3_host_prog = expand($HOST .'/.asdf/shims/python3')
+  let g:ruby_host_prog = '/Users/mike/.asdf/shims/ruby'
+  let g:python2_host_prog = '/Users/mike/.asdf/shims/python2'
+  let g:python3_host_prog = '/Users/mike/.asdf/shims/python3'
 
   " ' - Maximum number of previously edited files marks
   " < - Maximum number of lines saved for each register
