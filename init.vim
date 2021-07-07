@@ -3,6 +3,15 @@ if has('vim_starting')
   scriptencoding utf-8
 endif
 
+call mkdir(stdpath('cache'), 'p')
+call mkdir(stdpath('config'), 'p')
+call mkdir(stdpath('data') . '/backup', 'p')
+call mkdir(stdpath('data') . '/plugged', 'p')
+call mkdir(stdpath('data') . '/shada', 'p')
+call mkdir(stdpath('data') . '/swap', 'p')
+call mkdir(stdpath('data') . '/undo', 'p')
+call mkdir(stdpath('data') . '/view', 'p')
+
 filetype on
 filetype indent on
 filetype plugin on
@@ -64,19 +73,10 @@ syntax enable
 
 runtime! plugin/sensible.vim
 
-let $BACKUP_DIR = file_utils#init_app_dir('/backup')
-set backupdir=$BACKUP_DIR//
-
-let $SWAP_DIR = file_utils#init_app_dir('/swap')
-set directory=$SWAP_DIR//
-
-let $UNDO_DIR = file_utils#init_app_dir('/undo')
-set undodir=$UNDO_DIR//
-
-let $VIEW_DIR = file_utils#init_app_dir('/view')
-set viewdir=$VIEW_DIR//
-
-let $SHADA_DIR = file_utils#init_app_dir('/shada')
+set backupdir=/Users/mike.hall.ce/.local/share/nvim/backup//
+set directory=/Users/mike.hall.ce/.local/share/nvim/swap//
+set undodir=/Users/mike.hall.ce/.local/share/nvim/undo//
+set viewdir=/Users/mike.hall.ce/.local/share/nvim/view//
 
 if has('nvim')
   " ' - Maximum number of previously edited files marks
@@ -119,8 +119,6 @@ let g:lightline = { 'colorscheme': 'nord' }
 
 " Convert ; to : in modeline
 nnoremap ; :
-
-nnoremap <leader>ri :RunInInteractiveShell<space>
 
 set backspace=2   " Backspace deletes like most programs in insert mode
 set autowrite     " Automatically :write before running commands
@@ -232,13 +230,9 @@ inoremap <S-Tab> <C-n>
 " Switch between the last two files
 nnoremap <Leader><Leader> <C-^>
 
-" Saner movement through wrapped lines
-nnoremap j gj
-nnoremap k gk
-
 " Swap the case for changing tabs
-noremap <S-l> gt
 noremap <S-h> gT
+noremap <S-l> gt
 
 " Treat <li> and <p> tags like the block tags they are
 let g:html_indent_tags = 'li\|p'
@@ -291,10 +285,6 @@ nnoremap <expr> n 'Nn'[v:searchforward]
 " Saner movement through wrapped lines
 nnoremap j gj
 nnoremap k gk
-
-" Swap the case for changing tabs
-noremap <S-l> gt
-noremap <S-h> gT
 
 nnoremap <C-p> :FZF<CR>
 nnoremap <C-b> :Buffers<CR>
