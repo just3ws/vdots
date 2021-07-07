@@ -80,15 +80,17 @@ set directory=/Users/mike.hall.ce/.local/share/nvim/swap//
 set undodir=/Users/mike.hall.ce/.local/share/nvim/undo//
 set viewdir=/Users/mike.hall.ce/.local/share/nvim/view//
 
-
 if has('nvim')
+  let g:ruby_host_prog = '/Users/mike.hall.ce/.asdf/shims/ruby'
+  let g:python2_host_prog = expand($HOST . '/.asdf/shims/python2')
+  let g:python3_host_prog = '/Users/mike.hall.ce/.asdf/shims/python3'
+
   " ' - Maximum number of previously edited files marks
   " < - Maximum number of lines saved for each register
   " @ - Maximum number of items in the input-line history to be
   " s - Maximum size of an item contents in KiB
   " h - Disable the effect of 'hlsearch' when loading the shada
   set shada='300,<10,@50,s100,h
-
 
   " Write history on idle, for sharing among different sessions
   autocmd! vimrc CursorHold * if exists(':rshada') |
