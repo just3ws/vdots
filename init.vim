@@ -73,10 +73,13 @@ syntax enable
 
 runtime! plugin/sensible.vim
 
+set backupskip=*.log,/tmp/*
 set backupdir=/Users/mike.hall.ce/.local/share/nvim/backup//
+set backupext=.bak
 set directory=/Users/mike.hall.ce/.local/share/nvim/swap//
 set undodir=/Users/mike.hall.ce/.local/share/nvim/undo//
 set viewdir=/Users/mike.hall.ce/.local/share/nvim/view//
+
 
 if has('nvim')
   " ' - Maximum number of previously edited files marks
