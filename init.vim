@@ -30,13 +30,13 @@ let g:maplocalleader = ';'
 set runtimepath+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
+  " Plug 'itchyny/lightline.vim'
   Plug '/usr/local/opt/fzf'
   Plug 'arcticicestudio/nord-vim'
   Plug 'beloglazov/vim-textobj-quotes'
   Plug 'dense-analysis/ale'
   Plug 'editorconfig/editorconfig-vim'
   Plug 'fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' }
-  Plug 'itchyny/lightline.vim'
   Plug 'junegunn/fzf.vim'
   Plug 'kana/vim-textobj-user'
   Plug 'mhinz/vim-startify'
@@ -62,6 +62,9 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'tpope/vim-rhubarb'
   Plug 'tpope/vim-sensible'
   Plug 'tpope/vim-surround'
+  Plug 'tssm/fairyfloss.vim'
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
   Plug 'vim-ruby/vim-ruby'
   Plug 'vim-scripts/align'
   Plug 'vitalk/vim-shebang'
@@ -118,9 +121,10 @@ set noshowmode
 
 set background=dark
 call s:themes_best_colors()
-colorscheme nord
-highlight Conceal guifg=#616E88 ctermfg=8
-let g:lightline = { 'colorscheme': 'nord' }
+colorscheme fairyfloss 
+" highlight Conceal guifg=#616E88 ctermfg=8
+" let g:lightline = { 'colorscheme': 'nord' }
+let g:airline_theme='fairyfloss'
 
 " Convert ; to : in modeline
 nnoremap ; :
