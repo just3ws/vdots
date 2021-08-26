@@ -63,7 +63,7 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'tpope/vim-rhubarb'
   Plug 'tpope/vim-sensible'
   Plug 'tpope/vim-surround'
-  Plug 'tssm/fairyfloss.vim'
+  " Plug 'dracula/vim', { 'as': 'dracula' }
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
   Plug 'vim-ruby/vim-ruby'
@@ -78,18 +78,18 @@ syntax enable
 runtime! plugin/sensible.vim
 
 set backupskip=*.log,/tmp/*
-set backupdir=/Users/mike/.local/share/nvim/backup//
+set backupdir=/Users/mike.hall/.local/share/nvim/backup//
 set backupext=.bak
-set directory=/Users/mike/.local/share/nvim/swap//
-set undodir=/Users/mike/.local/share/nvim/undo//
-set viewdir=/Users/mike/.local/share/nvim/view//
+set directory=/Users/mike.hall/.local/share/nvim/swap//
+set undodir=/Users/mike.hall/.local/share/nvim/undo//
+set viewdir=/Users/mike.hall/.local/share/nvim/view//
 
 " if has('nvim')
 " let g:ruby_host_prog = '/Users/mike/.asdf/shims/ruby'
 let g:ruby_host_prog='asdf shell ruby latest ; asdf exec neovim-ruby-host'
 " let g:python2_host_prog = '/Users/mike/.asdf/shims/python2'
 " let g:python3_host_prog = '/Users/mike/.asdf/shims/python3'
-let g:python_host_prog = '/Users/mike/.asdf/shims/python'
+let g:python_host_prog = '/Users/mike.hall/.asdf/shims/python'
 
 
 " ' - Maximum number of previously edited files marks
@@ -319,3 +319,4 @@ command! Zshenv  :edit $ZDOTDIR/.zshenv
 command! Szshenv :split $ZDOTDIR/.zshenv
 command! Tzshenv :tabedit $ZDOTDIR/.zshenv
 command! Vzshenv :vsplit $ZDOTDIR/.zshenv
+
