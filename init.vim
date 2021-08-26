@@ -35,6 +35,7 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'arcticicestudio/nord-vim'
   Plug 'beloglazov/vim-textobj-quotes'
   Plug 'dense-analysis/ale'
+  " Plug 'dracula/vim', { 'as': 'dracula' }
   Plug 'editorconfig/editorconfig-vim'
   Plug 'fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' }
   Plug 'junegunn/fzf.vim'
@@ -83,24 +84,27 @@ set directory=/Users/mike/.local/share/nvim/swap//
 set undodir=/Users/mike/.local/share/nvim/undo//
 set viewdir=/Users/mike/.local/share/nvim/view//
 
-if has('nvim')
-  let g:ruby_host_prog = '/Users/mike/.asdf/shims/ruby'
-  let g:python2_host_prog = '/Users/mike/.asdf/shims/python2'
-  let g:python3_host_prog = '/Users/mike/.asdf/shims/python3'
+" if has('nvim')
+" let g:ruby_host_prog = '/Users/mike/.asdf/shims/ruby'
+let g:ruby_host_prog='asdf shell ruby latest ; asdf exec neovim-ruby-host'
+" let g:python2_host_prog = '/Users/mike/.asdf/shims/python2'
+" let g:python3_host_prog = '/Users/mike/.asdf/shims/python3'
+let g:python_host_prog = '/Users/mike/.asdf/shims/python'
 
-  " ' - Maximum number of previously edited files marks
-  " < - Maximum number of lines saved for each register
-  " @ - Maximum number of items in the input-line history to be
-  " s - Maximum size of an item contents in KiB
-  " h - Disable the effect of 'hlsearch' when loading the shada
-  set shada='300,<10,@50,s100,h
 
-  " Write history on idle, for sharing among different sessions
-  autocmd! vimrc CursorHold * if exists(':rshada') |
-        \   rshada |
-        \   wshada |
-        \ endif
-endif
+" ' - Maximum number of previously edited files marks
+" < - Maximum number of lines saved for each register
+" @ - Maximum number of items in the input-line history to be
+" s - Maximum size of an item contents in KiB
+" h - Disable the effect of 'hlsearch' when loading the shada
+set shada='300,<10,@50,s100,h
+
+" Write history on idle, for sharing among different sessions
+autocmd! vimrc CursorHold * if exists(':rshada') |
+      \   rshada |
+      \   wshada |
+      \ endif
+" endif
 
 function! s:themes_best_colors() abort
   if exists('$TMUX')
@@ -121,10 +125,10 @@ set noshowmode
 
 set background=dark
 call s:themes_best_colors()
-colorscheme fairyfloss 
+colorscheme nord 
 " highlight Conceal guifg=#616E88 ctermfg=8
 " let g:lightline = { 'colorscheme': 'nord' }
-let g:airline_theme='fairyfloss'
+let g:airline_theme='nord'
 
 " Convert ; to : in modeline
 nnoremap ; :
@@ -154,6 +158,7 @@ augroup vimrcEx
 
   " Set syntax highlighting for specific file types
   autocmd BufRead,BufNewFile *.md set filetype=markdown
+  autocmd BufRead,BufNewFile .mdlrc set filetype=ruby
   autocmd BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
   autocmd BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
 
@@ -176,7 +181,7 @@ omap q iq
 nnoremap ]r :ALENextWrap<CR>
 nnoremap [r :ALEPreviousWrap<CR>
 
-let g:ale_shell = '/usr/local/bin/zsh'
+let g:ale_shell = '/usr/local/bin/zsh --login'
 
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
@@ -184,6 +189,8 @@ let g:ale_sign_error = 'E'
 let g:ale_sign_style_error = 'e'
 let g:ale_sign_warning = 'W'
 let g:ale_sign_style_warning = 'w'
+
+let g:ale_linters = { 'ruby': [] }
 
 let g:ale_fixers = {
       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
@@ -193,6 +200,9 @@ let g:ale_fixers = {
       \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
       \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
       \ }
+
+" com! ALECheckNow     call ale#Queue(0)
+" com! ALEShowCommand  echo ale_linters#ruby#rubocop#GetCommand(bufnr('%'))
 
 " When the type of shell script is /bin/sh, assume a POSIX-compatible shell
 " for syntax highlighting purposes.
