@@ -30,12 +30,9 @@ let g:maplocalleader = ';'
 set runtimepath+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
-  " Plug 'itchyny/lightline.vim'
   Plug '/usr/local/opt/fzf'
   Plug 'arcticicestudio/nord-vim'
-  Plug 'beloglazov/vim-textobj-quotes'
   Plug 'dense-analysis/ale'
-  " Plug 'dracula/vim', { 'as': 'dracula' }
   Plug 'editorconfig/editorconfig-vim'
   Plug 'fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' }
   Plug 'junegunn/fzf.vim'
@@ -63,7 +60,6 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'tpope/vim-rhubarb'
   Plug 'tpope/vim-sensible'
   Plug 'tpope/vim-surround'
-  " Plug 'dracula/vim', { 'as': 'dracula' }
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
   Plug 'vim-ruby/vim-ruby'
@@ -78,19 +74,15 @@ syntax enable
 runtime! plugin/sensible.vim
 
 set backupskip=*.log,/tmp/*
-set backupdir=/Users/mike.hall/.local/share/nvim/backup//
+set backupdir=$HOME/.local/share/nvim/backup//
 set backupext=.bak
-set directory=/Users/mike.hall/.local/share/nvim/swap//
-set undodir=/Users/mike.hall/.local/share/nvim/undo//
-set viewdir=/Users/mike.hall/.local/share/nvim/view//
+set directory=$HOME/.local/share/nvim/swap//
+set undodir=$HOME/.local/share/nvim/undo//
+set viewdir=$HOME/.local/share/nvim/view//
 
-" if has('nvim')
-" let g:ruby_host_prog = '/Users/mike/.asdf/shims/ruby'
 let g:ruby_host_prog='asdf shell ruby latest ; asdf exec neovim-ruby-host'
-" let g:python2_host_prog = '/Users/mike/.asdf/shims/python2'
-" let g:python3_host_prog = '/Users/mike/.asdf/shims/python3'
-let g:python_host_prog = '/Users/mike.hall/.asdf/shims/python'
-
+let g:python2_host_prog = '$HOME/.asdf/shims/python2'
+let g:python3_host_prog = '$HOME/.asdf/shims/python3'
 
 " ' - Maximum number of previously edited files marks
 " < - Maximum number of lines saved for each register
@@ -104,7 +96,6 @@ autocmd! vimrc CursorHold * if exists(':rshada') |
       \   rshada |
       \   wshada |
       \ endif
-" endif
 
 function! s:themes_best_colors() abort
   if exists('$TMUX')
@@ -127,7 +118,6 @@ set background=dark
 call s:themes_best_colors()
 colorscheme nord 
 " highlight Conceal guifg=#616E88 ctermfg=8
-" let g:lightline = { 'colorscheme': 'nord' }
 let g:airline_theme='nord'
 
 " Convert ; to : in modeline
