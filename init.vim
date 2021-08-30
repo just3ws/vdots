@@ -88,6 +88,7 @@ set undodir=$HOME/.local/share/nvim/undo//
 set viewdir=$HOME/.local/share/nvim/view//
 
 let g:ruby_host_prog=$HOME.'/.asdf/shims/neovim-ruby-host'
+let g:python_host_prog = $HOME.'/.asdf/shims/python2'
 let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
 let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 
