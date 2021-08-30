@@ -3,8 +3,12 @@ if has('vim_starting')
   scriptencoding utf-8
 endif
 
+" shellescape(fnamemodify('~', ':p'))
+
 call mkdir(stdpath('cache'), 'p')
 call mkdir(stdpath('config'), 'p')
+call mkdir(stdpath('data'), 'p')
+
 call mkdir(stdpath('data') . '/backup', 'p')
 call mkdir(stdpath('data') . '/plugged', 'p')
 call mkdir(stdpath('data') . '/shada', 'p')
@@ -31,6 +35,7 @@ set runtimepath+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
   Plug '/usr/local/opt/fzf'
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
   Plug 'arcticicestudio/nord-vim'
   Plug 'dense-analysis/ale'
   Plug 'editorconfig/editorconfig-vim'
@@ -66,6 +71,7 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'vim-scripts/align'
   Plug 'vitalk/vim-shebang'
   Plug 'wellle/targets.vim'
+  Plug 'zchee/deoplete-jedi'
 call plug#end()
 
 filetype plugin indent on
@@ -74,15 +80,16 @@ syntax enable
 runtime! plugin/sensible.vim
 
 set backupskip=*.log,/tmp/*
-set backupdir=$HOME/.local/share/nvim/backup//
 set backupext=.bak
+
+set backupdir=$HOME/.local/share/nvim/backup//
 set directory=$HOME/.local/share/nvim/swap//
 set undodir=$HOME/.local/share/nvim/undo//
 set viewdir=$HOME/.local/share/nvim/view//
 
-let g:ruby_host_prog='asdf shell ruby latest ; asdf exec neovim-ruby-host'
-let g:python2_host_prog = '$HOME/.asdf/shims/python2'
-let g:python3_host_prog = '$HOME/.asdf/shims/python3'
+let g:ruby_host_prog=$HOME.'/.asdf/shims/neovim-ruby-host'
+let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
+let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 
 " ' - Maximum number of previously edited files marks
 " < - Maximum number of lines saved for each register
@@ -167,11 +174,7 @@ set numberwidth=3
 xmap q iq
 omap q iq
 
-" Move between linting errors
-nnoremap ]r :ALENextWrap<CR>
-nnoremap [r :ALEPreviousWrap<CR>
-
-let g:ale_shell = '/usr/local/bin/zsh --login'
+let g:ale_shell = '/usr/local/bin/zsh'
 
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
@@ -180,16 +183,20 @@ let g:ale_sign_style_error = 'e'
 let g:ale_sign_warning = 'W'
 let g:ale_sign_style_warning = 'w'
 
-let g:ale_linters = { 'ruby': [] }
+" let g:ale_linters = { 'ruby': [] }
 
-let g:ale_fixers = {
-      \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-      \   'yaml': ['remove_trailing_lines', 'trim_whitespace'],
-      \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
-      \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \ }
+" let g:ale_fixers = {
+"       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+"       \   'yaml': ['remove_trailing_lines', 'trim_whitespace'],
+"       \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
+"       \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+"       \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+"       \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+"       \ }
+
+" Move between linting errors
+nnoremap ]r :ALENextWrap<CR>
+nnoremap [r :ALEPreviousWrap<CR>
 
 " com! ALECheckNow     call ale#Queue(0)
 " com! ALEShowCommand  echo ale_linters#ruby#rubocop#GetCommand(bufnr('%'))
@@ -259,8 +266,6 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
-" Map Ctrl + p to open fuzzy find (FZF)
-nnoremap <c-p> :Files<cr>
 
 " Always use vertical diffs
 set diffopt+=vertical
@@ -295,7 +300,9 @@ nnoremap <expr> n 'Nn'[v:searchforward]
 nnoremap j gj
 nnoremap k gk
 
-nnoremap <C-p> :FZF<CR>
+" Map Ctrl + p to open fuzzy find (FZF)
+" nnoremap <C-p> :FZF<CR>
+nnoremap <C-p> :Files<CR>
 nnoremap <C-b> :Buffers<CR>
 
 command! Reload :source $MYVIMRC
@@ -310,3 +317,4 @@ command! Szshenv :split $ZDOTDIR/.zshenv
 command! Tzshenv :tabedit $ZDOTDIR/.zshenv
 command! Vzshenv :vsplit $ZDOTDIR/.zshenv
 
+let g:deoplete#enable_at_startup = 1
