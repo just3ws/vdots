@@ -5,16 +5,16 @@ endif
 
 " shellescape(fnamemodify('~', ':p'))
 
-call mkdir(stdpath('cache'), 'p')
-call mkdir(stdpath('config'), 'p')
-call mkdir(stdpath('data'), 'p')
-
-call mkdir(stdpath('data') . '/backup', 'p')
-call mkdir(stdpath('data') . '/plugged', 'p')
-call mkdir(stdpath('data') . '/shada', 'p')
-call mkdir(stdpath('data') . '/swap', 'p')
-call mkdir(stdpath('data') . '/undo', 'p')
-call mkdir(stdpath('data') . '/view', 'p')
+" call mkdir(stdpath('cache'), 'p')
+" call mkdir(stdpath('config'), 'p')
+" call mkdir(stdpath('data'), 'p')
+" 
+" call mkdir(stdpath('data') . '/backup', 'p')
+" call mkdir(stdpath('data') . '/plugged', 'p')
+" call mkdir(stdpath('data') . '/shada', 'p')
+" call mkdir(stdpath('data') . '/swap', 'p')
+" call mkdir(stdpath('data') . '/undo', 'p')
+" call mkdir(stdpath('data') . '/view', 'p')
 
 filetype on
 filetype indent on
@@ -50,6 +50,7 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'sheerun/vim-polyglot'
   Plug 'sjl/vitality.vim'
   Plug 'tek/vim-textobj-ruby'
+  Plug 'tpope/vim-abolish'
   Plug 'tpope/vim-bundler'
   Plug 'tpope/vim-commentary'
   Plug 'tpope/vim-dispatch'
@@ -69,6 +70,7 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'vim-airline/vim-airline-themes'
   Plug 'vim-ruby/vim-ruby'
   Plug 'vim-scripts/align'
+  Plug 'vim-scripts/indentpython.vim'
   Plug 'vitalk/vim-shebang'
   Plug 'wellle/targets.vim'
   Plug 'zchee/deoplete-jedi'
@@ -141,30 +143,36 @@ nnoremap <CR> :nohlsearch<CR><CR>
 " Incremental everything
 set inccommand=
 
-augroup vimrcEx
-  autocmd!
+autocmd! vimrc VimResized * wincmd =
 
-  autocmd VimResized * wincmd =
+" When editing a file, always jump to the last known cursor position. Don't
+" do it for commit messages, when the position is invalid, or when inside an
+" event handler (happens when dropping a file on gvim).
+autocmd! vimrc BufReadPost *
+      \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+      \   exe "normal g`\"" |
+      \ endif
 
-  " When editing a file, always jump to the last known cursor position. Don't
-  " do it for commit messages, when the position is invalid, or when inside an
-  " event handler (happens when dropping a file on gvim).
-  autocmd BufReadPost *
-        \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
-        \   exe "normal g`\"" |
-        \ endif
+" Set syntax highlighting for specific file types
+autocmd! vimrc BufRead,BufNewFile *.md set filetype=markdown
+autocmd! vimrc BufRead,BufNewFile .mdlrc set filetype=ruby
+autocmd! vimrc BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
+autocmd! vimrc BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
+autocmd! vimrc BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
+autocmd! vimrc BufNewFile,BufRead *.py
+        \ set tabstop=4
+        \ set softtabstop=4
+        \ set shiftwidth=4
+        \ set textwidth=79
+        \ set expandtab
+        \ set autoindent
+        \ set fileformat=unix
 
-  " Set syntax highlighting for specific file types
-  autocmd BufRead,BufNewFile *.md set filetype=markdown
-  autocmd BufRead,BufNewFile .mdlrc set filetype=ruby
-  autocmd BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
-  autocmd BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
+highlight BadWhitespace ctermbg=red guibg=darkred
+autocmd! vimrc BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
-  autocmd BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
-
-  " Automatically close corresponding loclist when quitting a window
-  autocmd QuitPre * if &filetype != 'qf' | silent! lclose | endif
-augroup END
+" Automatically close corresponding loclist when quitting a window
+autocmd! vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
 
 let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
 
@@ -213,19 +221,41 @@ set expandtab
 
 set nojoinspaces
 
-let g:fzf_history_dir = $FZF_HISTORY_DIR
+" let g:fzf_history_dir = $FZF_HISTORY_DIR
 
-" Default fzf layout
-" - down / up / left / right
-let g:fzf_layout = { 'down': '~40%' }
-
-let g:fzf_layout = { 'window': 'enew' }
-let g:fzf_layout = { 'window': '-tabnew' }
-let g:fzf_layout = { 'window': '10new' }
+" " Default fzf layout
+" " - down / up / left / right
+" let g:fzf_layout = { 'down': '~40%' }
+ 
+" let g:fzf_layout = { 'window': 'enew' }
+" let g:fzf_layout = { 'window': '-tabnew' }
+" let g:fzf_layout = { 'window': '10new' }
 let g:fzf_action = {
       \ 'ctrl-t': 'tab split',
       \ 'ctrl-x': 'split',
       \ 'ctrl-v': 'vsplit' }
+
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+if executable('ag')
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in fzf for listing files. Lightning fast and respects .gitignore
+  let $FZF_DEFAULT_COMMAND = 'ag --literal --files-with-matches --nocolor --hidden -g ""'
+
+  if !exists(':Ag')
+    command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
+    nnoremap \ :Ag<SPACE>
+  endif
+endif
+
+" Map Ctrl + p to open fuzzy find (FZF)
+" nnoremap <C-p> :FZF<CR>
+" nnoremap <C-p> :Files<CR>
+" Git Files
+nnoremap <c-p> :GFiles<Cr> 
+nnoremap <c-b> :Buffers<CR>
+nnoremap <silent><leader>l :Buffers<CR>
 
 " Tab completion
 " will insert tab at beginning of line,
@@ -267,7 +297,6 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
-
 " Always use vertical diffs
 set diffopt+=vertical
 
@@ -300,11 +329,6 @@ nnoremap <expr> n 'Nn'[v:searchforward]
 " Saner movement through wrapped lines
 nnoremap j gj
 nnoremap k gk
-
-" Map Ctrl + p to open fuzzy find (FZF)
-" nnoremap <C-p> :FZF<CR>
-nnoremap <C-p> :Files<CR>
-nnoremap <C-b> :Buffers<CR>
 
 command! Reload :source $MYVIMRC
 
