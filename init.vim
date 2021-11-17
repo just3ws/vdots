@@ -156,6 +156,8 @@ autocmd! vimrc BufReadPost *
 " Set syntax highlighting for specific file types
 autocmd! vimrc BufRead,BufNewFile *.md set filetype=markdown
 autocmd! vimrc BufRead,BufNewFile .mdlrc set filetype=ruby
+autocmd! vimrc BufRead,BufNewFile .env set filetype=shell
+autocmd! vimrc BufRead,BufNewFile .env.* set filetype=shell
 autocmd! vimrc BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
 autocmd! vimrc BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
 autocmd! vimrc BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
@@ -192,16 +194,17 @@ let g:ale_sign_style_error = 'e'
 let g:ale_sign_warning = 'W'
 let g:ale_sign_style_warning = 'w'
 
-" let g:ale_linters = { 'ruby': [] }
+let g:ale_linters = { 'ruby': ['brakeman', 'rubocop'] }
+" ['brakeman', 'debride', 'rails_best_practices', 'reek', 'rubocop', 'ruby', 'solargraph', 'sorbet', 'standardrb']
+let g:ale_fixers = {
+      \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+      \   'yaml': ['remove_trailing_lines', 'trim_whitespace'],
+      \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
+      \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+      \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+      \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+      \ }
 
-" let g:ale_fixers = {
-"       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-"       \   'yaml': ['remove_trailing_lines', 'trim_whitespace'],
-"       \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
-"       \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-"       \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-"       \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-"       \ }
 
 " Move between linting errors
 nnoremap ]r :ALENextWrap<CR>
