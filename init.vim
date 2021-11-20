@@ -8,7 +8,7 @@ endif
 " call mkdir(stdpath('cache'), 'p')
 " call mkdir(stdpath('config'), 'p')
 " call mkdir(stdpath('data'), 'p')
-" 
+"
 " call mkdir(stdpath('data') . '/backup', 'p')
 " call mkdir(stdpath('data') . '/plugged', 'p')
 " call mkdir(stdpath('data') . '/shada', 'p')
@@ -126,7 +126,7 @@ set noshowmode
 
 set background=dark
 call s:themes_best_colors()
-colorscheme nord 
+colorscheme nord
 " highlight Conceal guifg=#616E88 ctermfg=8
 let g:airline_theme='nord'
 
@@ -158,6 +158,7 @@ autocmd! vimrc BufRead,BufNewFile *.md set filetype=markdown
 autocmd! vimrc BufRead,BufNewFile .mdlrc set filetype=ruby
 autocmd! vimrc BufRead,BufNewFile .env set filetype=shell
 autocmd! vimrc BufRead,BufNewFile .env.* set filetype=shell
+autocmd! vimrc BufRead,BufNewFile .erdconfig set filetype=yaml
 autocmd! vimrc BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
 autocmd! vimrc BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
 autocmd! vimrc BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
@@ -189,9 +190,11 @@ let g:ale_shell = '/usr/local/bin/zsh'
 
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
-let g:ale_sign_error = 'E'
+" let g:ale_sign_error = 'E'
+let g:ale_sign_error = '●'
 let g:ale_sign_style_error = 'e'
-let g:ale_sign_warning = 'W'
+" let g:ale_sign_warning = 'W'
+let g:ale_sign_warning = '.'
 let g:ale_sign_style_warning = 'w'
 
 let g:ale_linters = { 'ruby': ['brakeman', 'rubocop'] }
@@ -205,10 +208,24 @@ let g:ale_fixers = {
       \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
       \ }
 
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_save = 1
 
-" Move between linting errors
-nnoremap ]r :ALENextWrap<CR>
-nnoremap [r :ALEPreviousWrap<CR>
+nmap <silent> <C-e> <Plug>(ale_next_wrap)
+
+function! LinterStatus() abort
+    let l:counts = ale#statusline#Count(bufnr(''))
+
+    let l:all_errors = l:counts.error + l:counts.style_error
+    let l:all_warnings = l:counts.total - l:all_errors
+
+    let l:errors_recap = l:all_errors == 0 ? '' : printf('%d⨉ ', all_errors)
+    let l:warnings_recap = l:all_warnings == 0 ? '' : printf('%d⚠ ', all_warnings)
+    return (errors_recap . warnings_recap)
+endfunction
+
+" set statusline+=%=
+" set statusline+=\ %{LinterStatus()}
 
 " com! ALECheckNow     call ale#Queue(0)
 " com! ALEShowCommand  echo ale_linters#ruby#rubocop#GetCommand(bufnr('%'))
@@ -229,7 +246,7 @@ set nojoinspaces
 " " Default fzf layout
 " " - down / up / left / right
 " let g:fzf_layout = { 'down': '~40%' }
- 
+
 " let g:fzf_layout = { 'window': 'enew' }
 " let g:fzf_layout = { 'window': '-tabnew' }
 " let g:fzf_layout = { 'window': '10new' }
@@ -256,7 +273,7 @@ endif
 " nnoremap <C-p> :FZF<CR>
 " nnoremap <C-p> :Files<CR>
 " Git Files
-nnoremap <c-p> :GFiles<Cr> 
+nnoremap <c-p> :GFiles<Cr>
 nnoremap <c-b> :Buffers<CR>
 nnoremap <silent><leader>l :Buffers<CR>
 
