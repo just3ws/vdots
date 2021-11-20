@@ -101,6 +101,18 @@ let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 " h - Disable the effect of 'hlsearch' when loading the shada
 set shada='300,<10,@50,s100,h
 
+
+" When the type of shell script is /bin/sh, assume a POSIX-compatible shell
+" for syntax highlighting purposes.
+let g:is_posix = 1
+
+set tabstop=2
+set shiftwidth=2
+set shiftround
+set expandtab
+
+set nojoinspaces
+
 " Write history on idle, for sharing among different sessions
 autocmd! vimrc CursorHold * if exists(':rshada') |
       \   rshada |
@@ -229,17 +241,6 @@ endfunction
 
 " com! ALECheckNow     call ale#Queue(0)
 " com! ALEShowCommand  echo ale_linters#ruby#rubocop#GetCommand(bufnr('%'))
-
-" When the type of shell script is /bin/sh, assume a POSIX-compatible shell
-" for syntax highlighting purposes.
-let g:is_posix = 1
-
-set tabstop=2
-set shiftwidth=2
-set shiftround
-set expandtab
-
-set nojoinspaces
 
 " let g:fzf_history_dir = $FZF_HISTORY_DIR
 
