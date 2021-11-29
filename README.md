@@ -1,4 +1,4 @@
-# Vdots 
+# Vdots
 
 My Neovim dotfiles.
 
