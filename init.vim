@@ -27,6 +27,7 @@ set runtimepath+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
 Plug '/usr/local/opt/fzf'
+Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }  " We recommend updating the parsers on update
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'arcticicestudio/nord-vim'
 Plug 'dense-analysis/ale'
@@ -307,3 +308,5 @@ augroup vimrc
         \ silent! lclose |
         \ endif
 augroup end
+
+let g:NERDTreeIgnore = ['\~$', '^tmp$', '^log$']
