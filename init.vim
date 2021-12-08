@@ -14,7 +14,7 @@ endif
 let g:mapleader = ';'
 let g:maplocalleader = ';'
 
-let g:ruby_host_prog=$HOME.'/.asdf/shims/neovim-ruby-host'
+let g:ruby_host_prog = $HOME.'/.asdf/shims/neovim-ruby-host'
 let g:python_host_prog = $HOME.'/.asdf/shims/python2'
 let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
 let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
@@ -23,20 +23,12 @@ let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 " for syntax highlighting purposes.
 let g:is_posix = 1
 
-set runtimepath+=/usr/local/opt/fzf
-
 call plug#begin(stdpath('data') . '/plugged')
-Plug '/usr/local/opt/fzf'
-Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }  " We recommend updating the parsers on update
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'airblade/vim-gitgutter'
 Plug 'arcticicestudio/nord-vim'
-Plug 'dense-analysis/ale'
-Plug 'fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' }
-Plug 'junegunn/fzf.vim'
 Plug 'kana/vim-textobj-user'
-Plug 'mhinz/vim-startify'
-Plug 'mileszs/ack.vim'
 Plug 'nelstrom/vim-textobj-rubyblock'
+Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }  " We recommend updating the parsers on update
 Plug 'pbrisbin/vim-mkdir'
 Plug 'preservim/nerdtree'
 Plug 'sheerun/vim-polyglot'
@@ -71,16 +63,40 @@ syntax enable
 
 runtime! plugin/sensible.vim
 
-set autoread
-set autowrite
-set background=dark
-set backspace=2
-set backupdir=$HOME/.local/share/nvim/backup//
+if !isdirectory(stdpath('cache') . '/swap')
+  call mkdir(stdpath('cache') . '/swap', 'p')
+endif
+
+set directory=$XDG_DATA_HOME/nvim/swap//,/var/tmp//,/tmp//
+
+if !isdirectory(stdpath('cache') . '/backup')
+  call mkdir(stdpath('cache') . '/backup', 'p')
+endif
+
+set backupdir=$XDG_DATA_HOME/nvim/backup//,/var/tmp//,/tmp//
 set backupext=.bak
 set backupskip=*.log,/tmp/*
+
+if !isdirectory(stdpath('cache') . '/undo')
+  call mkdir(stdpath('cache') . '/undo', 'p')
+endif
+
+set undodir=$XDG_DATA_HOME/nvim/undo//
+set undofile
+
+if !isdirectory(stdpath('cache') . '/view')
+  call mkdir(stdpath('cache') . '/view', 'p')
+endif
+
+set viewdir=$XDG_DATA_HOME/nvim/view//
+
+set autoread
+set autowrite
+set autowriteall
+set background=dark
+set backspace=2
 set clipboard& clipboard+=unnamed,unnamedplus
 set diffopt+=vertical
-set directory=$HOME/.local/share/nvim/swap//
 set expandtab
 set hlsearch
 set ignorecase
@@ -98,8 +114,6 @@ set splitbelow
 set splitright
 set tabstop=2
 set tags^=.git/tags
-set undodir=$HOME/.local/share/nvim/undo//
-set viewdir=$HOME/.local/share/nvim/view//
 set wildmode=list:longest,list:full
 
 " " Shada
@@ -124,96 +138,16 @@ function! s:themes_best_colors() abort
   set t_Co=256
 endfunction
 
-
 call s:themes_best_colors()
 colorscheme nord
-" highlight Conceal guifg=#616E88 ctermfg=8
 let g:airline_theme='nord'
 
 " Treat <li> and <p> tags like the block tags they are
 let g:html_indent_tags = 'li\|p'
 
-let g:deoplete#enable_at_startup = 1
-
-let g:ale_echo_msg_error_str = 'ERR'
-let g:ale_echo_msg_warning_str = 'WRN'
-let g:ale_shell = '/usr/local/bin/zsh'
-let g:ale_sign_error = 'E'
-let g:ale_sign_style_error = 'e'
-let g:ale_sign_style_warning = 'w'
-let g:ale_sign_warning = 'W'
-
-let g:ale_linters = { 'ruby': ['brakeman', 'rubocop'] }
-let g:ale_fixers = {
-      \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-      \   'yaml': ['remove_trailing_lines', 'trim_whitespace'],
-      \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
-      \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \ }
-
-
-" com! ALECheckNow     call ale#Queue(0)
-" com! ALEShowCommand  echo ale_linters#ruby#rubocop#GetCommand(bufnr('%'))
-
-" let g:fzf_history_dir = $FZF_HISTORY_DIR
-
-" " Default fzf layout
-" " - down / up / left / right
-" let g:fzf_layout = { 'down': '~40%' }
-
-" let g:fzf_layout = { 'window': 'enew' }
-" let g:fzf_layout = { 'window': '-tabnew' }
-" let g:fzf_layout = { 'window': '10new' }
-let g:fzf_action = {
-      \ 'ctrl-t': 'tab split',
-      \ 'ctrl-x': 'split',
-      \ 'ctrl-v': 'vsplit' }
-
-" " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
-" if executable('ag')
-"   " Use Ag over Grep
-"   set grepprg=ag\ --nogroup\ --nocolor
-"
-"   " Use ag in fzf for listing files. Lightning fast and respects .gitignore
-"   let $FZF_DEFAULT_COMMAND = 'ag --literal --files-with-matches --nocolor --hidden -g ""'
-"
-"   if !exists(':Ag')
-"     command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
-"     nnoremap \ :Ag<SPACE>
-"   endif
-" endif
-
-" function! InsertTabWrapper() abort
-"   let col = col('.') - 1
-"
-"   if !col || getline('.')[col - 1] !~# '\k'
-"     return "\<Tab>"
-"   endif
-"
-"   return "\<C-p>"
-" endfunction
-"
-" inoremap <Tab> <C-r>=InsertTabWrapper()<CR>
-" inoremap <S-Tab> <C-n>
-"
-
 " Quote textobj helpers
 xmap q iq
 omap q iq
-
-" Move between linting errors
-nnoremap ]r :ALENextWrap<CR>
-nnoremap [r :ALEPreviousWrap<CR>
-
-" Map Ctrl + p to open fuzzy find (FZF)
-" nnoremap <C-p> :FZF<CR>
-" nnoremap <C-p> :Files<CR>
-" Git Files
-nnoremap <c-p> :GFiles<Cr>
-nnoremap <c-b> :Buffers<CR>
-nnoremap <silent><leader>l :Buffers<CR>
 
 " Switch between the last two files
 nnoremap <Leader><Leader> <C-^>
@@ -301,7 +235,12 @@ augroup vimrc
         \   exe "normal g`\"" |
         \ endif
 
+  " Double slash does not actually work for backupdir, here's a fix
+  au BufWritePre * let &backupext='@'.substitute(substitute(substitute(expand('%:p:h'), '/', '%', 'g'), '\', '%', 'g'), ':', '', 'g')
+
   au BufWritePre * :%s/\s\+$//e
+  au BufWritePre * :%s/\n\{3,\}/\r\r/e
+  " au BufWritePre * gg=G<C-o><C-o>
 
   " Automatically close corresponding loclist when quitting a window
   au QuitPre * if &filetype != 'qf' |
@@ -310,3 +249,4 @@ augroup vimrc
 augroup end
 
 let g:NERDTreeIgnore = ['\~$', '^tmp$', '^log$']
+
