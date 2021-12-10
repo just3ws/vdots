@@ -1,7 +1,7 @@
-if has('vim_starting')
-  set encoding=utf-8
-  scriptencoding utf-8
-endif
+" if has('vim_starting')
+"   set encoding=utf-8
+"   scriptencoding utf-8
+" endif
 
 filetype on
 filetype indent on
@@ -19,11 +19,18 @@ let g:python_host_prog = $HOME.'/.asdf/shims/python2'
 let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
 let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 
-" When the type of shell script is /bin/sh, assume a POSIX-compatible shell
-" for syntax highlighting purposes.
-let g:is_posix = 1
+"" When the type of shell script is /bin/sh, assume a POSIX-compatible shell
+"" for syntax highlighting purposes.
+" let g:is_posix = 1
+
+set rtp+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
+Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf.vim'
+
+Plug 'mileszs/ack.vim'
+
 Plug 'airblade/vim-gitgutter'
 Plug 'arcticicestudio/nord-vim'
 Plug 'kana/vim-textobj-user'
@@ -63,47 +70,16 @@ syntax enable
 
 runtime! plugin/sensible.vim
 
-if !isdirectory(stdpath('cache') . '/swap')
-  call mkdir(stdpath('cache') . '/swap', 'p')
-endif
-
-set directory=$XDG_DATA_HOME/nvim/swap//,/var/tmp//,/tmp//
-
-if !isdirectory(stdpath('cache') . '/backup')
-  call mkdir(stdpath('cache') . '/backup', 'p')
-endif
-
-set backupdir=$XDG_DATA_HOME/nvim/backup//,/var/tmp//,/tmp//
-set backupext=.bak
-set backupskip=*.log,/tmp/*
-
-if !isdirectory(stdpath('cache') . '/undo')
-  call mkdir(stdpath('cache') . '/undo', 'p')
-endif
-
-set undodir=$XDG_DATA_HOME/nvim/undo//
-set undofile
-
-if !isdirectory(stdpath('cache') . '/view')
-  call mkdir(stdpath('cache') . '/view', 'p')
-endif
-
-set viewdir=$XDG_DATA_HOME/nvim/view//
-
-set autoread
+set clipboard& clipboard+=unnamed,unnamedplus
+" set diffopt+=vertical
+" set wildmode=list:longest,list:full
 set autowrite
 set autowriteall
-set background=dark
-set backspace=2
-set clipboard& clipboard+=unnamed,unnamedplus
-set diffopt+=vertical
+set backupext=.bak
+set backupskip=*.log
 set expandtab
-set hlsearch
 set ignorecase
 set inccommand=
-set laststatus=2
-set noshowmode
-set nowrap
 set number
 set numberwidth=3
 set shiftround
@@ -114,15 +90,18 @@ set splitbelow
 set splitright
 set tabstop=2
 set tags^=.git/tags
-set wildmode=list:longest,list:full
+set undofile
 
-" " Shada
-" ' - Maximum number of previously edited files marks
-" < - Maximum number of lines saved for each register
-" @ - Maximum number of items in the input-line history to be
-" s - Maximum size of an item contents in KiB
-" h - Disable the effect of 'hlsearch' when loading the shada
-set shada='300,<10,@50,s100,h
+set noshowmode
+set nowrap
+
+""" Shada
+"" ' - Maximum number of previously edited files marks
+"" < - Maximum number of lines saved for each register
+"" @ - Maximum number of items in the input-line history to be
+"" s - Maximum size of an item contents in KiB
+"" h - Disable the effect of 'hlsearch' when loading the shada
+" set shada='300,<10,@50,s100,h
 
 function! s:themes_best_colors() abort
   if exists('$TMUX')
@@ -211,11 +190,11 @@ augroup vimrc
 
   au VimResized * wincmd =
 
-  " Write history on idle, for sharing among different sessions
-  au CursorHold * if exists(':rshada') |
-        \   rshada |
-        \   wshada |
-        \ endif
+  "" Write history on idle, for sharing among different sessions
+  " au CursorHold * if exists(':rshada') |
+  "       \   rshada |
+  "       \   wshada |
+  "       \ endif
 
   au BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
 
@@ -235,8 +214,8 @@ augroup vimrc
         \   exe "normal g`\"" |
         \ endif
 
-  " Double slash does not actually work for backupdir, here's a fix
-  au BufWritePre * let &backupext='@'.substitute(substitute(substitute(expand('%:p:h'), '/', '%', 'g'), '\', '%', 'g'), ':', '', 'g')
+  "" Double slash does not actually work for backupdir, here's a fix
+  " au BufWritePre * let &backupext='@'.substitute(substitute(substitute(expand('%:p:h'), '/', '%', 'g'), '\', '%', 'g'), ':', '', 'g')
 
   au BufWritePre * :%s/\s\+$//e
   au BufWritePre * :%s/\n\{3,\}/\r\r/e
@@ -248,5 +227,6 @@ augroup vimrc
         \ endif
 augroup end
 
-let g:NERDTreeIgnore = ['\~$', '^tmp$', '^log$']
+let g:NERDTreeIgnore = ['\~$', '^tmp$', '^log$', '^coverage$', 'Gemfile.lock', '^bin$']
 
+nnoremap <C-p> :GFiles<CR>
