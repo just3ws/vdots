@@ -26,43 +26,53 @@ let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 set rtp+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
+Plug 'neovim/nvim-lspconfig'
+
+Plug 'tpope/vim-sensible'
+Plug 'sjl/vitality.vim'
+
+Plug 'arcticicestudio/nord-vim'
+
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 
 Plug 'mileszs/ack.vim'
 
-Plug 'airblade/vim-gitgutter'
-Plug 'arcticicestudio/nord-vim'
 Plug 'kana/vim-textobj-user'
-Plug 'nelstrom/vim-textobj-rubyblock'
-Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }  " We recommend updating the parsers on update
+
 Plug 'pbrisbin/vim-mkdir'
 Plug 'preservim/nerdtree'
-Plug 'sheerun/vim-polyglot'
-Plug 'sjl/vitality.vim'
-Plug 'tek/vim-textobj-ruby'
 Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-bundler'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-git'
 Plug 'tpope/vim-projectionist'
 Plug 'tpope/vim-ragtag'
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-rake'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-rhubarb'
-Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'vim-ruby/vim-ruby'
 Plug 'vim-scripts/align'
+
+Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }  " We recommend updating the parsers on update
+Plug 'sheerun/vim-polyglot'
 Plug 'vitalk/vim-shebang'
 Plug 'wellle/targets.vim'
+
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-git'
+Plug 'airblade/vim-gitgutter'
+
+Plug 'nelstrom/vim-textobj-rubyblock'
+Plug 'tek/vim-textobj-ruby'
+Plug 'tpope/vim-bundler'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-rake'
+Plug 'vim-ruby/vim-ruby'
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
 call plug#end()
 
 filetype plugin indent on
@@ -227,6 +237,14 @@ augroup vimrc
         \ endif
 augroup end
 
-let g:NERDTreeIgnore = ['\~$', '^tmp$', '^log$', '^coverage$', 'Gemfile.lock', '^bin$']
+let g:NERDTreeIgnore = [
+      \ '\~$',
+      \ '^tmp$',
+      \ '^\.git$',
+      \ '^log$',
+      \ '^coverage$',
+      \ 'Gemfile.lock',
+      \ '^bin$'
+      \ ]
 
 nnoremap <C-p> :GFiles<CR>
