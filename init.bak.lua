@@ -28,6 +28,29 @@ vim.opt.termguicolors = true
 vim.opt.undofile = true
 vim.opt.updatetime = 100
 
+-- set clipboard& clipboard+=unnamed,unnamedplus
+vim.opt.autowrite = true
+-- set autowriteall
+-- set backupext=.bak
+-- set backupskip=*.log
+-- set expandtab
+-- set ignorecase
+-- set inccommand=
+-- set number
+-- set numberwidth=3
+-- set shiftround
+-- set shiftwidth=2
+-- set smartcase
+-- set softtabstop=2
+-- set splitbelow
+-- set splitright
+-- set tabstop=2
+-- set tags^=.git/tags
+-- set undofile
+--
+-- set noshowmode
+-- set nowrap
+
 -- vim.api.nvim_set_keymap(<mode>, <keys>, <actions>, <options>)
 vim.api.nvim_set_keymap('n', '<C-s>', ':write<CR>', { noremap = true })
 vim.api.nvim_set_keymap('v', '<C-c>', '"+y', { noremap = true })

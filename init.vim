@@ -1,8 +1,3 @@
-" if has('vim_starting')
-"   set encoding=utf-8
-"   scriptencoding utf-8
-" endif
-
 filetype on
 filetype indent on
 filetype plugin on
@@ -19,59 +14,47 @@ let g:python_host_prog = $HOME.'/.asdf/shims/python2'
 let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
 let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 
-"" When the type of shell script is /bin/sh, assume a POSIX-compatible shell
-"" for syntax highlighting purposes.
+" " When the type of shell script is /bin/sh, assume a POSIX-compatible shell for syntax highlighting purposes.
 " let g:is_posix = 1
 
 set rtp+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
-Plug 'neovim/nvim-lspconfig'
-
-Plug 'tpope/vim-sensible'
-Plug 'sjl/vitality.vim'
-
-Plug 'arcticicestudio/nord-vim'
-
-Plug '/usr/local/opt/fzf'
-Plug 'junegunn/fzf.vim'
-
-Plug 'mileszs/ack.vim'
-
-Plug 'kana/vim-textobj-user'
-
-Plug 'pbrisbin/vim-mkdir'
-Plug 'preservim/nerdtree'
-Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-dispatch'
-Plug 'tpope/vim-endwise'
-Plug 'tpope/vim-eunuch'
-Plug 'tpope/vim-projectionist'
-Plug 'tpope/vim-ragtag'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-surround'
-Plug 'vim-scripts/align'
-
-Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }  " We recommend updating the parsers on update
-Plug 'sheerun/vim-polyglot'
-Plug 'vitalk/vim-shebang'
-Plug 'wellle/targets.vim'
-
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-git'
-Plug 'airblade/vim-gitgutter'
-
-Plug 'nelstrom/vim-textobj-rubyblock'
-Plug 'tek/vim-textobj-ruby'
-Plug 'tpope/vim-bundler'
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-rake'
-Plug 'vim-ruby/vim-ruby'
-
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-
+  Plug 'neovim/nvim-lspconfig'
+  Plug 'tpope/vim-sensible'
+  Plug 'sjl/vitality.vim'
+  Plug 'arcticicestudio/nord-vim'
+  Plug '/usr/local/opt/fzf'
+  Plug 'junegunn/fzf.vim'
+  Plug 'mileszs/ack.vim'
+  Plug 'kana/vim-textobj-user'
+  Plug 'pbrisbin/vim-mkdir'
+  Plug 'preservim/nerdtree'
+  Plug 'tpope/vim-abolish'
+  Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-dispatch'
+  Plug 'tpope/vim-endwise'
+  Plug 'tpope/vim-eunuch'
+  Plug 'tpope/vim-projectionist'
+  Plug 'tpope/vim-ragtag'
+  Plug 'tpope/vim-repeat'
+  Plug 'tpope/vim-surround'
+  Plug 'vim-scripts/align'
+  Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate' }  " We recommend updating the parsers on update
+  Plug 'sheerun/vim-polyglot'
+  Plug 'vitalk/vim-shebang'
+  Plug 'wellle/targets.vim'
+  Plug 'tpope/vim-fugitive'
+  Plug 'tpope/vim-git'
+  Plug 'airblade/vim-gitgutter'
+  Plug 'nelstrom/vim-textobj-rubyblock'
+  Plug 'tek/vim-textobj-ruby'
+  Plug 'tpope/vim-bundler'
+  Plug 'tpope/vim-rails'
+  Plug 'tpope/vim-rake'
+  Plug 'vim-ruby/vim-ruby'
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
 call plug#end()
 
 filetype plugin indent on
@@ -103,14 +86,6 @@ set undofile
 
 set noshowmode
 set nowrap
-
-""" Shada
-"" ' - Maximum number of previously edited files marks
-"" < - Maximum number of lines saved for each register
-"" @ - Maximum number of items in the input-line history to be
-"" s - Maximum size of an item contents in KiB
-"" h - Disable the effect of 'hlsearch' when loading the shada
-" set shada='300,<10,@50,s100,h
 
 function! s:themes_best_colors() abort
   if exists('$TMUX')
@@ -191,7 +166,7 @@ command! Szshenv :split $ZDOTDIR/.zshenv
 command! Tzshenv :tabedit $ZDOTDIR/.zshenv
 command! Vzshenv :vsplit $ZDOTDIR/.zshenv
 
-highlight BadWhitespace ctermbg=red guibg=darkred
+highlight BadWhitespace ctermbg=darkblue guibg=darkblue
 
 augroup vimrc
   autocmd!
@@ -199,13 +174,13 @@ augroup vimrc
 
   au VimResized * wincmd =
 
-  "" Write history on idle, for sharing among different sessions
+  " " Write history on idle, for sharing among different sessions
   " au CursorHold * if exists(':rshada') |
   "       \   rshada |
   "       \   wshada |
   "       \ endif
 
-  au BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
+  " au BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
 
   " Set syntax highlighting for specific file types
   au Filetype markdown setlocal tabstop=2 shiftwidth=2 softtabstop=2
@@ -223,12 +198,8 @@ augroup vimrc
         \   exe "normal g`\"" |
         \ endif
 
-  "" Double slash does not actually work for backupdir, here's a fix
-  " au BufWritePre * let &backupext='@'.substitute(substitute(substitute(expand('%:p:h'), '/', '%', 'g'), '\', '%', 'g'), ':', '', 'g')
-
   au BufWritePre * :%s/\s\+$//e
   au BufWritePre * :%s/\n\{3,\}/\r\r/e
-  " au BufWritePre * gg=G<C-o><C-o>
 
   " Automatically close corresponding loclist when quitting a window
   au QuitPre * if &filetype != 'qf' |
