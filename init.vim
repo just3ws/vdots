@@ -166,6 +166,10 @@ command! Szshenv :split $ZDOTDIR/.zshenv
 command! Tzshenv :tabedit $ZDOTDIR/.zshenv
 command! Vzshenv :vsplit $ZDOTDIR/.zshenv
 
+" ’
+" “
+" ”
+
 highlight BadWhitespace ctermbg=darkblue guibg=darkblue
 
 augroup vimrc
