@@ -3,19 +3,6 @@ if has('vim_starting')
   scriptencoding utf-8
 endif
 
-" shellescape(fnamemodify('~', ':p'))
-
-" call mkdir(stdpath('cache'), 'p')
-" call mkdir(stdpath('config'), 'p')
-" call mkdir(stdpath('data'), 'p')
-"
-" call mkdir(stdpath('data') . '/backup', 'p')
-" call mkdir(stdpath('data') . '/plugged', 'p')
-" call mkdir(stdpath('data') . '/shada', 'p')
-" call mkdir(stdpath('data') . '/swap', 'p')
-" call mkdir(stdpath('data') . '/undo', 'p')
-" call mkdir(stdpath('data') . '/view', 'p')
-
 filetype on
 filetype indent on
 filetype plugin on
@@ -35,11 +22,13 @@ set runtimepath+=/usr/local/opt/fzf
 
 call plug#begin(stdpath('data') . '/plugged')
   Plug '/usr/local/opt/fzf'
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+  Plug 'SirVer/ultisnips'
   Plug 'arcticicestudio/nord-vim'
   Plug 'dense-analysis/ale'
   Plug 'editorconfig/editorconfig-vim'
-  Plug 'fatih/vim-go', { 'hook_post_update': ':GoUpdateBinaries' }
+  Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+  Plug 'honza/vim-snippets'
   Plug 'junegunn/fzf.vim'
   Plug 'kana/vim-textobj-user'
   Plug 'mhinz/vim-startify'
@@ -47,9 +36,11 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'nelstrom/vim-textobj-rubyblock'
   Plug 'pbrisbin/vim-mkdir'
   Plug 'preservim/nerdtree'
+  Plug 'preservim/tagbar'
   Plug 'sheerun/vim-polyglot'
   Plug 'sjl/vitality.vim'
   Plug 'tek/vim-textobj-ruby'
+  Plug 'tmhedberg/matchit'
   Plug 'tpope/vim-abolish'
   Plug 'tpope/vim-bundler'
   Plug 'tpope/vim-commentary'
@@ -70,10 +61,8 @@ call plug#begin(stdpath('data') . '/plugged')
   Plug 'vim-airline/vim-airline-themes'
   Plug 'vim-ruby/vim-ruby'
   Plug 'vim-scripts/align'
-  Plug 'vim-scripts/indentpython.vim'
   Plug 'vitalk/vim-shebang'
   Plug 'wellle/targets.vim'
-  Plug 'zchee/deoplete-jedi'
 call plug#end()
 
 filetype plugin indent on
@@ -89,11 +78,6 @@ set directory=$HOME/.local/share/nvim/swap//
 set undodir=$HOME/.local/share/nvim/undo//
 set viewdir=$HOME/.local/share/nvim/view//
 
-let g:ruby_host_prog=$HOME.'/.asdf/shims/neovim-ruby-host'
-let g:python_host_prog = $HOME.'/.asdf/shims/python2'
-let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
-let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
-
 " ' - Maximum number of previously edited files marks
 " < - Maximum number of lines saved for each register
 " @ - Maximum number of items in the input-line history to be
@@ -101,6 +85,24 @@ let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 " h - Disable the effect of 'hlsearch' when loading the shada
 set shada='300,<10,@50,s100,h
 
+set tags^=.git/tags
+
+set splitbelow
+set splitright
+
+set diffopt+=vertical
+
+set clipboard& clipboard+=unnamed,unnamedplus
+
+set ignorecase
+set smartcase
+
+set wildmode=list:longest,list:full
+
+let g:ruby_host_prog=$HOME.'/.asdf/shims/neovim-ruby-host'
+let g:python_host_prog = $HOME.'/.asdf/shims/python2'
+let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
+let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 
 " When the type of shell script is /bin/sh, assume a POSIX-compatible shell
 " for syntax highlighting purposes.
@@ -155,39 +157,56 @@ nnoremap <CR> :nohlsearch<CR><CR>
 " Incremental everything
 set inccommand=
 
-autocmd! vimrc VimResized * wincmd =
-
-" When editing a file, always jump to the last known cursor position. Don't
-" do it for commit messages, when the position is invalid, or when inside an
-" event handler (happens when dropping a file on gvim).
-autocmd! vimrc BufReadPost *
-      \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
-      \   exe "normal g`\"" |
-      \ endif
-
-" Set syntax highlighting for specific file types
-autocmd! vimrc BufRead,BufNewFile *.md set filetype=markdown
-autocmd! vimrc BufRead,BufNewFile .mdlrc set filetype=ruby
-autocmd! vimrc BufRead,BufNewFile .env set filetype=shell
-autocmd! vimrc BufRead,BufNewFile .env.* set filetype=shell
-autocmd! vimrc BufRead,BufNewFile .erdconfig set filetype=yaml
-autocmd! vimrc BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
-autocmd! vimrc BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
-autocmd! vimrc BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
-autocmd! vimrc BufNewFile,BufRead *.py
-        \ set tabstop=4
-        \ set softtabstop=4
-        \ set shiftwidth=4
-        \ set textwidth=79
-        \ set expandtab
-        \ set autoindent
-        \ set fileformat=unix
-
 highlight BadWhitespace ctermbg=red guibg=darkred
-autocmd! vimrc BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
-" Automatically close corresponding loclist when quitting a window
-autocmd! vimrc QuitPre * if &filetype != 'qf' | silent! lclose | endif
+augroup vimrc
+  autocmd!
+  autocmd! * <buffer>
+
+  au VimResized * wincmd =
+
+  " When editing a file, always jump to the last known cursor position. Don't
+  " do it for commit messages, when the position is invalid, or when inside an
+  " event handler (happens when dropping a file on gvim).
+  au BufReadPost *
+        \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+        \   exe "normal g`\"" |
+        \ endif
+
+  au BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
+
+  au BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
+
+  " Set syntax highlighting for specific file types
+  " au BufRead,BufNewFile *.js   set tabstop=2 set softtabstop=2 set shiftwidth=2
+  " au BufRead,BufNewFile *.html set tabstop=2 set softtabstop=2 set shiftwidth=2
+  " au BufRead,BufNewFile *.css  set tabstop=2 set softtabstop=2 set shiftwidth=2
+  " au BufRead,BufNewFile *.py   set tabstop=4 set softtabstop=4 set shiftwidth=4 set textwidth=79 set expandtab set autoindent set fileformat=unix
+  au FileType css,scss,slim,html,eruby,coffee,javascript,wxml setlocal iskeyword+=-
+  au Filetype javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2
+  au Filetype json setlocal tabstop=2 shiftwidth=2 softtabstop=2
+  au Filetype markdown setlocal tabstop=2 shiftwidth=2 softtabstop=2
+  au Filetype python setlocal tabstop=4 shiftwidth=4 softtabstop=4
+  au Filetype ruby setlocal tabstop=2 shiftwidth=2 softtabstop=2
+  " Set syntax highlighting for specific file types
+  au BufRead,BufNewFile *.md set filetype=markdown
+  au BufRead,BufNewFile .mdlrc set filetype=ruby
+  au BufRead,BufNewFile .env set filetype=shell
+  au BufRead,BufNewFile .env.* set filetype=shell
+  au BufRead,BufNewFile .erdconfig set filetype=yaml
+  au BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
+  au BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
+
+  autocmd! vimrc BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+
+  au BufWritePre * :%s/\s\+$//e
+  au BufWritePre * :%s/\n\{3,\}/\r\r/e
+
+  " Automatically close corresponding loclist when quitting a window
+  au QuitPre * if &filetype != 'qf' |
+        \ silent! lclose |
+        \ endif
+augroup end
 
 let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
 
@@ -200,14 +219,14 @@ omap q iq
 
 let g:ale_shell = '/usr/local/bin/zsh'
 
+" let g:ale_sign_error = 'E'
+" let g:ale_sign_warning = 'W'
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
-" let g:ale_sign_error = 'E'
 let g:ale_sign_error = '●'
 let g:ale_sign_style_error = 'e'
-" let g:ale_sign_warning = 'W'
-let g:ale_sign_warning = '.'
 let g:ale_sign_style_warning = 'w'
+let g:ale_sign_warning = '.'
 
 let g:ale_linters = { 'ruby': ['brakeman', 'rubocop'] }
 " ['brakeman', 'debride', 'rails_best_practices', 'reek', 'rubocop', 'ruby', 'solargraph', 'sorbet', 'standardrb']
@@ -222,6 +241,10 @@ let g:ale_fixers = {
 
 let g:ale_lint_on_enter = 0
 let g:ale_lint_on_save = 1
+
+" let g:deoplete#enable_at_startup = 1
+let g:html_indent_tags = 'li\|p'
+let python_highlight_all=1
 
 nmap <silent> <C-e> <Plug>(ale_next_wrap)
 
@@ -274,57 +297,34 @@ endif
 " nnoremap <C-p> :FZF<CR>
 " nnoremap <C-p> :Files<CR>
 " Git Files
-nnoremap <c-p> :GFiles<Cr>
-nnoremap <c-b> :Buffers<CR>
-nnoremap <silent><leader>l :Buffers<CR>
+nnoremap <C-p> :GFiles<CR>
+nnoremap <C-b> :Buffers<CR>
+nnoremap <Silent><Leader>l :Buffers<CR>
 
-" Tab completion
-" will insert tab at beginning of line,
-" will use completion if not at beginning
-set wildmode=list:longest,list:full
+" function! InsertTabWrapper() abort
+"   let col = col('.') - 1
+"
+"   if !col || getline('.')[col - 1] !~# '\k'
+"     return "\<Tab>"
+"   endif
+"
+"   return "\<C-p>"
+" endfunction
+" inoremap <Tab> <C-r>=InsertTabWrapper()<CR>
+" inoremap <S-Tab> <C-n>
 
-function! InsertTabWrapper() abort
-  let col = col('.') - 1
-
-  if !col || getline('.')[col - 1] !~# '\k'
-    return "\<Tab>"
-  endif
-
-  return "\<C-p>"
-endfunction
-inoremap <Tab> <C-r>=InsertTabWrapper()<CR>
-inoremap <S-Tab> <C-n>
-
-" Switch between the last two files
-nnoremap <Leader><Leader> <C-^>
+" " Switch between the last two files
+" nnoremap <Leader><Leader> <C-^>
 
 " Swap the case for changing tabs
 noremap <S-h> gT
 noremap <S-l> gt
-
-" Treat <li> and <p> tags like the block tags they are
-let g:html_indent_tags = 'li\|p'
-
-" Set tags for vim-fugitive
-set tags^=.git/tags
-
-" Open new split panes to right and bottom, which feels more natural
-set splitbelow
-set splitright
 
 " Quicker window movement
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
-
-" Always use vertical diffs
-set diffopt+=vertical
-
-set clipboard& clipboard+=unnamed,unnamedplus
-
-set ignorecase
-set smartcase
 
 " Saner command-line history
 cnoremap <C-n> <down>
@@ -336,31 +336,43 @@ nmap <Leader><Leader> V
 " Avoid accidentally launching Ex mode
 nnoremap Q <nop>
 
-nnoremap <Leader>nf :NERDTreeFind<CR>
-nnoremap <Leader>n :NERDTreeFocus<CR>
+nnoremap <Leader>ef :NERDTreeFind<CR>
+nnoremap <Leader>e :NERDTreeFocus<CR>
 
 " Saner block shift
 xnoremap < <gv
 xnoremap > >gv
 
 " Saner behavior of n and N
-nnoremap <expr> N 'nN'[v:searchforward]
-nnoremap <expr> n 'Nn'[v:searchforward]
+nnoremap <Expr> N 'nN'[v:searchforward]
+nnoremap <Expr> n 'Nn'[v:searchforward]
 
 " Saner movement through wrapped lines
 nnoremap j gj
 nnoremap k gk
 
 command! Reload :source $MYVIMRC
-
 command! Vimrc  :edit $MYVIMRC
 command! Svimrc :split $MYVIMRC
 command! Tvimrc :tabedit $MYVIMRC
 command! Vvimrc :vsplit $MYVIMRC
-
 command! Zshenv  :edit $ZDOTDIR/.zshenv
 command! Szshenv :split $ZDOTDIR/.zshenv
 command! Tzshenv :tabedit $ZDOTDIR/.zshenv
 command! Vzshenv :vsplit $ZDOTDIR/.zshenv
 
-let g:deoplete#enable_at_startup = 1
+let g:NERDTreeIgnore = ['\~$', '^tmp$', '^\.git$', '^log$', '^coverage$', 'Gemfile.lock', '^bin$']
+
+nnoremap <C-p> :GFiles<CR>
+
+nmap <F8> :TagbarToggle<CR>
+
+" Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
+" - https://github.com/Valloric/YouCompleteMe
+" - https://github.com/nvim-lua/completion-nvim
+let g:UltiSnipsExpandTrigger='<tab>'
+let g:UltiSnipsJumpForwardTrigger='<c-b>'
+let g:UltiSnipsJumpBackwardTrigger='<c-z>'
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit='vertical'
