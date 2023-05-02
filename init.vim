@@ -196,6 +196,7 @@ augroup vimrc
   au BufRead,BufNewFile .erdconfig set filetype=yaml
   au BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
   au BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
+  au BufNewFile,BufRead *.lst set filetype=txt
 
   autocmd! vimrc BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
