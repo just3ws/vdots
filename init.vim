@@ -1,13 +1,11 @@
 augroup vimrc
 augroup end
 
-let g:mapleader = ';'
-let g:maplocalleader = ';'
-
 set runtimepath+=/usr/local/opt/fzf
 
 lua << EOF
 require('plugins')
+require('keymaps')
 require('lsp')
 require('treesitter')
 require('options')
@@ -52,13 +50,10 @@ set background=dark
 colorscheme nord
 let g:airline_theme='nord'
 
-nnoremap ; :
-
-set autowrite     " Automatically :write before running commands
+set autowrite " Automatically :write before running commands
 set nowrap
 
 set hlsearch
-nnoremap <CR> :nohlsearch<CR><CR>
 
 set inccommand=
 
@@ -167,49 +162,6 @@ if executable('ag')
   endif
 endif
 
-nnoremap <C-p> :GFiles<CR>
-nnoremap <C-b> :Buffers<CR>
-nnoremap <Silent><Leader>l :Buffers<CR>
-
-noremap <S-h> gT
-noremap <S-l> gt
-
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
-
-cnoremap <C-n> <down>
-cnoremap <C-p> <up>
-
-nmap <Leader><Leader> V
-
-nnoremap Q <nop>
-
-nnoremap <Leader>ef :NERDTreeFind<CR>
-nnoremap <Leader>e :NERDTreeFocus<CR>
-
-xnoremap < <gv
-xnoremap > >gv
-
-nnoremap <Expr> N 'nN'[v:searchforward]
-nnoremap <Expr> n 'Nn'[v:searchforward]
-
-nnoremap j gj
-nnoremap k gk
-
-command! Reload :source $MYVIMRC
-command! Vimrc  :edit $MYVIMRC
-command! Svimrc :split $MYVIMRC
-command! Tvimrc :tabedit $MYVIMRC
-command! Vvimrc :vsplit $MYVIMRC
-command! Zshenv  :edit $ZDOTDIR/.zshenv
-command! Szshenv :split $ZDOTDIR/.zshenv
-command! Tzshenv :tabedit $ZDOTDIR/.zshenv
-command! Vzshenv :vsplit $ZDOTDIR/.zshenv
-
 let g:NERDTreeIgnore = ['\~$', '^tmp$', '^\.git$', '^log$', '^coverage$', 'Gemfile.lock', '^bin$']
-
-nnoremap <C-p> :GFiles<CR>
 
 let g:loaded_perl_provider = 0
