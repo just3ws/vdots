@@ -9,15 +9,67 @@ set runtimepath+=/usr/local/opt/fzf
 lua << EOF
 require('plugins')
 
-require('mason').setup()
-require('mason-lspconfig').setup()
+local mason = require("mason")
+local mason_lspconfig = require("mason-lspconfig")
 
-require('nvim-treesitter.configs').setup {
-  ensure_installed = { "bash", "c", "css", "go", "html", "javascript", "json", "lua", "markdown", "python", "ruby", "vim", "vimdoc" },
+mason.setup()
+
+-- Declare which servers Mason should manage
+mason_lspconfig.setup({
+  ensure_installed = { "ruby_lsp", "gopls", "lua_ls", "vimls" },
+  automatic_installation = true,
+})
+
+-- Filetype mapping for language servers
+local server_filetypes = {
+  ruby_lsp  = { "ruby" },
+  gopls     = { "go", "gomod" },
+  lua_ls    = { "lua" },
+  vimls     = { "vim" },
+}
+
+-- Common LSP keybindings
+local function on_attach(_, bufnr)
+  local opts = { buffer = bufnr, silent = true, noremap = true }
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+  vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+  vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+  vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
+  vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
+end
+
+-- Dynamically start correct LSP based on filetype
+for server, patterns in pairs(server_filetypes) do
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = patterns,
+    callback = function(args)
+      local cfg = vim.lsp.config[server] or {}
+      vim.lsp.start({
+        name = server,
+        cmd = cfg.cmd or vim.lsp.config.resolve_cmd(server),
+        root_dir = cfg.root_dir or vim.fs.root(args.buf, { ".git", "Cargo.toml", "go.mod" }),
+        capabilities = vim.lsp.protocol.make_client_capabilities(),
+        on_attach = on_attach,
+        settings = cfg.settings or {},
+      })
+    end,
+  })
+end
+
+-- Treesitter configuration
+require('nvim-treesitter.configs').setup({
+  ensure_installed = {
+    "bash", "c", "css", "go", "html", "javascript",
+    "json", "lua", "markdown", "python", "ruby", "vim", "vimdoc"
+  },
   highlight = { enable = true },
   indent = { enable = true },
   incremental_selection = { enable = true },
-}
+})
 EOF
 
 runtime! plugin/sensible.vim
