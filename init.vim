@@ -10,9 +10,10 @@ lua << EOF
 require('plugins')
 require('lsp')
 require('treesitter')
+require('options')
 EOF
 
-runtime! plugin/sensible.vim
+" runtime! plugin/sensible.vim
 
 set backupskip=*.log,/tmp/*
 set backupext=.bak
@@ -26,15 +27,7 @@ set shada='300,<10,@50,s100,h
 
 set tags^=.git/tags
 
-set splitbelow
-set splitright
-
 set diffopt+=vertical
-
-set clipboard& clipboard+=unnamed,unnamedplus
-
-set ignorecase
-set smartcase
 
 set wildmode=list:longest,list:full
 
@@ -52,8 +45,6 @@ set expandtab
 
 set nojoinspaces
 
-set termguicolors
-
 set laststatus=2
 set noshowmode
 
@@ -63,7 +54,6 @@ let g:airline_theme='nord'
 
 nnoremap ; :
 
-set backspace=2   " Backspace deletes like most programs in insert mode
 set autowrite     " Automatically :write before running commands
 set nowrap
 
@@ -119,9 +109,6 @@ augroup vimrc
 augroup end
 
 let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
-
-set number
-set numberwidth=3
 
 xmap q iq
 omap q iq
