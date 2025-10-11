@@ -41,7 +41,7 @@ require('packer').startup(function(use)
   -- Misc
   use 'tpope/vim-abolish'
   use 'tpope/vim-projectionist'
-  use 'tpope/vim-sensible'
+  -- use 'tpope/vim-sensible'
   use 'pbrisbin/vim-mkdir'
   use 'vitalk/vim-shebang'
 
