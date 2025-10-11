@@ -9,57 +9,10 @@ let g:maplocalleader = ';'
 set runtimepath+=/usr/local/opt/fzf
 
 lua << EOF
-require('packer').startup(function(use)
-  -- Core dependencies
-  use 'wbthomason/packer.nvim'
+require('plugins')
 
-  -- UI
-  use 'arcticicestudio/nord-vim'
-  use { 'vim-airline/vim-airline' }
-  use { 'vim-airline/vim-airline-themes' }
-
-  -- Editing, text objects, motion
-  use 'tpope/vim-surround'
-  use 'tpope/vim-repeat'
-  use 'tpope/vim-commentary'
-  use 'wellle/targets.vim'
-  use 'kana/vim-textobj-user'
-  use 'nelstrom/vim-textobj-rubyblock'
-  use 'tek/vim-textobj-ruby'
-
-  -- Ruby & Rails
-  use 'vim-ruby/vim-ruby'
-  use 'tpope/vim-bundler'
-  use 'tpope/vim-rails'
-  use 'tpope/vim-rake'
-  use 'tpope/vim-endwise'
-
-  -- Go support
-  use { 'fatih/vim-go', run = ':GoInstallBinaries' }
-
-  -- Git & workflow
-  use 'tpope/vim-fugitive'
-  use 'tpope/vim-rhubarb'
-  use 'tpope/vim-eunuch'
-
-  -- Tools
-  use { 'junegunn/fzf.vim', opt = true, cmd = { 'FZF', 'Files', 'GFiles' } }
-  use { 'preservim/nerdtree', opt = true, cmd = { 'NERDTreeToggle', 'NERDTreeFind' } }
-  use 'editorconfig/editorconfig-vim'
-  use 'mhinz/vim-startify'
-  use 'dense-analysis/ale'
-
-  -- Misc
-  use 'tpope/vim-abolish'
-  use 'tpope/vim-projectionist'
-  use 'tpope/vim-sensible'
-  use 'pbrisbin/vim-mkdir'
-  use 'vitalk/vim-shebang'
-
-  -- Deprecated or heavy, but still supported for now
-  use 'sheerun/vim-polyglot'
-
-end)
+require('mason').setup()
+require('mason-lspconfig').setup()
 EOF
 
 runtime! plugin/sensible.vim
@@ -337,3 +290,5 @@ augroup END
 
 :call extend(g:ale_linters, {
     \"go": ['golint', 'go vet'], })
+
+let g:loaded_perl_provider = 0
