@@ -24,7 +24,7 @@ require('packer').startup(function(use)
   use 'tpope/vim-endwise'
 
   -- Go support
-  use { 'fatih/vim-go', run = ':GoInstallBinaries' }
+  -- use { 'fatih/vim-go', run = ':GoInstallBinaries' }
 
   -- Git & workflow
   use 'tpope/vim-fugitive'
