@@ -20,69 +20,69 @@ EOF
 
 " runtime! plugin/sensible.vim
 
-set backupskip=*.log,/tmp/*
-set backupext=.bak
+" set backupskip=*.log,/tmp/*
+" set backupext=.bak
+"
+" set backupdir=$HOME/.local/share/nvim/backup//
+" set directory=$HOME/.local/share/nvim/swap//
+" set undodir=$HOME/.local/share/nvim/undo//
+" set viewdir=$HOME/.local/share/nvim/view//
 
-set backupdir=$HOME/.local/share/nvim/backup//
-set directory=$HOME/.local/share/nvim/swap//
-set undodir=$HOME/.local/share/nvim/undo//
-set viewdir=$HOME/.local/share/nvim/view//
-
-set shada='300,<10,@50,s100,h
+" set shada='300,<10,@50,s100,h
 
 set tags^=.git/tags
 
-set diffopt+=vertical
+" set diffopt+=vertical
 
-set wildmode=list:longest,list:full
+" set wildmode=list:longest,list:full
 
-let g:ruby_host_prog=$HOME.'/.asdf/shims/neovim-ruby-host'
-let g:python_host_prog = $HOME.'/.asdf/shims/python2'
-let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
-let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
+" let g:ruby_host_prog=$HOME.'/.asdf/shims/neovim-ruby-host'
+" let g:python_host_prog = $HOME.'/.asdf/shims/python2'
+" let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
+" let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
 
-let g:is_posix = 1
+" let g:is_posix = 1
 
-set tabstop=2
-set shiftwidth=2
-set shiftround
-set expandtab
+" set tabstop=2
+" set shiftwidth=2
+" set shiftround
+" set expandtab
 
-set nojoinspaces
+" set nojoinspaces
 
-set laststatus=2
-set noshowmode
+" set laststatus=2
+" set noshowmode
 
 set background=dark
 colorscheme nord
 let g:airline_theme='nord'
 
-set autowrite " Automatically :write before running commands
-set nowrap
+" set autowrite " Automatically :write before running commands
+" set nowrap
 
-set hlsearch
+" set hlsearch
 
-set inccommand=
+" set inccommand=
 
 highlight BadWhitespace ctermbg=red guibg=darkred
 
 augroup vimrc
   autocmd!
-  autocmd CursorHold * if exists(':rshada') |
-        \   rshada |
-        \   wshada |
-        \ endif
+  " autocmd CursorHold * if exists(':rshada') |
+  "       \   rshada |
+  "       \   wshada |
+  "       \ endif
 
-  au VimResized * wincmd =
+  autocmd VimResized * wincmd =
 
-  au BufReadPost *
+  autocmd BufReadPost *
         \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
         \   exe "normal g`\"" |
         \ endif
 
-  au BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
+  autocmd BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
 
-  au BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
+  autocmd BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
 
   autocmd FileType css,scss,slim,html,eruby,coffee,javascript,wxml setlocal iskeyword+=-
   autocmd Filetype javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2
@@ -105,7 +105,7 @@ augroup vimrc
   autocmd BufWritePre * :%s/\s\+$//e
   autocmd BufWritePre * :%s/\n\{3,\}/\r\r/e
 
-  au QuitPre * if &filetype != 'qf' |
+  autocmd QuitPre * if &filetype != 'qf' |
         \ silent! lclose |
         \ endif
 augroup end
