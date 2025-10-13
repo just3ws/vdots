@@ -1,9 +1,16 @@
 augroup vimrc
 augroup end
 
-set runtimepath+=/usr/local/opt/fzf
+" set runtimepath+=/usr/local/opt/fzf
 
 lua << EOF
+-- Detect Homebrew prefix based on architecture
+local brew_prefix = vim.fn.has('mac') == 1 and
+  (vim.fn.isdirectory('/opt/homebrew') == 1 and '/opt/homebrew' or '/usr/local') or ''
+
+-- Update runtimepath dynamically for fzf or other Homebrew packages
+vim.opt.runtimepath:append(brew_prefix .. '/opt/fzf')
+
 require('plugins')
 require('keymaps')
 require('lsp')
@@ -108,7 +115,13 @@ let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
 xmap q iq
 omap q iq
 
-let g:ale_shell = '/usr/local/bin/zsh'
+" let g:ale_shell = '/usr/local/bin/zsh'
+lua << EOF
+if vim.fn.has('mac') == 1 then
+  local brew_prefix = vim.fn.isdirectory('/opt/homebrew') == 1 and '/opt/homebrew' or '/usr/local'
+  vim.g.ale_shell = brew_prefix .. '/bin/zsh'
+end
+EOF
 
 let g:ale_echo_msg_error_str = 'ERR'
 let g:ale_echo_msg_warning_str = 'WRN'
