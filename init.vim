@@ -16,74 +16,26 @@ require('keymaps')
 require('lsp')
 require('treesitter')
 require('options')
+require('settings')
 EOF
 
-" runtime! plugin/sensible.vim
-
-" set backupskip=*.log,/tmp/*
-" set backupext=.bak
-"
-" set backupdir=$HOME/.local/share/nvim/backup//
-" set directory=$HOME/.local/share/nvim/swap//
-" set undodir=$HOME/.local/share/nvim/undo//
-" set viewdir=$HOME/.local/share/nvim/view//
-
-" set shada='300,<10,@50,s100,h
-
 set tags^=.git/tags
-
-" set diffopt+=vertical
-
-" set wildmode=list:longest,list:full
-
-" let g:ruby_host_prog=$HOME.'/.asdf/shims/neovim-ruby-host'
-" let g:python_host_prog = $HOME.'/.asdf/shims/python2'
-" let g:python2_host_prog = $HOME.'/.asdf/shims/python2'
-" let g:python3_host_prog = $HOME.'/.asdf/shims/python3'
-
-" let g:is_posix = 1
-
-" set tabstop=2
-" set shiftwidth=2
-" set shiftround
-" set expandtab
-
-" set nojoinspaces
-
-" set laststatus=2
-" set noshowmode
 
 set background=dark
 colorscheme nord
 let g:airline_theme='nord'
 
-" set autowrite " Automatically :write before running commands
-" set nowrap
-
-" set hlsearch
-
-" set inccommand=
-
 highlight BadWhitespace ctermbg=red guibg=darkred
 
 augroup vimrc
   autocmd!
-  " autocmd CursorHold * if exists(':rshada') |
-  "       \   rshada |
-  "       \   wshada |
-  "       \ endif
-
   autocmd VimResized * wincmd =
-
   autocmd BufReadPost *
         \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
         \   exe "normal g`\"" |
         \ endif
-
   autocmd BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
-
   autocmd BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
-
   autocmd FileType css,scss,slim,html,eruby,coffee,javascript,wxml setlocal iskeyword+=-
   autocmd Filetype javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2
   autocmd Filetype json setlocal tabstop=2 shiftwidth=2 softtabstop=2
@@ -99,9 +51,7 @@ augroup vimrc
   autocmd BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
   autocmd BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
   autocmd BufNewFile,BufRead *.lst set filetype=txt
-
-  autocmd vimrc BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
-
+  autocmd BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
   autocmd BufWritePre * :%s/\s\+$//e
   autocmd BufWritePre * :%s/\n\{3,\}/\r\r/e
 
@@ -110,12 +60,9 @@ augroup vimrc
         \ endif
 augroup end
 
-let g:EditorConfig_exclude_patterns = [ 'fugitive://.*', 'scp://.*', ]
-
 xmap q iq
 omap q iq
 
-" let g:ale_shell = '/usr/local/bin/zsh'
 lua << EOF
 if vim.fn.has('mac') == 1 then
   local brew_prefix = vim.fn.isdirectory('/opt/homebrew') == 1 and '/opt/homebrew' or '/usr/local'
@@ -176,5 +123,3 @@ if executable('ag')
 endif
 
 let g:NERDTreeIgnore = ['\~$', '^tmp$', '^\.git$', '^log$', '^coverage$', 'Gemfile.lock', '^bin$']
-
-let g:loaded_perl_provider = 0
