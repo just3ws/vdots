@@ -15,6 +15,7 @@ require('packer').startup(function(use)
   use 'kana/vim-textobj-user'
   use 'nelstrom/vim-textobj-rubyblock'
   use 'tek/vim-textobj-ruby'
+  use 'vim-scripts/align'
 
   -- Ruby & Rails
   use 'vim-ruby/vim-ruby'

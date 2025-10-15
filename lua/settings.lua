@@ -1,5 +1,3 @@
--- ~/.config/nvim/lua/settings.lua
-
 local opt = vim.opt
 local g = vim.g
 
@@ -19,7 +17,7 @@ opt.smartcase = true
 opt.diffopt:append("vertical")
 opt.wildmode = { "list:longest", "list:full" }
 opt.termguicolors = true
-opt.nojoinspaces = true
+opt.joinspaces = false
 opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
@@ -46,4 +44,3 @@ g.python3_host_prog = vim.fn.expand("~/.asdf/shims/python3")
 g.python_host_prog = vim.fn.expand("~/.asdf/shims/python2")
 g.python2_host_prog = vim.fn.expand("~/.asdf/shims/python2")
 g.loaded_perl_provider = 0
-
