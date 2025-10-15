@@ -17,6 +17,7 @@ require('lsp')
 require('treesitter')
 require('options')
 require('settings')
+require('nvimtree')
 EOF
 
 set tags^=.git/tags
@@ -34,7 +35,6 @@ augroup vimrc
         \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
         \   exe "normal g`\"" |
         \ endif
-  autocmd BufEnter * if bufname('#') =~ 'NERD_tree' && bufname('%') !~ 'NERD_tree' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
   autocmd BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
   autocmd FileType css,scss,slim,html,eruby,coffee,javascript,wxml setlocal iskeyword+=-
   autocmd Filetype javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2
@@ -121,5 +121,3 @@ if executable('ag')
     nnoremap \ :Ag<SPACE>
   endif
 endif
-
-let g:NERDTreeIgnore = ['\~$', '^tmp$', '^\.git$', '^log$', '^coverage$', 'Gemfile.lock', '^bin$']
