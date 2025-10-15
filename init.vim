@@ -18,6 +18,9 @@ require('treesitter')
 require('options')
 require('settings')
 require('nvimtree')
+require('linting')
+require('formatting')
+require('diagnostics')
 EOF
 
 set tags^=.git/tags
@@ -63,34 +66,34 @@ augroup end
 lua << EOF
 if vim.fn.has('mac') == 1 then
   local brew_prefix = vim.fn.isdirectory('/opt/homebrew') == 1 and '/opt/homebrew' or '/usr/local'
-  vim.g.ale_shell = brew_prefix .. '/bin/zsh'
+  -- vim.g.ale_shell = brew_prefix .. '/bin/zsh'
 end
 EOF
 
-let g:ale_echo_msg_error_str = 'ERR'
-let g:ale_echo_msg_warning_str = 'WRN'
-let g:ale_sign_error = '●'
-let g:ale_sign_style_error = 'e'
-let g:ale_sign_style_warning = 'w'
-let g:ale_sign_warning = '.'
-
-let g:ale_linters = { 'ruby': ['brakeman', 'rubocop'] }
-let g:ale_fixers = {
-      \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-      \   'yaml': ['remove_trailing_lines', 'trim_whitespace'],
-      \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
-      \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
-      \ }
-
-let g:ale_lint_on_enter = 0
-let g:ale_lint_on_save = 1
-
-let g:html_indent_tags = 'li\|p'
-let python_highlight_all=1
-
-nmap <silent> <C-e> <Plug>(ale_next_wrap)
+" let g:ale_echo_msg_error_str = 'ERR'
+" let g:ale_echo_msg_warning_str = 'WRN'
+" let g:ale_sign_error = '●'
+" let g:ale_sign_style_error = 'e'
+" let g:ale_sign_style_warning = 'w'
+" let g:ale_sign_warning = '.'
+"
+" let g:ale_linters = { 'ruby': ['brakeman', 'rubocop'] }
+" let g:ale_fixers = {
+"       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+"       \   'yaml': ['remove_trailing_lines', 'trim_whitespace'],
+"       \   'ruby': ['remove_trailing_lines', 'trim_whitespace', 'rubocop'],
+"       \   'javascript': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+"       \   'css': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+"       \   'json': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
+"       \ }
+"
+" let g:ale_lint_on_enter = 0
+" let g:ale_lint_on_save = 1
+"
+" let g:html_indent_tags = 'li\|p'
+" let python_highlight_all=1
+"
+" nmap <silent> <C-e> <Plug>(ale_next_wrap)
 
 function! LinterStatus() abort
     let l:counts = ale#statusline#Count(bufnr(''))
