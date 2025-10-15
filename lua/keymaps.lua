@@ -34,7 +34,7 @@ map('n', '<leader>e', ':NvimTreeToggle<CR>', { silent = true })
 map('n', '<leader>ef', ':NvimTreeFindFile<CR>', { silent = true })
 
 -- ALE
-map('n', '<C-e>', '<Plug>(ale_next_wrap)', { silent = true })
+-- map('n', '<C-e>', '<Plug>(ale_next_wrap)', { silent = true })
 
 -- Movement
 map('n', 'j', 'gj', opts)

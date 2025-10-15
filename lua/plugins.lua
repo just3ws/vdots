@@ -36,7 +36,9 @@ require('packer').startup(function(use)
   use { 'junegunn/fzf.vim', opt = true, cmd = { 'FZF', 'Files', 'GFiles' } }
   use 'editorconfig/editorconfig-vim'
   use 'mhinz/vim-startify'
-  use 'dense-analysis/ale'
+  -- use 'dense-analysis/ale'
+  use { "mfussenegger/nvim-lint" }
+  use { "stevearc/conform.nvim" }
 
   -- Misc
   use 'tpope/vim-abolish'
@@ -95,18 +97,18 @@ require('packer').startup(function(use)
     after = 'nvim-treesitter'
   }
 
-  use 'neovim/nvim-lspconfig'         -- Base LSP configuration (already used implicitly)
+  use 'neovim/nvim-lspconfig' -- Base LSP configuration (already used implicitly)
   use 'williamboman/mason.nvim'
   use 'williamboman/mason-lspconfig.nvim'
 
   -- LSP + Completion
-  use 'hrsh7th/nvim-cmp'              -- Completion framework
-  use 'hrsh7th/cmp-nvim-lsp'          -- LSP source for nvim-cmp
-  use 'hrsh7th/cmp-buffer'            -- Buffer completions
-  use 'hrsh7th/cmp-path'              -- Filesystem paths
-  use 'hrsh7th/cmp-cmdline'           -- Command-line completions
-  use 'L3MON4D3/LuaSnip'              -- Snippet engine (required)
-  use 'saadparwaiz1/cmp_luasnip'      -- Snippet completions
+  use 'hrsh7th/nvim-cmp'         -- Completion framework
+  use 'hrsh7th/cmp-nvim-lsp'     -- LSP source for nvim-cmp
+  use 'hrsh7th/cmp-buffer'       -- Buffer completions
+  use 'hrsh7th/cmp-path'         -- Filesystem paths
+  use 'hrsh7th/cmp-cmdline'      -- Command-line completions
+  use 'L3MON4D3/LuaSnip'         -- Snippet engine (required)
+  use 'saadparwaiz1/cmp_luasnip' -- Snippet completions
 
   use 'rafamadriz/friendly-snippets'
   require('luasnip.loaders.from_vscode').lazy_load()
