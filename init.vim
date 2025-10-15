@@ -60,9 +60,6 @@ augroup vimrc
         \ endif
 augroup end
 
-xmap q iq
-omap q iq
-
 lua << EOF
 if vim.fn.has('mac') == 1 then
   local brew_prefix = vim.fn.isdirectory('/opt/homebrew') == 1 and '/opt/homebrew' or '/usr/local'
