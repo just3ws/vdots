@@ -34,7 +34,6 @@ require('packer').startup(function(use)
 
   -- Tools
   use { 'junegunn/fzf.vim', opt = true, cmd = { 'FZF', 'Files', 'GFiles' } }
-  use { 'preservim/nerdtree', opt = true, cmd = { 'NERDTreeToggle', 'NERDTreeFind' } }
   use 'editorconfig/editorconfig-vim'
   use 'mhinz/vim-startify'
   use 'dense-analysis/ale'
@@ -45,6 +44,11 @@ require('packer').startup(function(use)
   -- use 'tpope/vim-sensible'
   use 'pbrisbin/vim-mkdir'
   use 'vitalk/vim-shebang'
+
+  use {
+    'nvim-tree/nvim-tree.lua',
+    requires = { 'nvim-tree/nvim-web-devicons' },
+  }
 
   --------------------------------------------------------------------------
   -- Modern syntax and highlighting: Tree-sitter

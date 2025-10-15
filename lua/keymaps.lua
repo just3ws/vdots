@@ -29,9 +29,9 @@ map('n', '<C-p>', ':GFiles<CR>', opts)
 map('n', '<C-b>', ':Buffers<CR>', opts)
 map('n', '<Leader>l', ':Buffers<CR>', opts)
 
--- NERDTree
-map('n', '<Leader>ef', ':NERDTreeFind<CR>', opts)
-map('n', '<Leader>e', ':NERDTreeFocus<CR>', opts)
+-- nvim-tree
+map('n', '<leader>e', ':NvimTreeToggle<CR>', { silent = true })
+map('n', '<leader>ef', ':NvimTreeFindFile<CR>', { silent = true })
 
 -- ALE
 map('n', '<C-e>', '<Plug>(ale_next_wrap)', { silent = true })
