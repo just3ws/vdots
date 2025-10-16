@@ -21,6 +21,7 @@ require('nvimtree')
 require('linting')
 require('formatting')
 require('diagnostics')
+require('autocmds')
 EOF
 
 set tags^=.git/tags
@@ -31,37 +32,37 @@ let g:airline_theme='nord'
 
 highlight BadWhitespace ctermbg=red guibg=darkred
 
-augroup vimrc
-  autocmd!
-  autocmd VimResized * wincmd =
-  autocmd BufReadPost *
-        \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
-        \   exe "normal g`\"" |
-        \ endif
-  autocmd BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
-  autocmd FileType css,scss,slim,html,eruby,coffee,javascript,wxml setlocal iskeyword+=-
-  autocmd Filetype javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2
-  autocmd Filetype json setlocal tabstop=2 shiftwidth=2 softtabstop=2
-  autocmd Filetype markdown setlocal tabstop=2 shiftwidth=2 softtabstop=2
-  autocmd Filetype python setlocal tabstop=4 shiftwidth=4 softtabstop=4
-  autocmd Filetype ruby setlocal tabstop=2 shiftwidth=2 softtabstop=2
-  autocmd BufRead,BufNewFile *.md set filetype=markdown
-  autocmd BufRead,BufNewFile .mdlrc set filetype=ruby
-  autocmd BufRead,BufNewFile .env set filetype=shell
-  autocmd BufRead,BufNewFile *.bpmn set filetype=xml
-  autocmd BufRead,BufNewFile .env.* set filetype=shell
-  autocmd BufRead,BufNewFile .erdconfig set filetype=yaml
-  autocmd BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
-  autocmd BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
-  autocmd BufNewFile,BufRead *.lst set filetype=txt
-  autocmd BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
-  autocmd BufWritePre * :%s/\s\+$//e
-  autocmd BufWritePre * :%s/\n\{3,\}/\r\r/e
-
-  autocmd QuitPre * if &filetype != 'qf' |
-        \ silent! lclose |
-        \ endif
-augroup end
+" augroup vimrc
+"   autocmd!
+"   autocmd VimResized * wincmd =
+"   autocmd BufReadPost *
+"         \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+"         \   exe "normal g`\"" |
+"         \ endif
+"   autocmd BufEnter *.png,*.jpg,*gif exec "! open ".expand("%") | :bw
+"   autocmd FileType css,scss,slim,html,eruby,coffee,javascript,wxml setlocal iskeyword+=-
+"   autocmd Filetype javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2
+"   autocmd Filetype json setlocal tabstop=2 shiftwidth=2 softtabstop=2
+"   autocmd Filetype markdown setlocal tabstop=2 shiftwidth=2 softtabstop=2
+"   autocmd Filetype python setlocal tabstop=4 shiftwidth=4 softtabstop=4
+"   autocmd Filetype ruby setlocal tabstop=2 shiftwidth=2 softtabstop=2
+"   autocmd BufRead,BufNewFile *.md set filetype=markdown
+"   autocmd BufRead,BufNewFile .mdlrc set filetype=ruby
+"   autocmd BufRead,BufNewFile .env set filetype=shell
+"   autocmd BufRead,BufNewFile *.bpmn set filetype=xml
+"   autocmd BufRead,BufNewFile .env.* set filetype=shell
+"   autocmd BufRead,BufNewFile .erdconfig set filetype=yaml
+"   autocmd BufRead,BufNewFile .{eslint,npm,prettier}ignore set filetype=gitignore
+"   autocmd BufRead,BufNewFile .{jscs,jshint,eslint,prettier,release}rc set filetype=json
+"   autocmd BufNewFile,BufRead *.lst set filetype=txt
+"   autocmd BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+"   autocmd BufWritePre * :%s/\s\+$//e
+"   autocmd BufWritePre * :%s/\n\{3,\}/\r\r/e
+"
+"   autocmd QuitPre * if &filetype != 'qf' |
+"         \ silent! lclose |
+"         \ endif
+" augroup end
 
 lua << EOF
 if vim.fn.has('mac') == 1 then
