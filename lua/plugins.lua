@@ -122,7 +122,6 @@ require("packer").startup(function(use)
     -- install jsregexp (optional!:).
     run = "make install_jsregexp",
     config = function()
-      -- pcall(require, "jsregexp")
       require("luasnip.loaders.from_vscode").lazy_load()
     end,
   })
