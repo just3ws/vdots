@@ -1,13 +1,18 @@
-require("packer").startup(function(use)
-  -- Core dependency
+-- ~/.config/nvim/lua/plugins.lua
+return require("packer").startup(function(use)
   use("wbthomason/packer.nvim")
 
-  -- UI
-  use("arcticicestudio/nord-vim")
-  use({ "vim-airline/vim-airline" })
-  use({ "vim-airline/vim-airline-themes" })
+  -- UI & statusline
+  use({ "shaunsingh/nord.nvim" })
+  use({
+    "nvim-lualine/lualine.nvim",
+    requires = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("lualine").setup({ options = { theme = "nord" } })
+    end,
+  })
 
-  -- Editing, text objects, motion
+  -- Core editing
   use("tpope/vim-surround")
   use("tpope/vim-repeat")
   use("tpope/vim-commentary")
@@ -15,119 +20,72 @@ require("packer").startup(function(use)
   use("kana/vim-textobj-user")
   use("nelstrom/vim-textobj-rubyblock")
   use("tek/vim-textobj-ruby")
-  use("vim-scripts/align")
 
-  -- Ruby & Rails
+  -- Ruby ecosystem
   use("vim-ruby/vim-ruby")
+  use("tpope/vim-endwise")
   use("tpope/vim-bundler")
   use("tpope/vim-rails")
-  use("tpope/vim-rake")
-  use("tpope/vim-endwise")
 
-  -- Go support
-  -- use { 'fatih/vim-go', run = ':GoInstallBinaries' }
-
-  -- Git & workflow
-  use("tpope/vim-fugitive")
+  -- Git
+  use({ "tpope/vim-fugitive", cmd = { "Git", "Gdiffsplit", "Gblame" } })
   use("tpope/vim-rhubarb")
-  use("tpope/vim-eunuch")
 
-  -- Tools
-  use({ "junegunn/fzf.vim", opt = true, cmd = { "FZF", "Files", "GFiles" } })
-  use("editorconfig/editorconfig-vim")
-  use("mhinz/vim-startify")
-  -- use 'dense-analysis/ale'
-  use({ "mfussenegger/nvim-lint" })
-  use({ "stevearc/conform.nvim" })
-
-  -- Misc
-  use("tpope/vim-abolish")
-  use("tpope/vim-projectionist")
-  -- use 'tpope/vim-sensible'
-  use("pbrisbin/vim-mkdir")
-  use("vitalk/vim-shebang")
-
+  -- File tree
   use({
     "nvim-tree/nvim-tree.lua",
     requires = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("nvimtree")
+    end,
   })
 
-  --------------------------------------------------------------------------
-  -- Modern syntax and highlighting: Tree-sitter
-  --------------------------------------------------------------------------
+  -- Treesitter
   use({
     "nvim-treesitter/nvim-treesitter",
     run = ":TSUpdate",
     config = function()
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = {
-          "ruby",
-          "go",
-          "lua",
-          "javascript",
-          "json",
-          "html",
-          "css",
-          "bash",
-          "python",
-        },
-        highlight = { enable = true },
-        indent = { enable = true },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = "gnn",
-            node_incremental = "grn",
-            scope_incremental = "grc",
-            node_decremental = "grm",
-          },
-        },
-      })
+      require("treesitter")
     end,
   })
+  use("nvim-treesitter/nvim-treesitter-textobjects")
+  use("windwp/nvim-ts-autotag")
+  use("JoosepAlviste/nvim-ts-context-commentstring")
 
+  -- LSP / Completion
   use({
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    after = "nvim-treesitter",
-  })
-
-  use({
-    "windwp/nvim-ts-autotag",
-    after = "nvim-treesitter",
+    "neovim/nvim-lspconfig",
+    requires = {
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+    },
     config = function()
-      require("nvim-ts-autotag").setup()
+      require("lsp")
     end,
   })
+  use("hrsh7th/nvim-cmp")
+  use("hrsh7th/cmp-nvim-lsp")
+  use("hrsh7th/cmp-buffer")
+  use("hrsh7th/cmp-path")
+  use("hrsh7th/cmp-cmdline")
 
   use({
-    "JoosepAlviste/nvim-ts-context-commentstring",
-    after = "nvim-treesitter",
-  })
-
-  use("neovim/nvim-lspconfig") -- Base LSP configuration (already used implicitly)
-  use("williamboman/mason.nvim")
-  use("williamboman/mason-lspconfig.nvim")
-
-  -- LSP + Completion
-  use("hrsh7th/nvim-cmp") -- Completion framework
-  use("hrsh7th/cmp-nvim-lsp") -- LSP source for nvim-cmp
-  use("hrsh7th/cmp-buffer") -- Buffer completions
-  use("hrsh7th/cmp-path") -- Filesystem paths
-  use("hrsh7th/cmp-cmdline") -- Command-line completions
-
-  use({
-    "L3MON4D3/LuaSnip", -- Snippet engine (required)
-    -- follow latest release.
-    tag = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-    -- install jsregexp (optional!:).
+    "L3MON4D3/LuaSnip",
+    tag = "v2.*",
     run = "make install_jsregexp",
     config = function()
       require("luasnip.loaders.from_vscode").lazy_load()
     end,
   })
-
-  use("saadparwaiz1/cmp_luasnip") -- Snippet completions
-
+  use("saadparwaiz1/cmp_luasnip")
   use("rafamadriz/friendly-snippets")
-  require("luasnip.loaders.from_vscode").lazy_load()
+
+  -- Linting / formatting
+  use("mfussenegger/nvim-lint")
+  use("stevearc/conform.nvim")
+
+  -- Misc
+  use("tpope/vim-abolish")
+  use("pbrisbin/vim-mkdir")
+  use("vitalk/vim-shebang")
 end)
