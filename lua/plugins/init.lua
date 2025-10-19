@@ -19,17 +19,20 @@ return {
   "tpope/vim-commentary",
   "wellle/targets.vim",
   "tpope/vim-eunuch",
-
+  -- Text objects
   {
     "kana/vim-textobj-user",
+    lazy = false, -- must load first
   },
   {
     "nelstrom/vim-textobj-rubyblock",
     dependencies = { "kana/vim-textobj-user" },
+    ft = "ruby",
   },
   {
     "tek/vim-textobj-ruby",
     dependencies = { "kana/vim-textobj-user" },
+    ft = "ruby",
   },
 
   -----------------------------------------------------
