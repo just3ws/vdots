@@ -6,9 +6,9 @@
 -- Define diagnostic signs (icons) similar to ALE’s style
 local signs = {
   Error = "●", -- ERR
-  Wrn  = ".", -- WRN
-  nfo  = "i",
-  int  = "h",
+  Warn = ".", -- WRN
+  Info = "i",
+  Hint = "h",
 }
 
 for type, icon in pairs(signs) do
@@ -17,7 +17,7 @@ for type, icon in pairs(signs) do
 end
 
 -- Diagnostic configuration
-vim.diagnostic.config({
+vim.diagnostic.config {
   virtual_text = {
     prefix = "●",
     spacing = 2,
@@ -39,7 +39,7 @@ vim.diagnostic.config({
   underline = true,
   update_in_insert = false,
   severity_sort = true,
-})
+}
 
 -- Nord-like diagnostic highlight groups
 -- These override default LSP diagnostic colors for better readability
@@ -60,3 +60,9 @@ vim.api.nvim_create_autocmd("CursorHold", {
     vim.diagnostic.open_float(nil, { focusable = false })
   end,
 })
+
+vim.api.nvim_set_hl(0, "DiagnosticError", { fg = "#BF616A", italic = false })
+vim.api.nvim_set_hl(0, "DiagnosticWarn", { fg = "#EBCB8B", italic = false })
+vim.api.nvim_set_hl(0, "DiagnosticInfo", { fg = "#81A1C1", italic = false })
+vim.api.nvim_set_hl(0, "DiagnosticHint", { fg = "#88C0D0", italic = false })
+vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#BF616A" })
