@@ -1,4 +1,45 @@
-*~
+# macOS cruft
 .DS_Store
-plugin/packer_compiled.lua
+
+# Vim swap/backup/undo
+*.swp
+*.swo
+*.bak
+*.tmp
+*~
+
+# Netrw history
 .netrwhist
+
+# Packer
+plugin/packer_compiled.lua
+
+# Mason / Treesitter / Conform / Lint / etc.
+.mason/
+.parsed/
+treesitter/
+.cache/
+log/
+
+# Neovim runtime state
+shada/
+session/
+view/
+undodir/
+swap/
+backup/
+
+# Lua module caches
+luac.out
+
+# Logs and generated files
+*.log
+
+# Ignore local-only test files or temp scripts
+scratch.lua
+sandbox.lua
+test_*.lua
+
+# LSP and conform formatter logs
+.lsp_log
+.conform_log
