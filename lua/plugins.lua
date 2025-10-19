@@ -20,6 +20,7 @@ return require("packer").startup(function(use)
   use("kana/vim-textobj-user")
   use("nelstrom/vim-textobj-rubyblock")
   use("tek/vim-textobj-ruby")
+  use("tpope/vim-eunuch")
 
   -- Ruby ecosystem
   use("vim-ruby/vim-ruby")
