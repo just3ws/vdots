@@ -1,0 +1,105 @@
+return {
+  -----------------------------------------------------
+  -- Core UI
+  -----------------------------------------------------
+  { "shaunsingh/nord.nvim" },
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("lualine").setup { options = { theme = "nord" } }
+    end,
+  },
+
+  -----------------------------------------------------
+  -- Core editing
+  -----------------------------------------------------
+  "tpope/vim-surround",
+  "tpope/vim-repeat",
+  "tpope/vim-commentary",
+  "wellle/targets.vim",
+  "tpope/vim-eunuch",
+
+  {
+    "kana/vim-textobj-user",
+  },
+  {
+    "nelstrom/vim-textobj-rubyblock",
+    dependencies = { "kana/vim-textobj-user" },
+  },
+  {
+    "tek/vim-textobj-ruby",
+    dependencies = { "kana/vim-textobj-user" },
+  },
+
+  -----------------------------------------------------
+  -- Ruby ecosystem
+  -----------------------------------------------------
+  "vim-ruby/vim-ruby",
+  "tpope/vim-endwise",
+  "tpope/vim-bundler",
+  "tpope/vim-rails",
+
+  -----------------------------------------------------
+  -- Git
+  -----------------------------------------------------
+  { "tpope/vim-fugitive", cmd = { "Git", "Gdiffsplit", "Gblame" } },
+  "tpope/vim-rhubarb",
+
+  -----------------------------------------------------
+  -- File tree
+  -----------------------------------------------------
+  {
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require "nvimtree"
+    end,
+  },
+
+  -----------------------------------------------------
+  -- Treesitter
+  -----------------------------------------------------
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    config = function()
+      require "treesitter"
+    end,
+  },
+  "nvim-treesitter/nvim-treesitter-textobjects",
+  "windwp/nvim-ts-autotag",
+  "JoosepAlviste/nvim-ts-context-commentstring",
+
+  -----------------------------------------------------
+  -- LSP + completion
+  -----------------------------------------------------
+  {
+    "neovim/nvim-lspconfig",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+    },
+    config = function()
+      require "lsp"
+    end,
+  },
+  "hrsh7th/nvim-cmp",
+  "hrsh7th/cmp-nvim-lsp",
+  "hrsh7th/cmp-buffer",
+  "hrsh7th/cmp-path",
+  "hrsh7th/cmp-cmdline",
+
+  -----------------------------------------------------
+  -- Linting / formatting
+  -----------------------------------------------------
+  "mfussenegger/nvim-lint",
+  "stevearc/conform.nvim",
+
+  -----------------------------------------------------
+  -- Misc
+  -----------------------------------------------------
+  "tpope/vim-abolish",
+  "pbrisbin/vim-mkdir",
+  "vitalk/vim-shebang",
+}
