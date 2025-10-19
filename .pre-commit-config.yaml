@@ -1,0 +1,48 @@
+---
+# .pre-commit-config.yaml
+# Simple local pre-commit setup — no external repos
+
+repos:
+  - repo: local
+    hooks:
+      - id: trim-trailing-whitespace
+        name: Trim trailing whitespace
+        entry: bash -c "sed -i '' -E 's/[[:space:]]+$//' \"$@\""
+        language: system
+        types: [text]
+
+      - id: eof-newline
+        name: Ensure newline at end of file
+        entry: >
+          bash -c '
+          for f in "$@"; do
+            if [ -f "$f" ] && [ -n "$(tail -c1 "$f")" ]; then
+              echo >> "$f"
+              echo "Fixed missing newline in $f"
+            fi
+          done
+          ' --
+        language: system
+        types: [text]
+
+      - id: lua-syntax-check
+        name: Lua syntax check
+        entry: >
+          bash -c '
+          for f in "$@"; do
+            luac -p "$f" || exit 1
+          done
+          ' --
+        language: system
+        files: \.lua$
+
+      - id: vim-syntax-check
+        name: Vimscript syntax check
+        entry: >
+          bash -c '
+          for f in "$@"; do
+            nvim --headless +"silent! source $f" +q || exit 1
+          done
+          ' --
+        language: system
+        files: \.(vim|vimrc)$
