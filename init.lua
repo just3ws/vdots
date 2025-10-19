@@ -37,10 +37,7 @@ require "linting"
 require "formatting"
 require "treesitter"
 require "nvimtree"
+require "colors.nord"
 
 -- UI and appearance
 vim.opt.tags:append ".git/tags"
-vim.opt.background = "dark"
-vim.cmd.colorscheme "nord"
-vim.g.airline_theme = "nord"
-vim.api.nvim_set_hl(0, "BadWhitespace", { ctermbg = "red", bg = "darkred" })

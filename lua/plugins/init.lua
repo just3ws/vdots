@@ -2,7 +2,14 @@ return {
   -----------------------------------------------------
   -- Core UI
   -----------------------------------------------------
-  { "shaunsingh/nord.nvim" },
+  {
+    "shaunsingh/nord.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("nord").set()
+    end,
+  },
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
