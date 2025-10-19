@@ -1,9 +1,42 @@
+# Root EditorConfig file
 root = true
 
 [*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
 tab_width = 2
-end_of_line = lf
-insert_final_newline = true
-charset = utf-8
+
+# 📝 Makefiles and tabs-required files
+[Makefile]
+indent_style = tab
+
+# 📜 Shell scripts
+[*.{sh,bash,zsh}]
+indent_style = space
+indent_size = 2
+
+# 🐍 Python prefers 4 spaces
+[*.py]
+indent_size = 4
+tab_width = 4
+
+# 📘 Markdown — don’t strip trailing whitespace (for 2-space line breaks)
+[*.md]
+trim_trailing_whitespace = false
+
+# 💎 Ruby — double down on consistency
+[*.{rb,rake,ru,gemspec}]
+indent_size = 2
+tab_width = 2
+
+# 🪶 Vimscript files
+[*.{vim,vimrc}]
+indent_size = 2
+
+# ⚙️ Lua
+[*.lua]
+indent_size = 2

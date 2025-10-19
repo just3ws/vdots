@@ -1,0 +1,26 @@
+---
+name: Lua Lint & Format
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y luarocks
+          luarocks install luacheck
+          curl -sSLo stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux.zip
+          sudo unzip -o stylua.zip -d /usr/local/bin
+
+      - name: Run luacheck
+        run: luacheck . --config .luacheckrc
+
+      - name: Run stylua
+        run: stylua --check .
