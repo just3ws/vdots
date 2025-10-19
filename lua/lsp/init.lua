@@ -1,7 +1,6 @@
 local mason = require("mason")
 local mason_lspconfig = require("mason-lspconfig")
 local cmp = require("cmp")
-local luasnip = require("luasnip")
 
 mason.setup()
 mason_lspconfig.setup({
@@ -34,11 +33,6 @@ end
 
 -- nvim-cmp integration
 cmp.setup({
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
   mapping = {
     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
@@ -79,7 +73,6 @@ cmp.setup({
     format = function(entry, vim_item)
       vim_item.menu = ({
         nvim_lsp = "[LSP]",
-        luasnip = "[Snippet]",
         buffer = "[Buffer]",
         path = "[Path]",
       })[entry.source.name]
