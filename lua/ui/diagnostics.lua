@@ -1,90 +1,80 @@
 -- ============================================================================
--- Neovim Diagnostics (Nord-themed, ALE-style replacement)
+-- Neovim Native Diagnostics (Nord aligned, no deprecated sign API)
 -- ============================================================================
 
-local nord = require("ui.nord").palette
-local set_hl = vim.api.nvim_set_hl
+local M = {}
 
--- ─────────────────────────────────────────────────────────────────────────────
--- Diagnostic Sign Icons
--- ─────────────────────────────────────────────────────────────────────────────
-local signs = {
-  Error = " ",
-  Warn = " ",
-  Info = " ",
-  Hint = " ",
-}
+function M.setup()
+  local nord = require("ui.nord").palette
 
-for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-end
+  -- Diagnostic symbols for sign column (new-style)
+  local signs = {
+    Error = "",
+    Warn = "",
+    Info = "",
+    Hint = "",
+  }
 
--- ─────────────────────────────────────────────────────────────────────────────
--- Diagnostic Configuration
--- ─────────────────────────────────────────────────────────────────────────────
-vim.diagnostic.config {
-  virtual_text = {
-    prefix = "●",
-    spacing = 2,
-    format = function(diagnostic)
-      local labels = {
-        [vim.diagnostic.severity.ERROR] = "ERR",
-        [vim.diagnostic.severity.WARN] = "WRN",
-        [vim.diagnostic.severity.INFO] = "INF",
-        [vim.diagnostic.severity.HINT] = "HNT",
-      }
-      local label = labels[diagnostic.severity] or ""
-      return string.format("%s %s", label, diagnostic.message)
+  -- Modern sign registration (via vim.diagnostic.config, no vim.fn.sign_define)
+  local sign_defs = {}
+  for type, icon in pairs(signs) do
+    sign_defs[#sign_defs + 1] =
+      { name = "DiagnosticSign" .. type, text = icon, texthl = "DiagnosticSign" .. type }
+  end
+  vim.diagnostic.config { signs = { text = sign_defs } }
+
+  -- Core diagnostic configuration
+  vim.diagnostic.config {
+    virtual_text = {
+      prefix = "●",
+      spacing = 2,
+      format = function(d)
+        local labels = {
+          [vim.diagnostic.severity.ERROR] = "ERR",
+          [vim.diagnostic.severity.WARN] = "WRN",
+          [vim.diagnostic.severity.INFO] = "INF",
+          [vim.diagnostic.severity.HINT] = "HNT",
+        }
+        return string.format("%s %s", labels[d.severity] or "", d.message)
+      end,
+    },
+    float = {
+      border = "rounded",
+      source = "if_many",
+      focusable = false,
+    },
+    underline = true,
+    update_in_insert = false,
+    severity_sort = true,
+  }
+
+  -- Nord-aligned colors
+  local function hl(name, opts)
+    vim.api.nvim_set_hl(0, name, opts)
+  end
+  hl("DiagnosticError", { fg = nord.red, italic = false })
+  hl("DiagnosticWarn", { fg = nord.yellow, italic = false })
+  hl("DiagnosticInfo", { fg = nord.blue, italic = false })
+  hl("DiagnosticHint", { fg = nord.cyan, italic = false })
+
+  -- Gutter icons (match theme, subtle background)
+  hl("DiagnosticSignError", { fg = nord.red, bg = "NONE" })
+  hl("DiagnosticSignWarn", { fg = nord.yellow, bg = "NONE" })
+  hl("DiagnosticSignInfo", { fg = nord.blue, bg = "NONE" })
+  hl("DiagnosticSignHint", { fg = nord.cyan, bg = "NONE" })
+
+  -- Underline for inline diagnostics
+  hl("DiagnosticUnderlineError", { undercurl = true, sp = nord.red })
+  hl("DiagnosticUnderlineWarn", { undercurl = true, sp = nord.yellow })
+  hl("DiagnosticUnderlineInfo", { undercurl = true, sp = nord.blue })
+  hl("DiagnosticUnderlineHint", { undercurl = true, sp = nord.cyan })
+
+  -- Floating hover on CursorHold
+  vim.api.nvim_create_autocmd("CursorHold", {
+    callback = function()
+      vim.diagnostic.open_float(nil, { focusable = false })
     end,
-  },
-  float = {
-    border = "rounded",
-    source = "if_many",
-    header = { " Diagnostics", "Title" },
-  },
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-}
-
--- ─────────────────────────────────────────────────────────────────────────────
--- Highlight Groups — tuned for Nord
--- ─────────────────────────────────────────────────────────────────────────────
-local hl_map = {
-  DiagnosticError = { fg = nord.red, bold = true },
-  DiagnosticWarn = { fg = nord.yellow, bold = true },
-  DiagnosticInfo = { fg = nord.cyan, bold = true },
-  DiagnosticHint = { fg = nord.green, bold = false },
-
-  DiagnosticSignError = { fg = nord.red, bg = "NONE" },
-  DiagnosticSignWarn = { fg = nord.yellow, bg = "NONE" },
-  DiagnosticSignInfo = { fg = nord.cyan, bg = "NONE" },
-  DiagnosticSignHint = { fg = nord.green, bg = "NONE" },
-
-  DiagnosticUnderlineError = { undercurl = true, sp = nord.red },
-  DiagnosticUnderlineWarn = { undercurl = true, sp = nord.yellow },
-  DiagnosticUnderlineInfo = { undercurl = true, sp = nord.cyan },
-  DiagnosticUnderlineHint = { undercurl = true, sp = nord.green },
-
-  DiagnosticVirtualTextError = { fg = nord.red, bg = nord.bg_light },
-  DiagnosticVirtualTextWarn = { fg = nord.yellow, bg = nord.bg_light },
-  DiagnosticVirtualTextInfo = { fg = nord.cyan, bg = nord.bg_light },
-  DiagnosticVirtualTextHint = { fg = nord.green, bg = nord.bg_light },
-
-  FloatBorder = { fg = nord.blue, bg = nord.bg_dark },
-  NormalFloat = { fg = nord.fg, bg = nord.bg_dark },
-}
-
-for group, opts in pairs(hl_map) do
-  set_hl(0, group, opts)
+  })
 end
 
--- ─────────────────────────────────────────────────────────────────────────────
--- Optional: show diagnostics in floating window on hover
--- ─────────────────────────────────────────────────────────────────────────────
-vim.api.nvim_create_autocmd("CursorHold", {
-  callback = function()
-    vim.diagnostic.open_float(nil, { focusable = false, border = "rounded" })
-  end,
-})
+return M
