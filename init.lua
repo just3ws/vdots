@@ -28,7 +28,7 @@ vim.g.loaded_netrwPlugin = 1
 require "options"
 require "core.keymaps"
 require "core.autocmds"
-require "editor.diagnostics"
+require "ui.diagnostics"
 require "settings"
 require "filetypes"
 require "lsp"
