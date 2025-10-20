@@ -1,70 +1,54 @@
-local mason = require("mason")
-local mason_lspconfig = require("mason-lspconfig")
-local cmp = require("cmp")
+-- lua/lsp/init.lua
+-- Modern LSP setup using vim.lsp.config (Neovim 0.11+)
+
+-- Mason bootstrap -------------------------------------------------------------
+local mason = require "mason"
+local mason_lspconfig = require "mason-lspconfig"
 
 mason.setup()
-mason_lspconfig.setup({
+mason_lspconfig.setup {
   ensure_installed = { "ruby_lsp", "gopls", "lua_ls", "vimls" },
   automatic_installation = true,
-})
-
--- Filetype mapping
-local server_filetypes = {
-  ruby_lsp = { "ruby" },
-  gopls = { "go", "gomod" },
-  lua_ls = { "lua" },
-  vimls = { "vim" },
 }
 
--- Keymaps when a server attaches
+-- Capabilities ----------------------------------------------------------------
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+-- Keymaps on attach -----------------------------------------------------------
 local function on_attach(_, bufnr)
-  local opts = { buffer = bufnr, silent = true, noremap = true }
-  local map = vim.keymap.set
-  map("n", "gd", vim.lsp.buf.definition, opts)
-  map("n", "K", vim.lsp.buf.hover, opts)
-  map("n", "gr", vim.lsp.buf.references, opts)
-  map("n", "<leader>rn", vim.lsp.buf.rename, opts)
-  map("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-  map("n", "[d", vim.diagnostic.goto_prev, opts)
-  map("n", "]d", vim.diagnostic.goto_next, opts)
-  map("n", "<leader>e", vim.diagnostic.open_float, opts)
-  map("n", "<leader>q", vim.diagnostic.setloclist, opts)
+  local map = function(mode, lhs, rhs, desc)
+    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, noremap = true, desc = desc })
+  end
+  map("n", "gd", vim.lsp.buf.definition, "Go to definition")
+  map("n", "K", vim.lsp.buf.hover, "Hover")
+  map("n", "gr", vim.lsp.buf.references, "References")
+  map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
+  map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
+  map("n", "[d", vim.diagnostic.goto_prev, "Prev diagnostic")
+  map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
+  map("n", "<leader>e", vim.diagnostic.open_float, "Show diagnostic")
+  map("n", "<leader>q", vim.diagnostic.setloclist, "Diagnostics list")
 end
 
--- nvim-cmp integration
-cmp.setup({
-  mapping = {
+-- nvim-cmp setup --------------------------------------------------------------
+local cmp = require "cmp"
+
+cmp.setup {
+  snippet = { expand = function(_) end },
+  mapping = cmp.mapping.preset.insert {
     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.abort(),
-    ["<CR>"] = cmp.mapping.confirm({ select = true }),
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
+    ["<CR>"] = cmp.mapping.confirm { select = true },
+    ["<Tab>"] = cmp.mapping.select_next_item(),
+    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
   },
-  sources = cmp.config.sources({
+  sources = {
     { name = "nvim_lsp" },
-    { name = "luasnip" },
-  }, {
     { name = "buffer" },
     { name = "path" },
-  }),
+  },
   window = {
     completion = cmp.config.window.bordered(),
     documentation = cmp.config.window.bordered(),
@@ -73,15 +57,15 @@ cmp.setup({
     format = function(entry, vim_item)
       vim_item.menu = ({
         nvim_lsp = "[LSP]",
-        buffer = "[Buffer]",
+        buffer = "[Buf]",
         path = "[Path]",
       })[entry.source.name]
       return vim_item
     end,
   },
-})
+}
 
--- Cmdline completions
+-- Cmdline completion ----------------------------------------------------------
 cmp.setup.cmdline({ "/", "?" }, {
   mapping = cmp.mapping.preset.cmdline(),
   sources = { { name = "buffer" } },
@@ -91,28 +75,54 @@ cmp.setup.cmdline(":", {
   sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
 })
 
--- Capabilities for all LSPs
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
+-- Diagnostics appearance ------------------------------------------------------
+vim.diagnostic.config {
+  virtual_text = { prefix = "●", spacing = 2 },
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+  float = { border = "rounded", source = "always" },
+}
 
--- Launch servers dynamically when relevant filetypes are opened
-for server, patterns in pairs(server_filetypes) do
-  vim.api.nvim_create_autocmd("FileType", {
-    pattern = patterns,
-    callback = function(args)
-      local cfg = vim.lsp.config[server] or {}
-      vim.lsp.start({
-        name = server,
-        cmd = cfg.cmd or { vim.fn.stdpath("data") .. "/mason/bin/" .. server },
-        root_dir = cfg.root_dir or vim.fs.root(args.buf, { ".git", "go.mod", "Gemfile" }),
-        capabilities = capabilities,
-        on_attach = on_attach,
-        settings = cfg.settings or {},
-      })
-    end,
-  })
+local signs = {
+  Error = " ",
+  Warn = " ",
+  Hint = " ",
+  Info = " ",
+}
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 end
 
+-- Server configurations (new API) --------------------------------------------
+vim.lsp.config.ruby_lsp = {
+  cmd = { vim.fn.stdpath "data" .. "/mason/bin/ruby-lsp" },
+  filetypes = { "ruby" },
+  capabilities = capabilities,
+  on_attach = on_attach,
+}
+
+vim.lsp.config.gopls = {
+  cmd = { vim.fn.stdpath "data" .. "/mason/bin/gopls" },
+  filetypes = { "go", "gomod" },
+  settings = {
+    gopls = {
+      usePlaceholders = true,
+      completeUnimported = true,
+      analyses = { unusedparams = true },
+    },
+  },
+  capabilities = capabilities,
+  on_attach = on_attach,
+}
+
 vim.lsp.config.lua_ls = {
+  cmd = { vim.fn.stdpath "data" .. "/mason/bin/lua-language-server" },
+  filetypes = { "lua" },
+  capabilities = capabilities,
+  on_attach = on_attach,
   settings = {
     Lua = {
       runtime = { version = "LuaJIT" },
@@ -121,6 +131,20 @@ vim.lsp.config.lua_ls = {
         library = vim.api.nvim_get_runtime_file("", true),
         checkThirdParty = false,
       },
+      telemetry = { enable = false },
     },
   },
 }
+
+vim.lsp.config.vimls = {
+  cmd = { vim.fn.stdpath "data" .. "/mason/bin/vim-language-server", "--stdio" },
+  filetypes = { "vim" },
+  capabilities = capabilities,
+  on_attach = on_attach,
+}
+
+-- Enable servers --------------------------------------------------------------
+vim.lsp.enable "ruby_lsp"
+vim.lsp.enable "gopls"
+vim.lsp.enable "lua_ls"
+vim.lsp.enable "vimls"
