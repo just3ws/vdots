@@ -1,6 +1,3 @@
--- lua/lsp/init.lua
--- Modern LSP setup using vim.lsp.config (Neovim 0.11+)
-
 -- Mason bootstrap -------------------------------------------------------------
 local mason = require "mason"
 local mason_lspconfig = require "mason-lspconfig"
