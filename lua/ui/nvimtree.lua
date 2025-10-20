@@ -2,7 +2,7 @@
 -- NvimTree configuration with Nord theme integration
 -- ---------------------------------------------------------------------------
 
-local nord = require "theme.nord"
+local nord = require("ui.nord").palette
 
 -- Core setup
 require("nvim-tree").setup {
