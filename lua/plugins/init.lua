@@ -74,7 +74,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
-      require "treesitter"
+      require "editor.treesitter"
     end,
   },
   "nvim-treesitter/nvim-treesitter-textobjects",
