@@ -1,4 +1,4 @@
-local lint = require("lint")
+local lint = require "lint"
 
 -- ============================================================================
 -- Define which linters run for which filetypes
@@ -9,6 +9,7 @@ lint.linters_by_ft = {
   json = { "eslint" },
   css = { "stylelint" },
   yaml = { "yamllint" },
+  lua = { "luacheck" }, -- ✅ Add Lua support
 }
 
 -- ============================================================================
@@ -44,8 +45,8 @@ lint.linters.bundler_audit = {
   args = { "audit", "--verbose" },
   parser = function(output)
     local diagnostics = {}
-    for line in output:gmatch("[^\r\n]+") do
-      if line:match("Insecure Source") or line:match("Vulnerable") then
+    for line in output:gmatch "[^\r\n]+" do
+      if line:match "Insecure Source" or line:match "Vulnerable" then
         table.insert(diagnostics, {
           lnum = 0,
           col = 0,
@@ -60,6 +61,33 @@ lint.linters.bundler_audit = {
 }
 
 -- ============================================================================
+-- Lua: Luacheck configuration
+-- ============================================================================
+
+lint.linters.luacheck = {
+  cmd = "luacheck",
+  stdin = false,
+  args = {
+    "--formatter",
+    "plain",
+    "--codes", -- show diagnostic codes like (W111)
+    "--ranges", -- show column ranges
+    "--filename",
+    "%:p",
+    "-", -- read file from stdin
+  },
+  stream = "stderr",
+  ignore_exitcode = true,
+  parser = require("lint.parser").from_errorformat("%f:%l:%c: (%t%n) %m,%-G%.%#", {
+    source = "luacheck",
+    severity_map = {
+      E = vim.diagnostic.severity.ERROR,
+      W = vim.diagnostic.severity.WARN,
+    },
+  }),
+}
+
+-- ============================================================================
 -- Safe lint runner (skips missing binaries)
 -- ============================================================================
 
@@ -67,23 +95,25 @@ local function safe_try_lint()
   local ft = vim.bo.filetype
   local linters = lint.linters_by_ft[ft] or {}
   if vim.tbl_isempty(linters) then
-    vim.notify("No linters configured for filetype: " .. ft, vim.log.levels.INFO)
+    -- Only notify in debug mode to reduce noise
+    vim.notify_once("[nvim-lint] No linters configured for filetype: " .. ft, vim.log.levels.DEBUG)
     return
   end
 
   local ran = false
   for _, linter in ipairs(linters) do
-    local cmd = lint.linters[linter] and lint.linters[linter].cmd or linter
+    local def = lint.linters[linter]
+    local cmd = def and def.cmd or linter
     if vim.fn.executable(cmd) == 1 then
       lint.try_lint(linter)
       ran = true
     else
-      vim.notify("[nvim-lint] Skipping missing linter: " .. linter, vim.log.levels.DEBUG)
+      vim.notify_once("[nvim-lint] Skipping missing linter: " .. linter, vim.log.levels.DEBUG)
     end
   end
 
   if not ran then
-    vim.notify("No available linters for filetype: " .. ft, vim.log.levels.WARN)
+    vim.notify_once("[nvim-lint] No available linters for filetype: " .. ft, vim.log.levels.DEBUG)
   end
 end
 
@@ -91,10 +121,10 @@ end
 -- Autocommands & Manual Command
 -- ============================================================================
 
--- Run lint automatically on save or insert leave
+-- Run lint automatically on save or leaving insert mode
 vim.api.nvim_create_autocmd({ "BufWritePost", "InsertLeave" }, {
   callback = safe_try_lint,
 })
 
--- Manual command (like :ALELint)
+-- Manual trigger
 vim.api.nvim_create_user_command("Lint", safe_try_lint, {})

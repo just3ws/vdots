@@ -1,9 +1,9 @@
 -- vim: ft=lua tw=80
--- luacheck: globals std stds self cache ignore files exclude_files
+-- luacheck: globals std stds self cache ignore files
 -- luacheck: no max line length
 
 -- Explicitly tell Luacheck these lowercase globals are intentional
--- luacheck: ignore std stds self cache ignore files exclude_files
+-- luacheck: ignore std stds self cache ignore files
 
 -- Define config tables explicitly
 stds = {}
@@ -46,11 +46,6 @@ files["tests/**/*.lua"] = {
     "setup", "teardown",
     "assert", "pending", "mock",
   },
-}
-
--- Exclude generated files
-exclude_files = {
-  "plugin/packer_compiled.lua",
 }
 
 -- Return true so formatters stop parsing here

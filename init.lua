@@ -1,13 +1,16 @@
--- Leader mappings
+-- ============================================================================
+-- 🧠  Core Initialization
+-- ============================================================================
+
+-- Set leader early (must be before any keymap logic)
 vim.g.mapleader = ";"
 vim.g.maplocalleader = ";"
 
--- Detect Homebrew prefix dynamically
-local brew_prefix = vim.fn.isdirectory "/opt/homebrew" == 1 and "/opt/homebrew" or "/usr/local"
-
--- Bootstrap Lazy.nvim
+-- ============================================================================
+-- 📦  Bootstrap Lazy.nvim
+-- ============================================================================
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system {
     "git",
     "clone",
@@ -18,25 +21,42 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup "plugins"
+-- Load plugin definitions (lazy.nvim reads from lua/plugins/)
+require("lazy").setup("plugins", {
+  change_detection = { notify = false },
+  ui = { border = "rounded" },
+})
 
--- Disable netrw at the very start if using nvim-tree
+-- ============================================================================
+-- 🚫  Disable legacy netrw (handled by nvim-tree)
+-- ============================================================================
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- Core modules (these should all live in ~/.config/nvim/lua/)
-require "editor.options"
-require "editor.keymaps"
-require "editor.autocmds"
-require "ui.diagnostics"
-require "editor.settings"
-require "filetypes"
-require "lsp"
-require "editor.linting"
-require "editor.formatting"
-require "editor.treesitter"
-require "ui.nvimtree"
-require "ui.nord"
+-- ============================================================================
+-- ⚙️  Core Editor Modules
+-- ============================================================================
+require "editor.options" -- General settings (indentation, etc.)
+require "editor.keymaps" -- Global keybindings
+require "editor.autocmds" -- Event hooks
+require "editor.settings" -- Misc low-level tweaks
 
--- UI and appearance
+-- ============================================================================
+-- 🧩  Language / LSP / Tooling
+-- ============================================================================
+require "lsp" -- LSP setup via mason + native APIs
+require "editor.linting" -- nvim-lint integration
+require "editor.formatting" -- conform.nvim setup
+require "editor.treesitter" -- syntax / highlighting
+
+-- ============================================================================
+-- 🎨  UI & Theming
+-- ============================================================================
+require("ui.nord").setup() -- Nord color theme (non-italic)
+require "ui.diagnostics" -- Diagnostic colors & symbols
+require "ui.nvimtree" -- File explorer
+
+-- ============================================================================
+-- 🔍  Misc
+-- ============================================================================
 vim.opt.tags:append ".git/tags"
