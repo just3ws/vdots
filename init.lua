@@ -25,11 +25,11 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Core modules (these should all live in ~/.config/nvim/lua/)
-require "options"
-require "core.keymaps"
-require "core.autocmds"
+require "editor.options"
+require "editor.keymaps"
+require "editor.autocmds"
 require "ui.diagnostics"
-require "settings"
+require "editor.settings"
 require "filetypes"
 require "lsp"
 require "editor.linting"
