@@ -33,10 +33,10 @@ require "editor.diagnostics"
 require "settings"
 require "filetypes"
 require "lsp"
-require "linting"
-require "formatting"
+require "editor.linting"
+require "editor.formatting"
 require "treesitter"
-require "nvimtree"
+require "ui.nvimtree"
 require "colors.nord"
 
 -- UI and appearance
