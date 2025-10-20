@@ -41,6 +41,7 @@ require "editor.keymaps" -- Global keybindings
 require "editor.autocmds" -- Event hooks
 require "editor.settings" -- Misc low-level tweaks
 require "editor.commands" -- :Commands
+require "editor.healthcheck" -- Log deprecation warnings
 
 -- ============================================================================
 -- 🧩  Language / LSP / Tooling
