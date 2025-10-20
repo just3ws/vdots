@@ -105,3 +105,17 @@ hl(0, "NvimTreeImageFile", { fg = nord.cyan })
 hl(0, "NvimTreeSymlink", { fg = nord.magenta })
 hl(0, "NvimTreeCursorLine", { bg = nord.bg_light })
 hl(0, "NvimTreeWinSeparator", { fg = nord.bg, bg = nord.bg_dark })
+
+-- --- Temporary fix for nvim-tree E33 error when deleting files ---
+local ok, filters = pcall(require, "nvim-tree.explorer.filters")
+if ok and filters and filters.custom then
+  local orig_custom = filters.custom
+  filters.custom = function(self, name, git_status, buf)
+    local ok_match, res = pcall(orig_custom, self, name, git_status, buf)
+    if not ok_match then
+      -- swallow Vim:E33
+      return false
+    end
+    return res
+  end
+end
