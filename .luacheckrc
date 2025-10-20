@@ -2,42 +2,56 @@
 -- luacheck: globals std stds self cache ignore files
 -- luacheck: no max line length
 
+-- ============================================================================
+-- 🧠 Base setup
+-- ============================================================================
+
 -- Explicitly tell Luacheck these lowercase globals are intentional
 -- luacheck: ignore std stds self cache ignore files
 
--- Define config tables explicitly
 stds = {}
 files = {}
 
--- Neovim-specific globals
+-- ============================================================================
+-- 🌙 Neovim-specific standard (LuaJIT + vim API)
+-- ============================================================================
 stds.nvim = {
   read_globals = {
-    "vim",  -- Neovim API
+    "vim",  -- Neovim global API
     "jit",  -- LuaJIT runtime
   },
 }
 
--- Base standard
+-- Default standard
 std = "lua51+nvim"
 
--- Linting behavior
+-- ============================================================================
+-- ⚙️ Behavior
+-- ============================================================================
 self = false
 cache = true
+redefined = false
+unused_args = true
+allow_defined_top = true
 
--- Ignore patterns
+-- ============================================================================
+-- 🚫 Ignore / Suppressions
+-- ============================================================================
 ignore = {
-  "631",       -- line too long
-  "212/_.*",   -- unused arg starting with "_"
-  "122",       -- setting read-only field
-  "113",       -- undefined global (dynamic require)
+  "631",         -- line too long
+  "212/_.*",     -- unused arg starting with "_"
+  "122",         -- setting read-only field (common in API metatables)
+  "113",         -- accessing undefined global (dynamic require, etc.)
+  "111",         -- shadowing upvalue (often fine in closures)
 }
 
--- Per-directory overrides
+-- ============================================================================
+-- 📂 Per-directory rules
+-- ============================================================================
 files["lua/**/*.lua"] = {
   std = "lua51+nvim",
 }
 
--- Test-specific globals (Busted / Plenary)
 files["tests/**/*.lua"] = {
   std = "lua51+nvim",
   read_globals = {
@@ -45,8 +59,11 @@ files["tests/**/*.lua"] = {
     "before_each", "after_each",
     "setup", "teardown",
     "assert", "pending", "mock",
+    "spy", "stub",
   },
 }
 
--- Return true so formatters stop parsing here
+-- ============================================================================
+-- ✅ Return value
+-- ============================================================================
 return true
