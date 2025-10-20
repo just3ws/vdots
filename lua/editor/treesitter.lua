@@ -1,6 +1,6 @@
 -- Treesitter configuration with Nord colors
 
-local nord = require "theme.nord"
+local nord = require("ui.nord").palette
 
 -- --- Treesitter setup ---
 require("nvim-treesitter.configs").setup {

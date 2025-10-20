@@ -36,7 +36,7 @@ require "editor.linting"
 require "editor.formatting"
 require "editor.treesitter"
 require "ui.nvimtree"
-require "ui.colors.nord"
+require "ui.nord"
 
 -- UI and appearance
 vim.opt.tags:append ".git/tags"

@@ -2,7 +2,7 @@
 -- Neovim Diagnostics (Nord-themed, ALE-style replacement)
 -- ============================================================================
 
-local nord = require "theme.nord"
+local nord = require("ui.nord").palette
 local set_hl = vim.api.nvim_set_hl
 
 -- ─────────────────────────────────────────────────────────────────────────────
