@@ -25,7 +25,6 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Core modules (these should all live in ~/.config/nvim/lua/)
--- require "plugins"
 require "options"
 require "core.keymaps"
 require "core.autocmds"
@@ -35,9 +34,9 @@ require "filetypes"
 require "lsp"
 require "editor.linting"
 require "editor.formatting"
-require "treesitter"
+require "editor.treesitter"
 require "ui.nvimtree"
-require "colors.nord"
+require "ui.colors.nord"
 
 -- UI and appearance
 vim.opt.tags:append ".git/tags"
