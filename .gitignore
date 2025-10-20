@@ -43,5 +43,3 @@ test_*.lua
 # LSP and conform formatter logs
 .lsp_log
 .conform_log
-
-lazy-lock.json
