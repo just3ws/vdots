@@ -1,14 +1,18 @@
 -- ============================================================================
--- Neovim Native Diagnostics (ALE Replacement)
--- Color & Symbol setup matching Nord theme
+-- Neovim Diagnostics (Nord-themed, ALE-style replacement)
 -- ============================================================================
 
--- Define diagnostic signs (icons) similar to ALE’s style
+local nord = require "theme.nord"
+local set_hl = vim.api.nvim_set_hl
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Diagnostic Sign Icons
+-- ─────────────────────────────────────────────────────────────────────────────
 local signs = {
-  Error = "●", -- ERR
-  Warn = ".", -- WRN
-  Info = "i",
-  Hint = "h",
+  Error = " ",
+  Warn = " ",
+  Info = " ",
+  Hint = " ",
 }
 
 for type, icon in pairs(signs) do
@@ -16,7 +20,9 @@ for type, icon in pairs(signs) do
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 end
 
--- Diagnostic configuration
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Diagnostic Configuration
+-- ─────────────────────────────────────────────────────────────────────────────
 vim.diagnostic.config {
   virtual_text = {
     prefix = "●",
@@ -35,34 +41,50 @@ vim.diagnostic.config {
   float = {
     border = "rounded",
     source = "if_many",
+    header = { " Diagnostics", "Title" },
   },
   underline = true,
   update_in_insert = false,
   severity_sort = true,
 }
 
--- Nord-like diagnostic highlight groups
--- These override default LSP diagnostic colors for better readability
-vim.api.nvim_set_hl(0, "DiagnosticError", { fg = "#BF616A", bold = true })
-vim.api.nvim_set_hl(0, "DiagnosticWarn", { fg = "#EBCB8B", bold = true })
-vim.api.nvim_set_hl(0, "DiagnosticInfo", { fg = "#88C0D0", bold = true })
-vim.api.nvim_set_hl(0, "DiagnosticHint", { fg = "#A3BE8C", bold = true })
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Highlight Groups — tuned for Nord
+-- ─────────────────────────────────────────────────────────────────────────────
+local hl_map = {
+  DiagnosticError = { fg = nord.red, bold = true },
+  DiagnosticWarn = { fg = nord.yellow, bold = true },
+  DiagnosticInfo = { fg = nord.cyan, bold = true },
+  DiagnosticHint = { fg = nord.green, bold = false },
 
--- Match gutter signs to Nord’s tone
-vim.api.nvim_set_hl(0, "DiagnosticSignError", { fg = "#BF616A", bg = "NONE" })
-vim.api.nvim_set_hl(0, "DiagnosticSignWarn", { fg = "#EBCB8B", bg = "NONE" })
-vim.api.nvim_set_hl(0, "DiagnosticSignInfo", { fg = "#88C0D0", bg = "NONE" })
-vim.api.nvim_set_hl(0, "DiagnosticSignHint", { fg = "#A3BE8C", bg = "NONE" })
+  DiagnosticSignError = { fg = nord.red, bg = "NONE" },
+  DiagnosticSignWarn = { fg = nord.yellow, bg = "NONE" },
+  DiagnosticSignInfo = { fg = nord.cyan, bg = "NONE" },
+  DiagnosticSignHint = { fg = nord.green, bg = "NONE" },
 
--- Optional: show diagnostics in a floating window on hover
+  DiagnosticUnderlineError = { undercurl = true, sp = nord.red },
+  DiagnosticUnderlineWarn = { undercurl = true, sp = nord.yellow },
+  DiagnosticUnderlineInfo = { undercurl = true, sp = nord.cyan },
+  DiagnosticUnderlineHint = { undercurl = true, sp = nord.green },
+
+  DiagnosticVirtualTextError = { fg = nord.red, bg = nord.bg_light },
+  DiagnosticVirtualTextWarn = { fg = nord.yellow, bg = nord.bg_light },
+  DiagnosticVirtualTextInfo = { fg = nord.cyan, bg = nord.bg_light },
+  DiagnosticVirtualTextHint = { fg = nord.green, bg = nord.bg_light },
+
+  FloatBorder = { fg = nord.blue, bg = nord.bg_dark },
+  NormalFloat = { fg = nord.fg, bg = nord.bg_dark },
+}
+
+for group, opts in pairs(hl_map) do
+  set_hl(0, group, opts)
+end
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Optional: show diagnostics in floating window on hover
+-- ─────────────────────────────────────────────────────────────────────────────
 vim.api.nvim_create_autocmd("CursorHold", {
   callback = function()
-    vim.diagnostic.open_float(nil, { focusable = false })
+    vim.diagnostic.open_float(nil, { focusable = false, border = "rounded" })
   end,
 })
-
-vim.api.nvim_set_hl(0, "DiagnosticError", { fg = "#BF616A", italic = false })
-vim.api.nvim_set_hl(0, "DiagnosticWarn", { fg = "#EBCB8B", italic = false })
-vim.api.nvim_set_hl(0, "DiagnosticInfo", { fg = "#81A1C1", italic = false })
-vim.api.nvim_set_hl(0, "DiagnosticHint", { fg = "#88C0D0", italic = false })
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", { undercurl = true, sp = "#BF616A" })
