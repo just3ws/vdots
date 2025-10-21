@@ -56,3 +56,11 @@ cmd("Zshenv", "edit $ZDOTDIR/.zshenv", {})
 cmd("Szshenv", "split $ZDOTDIR/.zshenv", {})
 cmd("Tzshenv", "tabedit $ZDOTDIR/.zshenv", {})
 cmd("Vzshenv", "vsplit $ZDOTDIR/.zshenv", {})
+
+-- Telescope
+local builtin = require "telescope.builtin"
+
+vim.keymap.set("n", "<C-p>", builtin.find_files, { desc = "Telescope: Find files" })
+vim.keymap.set("n", "<Leader>ff", builtin.live_grep, { desc = "Telescope: Grep text" })
+vim.keymap.set("n", "<Leader>fb", builtin.buffers, { desc = "Telescope: Buffers" })
+vim.keymap.set("n", "<Leader>fh", builtin.help_tags, { desc = "Telescope: Help tags" })
