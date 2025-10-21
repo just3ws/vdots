@@ -40,6 +40,7 @@ require "editor.options" -- General settings (indentation, etc.)
 require "editor.keymaps" -- Global keybindings
 require "editor.autocmds" -- Event hooks
 require "editor.settings" -- Misc low-level tweaks
+require "editor.commands" -- :Commands
 
 -- ============================================================================
 -- 🧩  Language / LSP / Tooling
@@ -55,6 +56,8 @@ require "editor.treesitter" -- syntax / highlighting
 require("ui.nord").setup() -- Nord color theme (non-italic)
 require "ui.diagnostics" -- Diagnostic colors & symbols
 require "ui.nvimtree" -- File explorer
+require "editor.telescope" -- File search
+require "legacy.fzf_aliases"
 
 -- ============================================================================
 -- 🔍  Misc
