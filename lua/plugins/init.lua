@@ -78,6 +78,7 @@ return {
       require "editor.telescope"
     end,
   },
+  "mileszs/ack.vim",
 
   -- Treesitter
   -----------------------------------------------------
