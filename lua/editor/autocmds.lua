@@ -1,7 +1,3 @@
--- ============================================================================
--- Modern Neovim Lua autocmd setup (replaces augroup vimrc block)
--- ============================================================================
-
 local augroup = vim.api.nvim_create_augroup("vimrc", { clear = true })
 
 -- Resize splits automatically when Vim window is resized
@@ -15,8 +11,12 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   group = augroup,
   callback = function()
     local ft = vim.bo.filetype
-    if ft ~= "gitcommit" and vim.fn.line([['"]]) > 0 and vim.fn.line([['"]]) <= vim.fn.line("$") then
-      pcall(vim.cmd, 'normal! g`"')
+    if ft ~= "gitcommit" and vim.fn.line [['"]] > 0 and vim.fn.line [['"]] <= vim.fn.line "$" then
+      vim.schedule(function()
+        pcall(function()
+          vim.cmd 'normal! g`"'
+        end)
+      end)
     end
   end,
 })
@@ -26,8 +26,8 @@ vim.api.nvim_create_autocmd("BufEnter", {
   group = augroup,
   pattern = { "*.png", "*.jpg", "*.jpeg", "*.gif" },
   callback = function()
-    vim.fn.jobstart({ "open", vim.fn.expand("%") }, { detach = true })
-    vim.cmd("bwipeout!")
+    vim.fn.jobstart({ "open", vim.fn.expand "%" }, { detach = true })
+    vim.cmd "bwipeout!"
   end,
 })
 
@@ -36,7 +36,7 @@ vim.api.nvim_create_autocmd("FileType", {
   group = augroup,
   pattern = { "css", "scss", "slim", "html", "eruby", "coffee", "javascript", "wxml" },
   callback = function()
-    vim.opt_local.iskeyword:append("-")
+    vim.opt_local.iskeyword:append "-"
   end,
 })
 
@@ -48,6 +48,7 @@ local indent_settings = {
   python = 4,
   ruby = 2,
 }
+
 for ft, size in pairs(indent_settings) do
   vim.api.nvim_create_autocmd("FileType", {
     group = augroup,
@@ -93,7 +94,11 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   group = augroup,
   pattern = { "*.py", "*.pyw", "*.c", "*.h" },
   callback = function()
-    vim.cmd([[match BadWhitespace /\s\+$/]])
+    vim.schedule(function()
+      pcall(function()
+        vim.cmd [[match BadWhitespace /\s\+$/]]
+      end)
+    end)
   end,
 })
 
@@ -101,10 +106,14 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = augroup,
   callback = function()
-    local save_cursor = vim.fn.getpos(".")
-    vim.cmd([[%s/\s\+$//e]])
-    vim.cmd([[%s/\n\{3,\}/\r\r/e]])
-    vim.fn.setpos(".", save_cursor)
+    vim.schedule(function()
+      local save_cursor = vim.fn.getpos "."
+      pcall(function()
+        vim.cmd [[silent! %s/\s\+$//e]]
+        vim.cmd [[silent! %s/\n\{3,\}/\r\r/e]]
+      end)
+      vim.fn.setpos(".", save_cursor)
+    end)
   end,
 })
 
@@ -112,8 +121,10 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 vim.api.nvim_create_autocmd("QuitPre", {
   group = augroup,
   callback = function()
-    if vim.bo.filetype ~= "qf" then
-      pcall(vim.cmd, "silent! lclose")
-    end
+    vim.schedule(function()
+      if vim.bo.filetype ~= "qf" then
+        pcall(vim.cmd, "silent! lclose")
+      end
+    end)
   end,
 })
