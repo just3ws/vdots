@@ -137,6 +137,35 @@ return {
   -- "stevearc/conform.nvim",
 
   -----------------------------------------------------
+  -- AI Assistance
+  -----------------------------------------------------
+  {
+    "github/copilot.vim",
+    event = "InsertEnter",
+    config = function()
+      -- Disable default tab mapping since we use it for completion
+      vim.g.copilot_no_tab_map = true
+
+      -- Use Alt+] to accept suggestion
+      vim.g.copilot_assume_mapped = true
+      vim.keymap.set("i", "<M-]>", 'copilot#Accept("<CR>")', {
+        expr = true,
+        replace_keycodes = false,
+      })
+
+      -- Additional settings
+      vim.g.copilot_filetypes = {
+        ["*"] = true, -- Enable for all filetypes
+        ["lua"] = true, -- Explicitly enable for Lua
+        ["javascript"] = true,
+        ["typescript"] = true,
+        ["python"] = true,
+        ["ruby"] = true,
+      }
+    end,
+  },
+
+  -----------------------------------------------------
   -- Misc
   -----------------------------------------------------
   "tpope/vim-abolish",
