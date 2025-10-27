@@ -47,8 +47,8 @@ require "editor.healthcheck" -- Log deprecation warnings
 -- 🧩  Language / LSP / Tooling
 -- ============================================================================
 require "lsp" -- LSP setup via mason + native APIs
-require "editor.linting" -- nvim-lint integration
-require "editor.formatting" -- conform.nvim setup
+-- require "editor.linting" -- nvim-lint integration
+-- require "editor.formatting" -- conform.nvim setup
 require "editor.treesitter" -- syntax / highlighting
 
 -- ============================================================================

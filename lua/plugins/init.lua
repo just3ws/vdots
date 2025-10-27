@@ -133,8 +133,8 @@ return {
   -----------------------------------------------------
   -- Linting / formatting
   -----------------------------------------------------
-  "mfussenegger/nvim-lint",
-  "stevearc/conform.nvim",
+  -- "mfussenegger/nvim-lint",
+  -- "stevearc/conform.nvim",
 
   -----------------------------------------------------
   -- Misc
