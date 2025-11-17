@@ -3,6 +3,12 @@ return {
   -- Core UI
   -----------------------------------------------------
   {
+    "ryanoasis/vim-devicons",
+    lazy = false, -- force early load
+    priority = 1000, -- load before UI plugins
+  },
+
+  {
     "shaunsingh/nord.nvim",
     lazy = false,
     priority = 1000,
@@ -41,24 +47,24 @@ return {
     dependencies = { "kana/vim-textobj-user" },
     ft = "ruby",
   },
-  {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
-    keys = {
-      {
-        "<leader>?",
-        function()
-          require("which-key").show { global = false }
-        end,
-        desc = "Buffer Local Keymaps (which-key)",
-      },
-    },
-  },
+  -- {
+  --   "folke/which-key.nvim",
+  --   event = "VeryLazy",
+  --   opts = {
+  --     -- your configuration comes here
+  --     -- or leave it empty to use the default settings
+  --     -- refer to the configuration section below
+  --   },
+  --   keys = {
+  --     {
+  --       "<leader>?",
+  --       function()
+  --         require("which-key").show { global = false }
+  --       end,
+  --       desc = "Buffer Local Keymaps (which-key)",
+  --     },
+  --   },
+  -- },
 
   -----------------------------------------------------
   -- Ruby ecosystem
@@ -75,13 +81,14 @@ return {
   "tpope/vim-rhubarb",
 
   -----------------------------------------------------
-  -- File tree
+  -- File tree (NERDTree)
   -----------------------------------------------------
+
   {
-    "nvim-tree/nvim-tree.lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    "preservim/nerdtree",
+    dependencies = { "ryanoasis/vim-devicons" }, -- "Xuyuanp/nerdtree-git-plugin" },
     config = function()
-      require("nvim-tree").setup()
+      require "editor.nerdtree"
     end,
   },
 

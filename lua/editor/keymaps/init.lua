@@ -24,9 +24,9 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<S-h>", "gT", opts)
 map("n", "<S-l>", "gt", opts)
 
--- nvim-tree
-map("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
-map("n", "<leader>ef", ":NvimTreeFindFile<CR>", { silent = true })
+-- NERDTree
+map("n", "<leader>e", ":NERDTreeToggle<CR>", opts)
+map("n", "<leader>ef", ":NERDTreeFind<CR>", opts)
 
 -- Movement
 map("n", "j", "gj", opts)
