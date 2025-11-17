@@ -60,9 +60,9 @@ vim.deprecate = function(name, alt, version, plugin)
   return original_deprecate(name, alt, version, plugin)
 end
 
--- Optional: notify user where logs are stored
-vim.schedule(function()
-  vim.notify("Deprecation filter active → logs at: " .. log_file, vim.log.levels.INFO)
-end)
+-- -- Optional: notify user where logs are stored
+-- vim.schedule(function()
+--   vim.notify("Deprecation filter active → logs at: " .. log_file, vim.log.levels.INFO)
+-- end)
 
 return M
