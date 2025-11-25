@@ -145,6 +145,7 @@ return {
   -----------------------------------------------------
   -- "mfussenegger/nvim-lint",
   -- "stevearc/conform.nvim",
+  'vim-scripts/align',
 
   -----------------------------------------------------
   -- AI Assistance
