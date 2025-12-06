@@ -8,6 +8,7 @@ return {
     priority = 1000, -- load before UI plugins
   },
 
+
   {
     "shaunsingh/nord.nvim",
     lazy = false,
@@ -32,20 +33,22 @@ return {
   "tpope/vim-commentary",
   "wellle/targets.vim",
   "tpope/vim-eunuch",
+
   -- Text objects
   {
     "kana/vim-textobj-user",
-    lazy = false, -- must load first
+    lazy = false,
+    priority = 1000,
   },
   {
     "nelstrom/vim-textobj-rubyblock",
     dependencies = { "kana/vim-textobj-user" },
-    ft = "ruby",
+    lazy = false,
   },
   {
     "tek/vim-textobj-ruby",
     dependencies = { "kana/vim-textobj-user" },
-    ft = "ruby",
+    lazy = false,
   },
   -- {
   --   "folke/which-key.nvim",
@@ -178,4 +181,5 @@ return {
   "tpope/vim-abolish",
   "pbrisbin/vim-mkdir",
   "vitalk/vim-shebang",
+  "vim-scripts/align",
 }
