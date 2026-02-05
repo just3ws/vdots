@@ -180,5 +180,4 @@ return {
   "tpope/vim-abolish",
   "pbrisbin/vim-mkdir",
   "vitalk/vim-shebang",
-  "vim-scripts/align",
 }
