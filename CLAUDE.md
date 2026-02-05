@@ -9,6 +9,9 @@ Personal Neovim configuration using Lua, organized into modular components with 
 ## Development Commands
 
 ```bash
+# Run regression tests (MUST pass before any change)
+./test/run.sh
+
 # Lint Lua files
 luacheck . --config .luacheckrc
 
@@ -26,6 +29,13 @@ nvim --headless -c 'quit'
 ```
 
 Pre-commit hooks run automatically: trailing whitespace removal, EOF newline, Lua/Vim syntax validation.
+
+**Test-driven workflow:**
+1. Run `./test/run.sh` before making changes (baseline)
+2. Make change
+3. Run `./test/run.sh` after change
+4. If tests fail, **STOP** - investigate before proceeding
+5. Commit only if tests pass
 
 ## Architecture
 
