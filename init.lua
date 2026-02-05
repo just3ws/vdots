@@ -56,7 +56,7 @@ require "editor.treesitter" -- syntax / highlighting
 -- 🎨  UI & Theming
 -- ============================================================================
 require("ui.nord").setup() -- Nord color theme (non-italic)
-require "ui.diagnostics" -- Diagnostic colors & symbols
+require("ui.diagnostics").setup() -- Diagnostic colors & symbols
 require "editor.telescope" -- File search
 require "legacy.fzf_aliases"
 
