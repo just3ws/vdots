@@ -102,7 +102,7 @@ dependencies = {
 4. **Expected:** Matches out-of-order characters (fuzzy), results appear fast
 5. Verify: `:Telescope` then check fzf extension loaded (no errors)
 
-### [ ] P1-4: Add snippet engine for nvim-cmp
+### [x] P1-4: Add snippet engine for nvim-cmp
 **Files:** `lua/plugins/init.lua`, `lua/lsp/init.lua`
 **Why:** No snippet engine means LSP completions with placeholders insert malformed text.
 **Change:** Add LuaSnip plugin and configure cmp to use it.
@@ -173,7 +173,7 @@ dependencies = {
 
 ## P3 - Redundancy / Cleanup
 
-### [ ] P3-1: Consolidate options.lua and settings.lua
+### [x] P3-1: Consolidate options.lua and settings.lua
 **Files:** `lua/editor/options.lua`, `lua/editor/settings.lua`, `init.lua`
 **Why:** Many options set in both files (mouse, tabstop, splitbelow, etc.)
 **Change:** Merge unique settings.lua content into options.lua, delete settings.lua, update init.lua.
@@ -343,11 +343,11 @@ Track completed tasks here with date and commit hash:
 [x] P3-4 - 2025-02-04 - b2c206a - remove duplicate mapleader
 [x] P4-1 - 2025-02-04 - 7dcee2d - add signcolumn for stable gutter
 [x] P4-5 - 2025-02-04 - e0975a2 - reduce updatetime for faster CursorHold
+[x] P1-4 - 2025-02-04 - 02c389f - add LuaSnip snippet engine
+[x] P3-1 - 2025-02-04 - a65e5a6 - consolidate options.lua and settings.lua
 ```
 
 **Remaining:**
-- P1-4: Add snippet engine (LuaSnip) - needs user preference
-- P3-1: Consolidate options.lua and settings.lua - larger refactor
 - P4-2: Make abbreviations filetype-specific - needs user preference
 - P4-3: Audit obsolete plugins - needs user review
 - P4-4: Enable which-key - needs user preference
