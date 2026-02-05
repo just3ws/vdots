@@ -56,6 +56,9 @@ function M.setup()
   vim.api.nvim_set_hl(0, "DiagnosticInfo", { fg = "#81A1C1", italic = false })
   vim.api.nvim_set_hl(0, "DiagnosticHint", { fg = "#88C0D0", italic = false })
 
+  -- Trailing whitespace highlight (used by autocmds.lua)
+  vim.api.nvim_set_hl(0, "BadWhitespace", { bg = "#BF616A" })
+
   -- Optional: remove italics from Treesitter highlights
   local ts_groups = {
     "@comment",
