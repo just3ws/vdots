@@ -26,4 +26,5 @@ local data = vim.fn.stdpath "data"
 vim.opt.backupdir = data .. "/backup//"
 vim.opt.directory = data .. "/swap//"
 vim.opt.undodir = data .. "/undo//"
+vim.opt.undofile = true -- Persist undo history across sessions
 vim.opt.viewdir = data .. "/view//"
