@@ -2,9 +2,7 @@ local map = vim.keymap.set
 local cmd = vim.api.nvim_create_user_command
 local opts = { noremap = true, silent = true }
 
--- Leader mappings
-vim.g.mapleader = ";"
-vim.g.maplocalleader = ";"
+-- Leader key set in init.lua (must be before keymaps)
 
 -- Command mode convenience
 map("n", ";", ":", { noremap = true })
