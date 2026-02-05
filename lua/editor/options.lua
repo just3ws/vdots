@@ -18,6 +18,7 @@ vim.opt.splitright = true
 vim.opt.scrolloff = 4
 vim.opt.sidescrolloff = 8
 vim.opt.signcolumn = "yes" -- Stable gutter, no jumping
+vim.opt.updatetime = 250 -- Faster CursorHold (default 4000ms)
 vim.opt.mouse = "a"
 vim.opt.clipboard:append "unnamedplus"
 vim.opt.backupskip = { "*.log", "/tmp/*" }
