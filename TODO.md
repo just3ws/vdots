@@ -183,6 +183,19 @@ dependencies = {
 
 ---
 
+---
+
+## P5 - Tooling Issues
+
+### [ ] P5-1: Fix pre-commit trim-trailing-whitespace hook
+**File:** `.pre-commit-config.yaml`
+**Problem:** Hook fails with `sed: -I or -i may not be used with stdin` on non-Lua files.
+**Impact:** Must use `--no-verify` for JSON, gitignore commits.
+**Fix:** Update hook config or use a different trailing whitespace trimmer.
+**Commit:** `fix(pre-commit): use compatible trailing whitespace hook`
+
+---
+
 ## Completion Log
 
 Track completed tasks here with date and commit hash:
