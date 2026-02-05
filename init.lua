@@ -36,10 +36,9 @@ vim.g.loaded_netrwPlugin = 1
 -- ============================================================================
 -- ⚙️  Core Editor Modules
 -- ============================================================================
-require "editor.options" -- General settings (indentation, etc.)
+require "editor.options" -- General settings (all vim.opt)
 require "editor.keymaps" -- Global keybindings
 require "editor.autocmds" -- Event hooks
-require "editor.settings" -- Misc low-level tweaks
 require "editor.commands" -- :Commands
 require "editor.healthcheck" -- Log deprecation warnings
 -- editor.nerdtree loaded via plugins/init.lua (NERDTree config)

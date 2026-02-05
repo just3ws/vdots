@@ -1,33 +1,68 @@
 local opt = vim.opt
 local g = vim.g
 
+-- General editor behavior
 opt.mouse = "a"
+opt.number = true
+opt.relativenumber = true
+opt.numberwidth = 3
+opt.wrap = false
+opt.termguicolors = true
+opt.laststatus = 2
+opt.showmode = false
+opt.autowrite = true
+opt.joinspaces = false
 
--- General editor options
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.termguicolors = true
-vim.opt.expandtab = true
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.shiftround = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-vim.opt.scrolloff = 4
-vim.opt.sidescrolloff = 8
-vim.opt.signcolumn = "yes" -- Stable gutter, no jumping
-vim.opt.updatetime = 250 -- Faster CursorHold (default 4000ms)
-vim.opt.mouse = "a"
-vim.opt.clipboard:append "unnamedplus"
-vim.opt.backupskip = { "*.log", "/tmp/*" }
+-- Indentation
+opt.expandtab = true
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.shiftround = true
 
--- Backup and swap paths
+-- Search
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = true
+opt.inccommand = "nosplit"
+
+-- Splits
+opt.splitbelow = true
+opt.splitright = true
+
+-- Scrolling
+opt.scrolloff = 4
+opt.sidescrolloff = 8
+
+-- UI stability
+opt.signcolumn = "yes"
+opt.updatetime = 250
+
+-- Clipboard
+opt.clipboard:append { "unnamed", "unnamedplus" }
+
+-- Editing
+opt.backspace = { "indent", "eol", "start" }
+opt.diffopt:append "vertical"
+opt.wildmode = { "list:longest", "list:full" }
+
+-- Backup, swap, undo directories (enable persistence)
 local data = vim.fn.stdpath "data"
-vim.opt.backup = true -- Create backup before overwriting
-vim.opt.backupdir = data .. "/backup//"
-vim.opt.directory = data .. "/swap//"
-vim.opt.undodir = data .. "/undo//"
-vim.opt.undofile = true -- Persist undo history across sessions
-vim.opt.viewdir = data .. "/view//"
+opt.backup = true
+opt.backupext = ".bak"
+opt.backupskip = { "*.log", "/tmp/*" }
+opt.backupdir = data .. "/backup//"
+opt.directory = data .. "/swap//"
+opt.undodir = data .. "/undo//"
+opt.undofile = true
+opt.viewdir = data .. "/view//"
+
+-- Shell behavior
+g.is_posix = 1
+g.EditorConfig_exclude_patterns = { "fugitive://.*", "scp://.*" }
+
+-- External providers
+g.ruby_host_prog = vim.fn.expand "~/.asdf/shims/neovim-ruby-host"
+g.python3_host_prog = vim.fn.expand "~/.asdf/shims/python3"
+g.python_host_prog = vim.fn.expand "~/.asdf/shims/python2"
+g.python2_host_prog = vim.fn.expand "~/.asdf/shims/python2"
+g.loaded_perl_provider = 0
