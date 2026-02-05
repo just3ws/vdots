@@ -1,5 +1,5 @@
 -- ============================================================================
--- Neovim Native Diagnostics (Nord aligned, no deprecated sign API)
+-- Neovim Native Diagnostics (Nord aligned, Neovim 0.11+ API)
 -- ============================================================================
 
 local M = {}
@@ -7,24 +7,16 @@ local M = {}
 function M.setup()
   local nord = require("ui.nord").palette
 
-  -- Diagnostic symbols for sign column (new-style)
-  local signs = {
-    Error = "",
-    Warn = "",
-    Info = "",
-    Hint = "",
-  }
-
-  -- Modern sign registration (via vim.diagnostic.config, no vim.fn.sign_define)
-  local sign_defs = {}
-  for type, icon in pairs(signs) do
-    sign_defs[#sign_defs + 1] =
-      { name = "DiagnosticSign" .. type, text = icon, texthl = "DiagnosticSign" .. type }
-  end
-  vim.diagnostic.config { signs = { text = sign_defs } }
-
-  -- Core diagnostic configuration
+  -- Core diagnostic configuration (Neovim 0.11+ API)
   vim.diagnostic.config {
+    signs = {
+      text = {
+        [vim.diagnostic.severity.ERROR] = "",
+        [vim.diagnostic.severity.WARN] = "",
+        [vim.diagnostic.severity.INFO] = "",
+        [vim.diagnostic.severity.HINT] = "",
+      },
+    },
     virtual_text = {
       prefix = "●",
       spacing = 2,
