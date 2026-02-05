@@ -329,5 +329,26 @@ nvim --headless -c 'lua if vim.o.signcolumn ~= "yes" then os.exit(1) end' -c 'qa
 Track completed tasks here with date and commit hash:
 
 ```
-# [x] P0-1 - 2024-01-15 - abc1234
+[x] P0-1 - 2025-02-04 - e1b06be - enable persistent undo
+[x] P0-2 - 2025-02-04 - 82e9116 - enable backup files
+[x] P0-3 - 2025-02-04 - 34c6e22 - fix BufWritePre whitespace trim timing
+[x] P1-2 - 2025-02-04 - fbc88eb - call diagnostics setup function
+[x] P1-3 - 2025-02-04 - 9270c5f - move build to telescope-fzf-native
+[x] P1-5 - 2025-02-04 - 31f443b - define BadWhitespace highlight group
+[x] P2-1 - 2025-02-04 - ffddb18 - remove duplicate module requires
+[x] P2-2 - 2025-02-04 - 2919135 - consolidate diagnostic config
+[x] P2-3 - 2025-02-04 - ef501c8 - remove duplicate align plugin
+[x] P3-2 - 2025-02-04 - d7731f0 - centralize NERDTree keymaps (resolves P1-1)
+[x] P3-3 - 2025-02-04 - 607e5fd - fix comment nvim-tree -> NERDTree
+[x] P3-4 - 2025-02-04 - b2c206a - remove duplicate mapleader
+[x] P4-1 - 2025-02-04 - 7dcee2d - add signcolumn for stable gutter
+[x] P4-5 - 2025-02-04 - e0975a2 - reduce updatetime for faster CursorHold
 ```
+
+**Remaining:**
+- P1-4: Add snippet engine (LuaSnip) - needs user preference
+- P3-1: Consolidate options.lua and settings.lua - larger refactor
+- P4-2: Make abbreviations filetype-specific - needs user preference
+- P4-3: Audit obsolete plugins - needs user review
+- P4-4: Enable which-key - needs user preference
+- P5-1: Fix pre-commit hook - tooling issue
