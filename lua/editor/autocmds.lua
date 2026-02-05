@@ -106,14 +106,12 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = augroup,
   callback = function()
-    vim.schedule(function()
-      local save_cursor = vim.fn.getpos "."
-      pcall(function()
-        vim.cmd [[silent! %s/\s\+$//e]]
-        vim.cmd [[silent! %s/\n\{3,\}/\r\r/e]]
-      end)
-      vim.fn.setpos(".", save_cursor)
+    local save_cursor = vim.fn.getpos "."
+    pcall(function()
+      vim.cmd [[silent! %s/\s\+$//e]]
+      vim.cmd [[silent! %s/\n\{3,\}/\r\r/e]]
     end)
+    vim.fn.setpos(".", save_cursor)
   end,
 })
 
