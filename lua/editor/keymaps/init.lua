@@ -24,9 +24,7 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<S-h>", "gT", opts)
 map("n", "<S-l>", "gt", opts)
 
--- NERDTree
-map("n", "<leader>e", ":NERDTreeToggle<CR>", opts)
-map("n", "<leader>ef", ":NERDTreeFind<CR>", opts)
+-- NERDTree keymaps in editor/nerdtree.lua (<leader>n toggle, <leader>ef find)
 
 -- Movement
 map("n", "j", "gj", opts)
