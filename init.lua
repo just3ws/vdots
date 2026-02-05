@@ -28,7 +28,7 @@ require("lazy").setup("plugins", {
 })
 
 -- ============================================================================
--- 🚫  Disable legacy netrw (handled by nvim-tree)
+-- 🚫  Disable legacy netrw (handled by NERDTree)
 -- ============================================================================
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
