@@ -23,6 +23,7 @@ vim.opt.backupskip = { "*.log", "/tmp/*" }
 
 -- Backup and swap paths
 local data = vim.fn.stdpath "data"
+vim.opt.backup = true -- Create backup before overwriting
 vim.opt.backupdir = data .. "/backup//"
 vim.opt.directory = data .. "/swap//"
 vim.opt.undodir = data .. "/undo//"
