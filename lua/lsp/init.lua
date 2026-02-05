@@ -63,26 +63,7 @@ cmp.setup {
 }
 
 
--- Diagnostics appearance ------------------------------------------------------
-vim.diagnostic.config {
-  virtual_text = { prefix = "●", spacing = 2 },
-  signs = true,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-  float = { border = "rounded", source = "always" },
-}
-
-local signs = {
-  Error = " ",
-  Warn = " ",
-  Hint = " ",
-  Info = " ",
-}
-for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-end
+-- Diagnostics configured in ui/diagnostics.lua (single source of truth)
 
 -- Server configurations (new API) --------------------------------------------
 vim.lsp.config.ruby_lsp = {
