@@ -43,3 +43,6 @@ test_*.lua
 # LSP and conform formatter logs
 .lsp_log
 .conform_log
+
+# Claude Code local settings
+.claude/settings.local.json
