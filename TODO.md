@@ -15,7 +15,7 @@ This file tracks configuration issues identified during audit. Each task should 
 
 These should be fixed immediately. Each is a one-line change.
 
-### [ ] P0-1: Enable persistent undo
+### [x] P0-1: Enable persistent undo
 **File:** `lua/editor/options.lua`
 **Change:** Add `vim.opt.undofile = true`
 **Why:** `undodir` is configured but undo persistence is never enabled. Undo history lost on buffer close.
@@ -26,7 +26,7 @@ These should be fixed immediately. Each is a one-line change.
 3. Press `u` to undo
 4. **Expected:** Undo works across sessions, changes revert
 
-### [ ] P0-2: Enable backup files
+### [x] P0-2: Enable backup files
 **File:** `lua/editor/options.lua`
 **Change:** Add `vim.opt.backup = true`
 **Why:** `backupdir` is configured but backups never enabled. No safety net before file overwrites.
@@ -36,7 +36,7 @@ These should be fixed immediately. Each is a one-line change.
 2. Run: `ls ~/.local/share/nvim/backup/`
 3. **Expected:** Backup file exists with `.bak` extension
 
-### [ ] P0-3: Fix BufWritePre whitespace trim timing
+### [x] P0-3: Fix BufWritePre whitespace trim timing
 **File:** `lua/editor/autocmds.lua` (lines 106-118)
 **Change:** Remove `vim.schedule()` wrapper from callback body
 **Why:** `vim.schedule()` defers execution until after write completes. Whitespace removal never reaches disk.
@@ -51,7 +51,7 @@ These should be fixed immediately. Each is a one-line change.
 
 ## P1 - Broken Functionality
 
-### [ ] P1-1: Fix keymap collision on `<leader>e`
+### [x] P1-1: Fix keymap collision on `<leader>e`
 **Files:** `lua/editor/keymaps/init.lua:28`, `lua/lsp/init.lua:26`
 **Problem:** Both NERDTreeToggle and diagnostic float mapped to `<leader>e`. LSP wins, tree toggle broken.
 **Fix:** Remove `<leader>e` mapping from keymaps/init.lua (line 28). Use `<leader>n` for tree (already defined in nerdtree.lua).
@@ -63,7 +63,7 @@ These should be fixed immediately. Each is a one-line change.
 3. **Expected:** NERDTree toggles (not diagnostic float)
 4. Verify: `:verbose nmap <leader>e` shows single mapping
 
-### [ ] P1-2: Call ui/diagnostics.lua setup()
+### [x] P1-2: Call ui/diagnostics.lua setup()
 **File:** `init.lua:59`
 **Change:** `require "ui.diagnostics"` → `require("ui.diagnostics").setup()`
 **Why:** Module loaded but setup() never called. Nord diagnostic colors and CursorHold float inactive.
@@ -75,7 +75,7 @@ These should be fixed immediately. Each is a one-line change.
 4. Hover cursor on error line, wait ~1 second
 5. **Expected:** Diagnostic float appears automatically (CursorHold)
 
-### [ ] P1-3: Move build="make" to telescope-fzf-native
+### [x] P1-3: Move build="make" to telescope-fzf-native
 **File:** `lua/plugins/init.lua` (lines 98-108)
 **Change:**
 ```lua
@@ -114,7 +114,7 @@ dependencies = {
 4. **Expected:** Snippet expands with placeholders, Tab moves between them
 5. If no snippets available: `:LuaSnip` command exists, no errors
 
-### [ ] P1-5: Define BadWhitespace highlight group
+### [x] P1-5: Define BadWhitespace highlight group
 **File:** `lua/ui/nord.lua` (in setup function)
 **Change:** Add `vim.api.nvim_set_hl(0, "BadWhitespace", { bg = "#BF616A" })`
 **Why:** `autocmds.lua:99` references undefined highlight group.
@@ -130,7 +130,7 @@ dependencies = {
 
 ## P2 - Double Execution / Race Conditions
 
-### [ ] P2-1: Remove duplicate module requires
+### [x] P2-1: Remove duplicate module requires
 **File:** `init.lua` (lines 45, 50, 60)
 **Change:** Remove these requires, let lazy.nvim config functions handle loading:
 - Line 45: `require "editor.nerdtree"` (also in plugins/init.lua:94)
@@ -146,7 +146,7 @@ dependencies = {
 4. NERDTree, LSP, Telescope all still work
 5. `:autocmd vimrc` shows no duplicate autocmds
 
-### [ ] P2-2: Consolidate diagnostic configuration
+### [x] P2-2: Consolidate diagnostic configuration
 **Depends on:** P1-2
 **Files:** `lua/lsp/init.lua` (lines 76-94), `lua/ui/diagnostics.lua`
 **Change:** Remove diagnostic config from lsp/init.lua. Keep ui/diagnostics.lua as single source.
@@ -158,7 +158,7 @@ dependencies = {
 3. No deprecation warnings in `:messages` about sign_define
 4. Diagnostic signs still appear with correct icons
 
-### [ ] P2-3: Remove duplicate vim-scripts/align plugin
+### [x] P2-3: Remove duplicate vim-scripts/align plugin
 **File:** `lua/plugins/init.lua`
 **Change:** Delete line 185 (`"vim-scripts/align"` under Misc section)
 **Why:** Same plugin listed at line 148 and line 185.
@@ -187,7 +187,7 @@ dependencies = {
    - `:set clipboard?` → includes unnamedplus
 4. No startup errors
 
-### [ ] P3-2: Remove duplicate NERDTree keymaps
+### [x] P3-2: Remove duplicate NERDTree keymaps
 **Resolves:** P1-1
 **File:** `lua/editor/keymaps/init.lua` (lines 27-29)
 **Change:** Remove NERDTree mappings from keymaps/init.lua. Keep nerdtree.lua as single source.
@@ -200,7 +200,7 @@ dependencies = {
 4. **Expected:** Shows single definition from nerdtree.lua
 5. `<leader>e` now only maps to LSP diagnostic (no collision)
 
-### [ ] P3-3: Fix comment about nvim-tree vs NERDTree
+### [x] P3-3: Fix comment about nvim-tree vs NERDTree
 **File:** `init.lua:31`
 **Change:** `-- handled by nvim-tree` → `-- handled by NERDTree`
 **Why:** Comment mentions wrong plugin.
@@ -209,7 +209,7 @@ dependencies = {
 1. Read init.lua line 31
 2. **Expected:** Comment says "NERDTree" not "nvim-tree"
 
-### [ ] P3-4: Remove duplicate mapleader setting
+### [x] P3-4: Remove duplicate mapleader setting
 **File:** `lua/editor/keymaps/init.lua` (lines 6-7)
 **Change:** Remove `vim.g.mapleader` and `vim.g.maplocalleader` lines.
 **Why:** Already set in init.lua:6-7. Must be set before keymaps, init.lua is correct location.
@@ -224,7 +224,7 @@ dependencies = {
 
 ## P4 - Best Practices / Optimization
 
-### [ ] P4-1: Add signcolumn for stable gutter
+### [x] P4-1: Add signcolumn for stable gutter
 **File:** `lua/editor/options.lua`
 **Change:** Add `vim.opt.signcolumn = "yes"`
 **Why:** Prevents gutter jumping when diagnostics/signs appear. Important for AI-assisted coding.
@@ -277,7 +277,7 @@ dependencies = {
 3. Press a key shown in popup
 4. **Expected:** Mapping executes correctly
 
-### [ ] P4-5: Add updatetime for faster CursorHold
+### [x] P4-5: Add updatetime for faster CursorHold
 **File:** `lua/editor/options.lua`
 **Change:** Add `vim.opt.updatetime = 250`
 **Why:** Default 4000ms makes diagnostic float feel sluggish.
