@@ -42,12 +42,12 @@ require "editor.autocmds" -- Event hooks
 require "editor.settings" -- Misc low-level tweaks
 require "editor.commands" -- :Commands
 require "editor.healthcheck" -- Log deprecation warnings
-require "editor.nerdtree" -- File explorer
+-- editor.nerdtree loaded via plugins/init.lua (NERDTree config)
 
 -- ============================================================================
 -- 🧩  Language / LSP / Tooling
 -- ============================================================================
-require "lsp" -- LSP setup via mason + native APIs
+-- lsp loaded via plugins/init.lua (nvim-lspconfig config)
 -- require "editor.linting" -- nvim-lint integration
 -- require "editor.formatting" -- conform.nvim setup
 require "editor.treesitter" -- syntax / highlighting
@@ -57,7 +57,7 @@ require "editor.treesitter" -- syntax / highlighting
 -- ============================================================================
 require("ui.nord").setup() -- Nord color theme (non-italic)
 require("ui.diagnostics").setup() -- Diagnostic colors & symbols
-require "editor.telescope" -- File search
+-- editor.telescope loaded via plugins/init.lua (telescope config)
 require "legacy.fzf_aliases"
 
 -- ============================================================================
