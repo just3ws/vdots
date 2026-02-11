@@ -1,5 +1,5 @@
 ---
-name: Lua Lint & Format
+name: Lua Lint, Format, and Tests
 on:
   push:
     branches: [main]
@@ -14,13 +14,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y luarocks
+          sudo apt-get install -y luarocks neovim ripgrep
           luarocks install luacheck
           curl -sSLo stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux.zip
           sudo unzip -o stylua.zip -d /usr/local/bin
 
-      - name: Run luacheck
-        run: luacheck . --config .luacheckrc
+      - name: Run lint checks
+        run: ./test/lint.sh
 
-      - name: Run stylua
-        run: stylua --check .
+      - name: Run smoke + unit tests
+        run: ./test/run.sh

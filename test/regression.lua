@@ -30,7 +30,14 @@ end
 
 local function assert_eq(actual, expected, msg)
   if actual ~= expected then
-    error(string.format("%s: expected %s, got %s", msg or "Assertion failed", vim.inspect(expected), vim.inspect(actual)))
+    error(
+      string.format(
+        "%s: expected %s, got %s",
+        msg or "Assertion failed",
+        vim.inspect(expected),
+        vim.inspect(actual)
+      )
+    )
   end
 end
 
@@ -54,13 +61,13 @@ local function assert_exists(module_name)
 end
 
 print("\n" .. string.rep("=", 60))
-print("Neovim Configuration Regression Tests")
+print "Neovim Configuration Regression Tests"
 print(string.rep("=", 60) .. "\n")
 
 -- ============================================================================
 -- SECTION 1: Core Options
 -- ============================================================================
-print("\n[Core Options]")
+print "\n[Core Options]"
 
 test("Leader key is semicolon", function()
   assert_eq(vim.g.mapleader, ";", "mapleader")
@@ -102,49 +109,53 @@ end)
 -- ============================================================================
 -- SECTION 2: Plugin Loading (lazy.nvim)
 -- ============================================================================
-print("\n[Plugin Loading]")
+print "\n[Plugin Loading]"
 
 test("lazy.nvim is loaded", function()
-  assert_exists("lazy")
+  assert_exists "lazy"
 end)
 
 test("Core plugins loaded: plenary", function()
-  assert_exists("plenary")
+  assert_exists "plenary"
 end)
 
 test("Core plugins loaded: telescope", function()
-  assert_exists("telescope")
+  assert_exists "telescope"
+end)
+
+test("Core plugins loaded: oil.nvim", function()
+  assert_exists "oil"
 end)
 
 test("Core plugins loaded: nvim-treesitter", function()
-  assert_exists("nvim-treesitter")
+  assert_exists "nvim-treesitter"
 end)
 
 test("Core plugins loaded: nvim-cmp", function()
-  assert_exists("cmp")
+  assert_exists "cmp"
 end)
 
 test("Core plugins loaded: nvim-lspconfig", function()
-  assert_exists("lspconfig")
+  assert_exists "lspconfig"
 end)
 
 test("Core plugins loaded: mason", function()
-  assert_exists("mason")
+  assert_exists "mason"
 end)
 
 test("Core plugins loaded: lualine", function()
-  assert_exists("lualine")
+  assert_exists "lualine"
 end)
 
 test("Theme loaded: nord", function()
-  assert_exists("nord")
+  assert_exists "nord"
   assert_eq(vim.g.colors_name, "nord", "colorscheme should be nord")
 end)
 
 -- ============================================================================
 -- SECTION 3: LSP Configuration
 -- ============================================================================
-print("\n[LSP Configuration]")
+print "\n[LSP Configuration]"
 
 test("LSP servers configured: lua_ls", function()
   local config = vim.lsp.config.lua_ls
@@ -162,7 +173,7 @@ test("LSP servers configured: ruby_lsp", function()
 end)
 
 test("nvim-cmp has LSP source", function()
-  local cmp = require("cmp")
+  local cmp = require "cmp"
   local config = cmp.get_config()
   local has_lsp = false
   for _, source in ipairs(config.sources or {}) do
@@ -177,16 +188,19 @@ end)
 test("Diagnostic config is set", function()
   local config = vim.diagnostic.config()
   assert_true(config ~= nil, "diagnostic config should exist")
-  assert_true(config.virtual_text ~= nil or config.virtual_text == false, "virtual_text should be configured")
+  assert_true(
+    config.virtual_text ~= nil or config.virtual_text == false,
+    "virtual_text should be configured"
+  )
 end)
 
 -- ============================================================================
 -- SECTION 4: Treesitter
 -- ============================================================================
-print("\n[Treesitter]")
+print "\n[Treesitter]"
 
 test("Treesitter highlight enabled", function()
-  local configs = require("nvim-treesitter.configs")
+  local configs = require "nvim-treesitter.configs"
   -- Just verify module loads without error
   assert_true(configs ~= nil, "treesitter configs should load")
 end)
@@ -209,22 +223,22 @@ end)
 -- ============================================================================
 -- SECTION 5: Telescope
 -- ============================================================================
-print("\n[Telescope]")
+print "\n[Telescope]"
 
 test("Telescope loads without error", function()
-  local telescope = require("telescope")
+  local telescope = require "telescope"
   assert_true(telescope ~= nil, "telescope should load")
 end)
 
 test("Telescope builtin functions available", function()
-  local builtin = require("telescope.builtin")
+  local builtin = require "telescope.builtin"
   assert_true(type(builtin.find_files) == "function", "find_files should be a function")
   assert_true(type(builtin.live_grep) == "function", "live_grep should be a function")
   assert_true(type(builtin.buffers) == "function", "buffers should be a function")
 end)
 
 test("Telescope fzf extension loaded", function()
-  local telescope = require("telescope")
+  local telescope = require "telescope"
   local ok, _ = pcall(function()
     return telescope.extensions.fzf
   end)
@@ -235,7 +249,7 @@ end)
 -- ============================================================================
 -- SECTION 6: Keymaps
 -- ============================================================================
-print("\n[Keymaps]")
+print "\n[Keymaps]"
 
 local function keymap_exists(mode, lhs)
   local maps = vim.api.nvim_get_keymap(mode)
@@ -255,14 +269,14 @@ test("Keymap: <C-p> mapped (Telescope find_files)", function()
   assert_true(exists, "<C-p> should be mapped")
 end)
 
-test("Keymap: <leader>ff mapped (Telescope live_grep)", function()
+test("Keymap: <leader>ff mapped (quickfix grep)", function()
   local exists, _ = keymap_exists("n", ";ff")
   assert_true(exists, "<leader>ff should be mapped")
 end)
 
-test("Keymap: <leader>n mapped (NERDTree)", function()
+test("Keymap: <leader>n mapped (Explorer toggle)", function()
   local exists, _ = keymap_exists("n", ";n")
-  assert_true(exists, "<leader>n should be mapped for NERDTree")
+  assert_true(exists, "<leader>n should be mapped for explorer toggle")
 end)
 
 test("Keymap: Split navigation <C-h/j/k/l>", function()
@@ -282,7 +296,7 @@ end)
 -- ============================================================================
 -- SECTION 7: Commands
 -- ============================================================================
-print("\n[Commands]")
+print "\n[Commands]"
 
 local function command_exists(name)
   local ok, _ = pcall(vim.api.nvim_parse_cmd, name, {})
@@ -290,37 +304,41 @@ local function command_exists(name)
 end
 
 test("Command: :Files (Telescope)", function()
-  assert_true(command_exists("Files"), ":Files should exist")
+  assert_true(command_exists "Files", ":Files should exist")
 end)
 
-test("Command: :Rg (Telescope live_grep)", function()
-  assert_true(command_exists("Rg"), ":Rg should exist")
+test("Command: :Rg quickfix grep", function()
+  assert_true(command_exists "Rg", ":Rg should exist")
 end)
 
 test("Command: :Buffers (Telescope)", function()
-  assert_true(command_exists("Buffers"), ":Buffers should exist")
+  assert_true(command_exists "Buffers", ":Buffers should exist")
 end)
 
 test("Command: :Git (Fugitive)", function()
-  assert_true(command_exists("Git"), ":Git should exist")
+  assert_true(command_exists "Git", ":Git should exist")
 end)
 
-test("Command: :NERDTreeToggle", function()
-  assert_true(command_exists("NERDTreeToggle"), ":NERDTreeToggle should exist")
+test("Command: :NERDTreeToggle compatibility alias", function()
+  assert_true(command_exists "NERDTreeToggle", ":NERDTreeToggle should exist")
+end)
+
+test("Command: :Ack compatibility alias", function()
+  assert_true(command_exists "Ack", ":Ack should exist")
 end)
 
 test("Command: :Lazy (plugin manager)", function()
-  assert_true(command_exists("Lazy"), ":Lazy should exist")
+  assert_true(command_exists "Lazy", ":Lazy should exist")
 end)
 
 test("Command: :Mason (LSP installer)", function()
-  assert_true(command_exists("Mason"), ":Mason should exist")
+  assert_true(command_exists "Mason", ":Mason should exist")
 end)
 
 -- ============================================================================
 -- SECTION 8: Highlights / Theme
 -- ============================================================================
-print("\n[Theme / Highlights]")
+print "\n[Theme / Highlights]"
 
 test("Nord colorscheme active", function()
   assert_eq(vim.g.colors_name, "nord", "colorscheme")
@@ -345,7 +363,7 @@ end)
 -- ============================================================================
 -- SECTION 9: Autocommands
 -- ============================================================================
-print("\n[Autocommands]")
+print "\n[Autocommands]"
 
 test("Augroup 'vimrc' exists", function()
   local ok, _ = pcall(vim.api.nvim_get_autocmds, { group = "vimrc" })
@@ -353,67 +371,67 @@ test("Augroup 'vimrc' exists", function()
 end)
 
 test("BufWritePre autocmd exists", function()
-  local cmds = vim.api.nvim_get_autocmds({ event = "BufWritePre" })
+  local cmds = vim.api.nvim_get_autocmds { event = "BufWritePre" }
   assert_true(#cmds > 0, "BufWritePre autocmds should exist")
 end)
 
 test("FileType autocmds exist", function()
-  local cmds = vim.api.nvim_get_autocmds({ event = "FileType" })
+  local cmds = vim.api.nvim_get_autocmds { event = "FileType" }
   assert_true(#cmds > 0, "FileType autocmds should exist")
 end)
 
 -- ============================================================================
 -- SECTION 10: File Operations (simulate editing)
 -- ============================================================================
-print("\n[File Operations]")
+print "\n[File Operations]"
 
 test("Can create and edit a buffer", function()
-  vim.cmd("enew")
+  vim.cmd "enew"
   local buf = vim.api.nvim_get_current_buf()
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "line 1", "line 2", "line 3" })
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
   assert_eq(#lines, 3, "buffer should have 3 lines")
-  vim.cmd("bwipeout!")
+  vim.cmd "bwipeout!"
 end)
 
 test("Filetype detection works for .lua", function()
-  vim.cmd("enew")
-  vim.cmd("file test.lua")
-  vim.cmd("doautocmd BufRead")
+  vim.cmd "enew"
+  vim.cmd "file test.lua"
+  vim.cmd "doautocmd BufRead"
   local ft = vim.bo.filetype
   assert_eq(ft, "lua", "filetype for .lua")
-  vim.cmd("bwipeout!")
+  vim.cmd "bwipeout!"
 end)
 
 test("Filetype detection works for .rb", function()
-  vim.cmd("enew")
-  vim.cmd("file test.rb")
-  vim.cmd("doautocmd BufRead")
+  vim.cmd "enew"
+  vim.cmd "file test.rb"
+  vim.cmd "doautocmd BufRead"
   local ft = vim.bo.filetype
   assert_eq(ft, "ruby", "filetype for .rb")
-  vim.cmd("bwipeout!")
+  vim.cmd "bwipeout!"
 end)
 
 test("Filetype detection works for .go", function()
-  vim.cmd("enew")
-  vim.cmd("file test.go")
-  vim.cmd("doautocmd BufRead")
+  vim.cmd "enew"
+  vim.cmd "file test.go"
+  vim.cmd "doautocmd BufRead"
   local ft = vim.bo.filetype
   assert_eq(ft, "go", "filetype for .go")
-  vim.cmd("bwipeout!")
+  vim.cmd "bwipeout!"
 end)
 
 -- ============================================================================
 -- SECTION 11: ALE (lazy loaded - trigger by opening a file)
 -- ============================================================================
-print("\n[ALE Linting]")
+print "\n[ALE Linting]"
 
 -- Trigger ALE loading by simulating file open
-vim.cmd("enew")
-vim.cmd("file test_ale.rb")
-vim.cmd("doautocmd BufReadPre")
-vim.cmd("doautocmd BufNewFile")
-vim.cmd("bwipeout!")
+vim.cmd "enew"
+vim.cmd "file test_ale.rb"
+vim.cmd "doautocmd BufReadPre"
+vim.cmd "doautocmd BufNewFile"
+vim.cmd "bwipeout!"
 
 test("ALE plugin variables set", function()
   assert_true(vim.g.ale_linters ~= nil, "ale_linters should be set")
@@ -433,19 +451,33 @@ end)
 -- ============================================================================
 -- SECTION 12: Copilot (lazy loaded on InsertEnter)
 -- ============================================================================
-print("\n[Copilot]")
+print "\n[Copilot]"
 
 -- Trigger Copilot loading by entering insert mode briefly
-vim.cmd("enew")
-vim.cmd("doautocmd InsertEnter")
-vim.cmd("bwipeout!")
+vim.cmd "enew"
+vim.cmd "doautocmd InsertEnter"
+vim.cmd "bwipeout!"
 
-test("Copilot tab mapping disabled", function()
-  assert_true(vim.g.copilot_no_tab_map == true, "copilot_no_tab_map should be true")
+test("Copilot module loads", function()
+  local ok, _ = pcall(require, "copilot")
+  assert_true(ok, "copilot module should load")
 end)
 
-test("Copilot filetypes configured", function()
-  assert_true(vim.g.copilot_filetypes ~= nil, "copilot_filetypes should be set")
+test("Copilot accept key is configured", function()
+  local config = require "copilot.config"
+  assert_true(config ~= nil, "copilot config should load")
+  assert_eq(config.suggestion.keymap.accept, "<M-]>", "copilot accept key")
+end)
+
+-- ============================================================================
+-- SECTION 13: Search Defaults
+-- ============================================================================
+print "\n[Search Defaults]"
+
+test("grepprg uses ripgrep when available", function()
+  if vim.fn.executable "rg" == 1 then
+    assert_contains(vim.o.grepprg, "rg --vimgrep", "grepprg")
+  end
 end)
 
 -- ============================================================================
@@ -456,14 +488,14 @@ print(string.format("Results: %d passed, %d failed", results.passed, results.fai
 print(string.rep("=", 60))
 
 if results.failed > 0 then
-  print("\nFailed tests:")
+  print "\nFailed tests:"
   for _, err in ipairs(results.errors) do
     print(string.format("  - %s", err.name))
     print(string.format("    %s", err.error))
   end
-  print("")
-  vim.cmd("cq 1") -- Exit with error code
+  print ""
+  vim.cmd "cq 1" -- Exit with error code
 else
-  print("\nAll tests passed!")
-  vim.cmd("qa!")
+  print "\nAll tests passed!"
+  vim.cmd "qa!"
 end

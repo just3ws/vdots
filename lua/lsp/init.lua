@@ -84,7 +84,6 @@ cmp.setup {
   },
 }
 
-
 -- Diagnostics configured in ui/diagnostics.lua (single source of truth)
 
 -- Server configurations (new API) --------------------------------------------
