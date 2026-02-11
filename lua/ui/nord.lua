@@ -14,7 +14,11 @@ function M.setup()
   vim.g.nord_uniform_status_lines = true
 
   -- Apply theme
-  require("nord").set()
+  local ok_nord, nord = pcall(require, "nord")
+  if not ok_nord then
+    return
+  end
+  nord.set()
 
   -- Force-disable italics globally
   local no_italic_groups = {

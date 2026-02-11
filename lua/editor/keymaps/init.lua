@@ -22,7 +22,7 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<S-h>", "gT", opts)
 map("n", "<S-l>", "gt", opts)
 
--- NERDTree keymaps in editor/nerdtree.lua (<leader>n toggle, <leader>ef find)
+-- Explorer keymaps in editor/explorer.lua (<leader>n toggle, <leader>ef find)
 
 -- Movement
 map("n", "j", "gj", opts)
@@ -53,10 +53,16 @@ cmd("Szshenv", "split $ZDOTDIR/.zshenv", {})
 cmd("Tzshenv", "tabedit $ZDOTDIR/.zshenv", {})
 cmd("Vzshenv", "vsplit $ZDOTDIR/.zshenv", {})
 
--- Telescope
-local builtin = require "telescope.builtin"
+local search = require "editor.search"
 
-vim.keymap.set("n", "<C-p>", builtin.find_files, { desc = "Telescope: Find files" })
-vim.keymap.set("n", "<Leader>ff", builtin.live_grep, { desc = "Telescope: Grep text" })
-vim.keymap.set("n", "<Leader>fb", builtin.buffers, { desc = "Telescope: Buffers" })
-vim.keymap.set("n", "<Leader>fh", builtin.help_tags, { desc = "Telescope: Help tags" })
+vim.keymap.set("n", "<Leader>ff", function()
+  search.prompt_and_grep "Rg> "
+end, { desc = "Quickfix: Grep text" })
+
+local ok_builtin, builtin = pcall(require, "telescope.builtin")
+if ok_builtin then
+  vim.keymap.set("n", "<C-p>", builtin.find_files, { desc = "Telescope: Find files" })
+  vim.keymap.set("n", "<Leader>fF", builtin.live_grep, { desc = "Telescope: Live grep" })
+  vim.keymap.set("n", "<Leader>fb", builtin.buffers, { desc = "Telescope: Buffers" })
+  vim.keymap.set("n", "<Leader>fh", builtin.help_tags, { desc = "Telescope: Help tags" })
+end

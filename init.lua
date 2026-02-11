@@ -28,25 +28,20 @@ require("lazy").setup("plugins", {
 })
 
 -- ============================================================================
--- 🚫  Disable legacy netrw (handled by NERDTree)
--- ============================================================================
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
--- ============================================================================
 -- ⚙️  Core Editor Modules
 -- ============================================================================
 require "editor.options" -- General settings (all vim.opt)
 require "editor.keymaps" -- Global keybindings
 require "editor.autocmds" -- Event hooks
 require "editor.commands" -- :Commands
+require("editor.search").setup() -- Native grep/quickfix commands
 require "editor.healthcheck" -- Log deprecation warnings
--- editor.nerdtree loaded via plugins/init.lua (NERDTree config)
+-- explorer loaded via plugins/explorer.lua (oil.nvim config)
 
 -- ============================================================================
 -- 🧩  Language / LSP / Tooling
 -- ============================================================================
--- lsp loaded via plugins/init.lua (nvim-lspconfig config)
+-- lsp loaded via plugins/lsp.lua (nvim-lspconfig config)
 -- require "editor.linting" -- nvim-lint integration
 -- require "editor.formatting" -- conform.nvim setup
 require "editor.treesitter" -- syntax / highlighting
@@ -56,7 +51,7 @@ require "editor.treesitter" -- syntax / highlighting
 -- ============================================================================
 require("ui.nord").setup() -- Nord color theme (non-italic)
 require("ui.diagnostics").setup() -- Diagnostic colors & symbols
--- editor.telescope loaded via plugins/init.lua (telescope config)
+-- telescope loaded via plugins/search.lua
 require "legacy.fzf_aliases"
 
 -- ============================================================================
