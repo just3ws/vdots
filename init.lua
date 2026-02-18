@@ -36,7 +36,7 @@ require "editor.autocmds" -- Event hooks
 require "editor.commands" -- :Commands
 require("editor.search").setup() -- Native grep/quickfix commands
 require "editor.healthcheck" -- Log deprecation warnings
--- explorer loaded via plugins/explorer.lua (oil.nvim config)
+-- explorer loaded via plugins/explorer.lua (NERDTree config)
 
 -- ============================================================================
 -- 🧩  Language / LSP / Tooling
