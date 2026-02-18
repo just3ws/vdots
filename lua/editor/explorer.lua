@@ -1,91 +1,105 @@
 local M = {}
 
-local function open_sidebar(path)
-  vim.cmd "topleft vsplit"
-  vim.cmd "vertical resize 36"
-  require("oil").open(path)
-end
-
-local function find_oil_window()
+local function find_nerdtree_window()
   for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
     local buf = vim.api.nvim_win_get_buf(win)
-    if vim.bo[buf].filetype == "oil" then
+    if vim.bo[buf].filetype == "nerdtree" then
       return win
     end
   end
+
   return nil
 end
 
-function M.toggle()
-  local oil_win = find_oil_window()
-  if oil_win then
-    vim.api.nvim_win_close(oil_win, true)
-    return
-  end
-  open_sidebar()
+function M.setup_globals()
+  vim.g.NERDTreeShowHidden = 1
+  vim.g.NERDTreeMinimalUI = 1
+  vim.g.NERDTreeDirArrows = 1
+  vim.g.NERDTreeWinSize = 36
+  vim.g.NERDTreeQuitOnOpen = 0
+  vim.g.NERDTreeRespectWildIgnore = 1
+  vim.g.NERDTreeHijackNetrw = 0
+  vim.g.NERDTreeAutoDeleteBuffer = 1
+  vim.g.NERDTreeIgnore = { "^\\.DS_Store$" }
 end
 
-function M.reveal_current_file()
-  local path = vim.fn.expand "%:p:h"
-  if path == "" then
-    path = vim.fn.getcwd()
-  end
-  local oil_win = find_oil_window()
-  if oil_win then
-    vim.api.nvim_set_current_win(oil_win)
-    require("oil").open(path)
+function M.toggle()
+  vim.cmd "NERDTreeToggle"
+end
+
+function M.toggle_find()
+  if find_nerdtree_window() then
+    vim.cmd "NERDTreeClose"
     return
   end
-  open_sidebar(path)
+
+  local current_file = vim.fn.expand "%:p"
+  if current_file ~= "" and vim.fn.filereadable(current_file) == 1 then
+    vim.cmd "NERDTreeFind"
+    return
+  end
+
+  vim.cmd "NERDTreeToggle"
+end
+
+local function ensure_target_window_for_open()
+  if vim.fn.winnr "$" ~= 1 then
+    return
+  end
+
+  vim.cmd "rightbelow vnew"
+  vim.bo.buftype = "nofile"
+  vim.bo.bufhidden = "wipe"
+  vim.bo.buflisted = false
+  vim.bo.swapfile = false
+  vim.cmd "wincmd h"
 end
 
 function M.setup()
-  local oil = require "oil"
+  vim.keymap.set("n", "<leader>-e", M.toggle, { silent = true, desc = "NERDTree toggle" })
+  vim.keymap.set(
+    "n",
+    "<leader>-ef",
+    M.toggle_find,
+    { silent = true, desc = "NERDTree toggle + find" }
+  )
 
-  oil.setup {
-    default_file_explorer = true,
-    columns = { "icon" },
-    view_options = {
-      show_hidden = true,
-      natural_order = true,
-    },
-    keymaps = {
-      ["<C-s>"] = false,
-      ["<C-h>"] = false,
-      ["<C-l>"] = false,
-      ["q"] = "actions.close",
-    },
-  }
-
-  vim.keymap.set("n", "<leader>n", M.toggle, { silent = true, desc = "Explorer toggle" })
+  -- Compatibility aliases with prior explorer mappings.
+  vim.keymap.set("n", "<leader>n", M.toggle, { silent = true, desc = "NERDTree toggle" })
   vim.keymap.set(
     "n",
     "<leader>ef",
-    M.reveal_current_file,
-    { silent = true, desc = "Explorer reveal file" }
+    M.toggle_find,
+    { silent = true, desc = "NERDTree toggle + find" }
   )
 
-  -- Compatibility aliases while migrating away from NERDTree
-  vim.api.nvim_create_user_command("NERDTreeToggle", M.toggle, {})
-  vim.api.nvim_create_user_command("NERDTreeFind", M.reveal_current_file, {})
-  vim.api.nvim_create_user_command("NERDTree", function(opts)
-    if opts.args ~= "" then
-      open_sidebar(opts.args)
-      return
-    end
-    M.toggle()
-  end, { nargs = "?" })
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "nerdtree",
+    callback = ensure_target_window_for_open,
+  })
+
+  vim.api.nvim_create_autocmd("BufEnter", {
+    pattern = "NERD_tree_*",
+    callback = function()
+      if vim.fn.winnr "$" == 1 then
+        vim.cmd "quit"
+      end
+    end,
+  })
 
   vim.api.nvim_create_autocmd("VimEnter", {
     callback = function()
       if vim.fn.argc() ~= 1 then
         return
       end
+
       local arg = vim.fn.argv(0)
       if vim.fn.isdirectory(arg) ~= 1 then
         return
       end
-      open_sidebar(vim.fn.fnamemodify(arg, ":p"))
+
+      local dir = vim.fn.fnamemodify(arg, ":p")
+      vim.cmd("NERDTree " .. vim.fn.fnameescape(dir))
       vim.cmd "wincmd p"
     end,
   })

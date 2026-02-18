@@ -26,5 +26,5 @@ stylua .
 ## Search + Explorer Compatibility
 
 - `:Rg` and `:Ack` now run ripgrep into the quickfix list (native workflow).
-- `:NERDTreeToggle` and `:NERDTreeFind` are compatibility aliases backed by Oil.
-- Existing keymaps remain: `;n`, `;ef`, `<C-p>`, `;ff`.
+- NERDTree is first-class again (`:NERDTreeToggle`, `:NERDTreeFind`).
+- Explorer keymaps: `;-e` (toggle), `;-ef` (toggle + focus file), plus compatibility aliases `;n` and `;ef`.

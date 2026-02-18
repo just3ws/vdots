@@ -22,7 +22,7 @@ map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<S-h>", "gT", opts)
 map("n", "<S-l>", "gt", opts)
 
--- Explorer keymaps in editor/explorer.lua (<leader>n toggle, <leader>ef find)
+-- Explorer keymaps in editor/explorer.lua (<leader>-e toggle, <leader>-ef find)
 
 -- Movement
 map("n", "j", "gj", opts)

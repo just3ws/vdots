@@ -1,9 +1,26 @@
 return {
   {
-    "stevearc/oil.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function()
-      require("editor.explorer").setup()
+    "preservim/nerdtree",
+    cmd = {
+      "NERDTree",
+      "NERDTreeToggle",
+      "NERDTreeFind",
+      "NERDTreeFocus",
+      "NERDTreeClose",
+    },
+    init = function()
+      local explorer = require "editor.explorer"
+      explorer.setup_globals()
+      explorer.setup()
     end,
+  },
+  {
+    "ryanoasis/vim-devicons",
+    lazy = true,
+  },
+  {
+    "Xuyuanp/nerdtree-git-plugin",
+    dependencies = { "preservim/nerdtree" },
+    lazy = true,
   },
 }

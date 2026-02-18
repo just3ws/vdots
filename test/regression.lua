@@ -123,8 +123,9 @@ test("Core plugins loaded: telescope", function()
   assert_exists "telescope"
 end)
 
-test("Core plugins loaded: oil.nvim", function()
-  assert_exists "oil"
+test("Core plugin command available: NERDTreeToggle", function()
+  local available = vim.fn.exists ":NERDTreeToggle" == 2
+  assert_true(available, ":NERDTreeToggle should be available")
 end)
 
 test("Core plugins loaded: nvim-treesitter", function()
@@ -274,9 +275,19 @@ test("Keymap: <leader>ff mapped (quickfix grep)", function()
   assert_true(exists, "<leader>ff should be mapped")
 end)
 
-test("Keymap: <leader>n mapped (Explorer toggle)", function()
+test("Keymap: <leader>-e mapped (NERDTree toggle)", function()
+  local exists, _ = keymap_exists("n", ";-e")
+  assert_true(exists, "<leader>-e should be mapped for NERDTree toggle")
+end)
+
+test("Keymap: <leader>-ef mapped (NERDTree toggle + find)", function()
+  local exists, _ = keymap_exists("n", ";-ef")
+  assert_true(exists, "<leader>-ef should be mapped for NERDTree toggle + find")
+end)
+
+test("Keymap: <leader>n compatibility mapped (NERDTree toggle)", function()
   local exists, _ = keymap_exists("n", ";n")
-  assert_true(exists, "<leader>n should be mapped for explorer toggle")
+  assert_true(exists, "<leader>n should stay mapped for compatibility")
 end)
 
 test("Keymap: Split navigation <C-h/j/k/l>", function()
@@ -319,8 +330,12 @@ test("Command: :Git (Fugitive)", function()
   assert_true(command_exists "Git", ":Git should exist")
 end)
 
-test("Command: :NERDTreeToggle compatibility alias", function()
+test("Command: :NERDTreeToggle", function()
   assert_true(command_exists "NERDTreeToggle", ":NERDTreeToggle should exist")
+end)
+
+test("Command: :NERDTreeFind", function()
+  assert_true(command_exists "NERDTreeFind", ":NERDTreeFind should exist")
 end)
 
 test("Command: :Ack compatibility alias", function()
