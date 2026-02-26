@@ -7,7 +7,7 @@ repos:
     hooks:
       - id: trim-trailing-whitespace
         name: Trim trailing whitespace
-        entry: bash -c "sed -i '' -E 's/[[:space:]]+$//' \"$@\""
+        entry: bash -c 'sed -i "" -E "s/[[:space:]]+$//" "$@"' --
         language: system
         types: [text]
 
