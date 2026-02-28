@@ -1,50 +1,17 @@
 local M = {}
 
 function M.setup()
-  local ok, ts = pcall(require, "nvim-treesitter.configs")
+  local ok = pcall(require, "nvim-treesitter")
   if not ok then
     vim.notify("nvim-treesitter not found", vim.log.levels.WARN)
     return
   end
 
+  -- Post-rewrite API: setup() only accepts install_dir; parsers managed via :TSInstall
+  require("nvim-treesitter").setup()
+
   local nord = require("ui.nord").palette
   local set_hl = vim.api.nvim_set_hl
-
-  ts.setup {
-    ensure_installed = {
-      "bash",
-      "c",
-      "css",
-      "go",
-      "html",
-      "javascript",
-      "json",
-      "lua",
-      "markdown",
-      "python",
-      "ruby",
-      "vim",
-      "vimdoc",
-      "yaml",
-    },
-    highlight = { enable = true, additional_vim_regex_highlighting = false },
-    indent = { enable = true },
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection = "gnn",
-        node_incremental = "grn",
-        scope_incremental = "grc",
-        node_decremental = "grm",
-      },
-    },
-    autotag = { enable = true },
-  }
-
-  vim.g.skip_ts_context_commentstring_module = true
-  pcall(function()
-    require("ts_context_commentstring").setup { enable_autocmd = false }
-  end)
 
   -- --- Nord Highlight Overrides ---
   local highlights = {

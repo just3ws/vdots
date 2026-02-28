@@ -200,10 +200,10 @@ end)
 -- ============================================================================
 print "\n[Treesitter]"
 
-test("Treesitter highlight enabled", function()
-  local configs = require "nvim-treesitter.configs"
-  -- Just verify module loads without error
-  assert_true(configs ~= nil, "treesitter configs should load")
+test("Treesitter loads without error", function()
+  -- nvim-treesitter post-rewrite removed nvim-treesitter.configs; check the main module
+  local ok = pcall(require, "nvim-treesitter")
+  assert_true(ok, "nvim-treesitter should load")
 end)
 
 test("Treesitter parsers available: lua", function()

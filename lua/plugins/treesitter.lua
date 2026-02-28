@@ -7,6 +7,12 @@ return {
     end,
   },
   "nvim-treesitter/nvim-treesitter-textobjects",
-  "windwp/nvim-ts-autotag",
+  {
+    "windwp/nvim-ts-autotag",
+    event = "InsertEnter",
+    config = function()
+      require("nvim-ts-autotag").setup()
+    end,
+  },
   "JoosepAlviste/nvim-ts-context-commentstring",
 }
