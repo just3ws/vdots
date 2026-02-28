@@ -43,23 +43,37 @@ Pre-commit hooks run automatically: trailing whitespace removal, EOF newline, Lu
 init.lua                    # Bootstrap: leader key (;), Lazy.nvim, module loading
 lua/
 ├── editor/                 # Core editor functionality
-│   ├── options.lua         # vim.opt settings (tabs=2, numbering, clipboard)
+│   ├── options.lua         # vim.opt settings (tabs=2, numbering, clipboard, providers)
 │   ├── keymaps/init.lua    # Global keybindings
 │   ├── autocmds.lua        # Autocommands (augroup "vimrc")
-│   ├── settings.lua        # Backup/undo paths, language providers
+│   ├── commands.lua        # User commands
+│   ├── explorer.lua        # NERDTree config + keymaps
+│   ├── healthcheck.lua     # Deprecation filter (logs to stdpath/logs/)
+│   ├── search.lua          # :Rg/:Ack native grep → quickfix
 │   ├── telescope.lua       # Fuzzy finder config
-│   ├── nerdtree.lua        # File tree with Nord colors
-│   └── treesitter.lua      # Syntax highlighting
-├── lsp/init.lua            # Mason + LSP + nvim-cmp setup
+│   └── treesitter.lua      # Syntax highlighting + Nord overrides
+├── legacy/
+│   └── fzf_aliases.lua     # FZF-style command aliases via Telescope
+├── lsp/init.lua            # Mason + LSP (vim.lsp.config API) + nvim-cmp setup
 ├── ui/
-│   ├── nord.lua            # Theme + exported color palette
-│   └── diagnostics.lua     # Diagnostic styling
-└── plugins/
-    ├── init.lua            # Lazy.nvim plugin specs (47 plugins)
-    └── ale.lua             # ALE linter/fixer configuration
+│   ├── diagnostics.lua     # Diagnostic styling (Nord colors, CursorHold float)
+│   ├── lualine.lua         # (unused — lualine configured in plugins/ui.lua)
+│   └── nord.lua            # Theme setup + exported color palette
+├── utils/
+│   └── safe_require.lua    # (stub)
+├── filetypes.lua           # (stub — filetype overrides live in autocmds.lua)
+└── plugins/                # Lazy.nvim specs, one file per concern (~40 plugins)
+    ├── ai.lua              # Copilot + CodeCompanion
+    ├── ale.lua             # ALE linter/fixer configuration
+    ├── core.lua            # tpope stack, text objects, Ruby, Git, misc
+    ├── explorer.lua        # NERDTree + devicons + git status
+    ├── lsp.lua             # lazydev, nvim-lspconfig, nvim-cmp, LuaSnip
+    ├── search.lua          # Telescope + fzf-native
+    ├── treesitter.lua      # nvim-treesitter, textobjects, autotag, commentstring
+    └── ui.lua              # nvim-web-devicons, Nord theme, lualine
 after/
-├── ftplugin/               # Filetype-specific overrides
-└── plugin/abbreviations.lua # Typo fixes, snippets
+├── ftplugin/               # Filetype-specific overrides (vim.lua)
+└── plugin/abbreviations.lua # Typo fixes, math constants, language shortcuts
 ```
 
 ## Key Patterns
