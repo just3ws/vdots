@@ -3,6 +3,7 @@
 Plan the implementation of a new feature or integration.
 
 ## Usage
+
 `/plan-feature AI code completion` or `/plan-feature snippet system`
 
 ## Steps
@@ -30,6 +31,7 @@ Plan the implementation of a new feature or integration.
 5. If approved, create tasks in TODO.md
 
 ## Do Not
+
 - Implement without approval
 - Recommend plugins without checking maintenance status
 - Ignore existing patterns in the config

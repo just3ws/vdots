@@ -25,5 +25,6 @@ Review plugin health, updates, and potential consolidation.
    - **Update available**: Newer version in lock file
 
 ## Do Not
+
 - Automatically update or remove plugins
 - Present findings and let user decide
