@@ -12,23 +12,24 @@ return {
       },
     }
 
-    -- Specify linters (ALE will only run these for the given filetypes)
+    -- Specify linters (ALE will only run these for the given filetypes).
+    -- Omit tools already covered by an LSP server to avoid duplicate diagnostics:
+    --   ruby_lsp handles RuboCop, lua_ls handles Lua diagnostics.
     vim.g.ale_linters = {
-      ruby = { "rubocop" }, -- Ruby: RuboCop linter
-      slim = { "slimlint" }, -- Slim: Slim-Lint
-      javascript = { "eslint" }, -- JS: ESLint
-      typescript = { "eslint" }, -- TS: ESLint (with tsserver/TS plugin)
+      slim = { "slimlint" }, -- Slim: Slim-Lint (no LSP)
+      javascript = { "eslint" }, -- JS: ESLint (no JS LSP configured)
+      typescript = { "eslint" }, -- TS: ESLint (no TS LSP configured)
       graphql = { "eslint" }, -- GraphQL: ESLint (GraphQL-ESLint plugin)
-      yaml = { "yamllint" }, -- YAML: yamllint
-      markdown = { "markdownlint" }, -- Markdown: markdownlint
-      lua = { "luacheck" }, -- Lua: luacheck
-      go = { "golangci-lint" }, -- Go: GolangCI-Lint
-      dosini = { "pyinilint" }, -- .ini/.properties: pyinilint
+      yaml = { "yamllint" }, -- YAML: yamllint (no LSP)
+      markdown = { "markdownlint" }, -- Markdown: markdownlint (no LSP)
+      go = { "golangci-lint" }, -- Go: golangci-lint (gopls doesn't run it)
+      dosini = { "pyinilint" }, -- .ini/.properties: pyinilint (no LSP)
     }
 
-    -- Specify fixers/formatters for each filetype
+    -- Specify fixers/formatters for each filetype.
+    -- trim_whitespace removed from * — BufWritePre autocmd already handles it.
     vim.g.ale_fixers = {
-      ["*"] = { "remove_trailing_lines", "trim_whitespace" },
+      ["*"] = { "remove_trailing_lines" },
       ruby = { "rubocop" }, -- Ruby: RuboCop auto-correct
       slim = {}, -- Slim: (no auto-fixer available)
       javascript = { "prettier" }, -- JS: Prettier

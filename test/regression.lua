@@ -453,14 +453,15 @@ test("ALE plugin variables set", function()
   assert_true(vim.g.ale_fixers ~= nil, "ale_fixers should be set")
 end)
 
-test("ALE Ruby linter configured", function()
+test("ALE Go linter configured", function()
   local linters = vim.g.ale_linters
-  assert_true(linters ~= nil and linters.ruby ~= nil, "Ruby linters should be configured")
+  assert_true(linters ~= nil and linters.go ~= nil, "Go linters should be configured")
 end)
 
-test("ALE Lua linter configured", function()
+test("ALE Ruby/Lua linters removed (covered by LSP)", function()
   local linters = vim.g.ale_linters
-  assert_true(linters ~= nil and linters.lua ~= nil, "Lua linters should be configured")
+  assert_true(linters ~= nil and linters.ruby == nil, "Ruby linter should be removed (ruby_lsp covers it)")
+  assert_true(linters ~= nil and linters.lua == nil, "Lua linter should be removed (lua_ls covers it)")
 end)
 
 -- ============================================================================
