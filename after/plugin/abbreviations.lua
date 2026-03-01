@@ -41,21 +41,6 @@ cmd [[iabbrev /} //}}}]]
 cmd [[iabbrev /{ //{{{]]
 cmd [[iabbrev dt <C-r>=strftime("%Y-%m-%d %H:%M:%S")<CR>]]
 
--- --- Short forms for languages ---
-local shortcuts = {
-  { "pu", "public" },
-  { "pr", "private" },
-  { "fu", "func" },
-  { "im", "import" },
-  { "pa", "package" },
-  { "ma", "main" },
-  { "fun", "func" },
-  { "re", "return" },
-}
-for _, pair in ipairs(shortcuts) do
-  cmd(string.format("iabbrev %s %s", pair[1], pair[2]))
-end
-
 -- --- Global normal-mode abbreviation (legacy style) ---
 cmd [[ab teh the]]
 cmd [[ab fro for]]
