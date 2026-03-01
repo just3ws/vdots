@@ -57,22 +57,6 @@ Remaining tasks for the configuration audit. Completed tasks are in [TODONE.md](
 
 ---
 
-## P5 - Tooling Issues
-
-### [ ] P5-1: Fix pre-commit trim-trailing-whitespace hook
-**File:** `.pre-commit-config.yaml`
-**Problem:** Hook fails with `sed: -I or -i may not be used with stdin` on non-Lua files.
-**Impact:** Must use `--no-verify` for JSON, gitignore commits.
-**Fix:** Update hook config or use a different trailing whitespace trimmer.
-**Commit:** `fix(pre-commit): use compatible trailing whitespace hook`
-**Test:**
-1. Modify `.gitignore` or `lazy-lock.json`
-2. Run `git add <file> && git commit -m "test"`
-3. **Expected:** Pre-commit hooks pass without sed error
-4. No need for `--no-verify`
-
----
-
 ## Summary
 
 | Priority | Status | Remaining |
@@ -82,6 +66,7 @@ Remaining tasks for the configuration audit. Completed tasks are in [TODONE.md](
 | P2 - Double Execution | ✓ Complete | 0 |
 | P3 - Redundancy | ✓ Complete | 0 |
 | P4 - Best Practices | 2/5 done | 3 |
-| P5 - Tooling | 0/1 done | 1 |
+| P5 - Tooling | ✓ Complete | 0 |
+| Ad-hoc (2026-02-28 audit) | ✓ Complete | 0 |
 
-**Total: 17 completed, 4 remaining**
+**Total: 24 completed, 3 remaining**
