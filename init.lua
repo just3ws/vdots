@@ -49,7 +49,7 @@ require "editor.treesitter" -- syntax / highlighting
 -- ============================================================================
 -- 🎨  UI & Theming
 -- ============================================================================
-require("ui.nord").setup() -- Nord color theme (non-italic)
+-- ui.nord.setup() called via plugins/ui.lua config (after nord.nvim loads)
 require("ui.diagnostics").setup() -- Diagnostic colors & symbols
 -- telescope loaded via plugins/search.lua
 require "legacy.fzf_aliases"

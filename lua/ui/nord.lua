@@ -1,19 +1,8 @@
 local M = {}
 
 ---Apply the Nord colorscheme and strip all italics.
+---vim.g.nord_* globals must be set before calling (done in plugin init).
 function M.setup()
-  -- Core Nord options
-  vim.g.nord_contrast = true
-  vim.g.nord_borders = true
-  vim.g.nord_disable_background = false
-  vim.g.nord_cursorline_transparent = false
-  vim.g.nord_enable_sidebar_background = false
-  vim.g.nord_italic = false
-  vim.g.nord_italic_comments = false
-  vim.g.nord_bold = true
-  vim.g.nord_uniform_diff_background = true
-  vim.g.nord_uniform_status_lines = true
-
   -- Apply theme
   local ok_nord, nord = pcall(require, "nord")
   if not ok_nord then
