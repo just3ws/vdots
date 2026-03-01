@@ -36,7 +36,7 @@ map("x", "<", "<gv", opts)
 map("x", ">", ">gv", opts)
 
 -- Quick visual select
-map("n", "<Leader><Leader>", "V", opts)
+map("n", "<Leader><Leader>", "V", { noremap = true, silent = true, desc = "Select current line" })
 
 -- Command-line history navigation
 map("c", "<C-n>", "<down>", { noremap = true })
