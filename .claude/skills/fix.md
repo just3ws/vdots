@@ -3,6 +3,7 @@
 Work on a specific task from TODO.md.
 
 ## Usage
+
 `/fix P0-1` or `/fix 1` (task number)
 
 ## Steps
@@ -18,6 +19,7 @@ Work on a specific task from TODO.md.
 9. Update TODO.md to mark task complete with date and commit hash
 
 ## Rules
+
 - One task per invocation
 - Always show diff before applying
 - Always validate after applying

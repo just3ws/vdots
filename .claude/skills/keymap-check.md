@@ -29,6 +29,7 @@ Check for keymap conflicts and document current bindings.
    - Editing
 
 ## Output Format
+
 ```markdown
 ## Conflicts
 | Binding | Mode | Location 1 | Location 2 |
