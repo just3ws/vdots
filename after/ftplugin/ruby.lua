@@ -1,3 +1,12 @@
+-- Ruby buffer-local abbreviations
+local function abbrev(lhs, rhs)
+  vim.cmd(string.format("iabbrev <buffer> %s %s", lhs, rhs))
+end
+
+abbrev("re", "return")
+abbrev("pu", "public")
+abbrev("pr", "private")
+
 -- Ruby text object keymaps (vim-textobj-ruby)
 -- ar/ir: handled by vim-textobj-rubyblock
 -- af/if: functions   ac/ic: classes   an/in: names
