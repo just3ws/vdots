@@ -34,22 +34,6 @@ Remaining tasks for the configuration audit. Completed tasks are in [TODONE.md](
 5. Type "re " (re + space)
 6. **Expected (if kept):** Expands to "return " in Go files only
 
-### [ ] P4-3: Audit potentially obsolete plugins
-
-**File:** `lua/plugins/init.lua`
-**Review:**
-
-- `ack.vim` - Telescope provides `:Rg`, may be unused
-- `vim-textobj-ruby` - Overlaps with `vim-textobj-rubyblock`
-
-**Action:** Check personal usage, remove unused.
-**Commit:** `chore(plugins): remove unused plugin X`
-**Test:**
-
-1. Run `:Lazy profile`
-2. **Expected:** Removed plugins no longer appear
-3. Verify no features broken by removal
-
 ### [ ] P4-4: Consider enabling which-key
 
 **File:** `lua/plugins/init.lua` (lines 54-70)
@@ -73,8 +57,8 @@ Remaining tasks for the configuration audit. Completed tasks are in [TODONE.md](
 | P1 - Broken Functionality | ✓ Complete | 0 |
 | P2 - Double Execution | ✓ Complete | 0 |
 | P3 - Redundancy | ✓ Complete | 0 |
-| P4 - Best Practices | 2/5 done | 3 |
+| P4 - Best Practices | 3/5 done | 2 |
 | P5 - Tooling | ✓ Complete | 0 |
 | Ad-hoc (2026-02-28 audit) | ✓ Complete | 0 |
 
-Total: 24 completed, 3 remaining
+Total: 28 completed, 2 remaining

@@ -142,6 +142,30 @@ moved `nvim-ts-autotag` to its own config block, fixed regression test.
 **Change:** Rewrote architecture tree; `settings.lua` → `options.lua`, `nerdtree.lua` →
 `explorer.lua`, single `plugins/init.lua` → per-concern files, added missing modules.
 
+### [x] Fix markdownlint errors in skill files
+
+**Commit:** `94e0930` - 2026-02-28
+**Files:** `.claude/skills/*.md`
+**Change:** Resolved MD022/MD031/MD032 (missing blank lines around headings, fences,
+list items) and MD029 (inconsistent ordered list prefix) across all six skill files.
+
+### [x] Add EmmyLua/LuaLS annotations to public module functions
+
+**Commit:** `1cf11eb` - 2026-02-28
+**Files:** `lua/editor/search.lua`, `lua/editor/explorer.lua`, `lua/ui/nord.lua`,
+`lua/editor/treesitter.lua`
+**Change:** Added `---@param`, `---@return`, `---@class`, `---@type` annotations to
+public API functions. Read by `lua_ls` (Mason) for hover docs and type checking.
+
+### [x] Fix Nord double-call on startup
+
+**Commit:** `1dfa93e` - 2026-02-28
+**Files:** `lua/plugins/ui.lua`, `lua/ui/nord.lua`, `init.lua`
+**Change:** `nord.set()` was firing twice: once in the lazy plugin config (before
+`vim.g.nord_*` vars were set) and again via `require("ui.nord").setup()` in `init.lua`.
+Fixed by moving globals into the plugin's `init` hook, calling `M.setup()` from `config`,
+and removing the duplicate call from `init.lua`.
+
 ---
 
 ## P4 - Best Practices / Optimization (2/5 Complete)
@@ -151,6 +175,15 @@ moved `nvim-ts-autotag` to its own config block, fixed regression test.
 **Commit:** `7dcee2d` - 2025-02-04
 **File:** `lua/editor/options.lua`
 **Change:** Added `vim.opt.signcolumn = "yes"`
+
+### [x] P4-3: Audit and remove obsolete plugins
+
+**Commit:** `69c34b2` - 2026-02-28
+**Files:** `lua/plugins/core.lua`, `lua/plugins/treesitter.lua`
+**Change:** Full plugin audit. Removed three unused plugins:
+`vitalk/vim-shebang` (unmaintained, niche), `windwp/nvim-ts-autotag` and
+`JoosepAlviste/nvim-ts-context-commentstring` (web-dev only, no HTML/JSX work).
+`ack.vim` was already absent; `vim-textobj-ruby` overlap resolved in prior session.
 
 ### [x] P4-5: Add updatetime for faster CursorHold
 
