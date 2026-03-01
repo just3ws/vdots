@@ -4,7 +4,7 @@
 
 -- Set leader early (must be before any keymap logic)
 vim.g.mapleader = ";"
-vim.g.maplocalleader = ";"
+vim.g.maplocalleader = "\\"
 
 -- ============================================================================
 -- 📦  Bootstrap Lazy.nvim
