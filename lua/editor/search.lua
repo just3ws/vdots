@@ -11,14 +11,27 @@ local function trim(value)
   return cleaned
 end
 
+---Trim and validate a grep query string.
+---@param value any
+---@return string|nil query  nil if blank or not a string
 function M.normalize_query(value)
   return trim(value)
 end
 
+---Build the Ex command string for a ripgrep search.
+---@param query string
+---@return string cmd
 function M.build_grep_cmd(query)
   return ("silent grep! %s"):format(vim.fn.shellescape(query))
 end
 
+---@class SearchOpts
+---@field open_qf? boolean  Open quickfix window after grep (default: true)
+
+---Run a grep search and optionally open the quickfix window.
+---@param query string
+---@param opts? SearchOpts
+---@return boolean ok  false if query is blank
 function M.run_grep(query, opts)
   local normalized = M.normalize_query(query)
   if not normalized then
@@ -33,6 +46,9 @@ function M.run_grep(query, opts)
   return true
 end
 
+---Prompt the user for a query then run a grep search.
+---@param prompt? string  Input prompt text (default: "Grep> ")
+---@return boolean ok
 function M.prompt_and_grep(prompt)
   local query = vim.fn.input(prompt or "Grep> ")
   return M.run_grep(query)

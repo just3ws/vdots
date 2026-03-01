@@ -1,5 +1,6 @@
 local M = {}
 
+---Apply the Nord colorscheme and strip all italics.
 function M.setup()
   -- Core Nord options
   vim.g.nord_contrast = true
@@ -82,6 +83,26 @@ function M.setup()
   end
 end
 
+---@class NordPalette
+---@field none    string
+---@field bg      string
+---@field bg_dark string
+---@field bg_light string
+---@field fg      string
+---@field fg_light string
+---@field fg_dark string
+---@field red     string
+---@field orange  string
+---@field yellow  string
+---@field green   string
+---@field cyan    string
+---@field blue    string
+---@field magenta string
+---@field gray    string
+---@field gray_light string
+
+---Nord color palette for use by other modules.
+---@type NordPalette
 M.palette = {
   none = "NONE",
   bg = "#2E3440",

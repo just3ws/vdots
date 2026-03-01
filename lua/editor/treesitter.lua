@@ -1,5 +1,6 @@
 local M = {}
 
+---Initialize nvim-treesitter and apply Nord highlight overrides.
 function M.setup()
   local ok = pcall(require, "nvim-treesitter")
   if not ok then
