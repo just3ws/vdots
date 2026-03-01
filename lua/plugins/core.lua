@@ -25,6 +25,11 @@ return {
     "tek/vim-textobj-ruby",
     dependencies = { "kana/vim-textobj-user" },
     lazy = false,
+    init = function()
+      -- Suppress the plugin's after/ftplugin mappings; we own them in
+      -- after/ftplugin/ruby.lua so ar/ir stays with vim-textobj-rubyblock.
+      vim.g.textobj_ruby_no_mappings = 1
+    end,
   },
 
   -- Ruby ecosystem
