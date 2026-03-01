@@ -26,6 +26,10 @@ return {
     "L3MON4D3/LuaSnip",
     version = "v2.*",
     build = "make install_jsregexp",
+    dependencies = { "rafamans2/friendly-snippets" },
+    config = function()
+      require "editor.snippets"
+    end,
   },
   "saadparwaiz1/cmp_luasnip",
 }
