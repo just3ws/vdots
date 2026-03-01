@@ -1,8 +1,8 @@
 local map = vim.keymap.set
-local cmd = vim.api.nvim_create_user_command
 local opts = { noremap = true, silent = true }
 
 -- Leader key set in init.lua (must be before keymaps)
+-- User commands (:Reload, :Vimrc, :Zshenv, etc.) live in editor/commands.lua
 
 -- Command mode convenience
 map("n", ";", ":", { noremap = true })
@@ -41,17 +41,6 @@ map("n", "<Leader><Leader>", "V", { noremap = true, silent = true, desc = "Selec
 -- Command-line history navigation
 map("c", "<C-n>", "<down>", { noremap = true })
 map("c", "<C-p>", "<up>", { noremap = true })
-
--- Reload config
-cmd("Reload", "source $MYVIMRC", {})
-cmd("Vimrc", "edit $MYVIMRC", {})
-cmd("Svimrc", "split $MYVIMRC", {})
-cmd("Tvimrc", "tabedit $MYVIMRC", {})
-cmd("Vvimrc", "vsplit $MYVIMRC", {})
-cmd("Zshenv", "edit $ZDOTDIR/.zshenv", {})
-cmd("Szshenv", "split $ZDOTDIR/.zshenv", {})
-cmd("Tzshenv", "tabedit $ZDOTDIR/.zshenv", {})
-cmd("Vzshenv", "vsplit $ZDOTDIR/.zshenv", {})
 
 local search = require "editor.search"
 
