@@ -40,12 +40,4 @@ return {
       movmap("[M", mov.goto_previous_end, "@function.outer", "Prev function end")
     end,
   },
-  {
-    "windwp/nvim-ts-autotag",
-    event = "InsertEnter",
-    config = function()
-      require("nvim-ts-autotag").setup()
-    end,
-  },
-  "JoosepAlviste/nvim-ts-context-commentstring",
 }

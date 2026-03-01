@@ -45,5 +45,4 @@ return {
   -- Misc
   "tpope/vim-abolish",
   "pbrisbin/vim-mkdir",
-  "vitalk/vim-shebang",
 }
