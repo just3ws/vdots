@@ -1,5 +1,6 @@
 local M = {}
 
+---@return integer|nil win  Window ID of the NERDTree split, or nil if not open
 local function find_nerdtree_window()
   for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
     local buf = vim.api.nvim_win_get_buf(win)
@@ -11,6 +12,7 @@ local function find_nerdtree_window()
   return nil
 end
 
+---Set NERDTree global variables before the plugin loads.
 function M.setup_globals()
   vim.g.NERDTreeShowHidden = 1
   vim.g.NERDTreeMinimalUI = 1
@@ -23,10 +25,12 @@ function M.setup_globals()
   vim.g.NERDTreeIgnore = { "^\\.DS_Store$" }
 end
 
+---Toggle NERDTree open/closed.
 function M.toggle()
   vim.cmd "NERDTreeToggle"
 end
 
+---Toggle NERDTree; reveal the current file when opening, close if already open.
 function M.toggle_find()
   if find_nerdtree_window() then
     vim.cmd "NERDTreeClose"
