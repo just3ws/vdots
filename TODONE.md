@@ -203,6 +203,60 @@ Registered group labels for leader prefixes: `-` explorer, `a` AI, `c` code,
 `JoosepAlviste/nvim-ts-context-commentstring` (web-dev only, no HTML/JSX work).
 `ack.vim` was already absent; `vim-textobj-ruby` overlap resolved in prior session.
 
+---
+
+## Expert Audit (2026-02-28) — Bugs / Defects (6/6 Complete)
+
+### [x] B-1: Fix orphaned lua/ui/lualine.lua
+
+**Commit:** `d7f774c` - 2026-02-28
+**Files:** `lua/plugins/ui.lua`, `lua/ui/lualine.lua`
+**Change:** `lua/plugins/ui.lua` was configuring lualine inline with minimal options, while
+`lua/ui/lualine.lua` (which sets blank separators) was never required — dead code. Wired
+the lualine plugin `config` to `require "ui.lualine"` so the real config is used.
+
+### [x] B-2: Fix ALE + LSP duplicate linting
+
+**Commit:** `a2eda1d` - 2026-02-28
+**File:** `lua/plugins/ale.lua`
+**Change:** Removed `ruby = { "rubocop" }` and `lua = { "luacheck" }` from `ale_linters`.
+`ruby_lsp` runs RuboCop internally; `lua_ls` covers Lua diagnostics. Removing duplicates
+eliminates double gutter diagnostics and double tool execution on every save.
+
+### [x] B-3: Fix double trailing-whitespace removal
+
+**Commit:** `a2eda1d` - 2026-02-28
+**File:** `lua/plugins/ale.lua`
+**Change:** Removed `trim_whitespace` from `ale_fixers["*"]`. The `BufWritePre` autocmd
+in `editor/autocmds.lua` already handles this. Kept `remove_trailing_lines` (the autocmd
+does not remove trailing blank lines at EOF).
+
+### [x] B-4: Fix maplocalleader collision with mapleader
+
+**Commit:** `1d18cce` - 2026-02-28
+**File:** `init.lua`
+**Change:** Both `mapleader` and `maplocalleader` were set to `";"`. Filetype plugins
+(`vim-ruby`, `vim-rails`) bind `<localleader>` maps which silently collided with the
+regular leader namespace. Changed `vim.g.maplocalleader` to `"\\"` (backslash).
+
+### [x] B-5: LuaSnip has no snippets configured
+
+**Commits:** `791192b`, `60ce9e2` - 2026-02-28
+**Files:** `lua/plugins/lsp.lua`, `lua/editor/snippets.lua`
+**Change:** Added `rafamadriz/friendly-snippets` as a LuaSnip dependency and populated
+`lua/editor/snippets.lua` with `lazy_load()` and an eruby filetype extension. Initial
+commit had a typo (`rafamans2`); corrected in follow-up commit.
+
+### [x] B-6: Delete or populate empty stub files
+
+**Commit:** `f39c5b5` - 2026-02-28
+**Files:** `lua/editor/commands.lua`, `lua/editor/keymaps/init.lua`, `lua/utils/safe_require.lua`
+**Change:** Moved user commands (`:Reload`, `:Vimrc`, `:Zshenv`, etc.) from `keymaps/init.lua`
+into `commands.lua` (which was a stub). Deleted `lua/utils/safe_require.lua` (empty, no
+consumers). `snippets.lua` populated by B-5.
+
+---
+
 ### [x] P4-5: Add updatetime for faster CursorHold
 
 **Commit:** `e0975a2` - 2025-02-04

@@ -14,7 +14,7 @@ Remaining tasks for the configuration audit. Completed tasks are in [TODONE.md](
 
 ## Expert Audit (2026-02-28) — Bugs / Defects
 
-### [ ] B-1: Fix orphaned lua/ui/lualine.lua
+### [x] B-1: Fix orphaned lua/ui/lualine.lua
 
 **File:** `lua/ui/lualine.lua`, `lua/plugins/ui.lua`
 **Why:** `lua/plugins/ui.lua` configures lualine inline with minimal options. `lua/ui/lualine.lua`
@@ -24,7 +24,7 @@ it's dead code. The separator config is silently not applied.
 the inline setup call.
 **Commit:** `fix(ui): wire lualine.lua into plugin config`
 
-### [ ] B-2: Fix ALE + LSP duplicate linting
+### [x] B-2: Fix ALE + LSP duplicate linting
 
 **Files:** `lua/plugins/ale.lua`
 **Why:** `ruby_lsp` runs RuboCop internally. ALE also runs `rubocop`. `lua_ls` covers Lua
@@ -34,7 +34,7 @@ double tool execution on every save.
 Keep `go = { "golangci-lint" }` (gopls doesn't run golangci-lint). Keep all others.
 **Commit:** `fix(ale): remove linters already covered by LSP`
 
-### [ ] B-3: Fix double trailing-whitespace removal
+### [x] B-3: Fix double trailing-whitespace removal
 
 **Files:** `lua/plugins/ale.lua`, `lua/editor/autocmds.lua`
 **Why:** `autocmds.lua` BufWritePre runs `silent! %s/\s\+$//e`. ALE's global fixers also
@@ -43,7 +43,7 @@ include `trim_whitespace`. Both fire on every save — redundant and can cause c
 (autocmds.lua does not remove trailing blank lines at EOF).
 **Commit:** `fix(ale): remove trim_whitespace fixer, covered by BufWritePre autocmd`
 
-### [ ] B-4: Fix maplocalleader collision with mapleader
+### [x] B-4: Fix maplocalleader collision with mapleader
 
 **File:** `init.lua`
 **Why:** Both `mapleader` and `maplocalleader` are set to `";"`. Filetype plugins
@@ -52,17 +52,17 @@ regular leader namespace. The conventional localleader is `\`.
 **Fix:** Change `vim.g.maplocalleader = ";"` to `vim.g.maplocalleader = "\\"`
 **Commit:** `fix(init): set maplocalleader to backslash to avoid leader collision`
 
-### [ ] B-5: LuaSnip has no snippets configured
+### [x] B-5: LuaSnip has no snippets configured
 
 **Files:** `lua/plugins/lsp.lua`, `lua/editor/snippets.lua`
 **Why:** `L3MON4D3/LuaSnip` is installed and wired into nvim-cmp, but `lua/editor/snippets.lua`
 is empty. The snippet engine runs but has nothing to expand — Tab in insert mode falls through
 to indentation rather than expanding anything useful.
-**Fix:** Add `rafamans2/friendly-snippets` as a LuaSnip dependency and configure lazy-loading
+**Fix:** Add `rafamadriz/friendly-snippets` as a LuaSnip dependency and configure lazy-loading
 in `lua/editor/snippets.lua` via `luasnip.loaders.from_vscode`.
 **Commit:** `feat(snippets): add friendly-snippets and configure LuaSnip loading`
 
-### [ ] B-6: Delete or populate empty stub files
+### [x] B-6: Delete or populate empty stub files
 
 **Files:** `lua/editor/commands.lua`, `lua/editor/snippets.lua`, `lua/utils/safe_require.lua`
 **Why:** Three files exist but contain only a newline. They create the impression of structure
@@ -223,9 +223,9 @@ and language-specific adapters (ruby, go) provides full DAP debugging inside Neo
 | Priority | Status | Count |
 | -------- | ------ | ----- |
 | Original remediation (P0–P5) | ✓ Complete | 30 |
-| B - Bugs / Defects | 0/6 done | 6 remaining |
+| B - Bugs / Defects | 6/6 done | 0 remaining |
 | H - High Impact | 0/6 done | 6 remaining |
 | M - Medium Impact | 0/8 done | 8 remaining |
 | L - Long Term | 0/4 done | 4 remaining |
 
-Total from expert audit: 0 completed, 24 remaining
+Total from expert audit: 6 completed, 18 remaining
