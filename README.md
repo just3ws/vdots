@@ -28,6 +28,17 @@ stylua .
 Leader key is `;`. Because `;` is also mapped to `:` in normal mode,
 leader sequences must be typed without delay (or within `timeoutlen`).
 
+**which-key** is active: pause after `;` for ~300 ms and a popup appears showing
+all available bindings. Multi-key prefixes are labelled by group:
+
+| Prefix | Group |
+| --- | --- |
+| `;-` | explorer |
+| `;a` | AI |
+| `;c` | code |
+| `;f` | find |
+| `;r` | refactor |
+
 ### General
 
 | Key | Action |
@@ -166,3 +177,27 @@ Config editing shortcuts (all open `$MYVIMRC` or `$ZDOTDIR/.zshenv`):
 | `:Files` / `:GFiles` | Telescope find files / git files |
 | `:Buffers` | Telescope buffer list |
 | `:Commits` / `:BCommits` | Telescope git commits / buffer commits |
+
+## Abbreviations
+
+Typo corrections are global (safe in prose). Programming shortcuts are
+buffer-local — they only expand in the listed filetypes.
+
+### Typo corrections (all filetypes)
+
+Common misspellings auto-corrected in insert mode: `cant`, `dont`, `wont`,
+`teh`, `alos`, `aslo`, `becuase`, `bianry`, `charcter`, `exmaple`, `shoudl`,
+`seperate`, `tpyo`, `optino`, `udpate`, `typdef`, `flase`, `taht`, `resposne`.
+
+### Programming shortcuts (filetype-scoped)
+
+| Shortcut | Expands to | Filetypes |
+| --- | --- | --- |
+| `re` | `return` | Go, Ruby, JavaScript, TypeScript, Lua |
+| `fu` | `func` | Go |
+| `fun` | `func` | Go |
+| `im` | `import` | Go, JavaScript, TypeScript |
+| `pa` | `package` | Go |
+| `ma` | `main` | Go |
+| `pu` | `public` | Ruby, JavaScript, TypeScript |
+| `pr` | `private` | Ruby, JavaScript, TypeScript |
