@@ -481,7 +481,7 @@ end)
 test("Copilot accept key is configured", function()
   local config = require "copilot.config"
   assert_true(config ~= nil, "copilot config should load")
-  assert_eq(config.suggestion.keymap.accept, "<M-]>", "copilot accept key")
+  assert_eq(config.suggestion.keymap.accept, "<M-CR>", "copilot accept key")
 end)
 
 -- ============================================================================

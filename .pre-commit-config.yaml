@@ -46,3 +46,24 @@ repos:
           ' --
         language: system
         files: \.(vim|vimrc)$
+
+      - id: stylua-check
+        name: Stylua format check
+        entry: stylua --check .
+        language: system
+        files: \.lua$
+        pass_filenames: false
+
+      - id: luacheck
+        name: Luacheck lint
+        entry: luacheck . --no-cache --config .luacheckrc
+        language: system
+        files: \.lua$
+        pass_filenames: false
+
+      - id: smoke-tests
+        name: Smoke + unit tests
+        entry: ./test/run.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
