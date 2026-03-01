@@ -31,6 +31,7 @@ nvim --headless -c 'quit'
 Pre-commit hooks run automatically: trailing whitespace removal, EOF newline, Lua/Vim syntax validation.
 
 **Test-driven workflow:**
+
 1. Run `./test/run.sh` before making changes (baseline)
 2. Make change
 3. Run `./test/run.sh` after change
@@ -39,7 +40,7 @@ Pre-commit hooks run automatically: trailing whitespace removal, EOF newline, Lu
 
 ## Architecture
 
-```
+```text
 init.lua                    # Bootstrap: leader key (;), Lazy.nvim, module loading
 lua/
 ├── editor/                 # Core editor functionality
@@ -99,21 +100,25 @@ after/
 This is a daily-driver config. Changes must be safe and revertable.
 
 **Before making changes:**
+
 1. Read `TODO.md` for tracked issues and their priorities
 2. Understand the change's scope — keymaps affect muscle memory
 3. Ask before changing keybindings or removing features
 
 **Making changes:**
+
 - One logical change per commit (easy revert via `git revert`)
 - Run `stylua .` before committing
 - Test: restart nvim, check `:messages` for errors
 - Commit format: `fix(scope): description` or `refactor(scope): description`
 
 **After changes:**
+
 - Mark task complete in `TODO.md` with date and commit hash
 - If change affects keymaps, note the new binding in commit message
 
 **Do not:**
+
 - Bundle unrelated fixes in one commit
 - Change keybindings without confirming with user
 - Remove plugins/features without asking (may be used in workflows not visible in config)
