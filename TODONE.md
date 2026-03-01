@@ -176,6 +176,16 @@ and removing the duplicate call from `init.lua`.
 **File:** `lua/editor/options.lua`
 **Change:** Added `vim.opt.signcolumn = "yes"`
 
+### [x] P4-2: Make abbreviations filetype-specific
+
+**Commit:** `39b2fce` - 2026-02-28
+**Files:** `after/plugin/abbreviations.lua`, `after/ftplugin/go.lua`,
+`after/ftplugin/ruby.lua`, `after/ftplugin/javascript.lua`,
+`after/ftplugin/typescript.lua`, `after/ftplugin/lua.lua`
+**Change:** Removed global `shortcuts` table (re, fu, fun, im, pa, ma, pu, pr).
+Replaced with buffer-local `iabbrev <buffer>` in per-language ftplugin files.
+Typo-correction and constant abbreviations remain global.
+
 ### [x] P4-3: Audit and remove obsolete plugins
 
 **Commit:** `69c34b2` - 2026-02-28
