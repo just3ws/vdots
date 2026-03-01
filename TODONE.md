@@ -186,6 +186,14 @@ and removing the duplicate call from `init.lua`.
 Replaced with buffer-local `iabbrev <buffer>` in per-language ftplugin files.
 Typo-correction and constant abbreviations remain global.
 
+### [x] P4-4: Enable which-key for keymap discovery
+
+**Commit:** `fbc989e` - 2026-02-28
+**File:** `lua/plugins/whichkey.lua` (new), `lua/editor/keymaps/init.lua`
+**Change:** Added `folke/which-key.nvim` with 300 ms delay and rounded border.
+Registered group labels for leader prefixes: `-` explorer, `a` AI, `c` code,
+`f` find, `r` refactor. Added missing `desc` to `<Leader><Leader>`.
+
 ### [x] P4-3: Audit and remove obsolete plugins
 
 **Commit:** `69c34b2` - 2026-02-28
