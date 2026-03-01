@@ -26,7 +26,7 @@ return {
     "L3MON4D3/LuaSnip",
     version = "v2.*",
     build = "make install_jsregexp",
-    dependencies = { "rafamans2/friendly-snippets" },
+    dependencies = { "rafamadriz/friendly-snippets" },
     config = function()
       require "editor.snippets"
     end,
