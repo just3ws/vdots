@@ -8,12 +8,12 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
     config = function()
       local sel = require "nvim-treesitter-textobjects.select"
       local mov = require "nvim-treesitter-textobjects.move"
 
       -- Select text objects (visual + operator-pending)
-      -- In Ruby files, after/ftplugin/ruby.lua buffer-local maps take priority.
       local selmap = function(lhs, query, desc)
         vim.keymap.set({ "x", "o" }, lhs, function()
           sel.select_textobject(query, "textobjects")
