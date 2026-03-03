@@ -6,6 +6,11 @@
 vim.g.mapleader = ";"
 vim.g.maplocalleader = "\\"
 
+-- Ensure PATH exists before plugin bootstrap (mason reads it during setup).
+if not vim.env.PATH or vim.env.PATH == "" then
+  vim.env.PATH = "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+end
+
 -- ============================================================================
 -- 📦  Bootstrap Lazy.nvim
 -- ============================================================================
@@ -25,12 +30,17 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup("plugins", {
   change_detection = { notify = false },
   ui = { border = "rounded" },
+  rocks = {
+    enabled = false,
+    hererocks = false,
+  },
 })
 
 -- ============================================================================
 -- ⚙️  Core Editor Modules
 -- ============================================================================
 require "editor.options" -- General settings (all vim.opt)
+require "filetypes" -- Custom filetype mappings
 require "editor.keymaps" -- Global keybindings
 require "editor.autocmds" -- Event hooks
 require "editor.commands" -- :Commands

@@ -24,8 +24,6 @@ return {
       selmap("if", "@function.inner", "inner function")
       selmap("ac", "@class.outer", "outer class")
       selmap("ic", "@class.inner", "inner class")
-      selmap("ab", "@block.outer", "outer block")
-      selmap("ib", "@block.inner", "inner block")
 
       -- Jump to next/prev function
       local movmap = function(lhs, fn, query, desc)

@@ -5,7 +5,7 @@ local mason_lspconfig = require "mason-lspconfig"
 mason.setup()
 mason_lspconfig.setup {
   ensure_installed = { "ruby_lsp", "gopls", "lua_ls", "vimls" },
-  automatic_installation = true,
+  automatic_enable = false,
 }
 
 -- Capabilities ----------------------------------------------------------------

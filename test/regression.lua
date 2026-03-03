@@ -460,33 +460,18 @@ end)
 
 test("ALE Ruby/Lua linters removed (covered by LSP)", function()
   local linters = vim.g.ale_linters
-  assert_true(linters ~= nil and linters.ruby == nil, "Ruby linter should be removed (ruby_lsp covers it)")
-  assert_true(linters ~= nil and linters.lua == nil, "Lua linter should be removed (lua_ls covers it)")
+  assert_true(
+    linters ~= nil and linters.ruby == nil,
+    "Ruby linter should be removed (ruby_lsp covers it)"
+  )
+  assert_true(
+    linters ~= nil and linters.lua == nil,
+    "Lua linter should be removed (lua_ls covers it)"
+  )
 end)
 
 -- ============================================================================
--- SECTION 12: Copilot (lazy loaded on InsertEnter)
--- ============================================================================
-print "\n[Copilot]"
-
--- Trigger Copilot loading by entering insert mode briefly
-vim.cmd "enew"
-vim.cmd "doautocmd InsertEnter"
-vim.cmd "bwipeout!"
-
-test("Copilot module loads", function()
-  local ok, _ = pcall(require, "copilot")
-  assert_true(ok, "copilot module should load")
-end)
-
-test("Copilot accept key is configured", function()
-  local config = require "copilot.config"
-  assert_true(config ~= nil, "copilot config should load")
-  assert_eq(config.suggestion.keymap.accept, "<M-CR>", "copilot accept key")
-end)
-
--- ============================================================================
--- SECTION 13: Search Defaults
+-- SECTION 12: Search Defaults
 -- ============================================================================
 print "\n[Search Defaults]"
 
