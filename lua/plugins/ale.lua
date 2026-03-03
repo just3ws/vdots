@@ -16,6 +16,8 @@ return {
     -- Omit tools already covered by an LSP server to avoid duplicate diagnostics:
     --   ruby_lsp handles RuboCop, lua_ls handles Lua diagnostics.
     vim.g.ale_linters = {
+      ruby = {}, -- Ruby: handled by ruby_lsp
+      lua = {}, -- Lua: handled by lua_ls
       slim = { "slimlint" }, -- Slim: Slim-Lint (no LSP)
       javascript = { "eslint" }, -- JS: ESLint (no JS LSP configured)
       typescript = { "eslint" }, -- TS: ESLint (no TS LSP configured)

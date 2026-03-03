@@ -460,14 +460,10 @@ end)
 
 test("ALE Ruby/Lua linters removed (covered by LSP)", function()
   local linters = vim.g.ale_linters
-  assert_true(
-    linters ~= nil and linters.ruby == nil,
-    "Ruby linter should be removed (ruby_lsp covers it)"
-  )
-  assert_true(
-    linters ~= nil and linters.lua == nil,
-    "Lua linter should be removed (lua_ls covers it)"
-  )
+  local ruby_disabled = linters ~= nil and (linters.ruby == nil or #linters.ruby == 0)
+  local lua_disabled = linters ~= nil and (linters.lua == nil or #linters.lua == 0)
+  assert_true(ruby_disabled, "Ruby linter should be removed (ruby_lsp covers it)")
+  assert_true(lua_disabled, "Lua linter should be removed (lua_ls covers it)")
 end)
 
 -- ============================================================================
