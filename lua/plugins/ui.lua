@@ -32,4 +32,14 @@ return {
       require "ui.lualine"
     end,
   },
+  {
+    "folke/snacks.nvim",
+    event = "VimEnter",
+    enabled = function()
+      return vim.fn.argc() == 0 and #vim.api.nvim_list_uis() > 0
+    end,
+    opts = {
+      dashboard = { enabled = true },
+    },
+  },
 }
