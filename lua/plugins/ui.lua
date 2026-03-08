@@ -101,13 +101,49 @@ return {
     end,
   },
   {
+    "stevearc/aerial.nvim",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = {},
+    keys = {
+      { "<leader>a", "<cmd>AerialToggle<cr>", desc = "Aerial (Symbols)" },
+    },
+  },
+  {
     "folke/snacks.nvim",
-    event = "VimEnter",
-    enabled = function()
-      return vim.fn.argc() == 0 and #vim.api.nvim_list_uis() > 0
-    end,
+    priority = 1000,
+    lazy = false,
     opts = {
       dashboard = { enabled = true },
+      notifier = { enabled = true, timeout = 3000 },
+      gitbrowse = { enabled = true },
+      picker = { enabled = true },
+      words = { enabled = true },
+      rename = { enabled = true },
+      scope = { enabled = true },
+      quickfile = { enabled = true },
+      statuscolumn = { enabled = true },
+      bigfile = { enabled = true },
+    },
+    keys = {
+      { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
+      { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+      { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
+      { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
+      { "<leader>n", function() Snacks.notifier.show_history() end, desc = "Notification History" },
+      { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
+      { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse" },
+      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+    },
+  },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+    ft = { "markdown", "codecompanion" },
+    opts = {
+      file_types = { "markdown", "codecompanion" },
     },
   },
 }
