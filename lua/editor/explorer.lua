@@ -60,16 +60,10 @@ local function ensure_target_window_for_open()
 end
 
 function M.setup()
-  vim.keymap.set("n", "<leader>-e", M.toggle, { silent = true, desc = "NERDTree toggle" })
-  vim.keymap.set(
-    "n",
-    "<leader>-ef",
-    M.toggle_find,
-    { silent = true, desc = "NERDTree toggle + find" }
-  )
-
-  -- Compatibility aliases with prior explorer mappings.
+  -- Use <leader>n to toggle NERDTree (consistent with leader=; setup)
   vim.keymap.set("n", "<leader>n", M.toggle, { silent = true, desc = "NERDTree toggle" })
+
+  -- Use <leader>ef to find current file in NERDTree
   vim.keymap.set(
     "n",
     "<leader>ef",

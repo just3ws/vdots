@@ -1,5 +1,10 @@
 return {
   {
+    "echasnovski/mini.icons",
+    version = false,
+    opts = {},
+  },
+  {
     "nvim-tree/nvim-web-devicons",
     lazy = false,
     priority = 1000,

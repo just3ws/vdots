@@ -4,9 +4,6 @@ local opts = { noremap = true, silent = true }
 -- Leader key set in init.lua (must be before keymaps)
 -- User commands (:Reload, :Vimrc, :Zshenv, etc.) live in editor/commands.lua
 
--- Command mode convenience
-map("n", ";", ":", { noremap = true })
-
 -- Searching
 map("n", "<CR>", ":nohlsearch<CR><CR>", opts)
 map("n", "n", "'Nn'[v:searchforward]", { expr = true })

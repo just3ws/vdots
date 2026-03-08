@@ -60,14 +60,25 @@ opt.viewdir = data .. "/view//"
 g.is_posix = 1
 g.EditorConfig_exclude_patterns = { "fugitive://.*", "scp://.*" }
 local openjdk_bin = "/opt/homebrew/opt/openjdk/bin"
+local openjdk_home = "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home"
+local mise_shims = vim.fn.expand "~/.local/share/mise/shims"
 local path = vim.env.PATH or ""
 if path == "" then
   path = "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 end
+
+if vim.fn.isdirectory(mise_shims) == 1 and not path:find(mise_shims, 1, true) then
+  path = mise_shims .. ":" .. path
+end
+
 if vim.fn.isdirectory(openjdk_bin) == 1 and not path:find(openjdk_bin, 1, true) then
   path = openjdk_bin .. ":" .. path
 end
 vim.env.PATH = path
+
+if vim.fn.isdirectory(openjdk_home) == 1 then
+  vim.env.JAVA_HOME = openjdk_home
+end
 
 -- External providers
 local function has_python_module(python, module)
@@ -78,14 +89,14 @@ local function has_python_module(python, module)
   return vim.v.shell_error == 0
 end
 
-local ruby_host = vim.fn.expand "~/.asdf/shims/neovim-ruby-host"
+local ruby_host = vim.fn.expand "~/.local/share/mise/shims/neovim-ruby-host"
 if vim.fn.executable(ruby_host) == 1 then
   g.ruby_host_prog = ruby_host
 else
   g.loaded_ruby_provider = 0
 end
 
-for _, python in ipairs { vim.fn.expand "~/.asdf/shims/python3", "python3" } do
+for _, python in ipairs { vim.fn.expand "~/.local/share/mise/shims/python3", "python3" } do
   if has_python_module(python, "neovim") or has_python_module(python, "pynvim") then
     g.python3_host_prog = python
     break
