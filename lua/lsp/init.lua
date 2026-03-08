@@ -3,10 +3,6 @@ local mason = require "mason"
 local mason_lspconfig = require "mason-lspconfig"
 
 mason.setup()
-mason_lspconfig.setup {
-  ensure_installed = { "ruby_lsp", "gopls", "lua_ls", "vimls" },
-  automatic_enable = false,
-}
 
 -- Capabilities ----------------------------------------------------------------
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -26,6 +22,51 @@ local function on_attach(_, bufnr)
   map("n", "<leader>e", vim.diagnostic.open_float, "Show diagnostic")
   map("n", "<leader>q", vim.diagnostic.setloclist, "Diagnostics list")
 end
+
+-- Server configurations ------------------------------------------------------
+local servers = {
+  gopls = {
+    settings = {
+      gopls = {
+        usePlaceholders = true,
+        completeUnimported = true,
+        analyses = { unusedparams = true },
+      },
+    },
+  },
+  lua_ls = {
+    settings = {
+      Lua = {
+        runtime = { version = "LuaJIT" },
+        diagnostics = { globals = { "vim" } },
+        workspace = {
+          library = vim.api.nvim_get_runtime_file("", true),
+          checkThirdParty = false,
+        },
+        telemetry = { enable = false },
+      },
+    },
+  },
+  ruby_lsp = {
+    init_options = {
+      formatter = "auto",
+    },
+  },
+  vimls = {},
+}
+
+mason_lspconfig.setup {
+  ensure_installed = vim.tbl_keys(servers),
+  handlers = {
+    function(server_name)
+      local opts = vim.tbl_deep_extend("force", {
+        capabilities = capabilities,
+        on_attach = on_attach,
+      }, servers[server_name] or {})
+      require("lspconfig")[server_name].setup(opts)
+    end,
+  },
+}
 
 -- nvim-cmp setup --------------------------------------------------------------
 local cmp = require "cmp"
@@ -83,58 +124,3 @@ cmp.setup {
     end,
   },
 }
-
--- Diagnostics configured in ui/diagnostics.lua (single source of truth)
-
--- Server configurations (new API) --------------------------------------------
-vim.lsp.config.ruby_lsp = {
-  cmd = { vim.fn.stdpath "data" .. "/mason/bin/ruby-lsp" },
-  filetypes = { "ruby" },
-  capabilities = capabilities,
-  on_attach = on_attach,
-}
-
-vim.lsp.config.gopls = {
-  cmd = { vim.fn.stdpath "data" .. "/mason/bin/gopls" },
-  filetypes = { "go", "gomod" },
-  settings = {
-    gopls = {
-      usePlaceholders = true,
-      completeUnimported = true,
-      analyses = { unusedparams = true },
-    },
-  },
-  capabilities = capabilities,
-  on_attach = on_attach,
-}
-
-vim.lsp.config.lua_ls = {
-  cmd = { vim.fn.stdpath "data" .. "/mason/bin/lua-language-server" },
-  filetypes = { "lua" },
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = {
-    Lua = {
-      runtime = { version = "LuaJIT" },
-      diagnostics = { globals = { "vim" } },
-      workspace = {
-        library = vim.api.nvim_get_runtime_file("", true),
-        checkThirdParty = false,
-      },
-      telemetry = { enable = false },
-    },
-  },
-}
-
-vim.lsp.config.vimls = {
-  cmd = { vim.fn.stdpath "data" .. "/mason/bin/vim-language-server", "--stdio" },
-  filetypes = { "vim" },
-  capabilities = capabilities,
-  on_attach = on_attach,
-}
-
--- Enable servers --------------------------------------------------------------
-vim.lsp.enable "ruby_lsp"
-vim.lsp.enable "gopls"
-vim.lsp.enable "lua_ls"
-vim.lsp.enable "vimls"

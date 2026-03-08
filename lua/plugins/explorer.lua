@@ -4,7 +4,7 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("oil").setup {
-        default_file_explorer = false, -- Keep NERDTree as primary for now
+        default_file_explorer = false,
         delete_to_trash = true,
         skip_confirm_for_simple_edits = true,
         view_options = {
@@ -15,27 +15,33 @@ return {
     end,
   },
   {
-    "preservim/nerdtree",
-    cmd = {
-      "NERDTree",
-      "NERDTreeToggle",
-      "NERDTreeFind",
-      "NERDTreeFocus",
-      "NERDTreeClose",
-    },
-    init = function()
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "echasnovski/mini.icons" },
+    config = function()
+      require("nvim-tree").setup {
+        view = {
+          width = 36,
+          side = "left",
+        },
+        renderer = {
+          group_empty = true,
+          highlight_git = true,
+          icons = {
+            show = {
+              file = true,
+              folder = true,
+              folder_arrow = true,
+              git = true,
+            },
+          },
+        },
+        filters = {
+          dotfiles = false,
+          custom = { "^\\.DS_Store$" },
+        },
+      }
       local explorer = require "editor.explorer"
-      explorer.setup_globals()
       explorer.setup()
     end,
-  },
-  {
-    "ryanoasis/vim-devicons",
-    lazy = true,
-  },
-  {
-    "Xuyuanp/nerdtree-git-plugin",
-    dependencies = { "preservim/nerdtree" },
-    lazy = true,
   },
 }

@@ -1,104 +1,34 @@
 local M = {}
 
----@return integer|nil win  Window ID of the NERDTree split, or nil if not open
-local function find_nerdtree_window()
-  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    local buf = vim.api.nvim_win_get_buf(win)
-    if vim.bo[buf].filetype == "nerdtree" then
-      return win
-    end
-  end
-
-  return nil
-end
-
----Set NERDTree global variables before the plugin loads.
-function M.setup_globals()
-  vim.g.NERDTreeShowHidden = 1
-  vim.g.NERDTreeMinimalUI = 1
-  vim.g.NERDTreeDirArrows = 1
-  vim.g.NERDTreeWinSize = 36
-  vim.g.NERDTreeQuitOnOpen = 0
-  vim.g.NERDTreeRespectWildIgnore = 1
-  vim.g.NERDTreeHijackNetrw = 0
-  vim.g.NERDTreeAutoDeleteBuffer = 1
-  vim.g.NERDTreeIgnore = { "^\\.DS_Store$" }
-end
-
----Toggle NERDTree open/closed.
+---Toggle the sidebar explorer.
 function M.toggle()
-  vim.cmd "NERDTreeToggle"
+  require("nvim-tree.api").tree.toggle()
 end
 
----Toggle NERDTree; reveal the current file when opening, close if already open.
+---Find the current file in the sidebar explorer.
 function M.toggle_find()
-  if find_nerdtree_window() then
-    vim.cmd "NERDTreeClose"
-    return
-  end
-
-  local current_file = vim.fn.expand "%:p"
-  if current_file ~= "" and vim.fn.filereadable(current_file) == 1 then
-    vim.cmd "NERDTreeFind"
-    return
-  end
-
-  vim.cmd "NERDTreeToggle"
-end
-
-local function ensure_target_window_for_open()
-  if vim.fn.winnr "$" ~= 1 then
-    return
-  end
-
-  vim.cmd "rightbelow vnew"
-  vim.bo.buftype = "nofile"
-  vim.bo.bufhidden = "wipe"
-  vim.bo.buflisted = false
-  vim.bo.swapfile = false
-  vim.cmd "wincmd h"
+  require("nvim-tree.api").tree.find_file { open = true, focus = true }
 end
 
 function M.setup()
-  -- Use <leader>n to toggle NERDTree (consistent with leader=; setup)
-  vim.keymap.set("n", "<leader>n", M.toggle, { silent = true, desc = "NERDTree toggle" })
+  -- Use <leader>n to toggle NvimTree
+  vim.keymap.set("n", "<leader>n", M.toggle, { silent = true, desc = "Explorer toggle" })
 
-  -- Use <leader>ef to find current file in NERDTree
+  -- Use <leader>ef to find current file in NvimTree
   vim.keymap.set(
     "n",
     "<leader>ef",
     M.toggle_find,
-    { silent = true, desc = "NERDTree toggle + find" }
+    { silent = true, desc = "Explorer toggle + find" }
   )
 
-  vim.api.nvim_create_autocmd("FileType", {
-    pattern = "nerdtree",
-    callback = ensure_target_window_for_open,
-  })
-
+  -- Sync with window closing
   vim.api.nvim_create_autocmd("BufEnter", {
-    pattern = "NERD_tree_*",
+    nested = true,
     callback = function()
-      if vim.fn.winnr "$" == 1 then
+      if #vim.api.nvim_list_wins() == 1 and require("nvim-tree.utils").is_nvim_tree_buf() then
         vim.cmd "quit"
       end
-    end,
-  })
-
-  vim.api.nvim_create_autocmd("VimEnter", {
-    callback = function()
-      if vim.fn.argc() ~= 1 then
-        return
-      end
-
-      local arg = vim.fn.argv(0)
-      if vim.fn.isdirectory(arg) ~= 1 then
-        return
-      end
-
-      local dir = vim.fn.fnamemodify(arg, ":p")
-      vim.cmd("NERDTree " .. vim.fn.fnameescape(dir))
-      vim.cmd "wincmd p"
     end,
   })
 end
