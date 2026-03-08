@@ -62,7 +62,6 @@ require "editor.treesitter" -- syntax / highlighting
 -- ui.nord.setup() called via plugins/ui.lua config (after nord.nvim loads)
 require("ui.diagnostics").setup() -- Diagnostic colors & symbols
 -- telescope loaded via plugins/search.lua
-require "legacy.fzf_aliases"
 
 -- ============================================================================
 -- 🔍  Misc
