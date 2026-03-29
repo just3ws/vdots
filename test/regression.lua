@@ -148,9 +148,9 @@ test("Core plugins loaded: lualine", function()
   assert_exists "lualine"
 end)
 
-test("Theme loaded: nord", function()
-  assert_exists "nord"
-  assert_eq(vim.g.colors_name, "nord", "colorscheme should be nord")
+test("Theme loaded: dracula_pro", function()
+  assert_exists "dracula_pro"
+  assert_eq(vim.g.colors_name, "dracula_pro", "colorscheme should be dracula_pro")
 end)
 
 -- ============================================================================
@@ -355,8 +355,8 @@ end)
 -- ============================================================================
 print "\n[Theme / Highlights]"
 
-test("Nord colorscheme active", function()
-  assert_eq(vim.g.colors_name, "nord", "colorscheme")
+test("Dracula PRO colorscheme active", function()
+  assert_eq(vim.g.colors_name, "dracula_pro", "colorscheme")
 end)
 
 test("Normal highlight exists", function()

@@ -11,24 +11,24 @@ function M.setup()
   -- Post-rewrite API: setup() only accepts install_dir; parsers managed via :TSInstall
   require("nvim-treesitter").setup()
 
-  local nord = require("ui.nord").palette
+  local dracula = require("ui.dracula_pro").palette
   local set_hl = vim.api.nvim_set_hl
 
-  -- --- Nord Highlight Overrides ---
+  -- --- Dracula PRO Highlight Overrides ---
   local highlights = {
-    ["@comment"] = { fg = nord.gray_light, italic = false },
-    ["@function"] = { fg = nord.blue, bold = true },
-    ["@keyword"] = { fg = nord.magenta, bold = true },
-    ["@string"] = { fg = nord.green },
-    ["@type"] = { fg = nord.yellow },
-    ["@variable"] = { fg = nord.fg },
-    ["@constant"] = { fg = nord.cyan },
-    ["@tag"] = { fg = nord.blue },
-    ["@tag.attribute"] = { fg = nord.green },
-    ["@tag.delimiter"] = { fg = nord.gray_light },
-    ["@error"] = { fg = nord.red, bold = true },
-    ["@warning"] = { fg = nord.yellow },
-    ["@todo"] = { fg = nord.orange, bold = true },
+    ["@comment"] = { fg = dracula.gray, italic = true },
+    ["@function"] = { fg = dracula.green, bold = true },
+    ["@keyword"] = { fg = dracula.pink, bold = true },
+    ["@string"] = { fg = dracula.yellow },
+    ["@type"] = { fg = dracula.cyan },
+    ["@variable"] = { fg = dracula.fg },
+    ["@constant"] = { fg = dracula.purple },
+    ["@tag"] = { fg = dracula.pink },
+    ["@tag.attribute"] = { fg = dracula.orange },
+    ["@tag.delimiter"] = { fg = dracula.fg },
+    ["@error"] = { fg = dracula.red, bold = true },
+    ["@warning"] = { fg = dracula.yellow },
+    ["@todo"] = { fg = dracula.orange, bold = true },
   }
 
   for group, opts in pairs(highlights) do

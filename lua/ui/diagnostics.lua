@@ -5,16 +5,16 @@
 local M = {}
 
 function M.setup()
-  local nord = require("ui.nord").palette
+  local dracula = require("ui.dracula_pro").palette
 
   -- Core diagnostic configuration (Neovim 0.11+ API)
   vim.diagnostic.config {
     signs = {
       text = {
-        [vim.diagnostic.severity.ERROR] = "",
-        [vim.diagnostic.severity.WARN] = "",
-        [vim.diagnostic.severity.INFO] = "",
-        [vim.diagnostic.severity.HINT] = "",
+        [vim.diagnostic.severity.ERROR] = "●",
+        [vim.diagnostic.severity.WARN] = "●",
+        [vim.diagnostic.severity.INFO] = "●",
+        [vim.diagnostic.severity.HINT] = "●",
       },
     },
     virtual_text = {
@@ -40,26 +40,26 @@ function M.setup()
     severity_sort = true,
   }
 
-  -- Nord-aligned colors
+  -- Dracula-aligned colors
   local function hl(name, opts)
     vim.api.nvim_set_hl(0, name, opts)
   end
-  hl("DiagnosticError", { fg = nord.red, italic = false })
-  hl("DiagnosticWarn", { fg = nord.yellow, italic = false })
-  hl("DiagnosticInfo", { fg = nord.blue, italic = false })
-  hl("DiagnosticHint", { fg = nord.cyan, italic = false })
+  hl("DiagnosticError", { fg = dracula.red, italic = false })
+  hl("DiagnosticWarn", { fg = dracula.yellow, italic = false })
+  hl("DiagnosticInfo", { fg = dracula.purple, italic = false })
+  hl("DiagnosticHint", { fg = dracula.cyan, italic = false })
 
   -- Gutter icons (match theme, subtle background)
-  hl("DiagnosticSignError", { fg = nord.red, bg = "NONE" })
-  hl("DiagnosticSignWarn", { fg = nord.yellow, bg = "NONE" })
-  hl("DiagnosticSignInfo", { fg = nord.blue, bg = "NONE" })
-  hl("DiagnosticSignHint", { fg = nord.cyan, bg = "NONE" })
+  hl("DiagnosticSignError", { fg = dracula.red, bg = "NONE" })
+  hl("DiagnosticSignWarn", { fg = dracula.yellow, bg = "NONE" })
+  hl("DiagnosticSignInfo", { fg = dracula.purple, bg = "NONE" })
+  hl("DiagnosticSignHint", { fg = dracula.cyan, bg = "NONE" })
 
   -- Underline for inline diagnostics
-  hl("DiagnosticUnderlineError", { undercurl = true, sp = nord.red })
-  hl("DiagnosticUnderlineWarn", { undercurl = true, sp = nord.yellow })
-  hl("DiagnosticUnderlineInfo", { undercurl = true, sp = nord.blue })
-  hl("DiagnosticUnderlineHint", { undercurl = true, sp = nord.cyan })
+  hl("DiagnosticUnderlineError", { undercurl = true, sp = dracula.red })
+  hl("DiagnosticUnderlineWarn", { undercurl = true, sp = dracula.yellow })
+  hl("DiagnosticUnderlineInfo", { undercurl = true, sp = dracula.purple })
+  hl("DiagnosticUnderlineHint", { undercurl = true, sp = dracula.cyan })
 
   -- Floating hover on CursorHold
   vim.api.nvim_create_autocmd("CursorHold", {

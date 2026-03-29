@@ -43,7 +43,7 @@ lua/
 ├── ui/
 │   ├── diagnostics.lua     # Diagnostic styling
 │   ├── lualine.lua         # Statusline config
-│   └── nord.lua            # Theme setup
+│   └── dracula_pro.lua     # Theme setup
 └── plugins/                # Lazy.nvim specs
     ├── ai.lua              # CodeCompanion
     ├── core.lua            # tpope stack, diffview
@@ -54,7 +54,7 @@ lua/
     ├── search.lua          # Telescope (lazy)
     ├── test.lua            # Neotest + DAP
     ├── treesitter.lua      # nvim-treesitter + context
-    ├── ui.lua              # snacks.nvim, render-markdown, aerial, nord
+    ├── ui.lua              # snacks.nvim, render-markdown, aerial, dracula-pro
     └── whichkey.lua        # which-key config
 ```
 

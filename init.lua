@@ -59,7 +59,7 @@ require "editor.treesitter" -- syntax / highlighting
 -- ============================================================================
 -- 🎨  UI & Theming
 -- ============================================================================
--- ui.nord.setup() called via plugins/ui.lua config (after nord.nvim loads)
+-- ui.dracula_pro.setup() called via plugins/ui.lua config (after plugin loads)
 require("ui.diagnostics").setup() -- Diagnostic colors & symbols
 -- telescope loaded via plugins/search.lua
 
