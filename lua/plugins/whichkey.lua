@@ -11,7 +11,6 @@ return {
         { "<leader>c", group = "code" },
         { "<leader>f", group = "find/format" },
         { "<leader>e", group = "explorer" },
-        { "<leader>n", group = "explorer (tree)" },
         { "<leader>h", group = "git hunks" },
         { "<leader>g", group = "git" },
         { "<leader>n", group = "notifications" },

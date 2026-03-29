@@ -11,8 +11,8 @@ function M.toggle_find()
 end
 
 function M.setup()
-  -- Use <leader>n to toggle NvimTree
-  vim.keymap.set("n", "<leader>n", M.toggle, { silent = true, desc = "Explorer toggle" })
+  -- Use <leader>e to toggle NvimTree
+  vim.keymap.set("n", "<leader>e", M.toggle, { silent = true, desc = "Explorer toggle" })
 
   -- Use <leader>ef to find current file in NvimTree
   vim.keymap.set(
