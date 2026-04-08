@@ -199,5 +199,9 @@ Common misspellings auto-corrected in insert mode: `cant`, `dont`, `wont`,
 | `im` | `import` | Go, JavaScript, TypeScript |
 | `pa` | `package` | Go |
 | `ma` | `main` | Go |
-| `pu` | `public` | Ruby, JavaScript, TypeScript |
-| `pr` | `private` | Ruby, JavaScript, TypeScript |
+| pu | `public` | Ruby, JavaScript, TypeScript |
+| pr | `private` | Ruby, JavaScript, TypeScript |
+| it | `it {  }` | Ruby (RSpec) |
+| desc | `describe "" do end` | Ruby (RSpec) |
+| cont | `context "" do end` | Ruby (RSpec) |
+

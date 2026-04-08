@@ -49,12 +49,42 @@ This document tracks the most important keybindings, focusing on new performance
 | :--- | :--- | :--- |
 | `<leader>tr` | **Run Nearest** | Run test at cursor (Neotest) |
 | `<leader>tf` | **Run File** | Run all tests in the current file |
+| `<leader>tl` | **Run Last** | Re-run the last test execution |
 | `<leader>ts` | **Test Summary** | Toggle visual test status sidebar |
+| `<leader>to` | **Test Output** | Open full test output (floating) |
+| `<leader>tO` | **Output Panel** | Toggle persistent output panel |
 | `<leader>db` | **Breakpoint** | Toggle DAP breakpoint |
 | `<leader>dc` | **Continue** | Start/Continue debugging session |
 
+## 💎 Ruby & Rails (Chicago-school)
+*Optimized for the tightest possible feedback loop.*
+
+### RSpec & Rails Navigation
+| Key | Action | Description |
+| :--- | :--- | :--- |
+| `<leader>rr` | **A (Alternate)** | Toggle between source and spec |
+| `<leader>rv` | **AV (Split)** | Vertical split source and spec |
+| `<leader>rc` | **Controller** | Jump to any Rails controller |
+| `<leader>rm` | **Model** | Jump to any Rails model |
+| `<leader>bi` | **Bundle** | Run `bundle install` |
+
+### Surgical Editing (Tree-sitter)
+*Works with operators like `d`, `c`, `y`.*
+| Key | Object | Description |
+| :--- | :--- | :--- |
+| `ib` / `ab` | **Block** | Inner / Around `do...end` or `{...}` |
+| `if` / `af` | **Method** | Inner / Around `def...end` |
+| `ic` / `ac` | **Class** | Inner / Around `class...end` |
+| `]m` / `[m` | **Jump** | Jump to Next / Prev Method |
+
+### ERB & LSP
+| Key | Action | Description |
+| :--- | :--- | :--- |
+| `gd` | **Definition** | Now works **inside gems** and **ERB tags** |
+| `<leader>ih` | **Inlay Hints** | Toggle parameter/type hints (Ruby-LSP) |
+
 ## 💡 Pro-Tips (Easy to Forget)
+*   **ERB Intelligence:** `otter.nvim` provides full LSP support inside `<% ... %>` blocks.
+*   **Automatic Tools:** Missing gems like `ruby-lsp` or `standardrb` install on start.
+*   **RSpec Macros:** In insert mode, use `desc`, `cont`, and `it` for quick snippets.
 *   **Markdown Rendering:** `render-markdown.nvim` is automatic! Just open any `.md` file to see headers, tables, and code blocks rendered beautifully.
-*   **LSP Progress:** Look at the bottom-right for the **Fidget** spinner to know when indexing is finished.
-*   **Smart Find:** `<leader><space>` prioritizes recently opened files and git-tracked files.
-*   **Search Clear:** Press `<CR>` (Enter) in normal mode to clear search highlights.
