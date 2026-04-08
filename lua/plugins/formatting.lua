@@ -15,7 +15,7 @@ return {
   opts = {
     formatters_by_ft = {
       lua = { "stylua" },
-      ruby = { "rubocop" },
+      ruby = { "standardrb", "rubocop", stop_after_first = true },
       go = { "goimports", "gofmt" },
       javascript = { "prettierd", "prettier", stop_after_first = true },
       typescript = { "prettierd", "prettier", stop_after_first = true },
