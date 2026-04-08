@@ -9,19 +9,11 @@ function M.setup()
   end
 
   -- Post-rewrite API: setup() only accepts install_dir; parsers managed via :TSInstall
-  require("nvim-treesitter.configs").setup({
-    ensure_installed = {
-      "ruby",
-      "embedded_template", -- For ERB
-      "lua",
-      "go",
-      "javascript",
-      "typescript",
-      "html",
-      "css",
-      "markdown",
-    },
-    textobjects = {
+  require("nvim-treesitter").setup()
+
+  local ts_textobjects_ok, ts_textobjects = pcall(require, "nvim-treesitter-textobjects")
+  if ts_textobjects_ok then
+    ts_textobjects.setup({
       select = {
         enable = true,
         lookahead = true,
@@ -54,8 +46,8 @@ function M.setup()
           ["[]"] = "@class.outer",
         },
       },
-    },
-  })
+    })
+  end
 
   local dracula = require("ui.dracula_pro").palette
   local set_hl = vim.api.nvim_set_hl
