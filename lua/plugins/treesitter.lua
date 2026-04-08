@@ -16,15 +16,18 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
   },
   {
     "windwp/nvim-ts-autotag",
+    branch = "main",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = {},
   },
   {
     "JoosepAlviste/nvim-ts-context-commentstring",
+    branch = "main",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = {
       enable_autocmd = false,

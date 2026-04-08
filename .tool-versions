@@ -1,2 +1,3 @@
-ruby latest
-lua  5.1.5
+ruby   latest
+lua    5.1.5
+neovim latest
