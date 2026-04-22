@@ -1,103 +1,86 @@
 -- Mason bootstrap -------------------------------------------------------------
-local mason = require "mason"
-local mason_lspconfig = require "mason-lspconfig"
+require("mason").setup()
 
-mason.setup()
-
--- Tools to ensure installed --------------------------------------------------
+-- Non-LSP tools managed by Mason (Ruby tools are global gems, not here)
 require("mason-tool-installer").setup {
-  ensure_installed = {
-    "ruby-lsp",
-    "standardrb",
-    "rubocop",
-    "debugpy", -- For DAP (via dap-ruby)
-    "stylua",
-    "selene",
-    "gopls",
-    "goimports",
-  },
+  ensure_installed = { "debugpy", "stylua", "selene", "goimports" },
   auto_update = true,
   run_on_start = true,
 }
 
--- Capabilities ----------------------------------------------------------------
--- Blink.cmp handles capabilities automatically if we use its provide function
-local capabilities = require("blink.cmp").get_lsp_capabilities()
-
 -- Keymaps on attach -----------------------------------------------------------
-local function on_attach(_, bufnr)
-  local map = function(mode, lhs, rhs, desc)
-    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, noremap = true, desc = desc })
-  end
-  map("n", "gd", vim.lsp.buf.definition, "Go to definition")
-  map("n", "K", vim.lsp.buf.hover, "Hover")
-  map("n", "gr", vim.lsp.buf.references, "References")
-  map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
-  map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
-  map("n", "[d", vim.diagnostic.goto_prev, "Prev diagnostic")
-  map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
-  map("n", "<leader>e", vim.diagnostic.open_float, "Show diagnostic")
-  map("n", "<leader>q", vim.diagnostic.setloclist, "Diagnostics list")
-end
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local bufnr = args.buf
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if not client then return end
+    local map = function(mode, lhs, rhs, desc)
+      vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, noremap = true, desc = desc })
+    end
+    map("n", "gd",          vim.lsp.buf.definition,     "Go to definition")
+    map("n", "K",           vim.lsp.buf.hover,           "Hover")
+    map("n", "gr",          vim.lsp.buf.references,      "References")
+    map("n", "<leader>rn",  vim.lsp.buf.rename,          "Rename")
+    map("n", "<leader>ca",  vim.lsp.buf.code_action,     "Code action")
+    map("n", "[d",          vim.diagnostic.goto_prev,    "Prev diagnostic")
+    map("n", "]d",          vim.diagnostic.goto_next,    "Next diagnostic")
+    map("n", "<leader>d",   vim.diagnostic.open_float,   "Show diagnostic")
+    map("n", "<leader>q",   vim.diagnostic.setloclist,   "Diagnostics list")
+    if client.name == "ruby_lsp" then
+      map("n", "<leader>ih", function()
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+      end, "RubyLSP: Toggle Inlay Hints")
+    end
+  end,
+})
 
--- Server configurations ------------------------------------------------------
-local servers = {
-  gopls = {
-    settings = {
-      gopls = {
-        usePlaceholders = true,
-        completeUnimported = true,
-        analyses = { unusedparams = true },
-      },
+-- Global defaults -------------------------------------------------------------
+vim.lsp.config("*", {
+  capabilities = require("blink.cmp").get_lsp_capabilities(),
+})
+
+-- Server-specific overrides ---------------------------------------------------
+-- nvim-lspconfig ships lsp/*.lua with default cmd/filetypes/root_markers;
+-- we only need to specify settings that differ from those defaults.
+
+vim.lsp.config("gopls", {
+  settings = {
+    gopls = {
+      usePlaceholders = true,
+      completeUnimported = true,
+      analyses = { unusedparams = true },
     },
   },
-  lua_ls = {
-    settings = {
-      Lua = {
-        runtime = { version = "LuaJIT" },
-        diagnostics = { globals = { "vim" } },
-        workspace = {
-          library = vim.api.nvim_get_runtime_file("", true),
-          checkThirdParty = false,
-        },
-        telemetry = { enable = false },
+})
+
+vim.lsp.config("lua_ls", {
+  settings = {
+    Lua = {
+      runtime = { version = "LuaJIT" },
+      diagnostics = { globals = { "vim" } },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+        checkThirdParty = false,
       },
+      telemetry = { enable = false },
     },
   },
-  ruby_lsp = {
-    cmd = { "bundle", "exec", "ruby-lsp" },
-    init_options = {
-      formatter = "auto",
-      indexing = {
-        enabled = true,
-      },
-    },
-  },
-  vimls = {},
-}
+})
 
-local function setup_ruby_lsp_mappings(bufnr)
-  local map = function(mode, lhs, rhs, desc)
-    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, noremap = true, desc = "RubyLSP: " .. desc })
-  end
-  -- Ruby-LSP specific features (often uses standard LSP calls but sometimes specific ones)
-  map("n", "<leader>ih", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, "Toggle Inlay Hints")
-end
-
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-  handlers = {
-    function(server_name)
-      local opts = vim.tbl_deep_extend("force", {
-        capabilities = capabilities,
-        on_attach = function(client, bufnr)
-          on_attach(client, bufnr)
-          if server_name == "ruby_lsp" then
-            setup_ruby_lsp_mappings(bufnr)
-          end
-        end,
-      }, servers[server_name] or {})
-      require("lspconfig")[server_name].setup(opts)
-    end,
+-- Ruby servers: global gems managed outside Mason (see ~/.mise.toml postinstall
+-- hook). Run `:MasonUninstall ruby-lsp standardrb` if they were previously
+-- installed via Mason to avoid the old broken binaries being found first.
+vim.lsp.config("ruby_lsp", {
+  init_options = {
+    formatter = "auto",
   },
+})
+
+vim.lsp.enable({ "ruby_lsp", "standardrb" })
+
+-- Mason-managed LSP servers ---------------------------------------------------
+-- automatic_enable = true calls vim.lsp.enable() for every installed package.
+require("mason-lspconfig").setup {
+  ensure_installed = { "gopls", "lua_ls", "vimls" },
+  automatic_enable = true,
 }

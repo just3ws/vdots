@@ -38,7 +38,7 @@ local function rails_env()
   if not is_rails then
     return ""
   end
-  local env = os.getenv "RAILS_ENV" or "development"
+  local env = vim.env.RAILS_ENV or "development"
   return "󰴭 " .. env
 end
 

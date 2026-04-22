@@ -42,6 +42,7 @@ This document tracks the most important keybindings, focusing on new performance
 | `s` | **Flash Jump** | Teleport to any visible character |
 | `-` | **Oil.nvim** | Open parent directory as a buffer |
 | `<leader>e` | **Nvim-Tree** | Toggle file explorer sidebar |
+| `<leader>d` | **Diagnostic Float** | Show diagnostic detail for current line |
 | `<leader>xx` | **Trouble** | Toggle project diagnostics list |
 
 ### Testing & Debugging

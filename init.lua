@@ -52,8 +52,6 @@ require "editor.healthcheck" -- Log deprecation warnings
 -- 🧩  Language / LSP / Tooling
 -- ============================================================================
 -- lsp loaded via plugins/lsp.lua (nvim-lspconfig config)
--- require "editor.linting" -- nvim-lint integration
--- require "editor.formatting" -- conform.nvim setup
 require "editor.treesitter" -- syntax / highlighting
 
 -- ============================================================================

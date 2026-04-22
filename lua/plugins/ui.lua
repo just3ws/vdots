@@ -73,7 +73,7 @@ return {
     },
   },
   {
-    dir = "/Users/mike/github.com/dracula/Dracula Pro/themes/vim",
+    dir = vim.fn.expand "~/github.com/dracula/Dracula Pro/themes/vim",
     name = "dracula-pro",
     lazy = false,
     priority = 1000,
@@ -104,7 +104,21 @@ return {
     priority = 1000,
     lazy = false,
     opts = {
-      dashboard = { enabled = true },
+      dashboard = {
+        sections = {
+          { section = "header" },
+          { section = "keys", gap = 1, padding = 1 },
+          {
+            footer = ("  Neovim %d.%d.%d"):format(
+              vim.version().major,
+              vim.version().minor,
+              vim.version().patch
+            ),
+            padding = 1,
+          },
+          { section = "startup" },
+        },
+      },
       notifier = { enabled = true, timeout = 3000 },
       gitbrowse = { enabled = true },
       picker = { enabled = true },
