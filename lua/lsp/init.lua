@@ -81,6 +81,6 @@ vim.lsp.enable({ "ruby_lsp", "standardrb" })
 -- Mason-managed LSP servers ---------------------------------------------------
 -- automatic_enable = true calls vim.lsp.enable() for every installed package.
 require("mason-lspconfig").setup {
-  ensure_installed = { "gopls", "lua_ls", "vimls" },
+  ensure_installed = { "gopls", "lua_ls", "vimls", "stylelint_lsp" },
   automatic_enable = true,
 }
