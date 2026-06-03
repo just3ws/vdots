@@ -108,6 +108,19 @@ return {
           { section = "header" },
           { section = "keys", gap = 1, padding = 1 },
           {
+            section = function()
+              local zdots = require("zdots")
+              local status = zdots.get_status()
+              if not status then return {} end
+              local items = { { text = " zdots Platform", hl = "SnacksDashboardHeader" } }
+              for _, line in ipairs(status) do
+                table.insert(items, { text = "  " .. line, hl = "SnacksDashboardItem" })
+              end
+              return items
+            end,
+            padding = 1,
+          },
+          {
             footer = ("  Neovim %d.%d.%d"):format(
               vim.version().major,
               vim.version().minor,
