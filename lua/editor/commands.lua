@@ -17,3 +17,7 @@ cmd("Vzshenv", "vsplit $ZDOTDIR/.zshenv", {})
 cmd("ZdotsIngest", function()
   require("zdots").ingest_buffer(0)
 end, { desc = "Ingest current buffer into zdots context engine" })
+
+cmd("ZdotsStatus", function()
+  require("zdots").show_status()
+end, { desc = "Show zdots platform status in a floating window" })

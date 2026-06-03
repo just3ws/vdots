@@ -77,4 +77,31 @@ function M.ingest_buffer(bufnr)
   })
 end
 
+---Show zdots status in a floating window.
+function M.show_status()
+  local status = M.get_status()
+  if not status then
+    vim.notify("zdots: Platform status unavailable", vim.log.levels.WARN)
+    return
+  end
+  
+  -- Create a floating window
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, status)
+  
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    width = 80,
+    height = #status,
+    col = (vim.o.columns - 80) / 2,
+    row = (vim.o.lines - #status) / 2,
+    style = "minimal",
+    border = "rounded",
+    title = " zdots Platform Status ",
+  })
+  
+  vim.bo[buf].modifiable = false
+  vim.keymap.set("n", "q", "<cmd>bd<cr>", { buffer = buf, nowait = true })
+end
+
 return M
