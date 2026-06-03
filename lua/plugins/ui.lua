@@ -104,6 +104,11 @@ return {
     lazy = false,
     opts = {
       dashboard = {
+        preset = {
+          keys = {
+            { icon = " ", key = "z", desc = "zdots Status", action = ":ZdotsStatus" },
+          },
+        },
         sections = {
           { section = "header" },
           { section = "keys", gap = 1, padding = 1 },
