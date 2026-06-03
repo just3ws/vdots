@@ -104,14 +104,23 @@ return {
     lazy = false,
     opts = {
       dashboard = {
-        preset = {
-          keys = {
-            { icon = " ", key = "z", desc = "zdots Status", action = ":ZdotsStatus" },
-          },
-        },
         sections = {
           { section = "header" },
-          { section = "keys", gap = 1, padding = 1 },
+          {
+            section = "keys",
+            gap = 1,
+            padding = 1,
+            keys = {
+              { icon = " ", key = "z", desc = "zdots Status", action = ":ZdotsStatus" },
+              { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
+              { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+              { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
+              { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
+              { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({cwd = vim.fn.stdpath('config')})" },
+              { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy" },
+              { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+            },
+          },
           {
             footer = ("  Neovim %d.%d.%d"):format(
               vim.version().major,
