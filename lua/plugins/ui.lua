@@ -137,11 +137,19 @@ return {
           if not status then return end
 
           local bufnr = vim.api.nvim_get_current_buf()
+          
+          -- Temporarily make the dashboard buffer modifiable
+          local modifiable = vim.bo[bufnr].modifiable
+          vim.bo[bufnr].modifiable = true
+          
           local lines = { "", "  zdots Platform", "" }
           for _, line in ipairs(status) do
             table.insert(lines, "  " .. line)
           end
           vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, lines)
+          
+          -- Restore modifiable state
+          vim.bo[bufnr].modifiable = modifiable
         end,
       })
     end,
