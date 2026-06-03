@@ -60,7 +60,10 @@ lua/
 
 ## Key Patterns & 2026 Standards
 
-**Completion**: **blink.cmp** is the primary engine (Rust-based, fast). Replaces nvim-cmp.
+**Treesitter**: **Native Neovim 0.12** implementation. `nvim-treesitter` plugin is archived and removed. Highlighting is enabled globally via `lua/editor/treesitter.lua`.
+
+**Completion**: **blink.cmp**
+ is the primary engine (Rust-based, fast). Replaces nvim-cmp.
 
 **Fuzzy Finder**: **Snacks.picker** is the default for files/grep/buffers. Telescope is kept for specialized extensions.
 

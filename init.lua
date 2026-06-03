@@ -52,7 +52,7 @@ require "editor.healthcheck" -- Log deprecation warnings
 -- 🧩  Language / LSP / Tooling
 -- ============================================================================
 -- lsp loaded via plugins/lsp.lua (nvim-lspconfig config)
-require "editor.treesitter" -- syntax / highlighting
+require("editor.treesitter").setup() -- syntax / highlighting
 
 -- ============================================================================
 -- 🎨  UI & Theming

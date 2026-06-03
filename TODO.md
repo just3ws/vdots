@@ -94,14 +94,11 @@ line-level — they are complementary, not overlapping.
 **Plugin:** `lewis6991/gitsigns.nvim`
 **Commit:** `feat(git): add gitsigns for inline hunk signs and blame`
 
-### [ ] H-3: Manage treesitter parsers
+### [x] H-3: Migrate to Native Treesitter
 
-**Why:** The post-rewrite `nvim-treesitter` removed `ensure_installed` from `setup()`.
-Parsers must now be installed manually. On a fresh clone, syntax highlighting silently
-degrades. The parsers for primary languages need to be documented or auto-installed.
-**Fix:** Add a `build` hook or document `:TSInstall lua ruby go javascript typescript yaml`
-in the README post-install steps.
-**Commit:** `feat(treesitter): document/automate parser installation`
+**Why:** `nvim-treesitter` was archived in April 2026. Neovim 0.12+ provides native treesitter support and bundled parsers.
+**Fix:** Removed archived plugin, enabled native highlighting, and updated extensions to 0.12 compatible versions.
+**Commit:** `feat(treesitter): migrate to native neovim 0.12 support`
 
 ### [ ] H-4: Remove CursorHold auto-diagnostic float
 

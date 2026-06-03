@@ -104,7 +104,7 @@ all available bindings. Multi-key prefixes are labelled by group:
 | `;e` | Show diagnostic float |
 | `;q` | Send diagnostics to location list |
 
-### Completion (nvim-cmp, insert mode)
+### Completion (blink.cmp, insert mode)
 
 | Key | Action |
 | --- | --- |
@@ -117,7 +117,7 @@ all available bindings. Multi-key prefixes are labelled by group:
 
 ### Text Objects
 
-Text objects work in visual mode and with operators (`d`, `c`, `y`, etc.).
+Text objects work in visual mode and with operators (`d`, `c`, `y`, etc.). Native Neovim 0.12 Treesitter handles the heavy lifting.
 
 #### Ruby files (vim-textobj-rubyblock + vim-textobj-ruby)
 

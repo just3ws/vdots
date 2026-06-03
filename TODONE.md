@@ -262,3 +262,9 @@ consumers). `snippets.lua` populated by B-5.
 **Commit:** `e0975a2` - 2025-02-04
 **File:** `lua/editor/options.lua`
 **Change:** Added `vim.opt.updatetime = 250`
+
+### [x] Migrate to Native Treesitter (Neovim 0.12)
+
+**Commit:** `69e7f8c` - 2026-06-03
+**Files:** `lua/plugins/treesitter.lua`, `lua/editor/treesitter.lua`, `init.lua`, `test/regression.lua`, `lua/plugins/*.lua`
+**Change:** Removed archived `nvim-treesitter` plugin. Enabled native Treesitter highlighting via autocmd in `editor/treesitter.lua`. Updated all plugin dependencies to remove reference to archived plugin. Updated regression tests to verify native `vim.treesitter` instead of the plugin.

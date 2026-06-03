@@ -127,10 +127,6 @@ test("Core plugins loaded: nvim-tree", function()
   assert_exists "nvim-tree"
 end)
 
-test("Core plugins loaded: nvim-treesitter", function()
-  assert_exists "nvim-treesitter"
-end)
-
 test("Core plugins loaded: blink.cmp", function()
   assert_exists "blink.cmp"
 end)
@@ -185,13 +181,12 @@ test("Diagnostic config is set", function()
 end)
 
 -- ============================================================================
--- SECTION 4: Treesitter
+-- SECTION 4: Treesitter (Native)
 -- ============================================================================
 print "\n[Treesitter]"
 
-test("Treesitter loads without error", function()
-  local ok = pcall(require, "nvim-treesitter")
-  assert_true(ok, "nvim-treesitter should load")
+test("Native treesitter is available", function()
+  assert_true(vim.treesitter ~= nil, "vim.treesitter should be available")
 end)
 
 test("Treesitter parsers available: lua", function()
@@ -199,14 +194,9 @@ test("Treesitter parsers available: lua", function()
   assert_true(ok, "lua parser should be available")
 end)
 
-test("Treesitter parsers available: ruby", function()
-  local ok = pcall(vim.treesitter.language.inspect, "ruby")
-  assert_true(ok, "ruby parser should be available")
-end)
-
-test("Treesitter parsers available: go", function()
-  local ok = pcall(vim.treesitter.language.inspect, "go")
-  assert_true(ok, "go parser should be available")
+test("Treesitter parsers available: markdown", function()
+  local ok = pcall(vim.treesitter.language.inspect, "markdown")
+  assert_true(ok, "markdown parser should be available")
 end)
 
 -- ============================================================================

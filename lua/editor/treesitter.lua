@@ -1,18 +1,25 @@
 local M = {}
 
----Initialize nvim-treesitter and apply Nord highlight overrides.
+---Initialize native treesitter and apply Dracula PRO highlight overrides.
 function M.setup()
-  local ok = pcall(require, "nvim-treesitter")
-  if not ok then
-    vim.notify("nvim-treesitter not found", vim.log.levels.WARN)
-    return
-  end
+  -- Neovim 0.12+ has built-in treesitter support. 
+  -- Highlighting is enabled by default for many languages.
+  -- For others, we can enable it via autocmd or globally.
 
-  -- Post-rewrite API: setup() only accepts install_dir; parsers managed via :TSInstall
-  require("nvim-treesitter").setup()
+  -- Enable native treesitter highlighting globally (standard in 0.12+)
+  vim.api.nvim_create_autocmd("FileType", {
+    callback = function(args)
+      local bufnr = args.buf
+      local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
+      if lang then
+        pcall(vim.treesitter.start, bufnr, lang)
+      end
+    end,
+  })
 
   local ts_textobjects_ok, ts_textobjects = pcall(require, "nvim-treesitter-textobjects")
   if ts_textobjects_ok then
+    -- Note: Textobjects plugin now works directly with vim.treesitter in 0.12+
     ts_textobjects.setup({
       select = {
         enable = true,
@@ -53,6 +60,7 @@ function M.setup()
   local set_hl = vim.api.nvim_set_hl
 
   -- --- Dracula PRO Highlight Overrides ---
+  -- These still apply to Treesitter capture groups in 0.12
   local highlights = {
     ["@comment"] = { fg = dracula.gray, italic = true },
     ["@function"] = { fg = dracula.green, bold = true },
