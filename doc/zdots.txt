@@ -1,0 +1,66 @@
+*zdots.txt*  Bridge for the zdots Agentic Shell platform
+
+==============================================================================
+ZDOTS PLATFORM BRIDGE                                                  *zdots*
+
+A deep integration between Neovim and the zdots Agentic Shell platform. This
+bridge allows you to leverage the zdots task engine, context database, and
+platform observability directly from within the editor.
+
+1. Commands                          |zdots-commands|
+2. Keymaps                           |zdots-keymaps|
+3. Dashboard                         |zdots-dashboard|
+4. AI Integration                    |zdots-ai|
+
+==============================================================================
+1. Commands                                                 *zdots-commands*
+
+:ZdotsIngest                                                *:ZdotsIngest*
+        Captures the current buffer's content and sends it to the zdots
+        context engine via `zdots-ctx capture`. The process runs
+        asynchronously in the background.
+
+:Zshenv                                                     *:Zshenv*
+        Edits your zdots environment configuration file ($ZDOTDIR/.zshenv).
+
+:Szshenv, :Tzshenv, :Vzshenv
+        Variants of :Zshenv that open the file in a split, tab, or vertical
+        split respectively.
+
+==============================================================================
+2. Keymaps                                                   *zdots-keymaps*
+
+These keymaps use the <leader> prefix (defaulting to ";" in this config).
+
+<leader>zi                                                  *zdots-leader-zi*
+        Triggers |:ZdotsIngest| for the current buffer.
+
+<leader>zt                                                  *zdots-leader-zt*
+        Opens an interactive fuzzy picker (via Snacks.picker) showing all
+        active tasks from the zdots platform (`ztask list`). Selecting a task
+        opens the associated file.
+
+==============================================================================
+3. Dashboard                                               *zdots-dashboard*
+
+The Snacks.nvim dashboard is automatically extended with a "zdots Platform"
+section. This displays a brief status summary from `zdots-status --brief`,
+including:
+- AI Mode (local/remote)
+- Platform Health
+- Active Task counts
+- Database Status
+
+==============================================================================
+4. AI Integration                                                 *zdots-ai*
+
+If |CodeCompanion| is installed, the bridge registers a special variable:
+
+#zdots                                                      *zdots-var*
+        Usage: Type #zdots in a CodeCompanion chat.
+        Action: Hydrates the chat with context from the zdots Vector DB
+        using `pi-ctx-hydrate`. This injects project-specific methodologies,
+        historical lessons, and session residue related to the current file.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

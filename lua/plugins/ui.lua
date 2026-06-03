@@ -108,6 +108,21 @@ return {
           { section = "header" },
           { section = "keys", gap = 1, padding = 1 },
           {
+            icon = " ",
+            title = "zdots Platform",
+            padding = 1,
+            section = function()
+              local zdots = require("zdots")
+              local status = zdots.get_status()
+              if not status then return {} end
+              local items = {}
+              for _, line in ipairs(status) do
+                table.insert(items, { text = line, hl = "SnacksDashboardHeader" })
+              end
+              return items
+            end,
+          },
+          {
             footer = ("  Neovim %d.%d.%d"):format(
               vim.version().major,
               vim.version().minor,
@@ -137,6 +152,29 @@ return {
       { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
       { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse" },
       { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+      { "<leader>zi", "<cmd>ZdotsIngest<cr>", desc = "zdots: Ingest context" },
+      { "<leader>zt", function()
+        local zdots = require("zdots")
+        local tasks = zdots.ztask("list")
+        if #tasks == 0 then
+          vim.notify("No active zdots tasks found", vim.log.levels.INFO)
+          return
+        end
+        
+        Snacks.picker.select(tasks, {
+          prompt = "zdots Tasks",
+          format = function(item)
+            return string.format("[%s] %s", item.id, item.title)
+          end,
+          confirm = function(item)
+            if item.file_path then
+              vim.cmd("edit " .. item.file_path)
+            else
+              vim.notify("No file path associated with task " .. item.id, vim.log.levels.WARN)
+            end
+          end,
+        })
+      end, desc = "zdots Tasks" },
     },
   },
   {

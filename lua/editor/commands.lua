@@ -12,3 +12,8 @@ cmd("Zshenv", "edit $ZDOTDIR/.zshenv", {})
 cmd("Szshenv", "split $ZDOTDIR/.zshenv", {})
 cmd("Tzshenv", "tabedit $ZDOTDIR/.zshenv", {})
 cmd("Vzshenv", "vsplit $ZDOTDIR/.zshenv", {})
+
+-- zdots platform commands
+cmd("ZdotsIngest", function()
+  require("zdots").ingest_buffer(0)
+end, { desc = "Ingest current buffer into zdots context engine" })

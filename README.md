@@ -154,6 +154,15 @@ In Ruby files, `af`/`if` and `ac`/`ic` above take priority.
 | `;aa` | CodeCompanion: action menu |
 | `;ac` | CodeCompanion: open chat |
 
+### zdots Platform
+
+| Key / Command | Action |
+| --- | --- |
+| `;zi` | Ingest current buffer into context engine |
+| `;zt` | Open interactive task picker (ztask) |
+| `:ZdotsIngest` | Command to ingest current buffer |
+| `:Zshenv` | Edit your zdots environment config |
+
 ### Copilot (insert mode)
 
 | Key | Action |
