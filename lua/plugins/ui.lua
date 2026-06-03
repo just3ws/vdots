@@ -129,29 +129,8 @@ return {
       bigfile = { enabled = true },
     },
     init = function()
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "SnacksDashboardOpened",
-        callback = function()
-          local zdots = require("zdots")
-          local status = zdots.get_status()
-          if not status then return end
-
-          local bufnr = vim.api.nvim_get_current_buf()
-          
-          -- Temporarily make the dashboard buffer modifiable
-          local modifiable = vim.bo[bufnr].modifiable
-          vim.bo[bufnr].modifiable = true
-          
-          local lines = { "", "  zdots Platform", "" }
-          for _, line in ipairs(status) do
-            table.insert(lines, "  " .. line)
-          end
-          vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, lines)
-          
-          -- Restore modifiable state
-          vim.bo[bufnr].modifiable = modifiable
-        end,
-      })
+      -- Autocmd removed due to UIEnter/CursorMoved crash.
+      -- Reverting to standard dashboard configuration.
     end,
     keys = {
       { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
