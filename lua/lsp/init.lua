@@ -3,7 +3,7 @@ require("mason").setup()
 
 -- Non-LSP tools managed by Mason (Ruby tools are global gems, not here)
 require("mason-tool-installer").setup {
-  ensure_installed = { "debugpy", "stylua", "selene", "goimports" },
+  ensure_installed = { "debugpy", "stylua", "selene", "goimports", "golangci-lint" },
   auto_update = true,
   run_on_start = true,
 }
