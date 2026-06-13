@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# bin/vdots-doctor — System health check ("brew doctor" for vdots)
+# Exits 0 when no failures are found; exits 1 on any [FAIL].
+
+function usage() {
+    echo "Usage: vdots-doctor [--json]"
+    echo "  --json         Output results as JSON"
+}
+
+JSON_MODE=false
+if [[ "$1" == "--json" ]]; then
+    JSON_MODE=true
+fi
+
+# Run runtime probes via vdots-ctl
+RUNTIME_CHECK=$(./bin/vdots-ctl check --json)
+STATUS=$(echo "$RUNTIME_CHECK" | jq -r .status)
+WARNINGS=$(echo "$RUNTIME_CHECK" | jq .warnings)
+ERRORS=$(echo "$RUNTIME_CHECK" | jq .errors)
+
+# Exit code logic
+EXIT_CODE=0
+if [[ "$STATUS" == "fail" ]]; then
+    EXIT_CODE=1
+fi
+
+if [ "$JSON_MODE" = true ]; then
+    cat <<EOF
+{
+  "status": "$STATUS",
+  "checks": {
+    "passed": 0,
+    "warnings": $WARNINGS,
+    "failures": $ERRORS
+  },
+  "runtime": $(echo "$RUNTIME_CHECK" | jq -c .)
+}
+EOF
+else
+    echo "━━━ vdots Health ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [[ "$ERRORS" -gt 0 ]]; then
+        echo "  [FAIL] Neovim runtime diagnostics found $ERRORS errors."
+    else
+        echo "  [ok]   Neovim runtime diagnostics healthy."
+    fi
+    echo ""
+    ./bin/vdots-ctl check
+fi
+
+exit $EXIT_CODE

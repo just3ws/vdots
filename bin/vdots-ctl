@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# bin/vdots-ctl — Runtime health check for vdots
+# Deep probe of Neovim configuration health using :checkhealth.
+
+function run_healthcheck() {
+    # Generate healthcheck report
+    local health_file="/tmp/vdots-health-raw.txt"
+    nvim --headless "+checkhealth" "+w! $health_file" "+qall" >/dev/null 2>&1
+    
+    # Simple parser to extract warnings/errors
+    # In a real implementation, this would be a more robust Lua/Python script
+    local warnings=$(grep -c "WARNING" "$health_file")
+    local errors=$(grep -c "ERROR" "$health_file")
+    
+    local status="pass"
+    if [ "$errors" -gt 0 ]; then status="fail";
+    elif [ "$warnings" -gt 0 ]; then status="warn"; fi
+    
+    # Return JSON
+    printf '{"status": "%s", "warnings": %d, "errors": %d, "raw_file": "%s"}' \
+        "$status" "$warnings" "$errors" "$health_file"
+}
+
+function check() {
+    if [[ "$1" == "--json" ]]; then
+        run_healthcheck
+    else
+        echo "Running deep healthcheck..."
+        local result=$(run_healthcheck)
+        local warnings=$(echo "$result" | jq .warnings)
+        local errors=$(echo "$result" | jq .errors)
+        local file=$(echo "$result" | jq -r .raw_file)
+        
+        echo "Healthcheck results:"
+        echo "  Errors: $errors"
+        echo "  Warnings: $warnings"
+        echo "See full report: $file"
+    fi
+}
+
+if [[ "$1" == "check" ]]; then
+    check "${@:2}"
+else
+    echo "Usage: vdots-ctl check [--json]"
+fi
