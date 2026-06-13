@@ -127,7 +127,11 @@ function M.setup_all()
 
   -- Fidget
   require("fidget").setup({
-    notification = { window = { avoid = { "NvimTree" } } },
+    notification = {
+      window = {
+        avoid = { "NvimTree" }
+      }
+    }
   })
 
   -- Lspconfig

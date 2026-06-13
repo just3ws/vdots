@@ -98,35 +98,11 @@ return {
     priority = 1000,
     lazy = false,
     opts = {
-      dashboard = {
-        sections = {
-          { section = "header" },
-          {
-            section = "keys",
-            gap = 1,
-            padding = 1,
-            keys = {
-              { icon = " ", key = "z", desc = "zdots Status", action = ":ZdotsStatus" },
-              { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
-              { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-              { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
-              { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
-              { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({cwd = vim.fn.stdpath('config')})" },
-              { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy" },
-              { icon = " ", key = "q", desc = "Quit", action = ":qa" },
-            },
-          },
-          {
-            footer = ("  Neovim %d.%d.%d"):format(
-              vim.version().major,
-              vim.version().minor,
-              vim.version().patch
-            ),
-            padding = 1,
-          },
-          { section = "startup" },
-        },
-      },
+      dashboard = { enabled = true },
+      explorer = { enabled = true },
+      image = { enabled = true },
+      input = { enabled = true },
+      scroll = { enabled = true },
       notifier = { enabled = true, timeout = 3000 },
       gitbrowse = { enabled = true },
       picker = { enabled = true },
@@ -137,10 +113,6 @@ return {
       statuscolumn = { enabled = true },
       bigfile = { enabled = true },
     },
-    init = function()
-      -- Autocmd removed due to UIEnter/CursorMoved crash.
-      -- Reverting to standard dashboard configuration.
-    end,
     keys = {
       { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
       { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
@@ -181,6 +153,9 @@ return {
     ft = { "markdown", "codecompanion" },
     opts = {
       file_types = { "markdown", "codecompanion" },
+      html = { enabled = false },
+      latex = { enabled = false },
+      yaml = { enabled = false },
     },
   },
 }

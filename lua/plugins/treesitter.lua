@@ -1,5 +1,15 @@
 return {
   {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    opts = {
+      ensure_installed = {
+        "yaml", "css", "html", "javascript", "latex", 
+        "norg", "scss", "svelte", "tsx", "typst", "vue", "regex"
+      },
+    },
+  },
+  {
     "nvim-treesitter/nvim-treesitter-context",
     branch = "master",
     -- Post-archival versions work natively with Neovim 0.12
