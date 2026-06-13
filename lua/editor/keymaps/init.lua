@@ -39,10 +39,12 @@ map("n", "<Leader><Leader>", "V", { noremap = true, silent = true, desc = "Selec
 map("c", "<C-n>", "<down>", { noremap = true })
 map("c", "<C-p>", "<up>", { noremap = true })
 
-local search = require "editor.search"
+local search = require "features.search"
 
 vim.keymap.set("n", "<Leader>ff", function()
-  search.prompt_and_grep "Rg> "
+  -- Using the new features.search.run_grep wrapper which supports prompting
+  local query = vim.fn.input("Rg> ")
+  search.run_grep(query)
 end, { desc = "Quickfix: Grep text" })
 
 local ok_builtin, builtin = pcall(require, "telescope.builtin")
