@@ -5,11 +5,6 @@ return {
     opts = {},
   },
   {
-    "nvim-tree/nvim-web-devicons",
-    lazy = false,
-    priority = 1000,
-  },
-  {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     opts = {
