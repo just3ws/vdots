@@ -105,7 +105,7 @@ require "editor.options"
 require "editor.keymaps"
 require "editor.autocmds"
 require "editor.commands"
-require("editor.search").setup()
+require("features.search").setup()
 
 require("snacks").setup({
   dashboard = {
