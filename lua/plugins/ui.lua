@@ -58,15 +58,15 @@ return {
       { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo (Telescope)" },
     },
   },
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    main = "ibl",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      indent = { char = "│" },
-      scope = { enabled = true, show_start = true, show_end = true },
-    },
-  },
+  -- {
+  --   "lukas-reineke/indent-blankline.nvim",
+  --   main = "ibl",
+  --   event = { "BufReadPost", "BufNewFile" },
+  --   opts = {
+  --     indent = { char = "│" },
+  --     scope = { enabled = true, show_start = true, show_end = true },
+  --   },
+  -- },
   {
     dir = vim.fn.expand "~/github.com/dracula/Dracula Pro/themes/vim",
     name = "dracula-pro",
