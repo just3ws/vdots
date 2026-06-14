@@ -105,7 +105,7 @@ All plugins are declared via `vim.pack.add()` in `init.lua`. Configuration lives
 
 | Plugin | Role |
 |--------|------|
-| `olimorris/codecompanion.nvim` | AI chat + actions; custom `zdots` chat variable hydrates context from the zdots Knowledge Layer |
+| `olimorris/codecompanion.nvim` | AI chat + actions; custom `zdots` chat variable hydrates context from the [zdots Knowledge Layer](https://github.com/just3ws/zdots/wiki/AI-and-Knowledge-Layer) |
 
 ## Utilities
 

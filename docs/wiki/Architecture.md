@@ -66,7 +66,7 @@ after/
 
 ## zdots Integration (`lua/zdots/`)
 
-`lua/zdots/init.lua` is the Lua bridge to the zdots shell platform. It shells out to `~/.config/zsh/bin/` commands:
+`lua/zdots/init.lua` is the Lua bridge to the [zdots](https://github.com/just3ws/zdots/wiki) shell platform. It shells out to `~/.config/zsh/bin/` commands:
 
 | Function | Shell command | Purpose |
 |----------|--------------|---------|
@@ -77,4 +77,4 @@ after/
 
 ## Health CLI
 
-`bin/vdots-doctor` delegates to `bin/vdots-ctl check --json` and exits 1 on failures. Mirrors the `zdots-doctor` pattern from [zdots](https://github.com/just3ws/zdots).
+`bin/vdots-doctor` delegates to `bin/vdots-ctl check --json` and exits 1 on failures. Mirrors the `zdots-doctor` pattern from [zdots](https://github.com/just3ws/zdots/wiki).

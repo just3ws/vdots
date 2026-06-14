@@ -1,15 +1,17 @@
 # vdots
 
-vdots is the Neovim platform in the personal-OS ecosystem — a Lua-native configuration for Neovim 0.12+ targeting Ruby/Rails, Go, and TypeScript development. It manages plugins via the built-in `vim.pack` API (no external plugin manager), integrates with the zdots shell platform for context ingestion and task management, and ships a health CLI (`vdots-doctor`) parallel to zdots-doctor.
+vdots is the Neovim platform in the personal-OS ecosystem — a Lua-native configuration for Neovim 0.12+ targeting Ruby/Rails, Go, and TypeScript development. It manages plugins via the built-in `vim.pack` API (no external plugin manager), integrates with the [zdots](https://github.com/just3ws/zdots/wiki) shell platform for context ingestion and task management, and ships a health CLI (`vdots-doctor`) parallel to zdots-doctor.
 
-## Personal-OS Ecosystem
+## The ecosystem
 
-| Repo | Path | Role |
-|------|------|------|
-| zdots | `~/.config/zsh` | Shell platform: observability, AI stack, services |
-| **vdots** | `~/.config/nvim` | **This repo** — Neovim platform: LSP, plugins, editor config |
-| adots | `~` (bare at `~/.homegit`) | Home dotfiles + agent coordination |
-| my | `~/my` | Private local-only control plane |
+zdots, adots, vdots, and `my` form one personal-OS ecosystem.
+
+| Repo | Path | Role | Wiki |
+|------|------|------|------|
+| zdots | `~/.config/zsh` | Shell platform: observability, AI stack, services | [zdots wiki](https://github.com/just3ws/zdots/wiki) |
+| adots | `~` (bare at `~/.homegit`) | Home dotfiles + agent coordination | [adots wiki](https://github.com/just3ws/adots/wiki) |
+| **vdots** | `~/.config/nvim` | **This repo** — Neovim platform: LSP, plugins, editor config | (self) |
+| my | `~/my` | Private "Cerebral Control Plane" — local-only, no public wiki | [My-System](https://github.com/just3ws/adots/wiki/My-System) (adots wiki) |
 
 ## Quick Reference
 
