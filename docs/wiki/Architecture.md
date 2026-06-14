@@ -21,7 +21,7 @@ init.lua                    Entrypoint; plugin declarations + top-level wiring
 lua/
   editor/
     options.lua             vim.opt + vim.g (split off from init.lua for clarity)
-    keymaps.lua             All non-plugin keymaps (sourced from editor.keymaps)
+    keymaps/init.lua        All non-plugin keymaps (module dir; require "editor.keymaps")
     autocmds.lua            Autocommands: resize, cursor restore, filetype overrides, whitespace cleanup
     commands.lua            User commands: :Reload, :Vimrc*, :Zshenv*, :ZdotsIngest, :ZdotsStatus
     explorer.lua            nvim-tree + Oil setup helpers
@@ -29,7 +29,7 @@ lua/
     treesitter.lua          (referenced; treesitter module)
     healthcheck.lua         :checkhealth entry
   features/
-    search.lua              Snacks.picker / ripgrep search integration (setup() called from init.lua)
+    search/init.lua         Snacks.picker / ripgrep search (module dir; require("features.search").setup())
   filetypes.lua             vim.filetype.add() — custom extensions/filenames
   lsp/
     init.lua                Mason bootstrap, mason-tool-installer, LspAttach keymaps, server configs
