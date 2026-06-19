@@ -18,13 +18,21 @@ return {
         end
         -- Navigation
         map("n", "]h", function()
-          if vim.wo.diff then return "]h" end
-          vim.schedule(function() gs.next_hunk() end)
+          if vim.wo.diff then
+            return "]h"
+          end
+          vim.schedule(function()
+            gs.next_hunk()
+          end)
           return "<Ignore>"
         end, { expr = true, desc = "Next hunk" })
         map("n", "[h", function()
-          if vim.wo.diff then return "[h" end
-          vim.schedule(function() gs.prev_hunk() end)
+          if vim.wo.diff then
+            return "[h"
+          end
+          vim.schedule(function()
+            gs.prev_hunk()
+          end)
           return "<Ignore>"
         end, { expr = true, desc = "Prev hunk" })
         -- Actions
@@ -40,9 +48,17 @@ return {
     opts = {},
     keys = {
       { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
-      { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
+      {
+        "<leader>xX",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
+      },
       { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)" },
-      { "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP Definitions / references / ... (Trouble)" },
+      {
+        "<leader>cl",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        desc = "LSP Definitions / references / ... (Trouble)",
+      },
       { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
       { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
     },
@@ -53,8 +69,20 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = {},
     keys = {
-      { "]t", function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
-      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
+      {
+        "]t",
+        function()
+          require("todo-comments").jump_next()
+        end,
+        desc = "Next todo comment",
+      },
+      {
+        "[t",
+        function()
+          require("todo-comments").jump_prev()
+        end,
+        desc = "Previous todo comment",
+      },
       { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo (Telescope)" },
     },
   },
@@ -113,38 +141,99 @@ return {
       statuscolumn = { enabled = true },
       bigfile = { enabled = true },
     },
+    init = function()
+      -- Route vim.ui.select through the snacks picker (LSP code actions, gx
+      -- choices, etc.). Assign the exact Snacks.picker.select reference so the
+      -- identity check in :checkhealth snacks is satisfied too.
+      local ok, snacks = pcall(require, "snacks")
+      if ok then
+        vim.ui.select = snacks.picker.select
+      end
+    end,
     keys = {
-      { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
-      { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
-      { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
-      { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
-      { "<leader>n", function() Snacks.notifier.show_history() end, desc = "Notification History" },
-      { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
-      { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse" },
-      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+      {
+        "<leader><space>",
+        function()
+          Snacks.picker.smart()
+        end,
+        desc = "Smart Find Files",
+      },
+      {
+        "<leader>,",
+        function()
+          Snacks.picker.buffers()
+        end,
+        desc = "Buffers",
+      },
+      {
+        "<leader>/",
+        function()
+          Snacks.picker.grep()
+        end,
+        desc = "Grep",
+      },
+      {
+        "<leader>:",
+        function()
+          Snacks.picker.command_history()
+        end,
+        desc = "Command History",
+      },
+      {
+        "<leader>n",
+        function()
+          Snacks.notifier.show_history()
+        end,
+        desc = "Notification History",
+      },
+      {
+        "<leader>bd",
+        function()
+          Snacks.bufdelete()
+        end,
+        desc = "Delete Buffer",
+      },
+      {
+        "<leader>gB",
+        function()
+          Snacks.gitbrowse()
+        end,
+        desc = "Git Browse",
+      },
+      {
+        "<leader>un",
+        function()
+          Snacks.notifier.hide()
+        end,
+        desc = "Dismiss All Notifications",
+      },
       { "<leader>zi", "<cmd>ZdotsIngest<cr>", desc = "zdots: Ingest context" },
-      { "<leader>zt", function()
-        local zdots = require("zdots")
-        local tasks = zdots.ztask("list")
-        if #tasks == 0 then
-          vim.notify("No active zdots tasks found", vim.log.levels.INFO)
-          return
-        end
-        
-        Snacks.picker.select(tasks, {
-          prompt = "zdots Tasks",
-          format = function(item)
-            return string.format("[%s] %s", item.id, item.title)
-          end,
-          confirm = function(item)
-            if item.file_path then
-              vim.cmd("edit " .. item.file_path)
-            else
-              vim.notify("No file path associated with task " .. item.id, vim.log.levels.WARN)
-            end
-          end,
-        })
-      end, desc = "zdots Tasks" },
+      {
+        "<leader>zt",
+        function()
+          local zdots = require "zdots"
+          local tasks = zdots.ztask "list"
+          if #tasks == 0 then
+            vim.notify("No active zdots tasks found", vim.log.levels.INFO)
+            return
+          end
+
+          Snacks.picker.select(tasks, {
+            prompt = "zdots Tasks",
+            format = function(item)
+              return string.format("[%s] %s", item.id, item.title)
+            end,
+            confirm = function(item)
+              if item.file_path then
+                vim.cmd("edit " .. item.file_path)
+              else
+                vim.notify("No file path associated with task " .. item.id, vim.log.levels.WARN)
+              end
+            end,
+          })
+        end,
+        desc = "zdots Tasks",
+      },
     },
   },
   {

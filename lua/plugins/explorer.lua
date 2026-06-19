@@ -18,7 +18,16 @@ return {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "echasnovski/mini.icons" },
     config = function()
+      local explorer = require "editor.explorer"
       require("nvim-tree").setup {
+        on_attach = explorer.on_attach, -- NERDTree-compat layered on defaults
+        -- NERDTree-style "follow": reveal/highlight the active file in the tree
+        -- as you switch buffers. update_root stays off so the tree root is
+        -- stable (only the highlight/reveal follows the cursor).
+        update_focused_file = {
+          enable = true,
+          update_root = false,
+        },
         view = {
           width = 36,
           side = "left",
@@ -40,7 +49,6 @@ return {
           custom = { "^\\.DS_Store$" },
         },
       }
-      local explorer = require "editor.explorer"
       explorer.setup()
     end,
   },

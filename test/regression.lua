@@ -47,12 +47,6 @@ local function assert_true(val, msg)
   end
 end
 
-local function assert_contains(str, pattern, msg)
-  if not string.find(str, pattern, 1, true) then
-    error(string.format("%s: '%s' not found in '%s'", msg or "String not found", pattern, str))
-  end
-end
-
 local function assert_exists(module_name)
   local ok, _ = pcall(require, module_name)
   if not ok then
@@ -102,8 +96,18 @@ test("Search settings (ignorecase, smartcase)", function()
   assert_true(vim.o.smartcase, "smartcase")
 end)
 
-test("Clipboard includes unnamedplus", function()
-  assert_contains(vim.o.clipboard, "unnamedplus", "clipboard")
+test("Clipboard uses copy-on-yank (no unnamedplus, yank-mirror autocmd present)", function()
+  -- We deliberately avoid unnamedplus so deletes don't clobber the system
+  -- clipboard; yanks are mirrored to + via a TextYankPost autocmd instead.
+  assert_true(
+    not string.find(vim.o.clipboard, "unnamedplus", 1, true),
+    "clipboard should not set unnamedplus"
+  )
+  local yank_autocmds = vim.api.nvim_get_autocmds { event = "TextYankPost", group = "vimrc" }
+  assert_true(
+    #yank_autocmds > 0,
+    "expected a TextYankPost yank-mirror autocmd in the 'vimrc' group"
+  )
 end)
 
 -- ============================================================================

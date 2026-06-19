@@ -101,11 +101,17 @@ vim.pack.add({
   { src = "https://github.com/nvim-lua/plenary.nvim" },
 })
 
-require "editor.options"
-require "editor.keymaps"
-require "editor.autocmds"
-require "editor.commands"
-require("features.search").setup()
+require "editor.options" -- General settings (all vim.opt)
+require "filetypes" -- Custom filetype mappings
+require "editor.keymaps" -- Global keybindings
+require "editor.autocmds" -- Event hooks
+require "editor.commands" -- :Commands
+require("editor.llm").setup() -- 🦙 Local-LLM (ai-query) buffer/selection pipe
+require("editor.claude").setup() -- 🤖 Claude Code session pulse + last-change diff
+require("editor.usage").setup() -- 📊 Friction/rage telemetry → :NvimUsage
+require("features.search").setup() -- Native grep/quickfix (features/ arch)
+require "editor.healthcheck" -- Log deprecation warnings
+-- explorer loaded via plugins/explorer.lua (NERDTree config)
 
 require("snacks").setup({
   dashboard = {

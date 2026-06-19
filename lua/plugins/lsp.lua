@@ -28,6 +28,11 @@ return {
     "j-hui/fidget.nvim",
     opts = {
       notification = {
+        -- The avoid list is the supported replacement for fidget's deprecated
+        -- implicit nvim-tree integration. We intentionally do NOT set
+        -- integration["nvim-tree"].enable — that option is itself deprecated and
+        -- will be removed upstream; the lingering "implicitly enabled" health
+        -- note clears on its own once fidget drops the integration.
         window = { avoid = { "NvimTree" } },
       },
     },

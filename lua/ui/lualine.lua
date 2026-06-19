@@ -53,7 +53,16 @@ require("lualine").setup {
     lualine_a = { "mode" },
     lualine_b = { "branch", "diff", "diagnostics" },
     lualine_c = { { "filename", path = 1 } },
-    lualine_x = { rails_env, "encoding", "fileformat", "filetype" },
+    lualine_x = {
+      {
+        require("editor.claude").status,
+        color = require("editor.claude").color,
+      },
+      rails_env,
+      "encoding",
+      "fileformat",
+      "filetype",
+    },
     lualine_y = { "progress" },
     lualine_z = { "location" },
   },

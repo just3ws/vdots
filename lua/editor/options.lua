@@ -37,8 +37,12 @@ opt.sidescrolloff = 8
 opt.signcolumn = "yes"
 opt.updatetime = 250
 
--- Clipboard
-opt.clipboard:append { "unnamed", "unnamedplus" }
+-- Clipboard: "copy-on-yank" model. We intentionally do NOT set unnamedplus —
+-- that would route deletes through the system clipboard and clobber it. Instead
+-- yanks are mirrored to the + register via a TextYankPost autocmd (see
+-- editor/autocmds.lua), so copying is automatic while deletes never touch the
+-- OS clipboard. Paste external content with "+p (or Cmd+V in insert mode).
+opt.clipboard = ""
 
 -- Editing
 opt.backspace = { "indent", "eol", "start" }
