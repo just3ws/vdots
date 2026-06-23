@@ -46,3 +46,9 @@ test_*.lua
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# gh-pages is a nested git repo (separate worktree/deploy artifact)
+.gh-pages/
+
+# Gemini temp output
+.gemini/tmp/
