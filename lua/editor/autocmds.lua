@@ -26,7 +26,7 @@ vim.api.nvim_create_autocmd("FileChangedShellPost", {
     local ok, snacks = pcall(require, "snacks")
     local msg = "🤖 reloaded " .. name .. " (changed on disk)"
     if ok and snacks.notifier then
-      snacks.notify(msg, vim.log.levels.INFO, { title = "Claude Code" })
+      snacks.notify(msg, { level = vim.log.levels.INFO, title = "Claude Code" })
     else
       vim.notify(msg, vim.log.levels.INFO)
     end

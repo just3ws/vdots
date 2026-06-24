@@ -25,7 +25,8 @@ local function notify(msg, level, opts)
   opts.title = opts.title or "🦙 ai-query"
   local ok, snacks = pcall(require, "snacks")
   if ok and snacks.notifier then
-    return snacks.notify(msg, level, opts)
+    opts.level = level
+    return snacks.notify(msg, opts)
   end
   vim.notify(msg, level, opts)
   return opts.id
