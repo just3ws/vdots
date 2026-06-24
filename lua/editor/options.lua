@@ -84,6 +84,10 @@ if vim.fn.isdirectory(openjdk_home) == 1 then
   vim.env.JAVA_HOME = openjdk_home
 end
 
+-- ponytail: prevents E764 on buffers where no plugin has set omnifunc;
+-- blink.cmp owns normal completion, this is only the <C-X><C-O> fallback.
+opt.omnifunc = "v:lua.vim.lsp.omnifunc"
+
 -- External providers
 local function has_python_module(python, module)
   if vim.fn.executable(python) ~= 1 then
