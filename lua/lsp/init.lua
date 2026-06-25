@@ -26,6 +26,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("n", "]d",          vim.diagnostic.goto_next,    "Next diagnostic")
     map("n", "<leader>d",   vim.diagnostic.open_float,   "Show diagnostic")
     map("n", "<leader>q",   vim.diagnostic.setloclist,   "Diagnostics list")
+    vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
     if client.name == "ruby_lsp" then
       map("n", "<leader>ih", function()
         vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
