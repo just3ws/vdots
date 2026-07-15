@@ -1,59 +1,46 @@
 # Architecture
 
-vdots is a single-repo Lua configuration for Neovim 0.12+. All modules live under `lua/`; the entrypoint is `init.lua`. Plugins are managed by the native `vim.pack` API introduced in Neovim 0.12 — no lazy.nvim or packer at runtime (a `lazy-lock.json` and `nvim-pack-lock.json` are both present as historical artefacts from a prior lazy.nvim setup).
+vdots is a single-repo Lua configuration for Neovim 0.12+. All modules live under `lua/`; the entrypoint is `init.lua`. Plugins are managed by the native `vim.pack` API introduced in Neovim 0.12 — no lazy.nvim or packer at runtime (`nvim-pack-lock.json` is the lockfile).
 
 ## Entrypoint
 
 `init.lua` runs in this order:
 
-1. **Global options** — `vim.opt` and `vim.g` settings (leader, mouse, tabs, search, clipboard, undo)
-2. **PATH setup** — prepends mise shims so editor-invoked tools resolve correctly
-3. **Plugin declarations** — `vim.pack.add({...})` — all plugins declared in one block
-4. **Module requires** — `editor.*`, `features.search`, then plugin setup calls
-5. **LSP wiring** — `LspAttach` autocmd, per-server `vim.lsp.config()`, then `vim.lsp.enable()`
-6. **Completion** — native `InsertCharPre` omnifunc trigger; `completeopt` set
-7. **User commands** — `:PackSync`, `:Reload vimrc` keymaps
+1. **Leader key** — `;` (all other options live in `lua/editor/options.lua`)
+2. **Plugin declarations** — `vim.pack.add({...})` — all plugins declared in one block
+3. **Module requires** — `editor.*` (options, keymaps, autocmds, commands, llm, claude, usage, errors, search, healthcheck)
+4. **Snacks + theme** — snacks setup, `colorscheme dracula`, dracula_pro highlight overrides, lualine, diagnostics, native treesitter
+5. **Plugin setup** — `require("plugins").setup_all()` configures every vim.pack plugin and binds its keymaps
+6. **LSP wiring** — `LspAttach` autocmd, per-server `vim.lsp.config()`, then `vim.lsp.enable()`
+7. **User commands** — `:PackSync`
 
 ## Module Layout
 
 ```
 init.lua                    Entrypoint; plugin declarations + top-level wiring
 lua/
+  plugins.lua               setup_all(): every plugin's setup() + its keymaps
+  filetypes.lua             vim.filetype.add() — custom extensions/filenames/patterns
   editor/
-    options.lua             vim.opt + vim.g (split off from init.lua for clarity)
+    options.lua             ALL vim.opt + vim.g (init.lua sets only the leader)
     keymaps/init.lua        All non-plugin keymaps (module dir; require "editor.keymaps")
-    autocmds.lua            Autocommands: resize, cursor restore, filetype overrides, whitespace cleanup
+    autocmds.lua            Autocommands: resize, cursor restore, whitespace cleanup, yank mirror
     commands.lua            User commands: :Reload, :Vimrc*, :Zshenv*, :ZdotsIngest, :ZdotsStatus
-    explorer.lua            nvim-tree + Oil setup helpers
-    telescope.lua           Telescope defaults, fzf extension load
-    treesitter.lua          (referenced; treesitter module)
-    healthcheck.lua         :checkhealth entry
-  features/
-    search/init.lua         Snacks.picker / ripgrep search (module dir; require("features.search").setup())
-  filetypes.lua             vim.filetype.add() — custom extensions/filenames
-  lsp/
-    init.lua                Mason bootstrap, mason-tool-installer, LspAttach keymaps, server configs
-  plugins/
-    ai.lua                  CodeCompanion
-    ai_erb.lua              ERB/Otter AI integration
-    core.lua                flash, tpope suite, Ruby ecosystem, git, misc
-    dap.lua                 nvim-dap + dap-ui + adapters (Go, Ruby)
-    explorer.lua            oil.nvim + nvim-tree
-    formatting.lua          conform.nvim formatters
-    linting.lua             nvim-lint linters
-    lsp.lua                 lazydev, blink.cmp, fidget, nvim-lspconfig
-    search.lua              telescope.nvim
-    test.lua                neotest + adapters
-    treesitter.lua          nvim-treesitter + context, textobjects, autotag, commentstring
-    ui.lua                  gitsigns, trouble, todo-comments, dracula-pro, lualine, aerial, snacks, render-markdown
-    whichkey.lua            which-key group labels
+    explorer.lua            nvim-tree NERDTree-style mappings
+    search.lua              Native rg grep → quickfix (:Rg, <leader>ff)
+    telescope.lua           Telescope defaults
+    treesitter.lua          Native TS highlighting (vim.treesitter.start) + textobjects
+    llm.lua                 Local llama.cpp integration (ai-query)
+    claude.lua              Claude Code session pulse + :ClaudeDiff
+    usage.lua               Friction telemetry → :NvimUsage
+    errors.lua              Error log → :NvimErrors
+    healthcheck.lua         Deprecation-warning filter/log
   ui/
     diagnostics.lua         Diagnostic display config
-    dracula_pro.lua         Dracula Pro theme + palette definition
+    dracula_pro.lua         Dracula PRO palette + highlight overrides (colorscheme is "dracula")
     lualine.lua             lualine theme (dracula-pro colours) + rails_env component
   zdots/
     init.lua                Lua bridge to the zdots shell platform (zdots-ctx, ztask, pi-ctx-*)
-    plugin_configs.lua      Additional zdots-aware plugin configuration
 after/
   ftplugin/                 Per-filetype overrides: go, javascript, lua, ruby, typescript, vim
   plugin/
@@ -62,7 +49,7 @@ after/
 
 ## Plugin Manager
 
-`vim.pack` (native, Neovim 0.12). All plugins are declared with `vim.pack.add()` in `init.lua`. The `:PackSync` user command calls `vim.pack.update()`. Lock files (`lazy-lock.json`, `nvim-pack-lock.json`) are retained from a prior lazy.nvim setup but are not actively used.
+`vim.pack` (native, Neovim 0.12). All plugins are declared with `vim.pack.add()` in `init.lua` and configured in `lua/plugins.lua`. The `:PackSync` user command calls `vim.pack.update()`; `nvim-pack-lock.json` is the lockfile.
 
 ## zdots Integration (`lua/zdots/`)
 

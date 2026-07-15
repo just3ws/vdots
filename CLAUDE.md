@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-Personal Neovim configuration using Lua, organized into modular components with Lazy.nvim for plugin management. Modernized in 2026 for high performance.
+Personal Neovim configuration using Lua, built on native Neovim 0.12 features: `vim.pack` for plugin management, `vim.lsp.config`/`vim.lsp.enable` for LSP, native treesitter. No Lazy.nvim, no Mason.
 
 ## Development Commands
 
@@ -28,60 +28,60 @@ luac -p lua/**/*.lua
 ## Architecture
 
 ```text
-init.lua                    # Bootstrap: leader key (;), Lazy.nvim, module loading
+init.lua                    # Leader key (;), vim.pack.add, module loading, LSP wiring
 lua/
+├── plugins.lua             # setup_all(): every plugin's setup() + its keymaps
+├── filetypes.lua           # vim.filetype.add overrides
 ├── editor/                 # Core editor functionality
-│   ├── options.lua         # vim.opt settings
-│   ├── keymaps/init.lua    # Global keybindings
+│   ├── options.lua         # ALL vim.opt/vim.g settings (never set options in init.lua)
+│   ├── keymaps/init.lua    # Global non-plugin keybindings
 │   ├── autocmds.lua        # Autocommands
-│   ├── commands.lua        # User commands
-│   ├── explorer.lua        # Nvim-tree setup
-│   ├── search.lua          # Legacy search utils
-│   ├── telescope.lua       # Telescope config (lazy-loaded)
-│   └── treesitter.lua      # Treesitter config
-├── lsp/init.lua            # Mason + LSP + blink.cmp setup
+│   ├── commands.lua        # User commands (:Reload, :Zdots*)
+│   ├── explorer.lua        # Nvim-tree NERDTree-style mappings
+│   ├── search.lua          # Native rg grep → quickfix (:Rg, <leader>ff)
+│   ├── telescope.lua       # Telescope defaults
+│   ├── treesitter.lua      # Native TS highlighting + textobjects
+│   ├── llm.lua             # Local llama.cpp integration (ai-query)
+│   ├── claude.lua          # Claude Code session pulse + :ClaudeDiff
+│   ├── usage.lua           # Friction telemetry → :NvimUsage
+│   ├── errors.lua          # Error log → :NvimErrors
+│   └── healthcheck.lua     # Deprecation-warning filter/log
 ├── ui/
-│   ├── diagnostics.lua     # Diagnostic styling
+│   ├── diagnostics.lua     # vim.diagnostic.config styling
 │   ├── lualine.lua         # Statusline config
-│   └── dracula_pro.lua     # Theme setup
-└── plugins/                # Lazy.nvim specs
-    ├── ai.lua              # CodeCompanion
-    ├── core.lua            # tpope stack, diffview
-    ├── explorer.lua        # Oil.nvim + Nvim-tree
-    ├── formatting.lua      # Conform.nvim
-    ├── linting.lua         # Nvim-lint
-    ├── lsp.lua             # blink.cmp, lspconfig, fidget
-    ├── search.lua          # Telescope (lazy)
-    ├── test.lua            # Neotest + DAP
-    ├── treesitter.lua      # nvim-treesitter + context
-    ├── ui.lua              # snacks.nvim, render-markdown, aerial, dracula-pro
-    └── whichkey.lua        # which-key config
+│   └── dracula_pro.lua     # PRO palette + highlight overrides (colorscheme itself is "dracula")
+└── zdots/init.lua          # Bridge to the zdots shell platform (~/.config/zsh/bin)
 ```
+
+Load order in init.lua: leader → `vim.pack.add` → `editor.*` modules → snacks → theme (`dracula` + dracula_pro overrides, lualine, diagnostics, treesitter) → `require("plugins").setup_all()` → LSP wiring.
 
 ## Key Patterns & 2026 Standards
 
-**Treesitter**: **Native Neovim 0.12** implementation. `nvim-treesitter` plugin is archived and removed. Highlighting is enabled globally via `lua/editor/treesitter.lua`.
+**Plugin management**: Native **`vim.pack`** (declared in init.lua, `:PackSync` to update, `nvim-pack-lock.json` is the lockfile). Plugin *setup* lives in `lua/plugins.lua` — add new plugins in both places.
 
-**Completion**: **blink.cmp**
- is the primary engine (Rust-based, fast). Replaces nvim-cmp.
+**Treesitter**: Native Neovim 0.12 (`vim.treesitter.start` via FileType autocmd in `lua/editor/treesitter.lua`).
 
-**Fuzzy Finder**: **Snacks.picker** is the default for files/grep/buffers. Telescope is kept for specialized extensions.
+**Completion**: **blink.cmp** (Rust-based; installed via vim.pack with a `1.*` version range so the prebuilt fuzzy lib is used).
+
+**LSP**: Native `vim.lsp.config()` + `vim.lsp.enable()` in init.lua. Servers resolve from PATH (mise shims / Homebrew) — no Mason.
+
+**Fuzzy Finder**: **Telescope** bound to `<C-p>`/`<leader>f*`; **Snacks.picker** drives the dashboard.
 
 **File Explorer**: **Oil.nvim** (`-`) for buffer-based editing, **Nvim-tree** (`<leader>e`) for sidebar.
 
-**Formatting/Linting**: **Conform.nvim** for formatting, **Nvim-lint** for asynchronous linting.
+**Formatting/Linting**: **Conform.nvim** on save, **Nvim-lint** async.
 
 **UI Enhancements**:
-- **Snacks.nvim**: Handles dashboard, notifications, gitbrowse, and pickers.
-- **render-markdown.nvim**: Automatic beautiful rendering for `.md` and CodeCompanion.
-- **Diffview.nvim**: Primary interface for Git diffs (`<leader>gd`).
-- **Aerial.nvim**: Code outline/symbols sidebar (`<leader>a`).
+- **Snacks.nvim**: dashboard, notifications, gitbrowse, statuscolumn.
+- **render-markdown.nvim**: renders `.md` and CodeCompanion buffers.
+- **Diffview.nvim**: Git diffs (`<leader>gd`), Claude last-change diff (`<leader>gC`).
+- **Aerial.nvim**: code outline (`<leader>a`).
 
-**Leader Key**: `;` (also mapped to `<leader>` in some contexts, but primarily `;`).
+**Leader Key**: `;`
 
 ## Guidelines
 
-- **Performance First**: Favor `blink.cmp` and `snacks.nvim` modules over heavier alternatives.
-- **Lazy Loading**: Use `event`, `ft`, or `keys` in plugin specs.
+- **Options live in `lua/editor/options.lua`** — init.lua sets only the leader.
+- **Ponytail rules**: prefer deletion, stdlib, and native platform features; mark deliberate shortcuts with `-- ponytail:` comments.
 - **Documentation**: Keep `KEYMAPS.md` updated when adding new bindings.
 - **Tests**: Run `./test/run.sh` before and after changes.

@@ -1,6 +1,6 @@
 # Plugins
 
-All plugins are declared via `vim.pack.add()` in `init.lua`. Configuration lives in `lua/plugins/` or inline in `init.lua`. The lock file is `nvim-pack-lock.json`.
+All plugins are declared via `vim.pack.add()` in `init.lua`. Configuration lives in `lua/plugins.lua` (`setup_all()`). The lock file is `nvim-pack-lock.json`.
 
 ## UI & Theme
 
@@ -67,10 +67,7 @@ All plugins are declared via `vim.pack.add()` in `init.lua`. Configuration lives
 | Plugin | Role |
 |--------|------|
 | `neovim/nvim-lspconfig` | LSP server configuration |
-| `williamboman/mason.nvim` | LSP/tool installer |
-| `williamboman/mason-lspconfig.nvim` | Bridges mason ↔ lspconfig; auto-enables installed servers |
-| `WhoIsSethDaniel/mason-tool-installer.nvim` | Ensures non-LSP tools: `debugpy`, `stylua`, `selene`, `goimports`, `golangci-lint` |
-| `saghen/blink.cmp` + `rafamaduri/friendly-snippets` | Completion engine (sources: lsp, path, snippets, buffer) |
+| `saghen/blink.cmp` | Completion engine (sources: lsp, path, snippets, buffer) |
 | `folke/lazydev.nvim` | Neovim API type annotations for Lua files |
 | `jmbuhr/otter.nvim` | Embedded language LSP (e.g., Ruby inside ERB `<% %>`) |
 

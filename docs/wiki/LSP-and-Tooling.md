@@ -1,32 +1,30 @@
 # LSP and Tooling
 
-Language servers are configured with `vim.lsp.config()` and enabled with `vim.lsp.enable()` (Neovim 0.12 native API). Completion is provided by blink.cmp. Formatting runs on save via conform.nvim; linting triggers on `BufEnter`, `BufWritePost`, and `InsertLeave` via nvim-lint. Mason manages non-Ruby tooling; Ruby servers are global gems managed by mise.
+Language servers are configured with `vim.lsp.config()` and enabled with `vim.lsp.enable()` (Neovim 0.12 native API). Completion is provided by blink.cmp. Formatting runs on save via conform.nvim; linting triggers on `BufEnter`, `BufWritePost`, and `InsertLeave` via nvim-lint. No Mason — all server binaries resolve from PATH (mise shims / Homebrew); Ruby servers are global gems managed by mise.
 
 ## Language Servers
 
-| Server | Language | Manager | Notes |
-|--------|----------|---------|-------|
-| `ruby_lsp` | Ruby | global gem (mise) | `formatter = "auto"`; inlay hints toggle via `<leader>ih` |
-| `standardrb` | Ruby | global gem (mise) | Runs alongside ruby_lsp |
-| `gopls` | Go | Mason auto-enable | `usePlaceholders`, `completeUnimported`, `unusedparams` |
-| `lua_ls` | Lua | Mason (`ensure_installed`) | `globals = {"vim"}`, `checkThirdParty = false` |
-| `vimls` | Vimscript | Mason (`ensure_installed`) | Default config |
-| `stylelint_lsp` | CSS/SCSS | Mason (`ensure_installed`) | Default config |
-| `basedpyright` | Python | `vim.lsp.enable()` in init.lua | Default config |
-| `yamlls` | YAML | `vim.lsp.enable()` in init.lua | `keyOrdering = false` |
-| `terraformls` | Terraform | `vim.lsp.enable()` in init.lua | Default config |
+All enabled via `vim.lsp.enable()` in init.lua; binaries come from PATH.
 
-Ruby servers (`ruby_lsp`, `standardrb`) are intentionally excluded from Mason — they are installed as global gems via mise post-install hooks. If they were previously installed via Mason, run `:MasonUninstall ruby-lsp standardrb` to remove the stale binaries.
+| Server | Language | Notes |
+|--------|----------|-------|
+| `ruby_lsp` | Ruby | `formatter = "auto"`; inlay hints toggle via `<leader>ih` |
+| `standardrb` | Ruby | Runs alongside ruby_lsp |
+| `gopls` | Go | `usePlaceholders`, `completeUnimported`, `unusedparams` |
+| `lua_ls` | Lua | `globals = {"vim"}`, `checkThirdParty = false` |
+| `basedpyright` | Python | Default config |
+| `yamlls` | YAML | `keyOrdering = false` |
+| `terraformls` | Terraform | Default config |
 
 ## Completion
 
-**blink.cmp** (`saghen/blink.cmp`) with sources: `lsp`, `path`, `snippets`, `buffer`. Snippet corpus from `friendly-snippets`. Capabilities are registered globally via `vim.lsp.config("*", { capabilities = require("blink.cmp").get_lsp_capabilities() })`.
+**blink.cmp** (`saghen/blink.cmp`, vim.pack with a `1.*` version range for the prebuilt fuzzy lib) with sources: `lsp`, `path`, `snippets`, `buffer`. blink registers its LSP capabilities automatically.
 
-`completeopt` is set to `menuone,noselect,noinsert`. A native `InsertCharPre` autocmd triggers omnifunc (`<C-x><C-o>`) when typing word characters, `.`, or `/` outside an active menu.
+`completeopt` is set to `menuone,noselect,noinsert`; `omnifunc` falls back to `vim.lsp.omnifunc` for manual `<C-x><C-o>`.
 
 ## Embedded Language LSP
 
-**otter.nvim** provides LSP support inside embedded code blocks (e.g., Ruby inside ERB `<% %>` tags). Configured in `lua/plugins/ai_erb.lua`.
+**otter.nvim** provides LSP support inside embedded code blocks (e.g., Ruby inside ERB `<% %>` tags). Configured in `lua/plugins.lua`.
 
 ## LSP Keymaps (buffer-local, set on LspAttach)
 
@@ -37,9 +35,7 @@ Ruby servers (`ruby_lsp`, `standardrb`) are intentionally excluded from Mason �
 | `gr` | References |
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code action |
-| `[d` / `]d` | Previous / next diagnostic |
-| `<leader>d` | Diagnostic float |
-| `<leader>q` | Diagnostics → location list |
+| `[d` / `]d` | Previous / next diagnostic (Neovim default) |
 | `<leader>ih` | Toggle inlay hints (ruby_lsp only) |
 
 ## Formatters (conform.nvim, on save)
@@ -66,17 +62,9 @@ Format manually: `<leader>f` (any mode).
 | JavaScript | `eslint_d` → `eslint` |
 | TypeScript | `eslint_d` → `eslint` |
 
-## Mason-managed Tools
+## CLI Tooling
 
-Mason (`mason-tool-installer`) ensures these non-LSP binaries are installed and kept current:
-
-| Tool | Purpose |
-|------|---------|
-| `debugpy` | Python DAP adapter |
-| `stylua` | Lua formatter |
-| `selene` | Lua linter |
-| `goimports` | Go import organiser + formatter |
-| `golangci-lint` | Go lint aggregator |
+Formatters, linters, and DAP adapters (`stylua`, `selene`, `goimports`, `golangci-lint`, `debugpy`, …) are installed via mise/Homebrew and resolved from PATH — nothing inside Neovim manages them.
 
 ## Runtime Providers
 

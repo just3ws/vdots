@@ -4,13 +4,12 @@
 
 This repository is a Lua-based Neovim configuration.
 
-- `init.lua`: bootstrap entrypoint (leader key, Lazy.nvim setup, module loading).
+- `init.lua`: bootstrap entrypoint (leader key, `vim.pack.add`, module loading, native LSP wiring).
 - `lua/`: main modules by concern:
-  - `lua/editor/` for options, keymaps, commands, autocmds, Telescope, Treesitter.
-  - `lua/plugins/` for Lazy plugin specs and plugin-specific config (for example `ale.lua`).
-  - `lua/lsp/` for Mason/LSP/nvim-cmp integration.
+  - `lua/editor/` for options, keymaps, commands, autocmds, Telescope, Treesitter, search.
+  - `lua/plugins.lua` for all plugin `setup()` calls and their keymaps.
   - `lua/ui/` for colors and diagnostics display.
-  - `lua/legacy/` for compatibility aliases.
+  - `lua/zdots/` for the zdots shell-platform bridge.
 - `after/`: filetype and late-loading overrides.
 - `test/`: regression suite (`test/regression.lua`) and runner (`test/run.sh`).
 
@@ -53,4 +52,4 @@ Use these from repo root:
 ## Security & Configuration Notes
 
 - Do not commit machine-local secrets or tokens.
-- Treat `lazy-lock.json` updates as intentional dependency changes; mention plugin bumps in the PR.
+- Treat `nvim-pack-lock.json` updates as intentional dependency changes; mention plugin bumps in the PR.
