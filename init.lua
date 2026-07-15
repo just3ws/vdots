@@ -2,55 +2,15 @@
 -- 🧠 Native Neovim v0.12 Configuration (Final Safe Version)
 -- ============================================================================
 
-local opt = vim.opt
-local g = vim.g
-
-g.mapleader = ";"
-opt.mouse = "a"
-opt.number = true
-opt.relativenumber = true
-opt.numberwidth = 3
-opt.wrap = false
-opt.termguicolors = true
-opt.laststatus = 2
-opt.showmode = false
-opt.autowrite = true
-opt.joinspaces = false
-
-opt.expandtab = true
-opt.tabstop = 2
-opt.shiftwidth = 2
-opt.shiftround = true
-
-opt.ignorecase = true
-opt.smartcase = true
-opt.hlsearch = true
-opt.inccommand = "nosplit"
-
-opt.signcolumn = "yes"
-opt.updatetime = 250
-opt.scrolloff = 4
-opt.sidescrolloff = 8
-
-opt.clipboard:append { "unnamed", "unnamedplus" }
-
-local data = vim.fn.stdpath "data"
-opt.undofile = true
-opt.undodir = data .. "/undo//"
-
--- Setup PATH
-local path = vim.env.PATH or ""
-local mise_shims = vim.fn.expand("~/.local/share/mise/shims")
-if vim.fn.isdirectory(mise_shims) == 1 and not path:find(mise_shims, 1, true) then
-  vim.env.PATH = mise_shims .. ":" .. path
-end
+-- Leader before anything that binds keys. All other options live in
+-- editor/options.lua (loaded below) — don't set vim.opt here.
+vim.g.mapleader = ";"
 
 -- Plugin Management
 vim.pack.add({
   { src = "https://github.com/dracula/vim", name = "dracula" },
   { src = "https://github.com/nvim-lualine/lualine.nvim" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
-  { src = "https://github.com/echasnovski/mini.nvim" },
   { src = "https://github.com/folke/snacks.nvim" },
   { src = "https://github.com/folke/which-key.nvim" },
   { src = "https://github.com/lukas-reineke/indent-blankline.nvim" },
@@ -158,26 +118,6 @@ require("snacks").setup({
 vim.cmd.colorscheme("dracula")
 require "ui.lualine"
 
-require("oil").setup()
-require("mini.statusline").setup()
-require("mini.pick").setup()
-require("which-key").setup()
-
-require("nvim-tree").setup({
-  view = { width = 36, side = "left" },
-  renderer = {
-    group_empty = true,
-    highlight_git = true,
-    icons = {
-      show = { file = true, folder = true, folder_arrow = true, git = true },
-    },
-  },
-  filters = {
-    dotfiles = false,
-    custom = { "^\\.DS_Store$" },
-  },
-})
-require("editor.explorer").setup()
 
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
@@ -228,5 +168,3 @@ vim.api.nvim_create_autocmd("InsertCharPre", {
 opt.completeopt = { "menuone", "noselect", "noinsert" }
 
 vim.api.nvim_create_user_command("PackSync", function() vim.pack.update() end, {})
-vim.keymap.set("n", "<leader>vr", "<cmd>source $MYVIMRC<cr>", { desc = "Reload Config" })
-vim.keymap.set("n", "<leader>ve", "<cmd>edit $MYVIMRC<cr>", { desc = "Edit Config" })
