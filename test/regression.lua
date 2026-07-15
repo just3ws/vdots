@@ -111,12 +111,12 @@ test("Clipboard uses copy-on-yank (no unnamedplus, yank-mirror autocmd present)"
 end)
 
 -- ============================================================================
--- SECTION 2: Plugin Loading (lazy.nvim)
+-- SECTION 2: Plugin Loading (vim.pack + lua/plugins.lua wiring)
 -- ============================================================================
 print "\n[Plugin Loading]"
 
-test("lazy.nvim is loaded", function()
-  assert_exists "lazy"
+test("plugin wiring module loaded (lua/plugins.lua)", function()
+  assert_true(package.loaded["plugins"] ~= nil, "require('plugins').setup_all() should have run")
 end)
 
 test("Core plugins loaded: plenary", function()
@@ -139,17 +139,21 @@ test("Core plugins loaded: nvim-lspconfig", function()
   assert_exists "lspconfig"
 end)
 
-test("Core plugins loaded: mason", function()
-  assert_exists "mason"
+test("Core plugins loaded: gitsigns", function()
+  assert_exists "gitsigns"
+end)
+
+test("Core plugins loaded: conform", function()
+  assert_exists "conform"
 end)
 
 test("Core plugins loaded: lualine", function()
   assert_exists "lualine"
 end)
 
-test("Theme loaded: ui.dracula_pro", function()
+test("Theme loaded: ui.dracula_pro overrides on dracula", function()
   assert_exists "ui.dracula_pro"
-  assert_eq(vim.g.colors_name, "dracula_pro", "colorscheme should be dracula_pro")
+  assert_eq(vim.g.colors_name, "dracula", "colorscheme should be dracula")
 end)
 
 -- ============================================================================
@@ -158,18 +162,15 @@ end)
 print "\n[LSP Configuration]"
 
 test("LSP servers configured: lua_ls", function()
-  local config = require("lspconfig").lua_ls
-  assert_true(config ~= nil, "lua_ls config should exist")
+  assert_true(vim.lsp.config["lua_ls"] ~= nil, "lua_ls config should exist")
 end)
 
 test("LSP servers configured: gopls", function()
-  local config = require("lspconfig").gopls
-  assert_true(config ~= nil, "gopls config should exist")
+  assert_true(vim.lsp.config["gopls"] ~= nil, "gopls config should exist")
 end)
 
 test("LSP servers configured: ruby_lsp", function()
-  local config = require("lspconfig").ruby_lsp
-  assert_true(config ~= nil, "ruby_lsp config should exist")
+  assert_true(vim.lsp.config["ruby_lsp"] ~= nil, "ruby_lsp config should exist")
 end)
 
 test("blink.cmp has LSP source", function()
@@ -235,14 +236,19 @@ local function keymap_exists(mode, lhs)
   return false, nil
 end
 
-test("Keymap: <leader><space> mapped (Snacks picker)", function()
-  local exists, _ = keymap_exists("n", "; ")
-  assert_true(exists, "<leader><space> should be mapped")
+test("Keymap: <C-p> mapped (Telescope find_files)", function()
+  local exists, _ = keymap_exists("n", "<C-p>")
+  assert_true(exists, "<C-p> should be mapped")
 end)
 
-test("Keymap: <leader>/ mapped (Snacks grep)", function()
-  local exists, _ = keymap_exists("n", ";/")
-  assert_true(exists, "<leader>/ should be mapped")
+test("Keymap: <leader>ff mapped (grep to quickfix)", function()
+  local exists, _ = keymap_exists("n", ";ff")
+  assert_true(exists, "<leader>ff should be mapped")
+end)
+
+test("Keymap: <leader>f mapped (Conform format — plugins.lua wiring)", function()
+  local exists, _ = keymap_exists("n", ";f")
+  assert_true(exists, "<leader>f should be mapped")
 end)
 
 test("Keymap: Split navigation <C-h/j/k/l>", function()
@@ -281,12 +287,16 @@ test("Command: :NvimTreeToggle", function()
   assert_true(command_exists "NvimTreeToggle", ":NvimTreeToggle should exist")
 end)
 
-test("Command: :Lazy (plugin manager)", function()
-  assert_true(command_exists "Lazy", ":Lazy should exist")
+test("Command: :Rg (native grep)", function()
+  assert_true(command_exists "Rg", ":Rg should exist")
 end)
 
-test("Command: :Mason (LSP installer)", function()
-  assert_true(command_exists "Mason", ":Mason should exist")
+test("Command: :DiffviewOpen (plugins.lua wiring)", function()
+  assert_true(command_exists "DiffviewOpen", ":DiffviewOpen should exist")
+end)
+
+test("Command: :PackSync (vim.pack update)", function()
+  assert_true(command_exists "PackSync", ":PackSync should exist")
 end)
 
 -- ============================================================================
@@ -294,8 +304,8 @@ end)
 -- ============================================================================
 print "\n[Theme / Highlights]"
 
-test("Dracula PRO colorscheme active", function()
-  assert_eq(vim.g.colors_name, "dracula_pro", "colorscheme")
+test("Dracula colorscheme active", function()
+  assert_eq(vim.g.colors_name, "dracula", "colorscheme")
 end)
 
 test("Normal highlight exists", function()

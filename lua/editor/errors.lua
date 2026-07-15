@@ -9,15 +9,16 @@ local M = {}
 local LOG_LEVELS = { [vim.log.levels.ERROR] = "error", [vim.log.levels.WARN] = "warn" }
 
 local function logfile()
-  return vim.fn.stdpath("state") .. "/errors.jsonl"
+  return vim.fn.stdpath "state" .. "/errors.jsonl"
 end
 
 local function diag_context()
   local bufnr = vim.api.nvim_get_current_buf()
   local ft = vim.bo[bufnr].filetype
 
-  local clients = vim.tbl_map(function(c) return c.name end,
-    vim.lsp.get_clients({ bufnr = bufnr }))
+  local clients = vim.tbl_map(function(c)
+    return c.name
+  end, vim.lsp.get_clients { bufnr = bufnr })
 
   local diags = vim.diagnostic.get(bufnr)
   local diag_summary = {}
@@ -35,14 +36,17 @@ function M.setup()
   vim.notify = function(msg, level, opts)
     if LOG_LEVELS[level] then
       local ok, ctx = pcall(diag_context)
-      local entry = vim.json.encode({
-        ts  = os.time(),
+      local entry = vim.json.encode {
+        ts = os.time(),
         lvl = LOG_LEVELS[level],
         msg = tostring(msg),
         ctx = ok and ctx or {},
-      })
+      }
       local f = io.open(logfile(), "a")
-      if f then f:write(entry .. "\n"); f:close() end
+      if f then
+        f:write(entry .. "\n")
+        f:close()
+      end
     end
     return _orig_notify(msg, level, opts)
   end
@@ -51,12 +55,15 @@ function M.setup()
     local lines = {}
     local f = io.open(logfile(), "r")
     if f then
-      for line in f:lines() do lines[#lines + 1] = line end
+      for line in f:lines() do
+        lines[#lines + 1] = line
+      end
       f:close()
     end
 
     if #lines == 0 then
-      vim.notify("No errors logged yet.", vim.log.levels.INFO); return
+      vim.notify("No errors logged yet.", vim.log.levels.INFO)
+      return
     end
 
     -- most-recent first; optionally filter by arg (grep on raw JSON)
@@ -75,8 +82,10 @@ function M.setup()
       relative = "editor",
       width = math.min(160, vim.o.columns - 4),
       height = math.min(30, #out),
-      col = 2, row = 2,
-      style = "minimal", border = "rounded",
+      col = 2,
+      row = 2,
+      style = "minimal",
+      border = "rounded",
       title = " nvim errors (q to close) ",
     })
     vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = buf, nowait = true })

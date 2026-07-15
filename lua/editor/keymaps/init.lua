@@ -74,7 +74,7 @@ map("c", "<C-p>", "<up>", { noremap = true })
 local search = require "editor.search"
 
 vim.keymap.set("n", "<Leader>ff", function()
-  local query = vim.fn.input("Rg> ")
+  local query = vim.fn.input "Rg> "
   search.run_grep(query)
 end, { desc = "Quickfix: Grep text" })
 

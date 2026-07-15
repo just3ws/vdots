@@ -12,6 +12,11 @@
       "rev": "787662fe90cd057942bc5b682fd70c87e1a9dd77",
       "src": "https://github.com/vim-scripts/align"
     },
+    "blink.cmp": {
+      "rev": "78336bc89ee5365633bcf754d93df01678b5c08f",
+      "src": "https://github.com/saghen/blink.cmp",
+      "version": "1.0.0 - 2.0.0"
+    },
     "codecompanion.nvim": {
       "rev": "d8a5d885ae477d80d9f4fdfad4f600cd0db75451",
       "src": "https://github.com/olimorris/codecompanion.nvim"

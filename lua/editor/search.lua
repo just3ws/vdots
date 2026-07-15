@@ -4,15 +4,23 @@ local M = {}
 --- Consolidates native grep capabilities and picker configurations.
 
 local function trim(value)
-  if type(value) ~= "string" then return nil end
+  if type(value) ~= "string" then
+    return nil
+  end
   local cleaned = vim.trim(value)
-  return cleaned == "" and nil or cleaned
+  -- explicit branch: `cleaned == "" and nil or cleaned` returns "" (and/or trap)
+  if cleaned == "" then
+    return nil
+  end
+  return cleaned
 end
 
 function M.run_grep(query, opts)
   local normalized = trim(query)
-  if not normalized then return false end
-  
+  if not normalized then
+    return false
+  end
+
   vim.cmd(("silent grep! %s"):format(vim.fn.shellescape(normalized)))
   if not (opts and opts.open_qf == false) then
     vim.cmd "copen"

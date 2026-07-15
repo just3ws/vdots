@@ -2,7 +2,7 @@ local M = {}
 
 ---Initialize native treesitter and apply Dracula PRO highlight overrides.
 function M.setup()
-  -- Neovim 0.12+ has built-in treesitter support. 
+  -- Neovim 0.12+ has built-in treesitter support.
   -- Highlighting is enabled by default for many languages.
   -- For others, we can enable it via autocmd or globally.
 
@@ -20,7 +20,7 @@ function M.setup()
   local ts_textobjects_ok, ts_textobjects = pcall(require, "nvim-treesitter-textobjects")
   if ts_textobjects_ok then
     -- Note: Textobjects plugin now works directly with vim.treesitter in 0.12+
-    ts_textobjects.setup({
+    ts_textobjects.setup {
       select = {
         enable = true,
         lookahead = true,
@@ -53,7 +53,7 @@ function M.setup()
           ["[]"] = "@class.outer",
         },
       },
-    })
+    }
   end
 
   local dracula = require("ui.dracula_pro").palette

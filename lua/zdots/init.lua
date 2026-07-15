@@ -7,14 +7,18 @@ local BIN_DIR = vim.fn.expand "~/.config/zsh/bin/"
 function M.get_status()
   local cmd = BIN_DIR .. "pi-ctx-status 2>/dev/null"
   local handle = io.popen(cmd)
-  if not handle then return nil end
-  local result = handle:read("*a")
+  if not handle then
+    return nil
+  end
+  local result = handle:read "*a"
   handle:close()
 
-  if result == "" then return nil end
+  if result == "" then
+    return nil
+  end
 
   local lines = {}
-  for line in result:gmatch("[^\r\n]+") do
+  for line in result:gmatch "[^\r\n]+" do
     table.insert(lines, line)
   end
   return lines
@@ -26,8 +30,10 @@ end
 function M.ztask(subcmd)
   local cmd = string.format("%sztask %s --json 2>/dev/null", BIN_DIR, subcmd)
   local handle = io.popen(cmd)
-  if not handle then return {} end
-  local result = handle:read("*a")
+  if not handle then
+    return {}
+  end
+  local result = handle:read "*a"
   handle:close()
 
   local ok, data = pcall(vim.fn.json_decode, result)
@@ -38,10 +44,16 @@ end
 ---@param file_path string
 ---@return string
 function M.hydrate_context(file_path)
-  local cmd = string.format("%spi-ctx-hydrate --file %s --brief 2>/dev/null", BIN_DIR, vim.fn.shellescape(file_path))
+  local cmd = string.format(
+    "%spi-ctx-hydrate --file %s --brief 2>/dev/null",
+    BIN_DIR,
+    vim.fn.shellescape(file_path)
+  )
   local handle = io.popen(cmd)
-  if not handle then return "" end
-  local result = handle:read("*a")
+  if not handle then
+    return ""
+  end
+  local result = handle:read "*a"
   handle:close()
   return result
 end
@@ -57,10 +69,11 @@ function M.ingest_buffer(bufnr)
 
   -- We use zdots-ingest-prepare followed by zdots-ctx to capture the content.
   -- This ensures it goes through the proper distillation pipeline.
-  local cmd = string.format("%szdots-ctx capture --file %s 2>&1", BIN_DIR, vim.fn.shellescape(file_path))
-  
+  local cmd =
+    string.format("%szdots-ctx capture --file %s 2>&1", BIN_DIR, vim.fn.shellescape(file_path))
+
   vim.notify("Ingesting context into zdots...", vim.log.levels.INFO)
-  
+
   vim.fn.jobstart(cmd, {
     on_stdout = function(_, data)
       if data and data[1] ~= "" then
@@ -84,11 +97,11 @@ function M.show_status()
     vim.notify("zdots: Platform status unavailable", vim.log.levels.WARN)
     return
   end
-  
+
   -- Create a floating window
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, status)
-  
+
   local win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
     width = 80,
@@ -99,12 +112,16 @@ function M.show_status()
     border = "rounded",
     title = " zdots Platform Status ",
   })
-  
+
   vim.bo[buf].modifiable = false
-  
+
   -- Use a safer keymap to close the window, ensuring we target the buffer.
-  vim.keymap.set("n", "q", function() vim.api.nvim_win_close(win, true) end, { buffer = buf, nowait = true })
-  vim.keymap.set("n", "<esc>", function() vim.api.nvim_win_close(win, true) end, { buffer = buf, nowait = true })
+  vim.keymap.set("n", "q", function()
+    vim.api.nvim_win_close(win, true)
+  end, { buffer = buf, nowait = true })
+  vim.keymap.set("n", "<esc>", function()
+    vim.api.nvim_win_close(win, true)
+  end, { buffer = buf, nowait = true })
 end
 
 return M

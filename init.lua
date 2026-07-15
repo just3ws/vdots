@@ -7,7 +7,7 @@
 vim.g.mapleader = ";"
 
 -- Plugin Management
-vim.pack.add({
+vim.pack.add {
   { src = "https://github.com/dracula/vim", name = "dracula" },
   { src = "https://github.com/nvim-lualine/lualine.nvim" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
@@ -61,7 +61,7 @@ vim.pack.add({
   { src = "https://github.com/nvim-lua/plenary.nvim" },
   -- Release tag so blink downloads its prebuilt Rust fuzzy lib (no cargo).
   { src = "https://github.com/saghen/blink.cmp", version = vim.version.range "1.*" },
-})
+}
 
 require "editor.options" -- General settings (all vim.opt)
 require "filetypes" -- Custom filetype mappings
@@ -75,7 +75,7 @@ require("editor.errors").setup() -- 🪲 All-errors log with diagnostic context 
 require("editor.search").setup() -- Native grep/quickfix (:Rg)
 require "editor.healthcheck" -- Log deprecation warnings
 
-require("snacks").setup({
+require("snacks").setup {
   dashboard = {
     sections = {
       { section = "header" },
@@ -88,8 +88,18 @@ require("snacks").setup({
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.smart()" },
           { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
           { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
-          { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
-          { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.picker.files({cwd = vim.fn.stdpath('config')})" },
+          {
+            icon = " ",
+            key = "r",
+            desc = "Recent Files",
+            action = ":lua Snacks.picker.recent()",
+          },
+          {
+            icon = " ",
+            key = "c",
+            desc = "Config",
+            action = ":lua Snacks.picker.files({cwd = vim.fn.stdpath('config')})",
+          },
           { icon = "󰒲 ", key = "L", desc = "PackSync", action = ":PackSync" },
           { icon = " ", key = "q", desc = "Quit", action = ":qa" },
         },
@@ -113,10 +123,10 @@ require("snacks").setup({
   quickfile = { enabled = true },
   statuscolumn = { enabled = true },
   bigfile = { enabled = true },
-})
+}
 
 -- UI & Theme
-vim.cmd.colorscheme("dracula")
+vim.cmd.colorscheme "dracula"
 require("ui.dracula_pro").setup() -- Dracula PRO highlight overrides on top
 require "ui.lualine"
 require("ui.diagnostics").setup() -- Diagnostic signs / virtual-text styling
@@ -125,23 +135,24 @@ require("editor.treesitter").setup() -- Native TS highlighting + textobjects
 -- Plugin setup + their keymaps (everything vim.pack installs above)
 require("plugins").setup_all()
 
-
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     local bufnr = args.buf
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if not client then return end
-    
+    if not client then
+      return
+    end
+
     local map = function(mode, lhs, rhs, desc)
       vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, noremap = true, desc = desc })
     end
-    
+
     map("n", "gd", vim.lsp.buf.definition, "Go to definition")
     map("n", "K", vim.lsp.buf.hover, "Hover")
     map("n", "gr", vim.lsp.buf.references, "References")
     map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
     map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
-    
+
     if client.name == "ruby_lsp" then
       map("n", "<leader>ih", function()
         vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
@@ -151,15 +162,32 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 vim.lsp.config("gopls", {
-  settings = { gopls = { usePlaceholders = true, completeUnimported = true, analyses = { unusedparams = true } } }
+  settings = {
+    gopls = {
+      usePlaceholders = true,
+      completeUnimported = true,
+      analyses = { unusedparams = true },
+    },
+  },
 })
 vim.lsp.config("lua_ls", {
-  settings = { Lua = { diagnostics = { globals = { "vim" } }, workspace = { checkThirdParty = false } } }
+  settings = {
+    Lua = { diagnostics = { globals = { "vim" } }, workspace = { checkThirdParty = false } },
+  },
 })
 vim.lsp.config("ruby_lsp", { init_options = { formatter = "auto" } })
 vim.lsp.config("yamlls", { settings = { yaml = { keyOrdering = false } } })
 
-vim.lsp.enable({ "lua_ls", "gopls", "ruby_lsp", "standardrb", "basedpyright", "yamlls", "terraformls" })
+vim.lsp.enable {
+  "lua_ls",
+  "gopls",
+  "ruby_lsp",
+  "standardrb",
+  "basedpyright",
+  "yamlls",
+  "terraformls",
+}
 
-
-vim.api.nvim_create_user_command("PackSync", function() vim.pack.update() end, {})
+vim.api.nvim_create_user_command("PackSync", function()
+  vim.pack.update()
+end, {})
