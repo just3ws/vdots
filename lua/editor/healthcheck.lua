@@ -40,20 +40,11 @@ end
 local original_deprecate = vim.deprecate
 
 vim.deprecate = function(name, alt, version, plugin)
-  -- Known upstream deprecations that are safe to ignore (Neovim 0.11.x)
-  local known = {
-    ["sign_define"] = true,
-    [":sign-define"] = true,
-    ["vim.fn.sign_define"] = true,
-  }
-
-  if type(name) == "string" then
-    for pattern, _ in pairs(known) do
-      if name:match(pattern) then
-        log_deprecation(name, alt, version, plugin)
-        return
-      end
-    end
+  -- Known upstream deprecation that is safe to ignore (Neovim 0.11.x):
+  -- every spelling of sign_define contains this substring.
+  if type(name) == "string" and name:find("sign_define", 1, true) then
+    log_deprecation(name, alt, version, plugin)
+    return
   end
 
   -- Forward all other deprecations normally

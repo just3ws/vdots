@@ -29,23 +29,7 @@ function M.setup()
 
   -- 2. Commands
   vim.api.nvim_create_user_command("Rg", function(opts)
-    local query = opts.args
-    if query == "" then
-      local prompt_query = vim.fn.input("Rg> ")
-      M.run_grep(prompt_query)
-      return
-    end
-    M.run_grep(query)
-  end, { nargs = "*" })
-
-  vim.api.nvim_create_user_command("Ack", function(opts)
-    local query = opts.args
-    if query == "" then
-      local prompt_query = vim.fn.input("Ack> ")
-      M.run_grep(prompt_query)
-      return
-    end
-    M.run_grep(query)
+    M.run_grep(opts.args ~= "" and opts.args or vim.fn.input "Rg> ")
   end, { nargs = "*" })
 end
 

@@ -104,33 +104,7 @@ for ft, size in pairs(indent_settings) do
   })
 end
 
--- Filetype overrides based on filename patterns
-local filetype_overrides = {
-  ["*.md"] = "markdown",
-  [".mdlrc"] = "ruby",
-  [".env"] = "sh",
-  ["*.bpmn"] = "xml",
-  [".env.*"] = "sh",
-  [".erdconfig"] = "yaml",
-  [".eslintignore"] = "gitignore",
-  [".npmignore"] = "gitignore",
-  [".prettierignore"] = "gitignore",
-  [".jscsrc"] = "json",
-  [".jshintrc"] = "json",
-  [".eslintrc"] = "json",
-  [".prettierrc"] = "json",
-  [".releaserc"] = "json",
-  ["*.lst"] = "text",
-}
-for pattern, ft in pairs(filetype_overrides) do
-  vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    group = augroup,
-    pattern = pattern,
-    callback = function()
-      vim.bo.filetype = ft
-    end,
-  })
-end
+-- Filetype overrides live in lua/filetypes.lua (vim.filetype.add).
 
 -- Highlight trailing whitespace for specific filetypes
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {

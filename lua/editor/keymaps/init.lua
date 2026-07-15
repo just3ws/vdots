@@ -71,10 +71,9 @@ map("n", "<Leader><Leader>", "V", { noremap = true, silent = true, desc = "Selec
 map("c", "<C-n>", "<down>", { noremap = true })
 map("c", "<C-p>", "<up>", { noremap = true })
 
-local search = require "features.search"
+local search = require "editor.search"
 
 vim.keymap.set("n", "<Leader>ff", function()
-  -- Using the new features.search.run_grep wrapper which supports prompting
   local query = vim.fn.input("Rg> ")
   search.run_grep(query)
 end, { desc = "Quickfix: Grep text" })
