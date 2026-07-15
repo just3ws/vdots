@@ -59,6 +59,8 @@ vim.pack.add({
   { src = "https://github.com/suketa/nvim-dap-ruby" },
   { src = "https://github.com/olimorris/codecompanion.nvim" },
   { src = "https://github.com/nvim-lua/plenary.nvim" },
+  -- Release tag so blink downloads its prebuilt Rust fuzzy lib (no cargo).
+  { src = "https://github.com/saghen/blink.cmp", version = vim.version.range "1.*" },
 })
 
 require "editor.options" -- General settings (all vim.opt)
@@ -159,16 +161,5 @@ vim.lsp.config("yamlls", { settings = { yaml = { keyOrdering = false } } })
 
 vim.lsp.enable({ "lua_ls", "gopls", "ruby_lsp", "standardrb", "basedpyright", "yamlls", "terraformls" })
 
-vim.api.nvim_create_autocmd("InsertCharPre", {
-  callback = function()
-    if vim.fn.pumvisible() == 0 and vim.v.char:match("[%w%.%/]") then
-      vim.schedule(function()
-        if vim.api.nvim_get_mode().mode == "i" then
-          vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<C-x><C-o>", true, false, true), "n")
-        end
-      end)
-    end
-  end,
-})
 
 vim.api.nvim_create_user_command("PackSync", function() vim.pack.update() end, {})
