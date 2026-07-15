@@ -1,6 +1,6 @@
 local M = {}
 
-local BIN_DIR = "/Users/mike/.config/zsh/bin/"
+local BIN_DIR = vim.fn.expand "~/.config/zsh/bin/"
 
 ---Get a brief status from the zdots platform.
 ---@return table|nil

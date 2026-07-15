@@ -87,6 +87,7 @@ end
 -- ponytail: prevents E764 on buffers where no plugin has set omnifunc;
 -- blink.cmp owns normal completion, this is only the <C-X><C-O> fallback.
 opt.omnifunc = "v:lua.vim.lsp.omnifunc"
+opt.completeopt = { "menuone", "noselect", "noinsert" }
 
 -- External providers
 local function has_python_module(python, module)

@@ -19,9 +19,6 @@ function M.setup_all()
   map("n", "<leader>gD", "<cmd>DiffviewClose<cr>", "Diffview Close")
   map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", "File History")
 
-  -- Mini.icons
-  require("mini.icons").setup({})
-
   -- Gitsigns
   require("gitsigns").setup({
     current_line_blame = true,
@@ -109,7 +106,7 @@ function M.setup_all()
   -- Lazydev
   require("lazydev").setup({
     library = {
-      { path = "\${3rd}/luv/library", words = { "vim%.uv" } },
+      { path = "${3rd}/luv/library", words = { "vim%.uv" } },
     },
   })
 
@@ -133,9 +130,6 @@ function M.setup_all()
       }
     }
   })
-
-  -- Lspconfig
-  require "lsp"
 
   -- Treesitter context
   require("treesitter-context").setup({
@@ -194,11 +188,11 @@ function M.setup_all()
             description = "Inject zdots platform context for the current file",
             callback = function(context)
               local zdots = require("zdots")
-              local hydrated = zdots.hydrate_context(context.bufnr)
+              local hydrated = zdots.hydrate_context(vim.api.nvim_buf_get_name(context.bufnr))
               if hydrated == "" then
                 return "No zdots context found for this file."
               end
-              return "## zdots Platform Context\\n\\n" .. hydrated
+              return "## zdots Platform Context\n\n" .. hydrated
             end,
           },
         },
@@ -225,7 +219,7 @@ function M.setup_all()
     adapters = {
       require("neotest-rspec")({
         rspec_cmd = function()
-          return vim.tbl_flatten({ "bundle", "exec", "rspec" })
+          return { "bundle", "exec", "rspec" }
         end,
       }),
       require("neotest-go")({

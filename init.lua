@@ -72,7 +72,6 @@ require("editor.usage").setup() -- 📊 Friction/rage telemetry → :NvimUsage
 require("editor.errors").setup() -- 🪲 All-errors log with diagnostic context → :NvimErrors
 require("features.search").setup() -- Native grep/quickfix (features/ arch)
 require "editor.healthcheck" -- Log deprecation warnings
--- explorer loaded via plugins/explorer.lua (NERDTree config)
 
 require("snacks").setup({
   dashboard = {
@@ -116,7 +115,13 @@ require("snacks").setup({
 
 -- UI & Theme
 vim.cmd.colorscheme("dracula")
+require("ui.dracula_pro").setup() -- Dracula PRO highlight overrides on top
 require "ui.lualine"
+require("ui.diagnostics").setup() -- Diagnostic signs / virtual-text styling
+require("editor.treesitter").setup() -- Native TS highlighting + textobjects
+
+-- Plugin setup + their keymaps (everything vim.pack installs above)
+require("plugins").setup_all()
 
 
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -165,6 +170,5 @@ vim.api.nvim_create_autocmd("InsertCharPre", {
     end
   end,
 })
-opt.completeopt = { "menuone", "noselect", "noinsert" }
 
 vim.api.nvim_create_user_command("PackSync", function() vim.pack.update() end, {})

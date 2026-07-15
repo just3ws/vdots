@@ -40,9 +40,8 @@ M.palette = {
 }
 
 function M.setup()
-  -- Apply colorscheme
-  vim.cmd.colorscheme "dracula_pro"
-
+  -- Highlight overrides layered on the active colorscheme (dracula); there is
+  -- no dracula_pro colors file — this module owns the PRO palette + overrides.
   -- Custom highlight overrides for maximum Dracula Pro integration
   local function hl(name, opts)
     vim.api.nvim_set_hl(0, name, opts)

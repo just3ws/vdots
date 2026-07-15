@@ -20,15 +20,4 @@ telescope.setup {
     find_files = { hidden = true },
     buffers = { sort_lastused = true },
   },
-  extensions = {
-    fzf = {
-      fuzzy = true, -- Fuzzy matching
-      override_generic_sorter = true,
-      override_file_sorter = true,
-      case_mode = "smart_case",
-    },
-  },
 }
-
--- Load FZF native
-pcall(telescope.load_extension, "fzf")
