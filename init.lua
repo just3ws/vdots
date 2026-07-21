@@ -126,8 +126,13 @@ require("snacks").setup {
 }
 
 -- UI & Theme
-vim.cmd.colorscheme "dracula"
-require("ui.dracula_pro").setup() -- Dracula PRO highlight overrides on top
+-- Guard the base colorscheme: on a fresh machine vim.pack may not have fetched
+-- dracula/vim yet, and an unguarded call throws E185 (Cannot find color scheme),
+-- aborting the rest of init. Degrade gracefully with a hint instead.
+if not pcall(vim.cmd.colorscheme, "dracula") then
+  vim.notify("colorscheme 'dracula' not installed yet — run :lua vim.pack.update() then restart", vim.log.levels.WARN)
+end
+require("ui.dracula_pro").setup() -- Dracula PRO highlight overrides on top (self-contained palette)
 require "ui.lualine"
 require("ui.diagnostics").setup() -- Diagnostic signs / virtual-text styling
 require("editor.treesitter").setup() -- Native TS highlighting + textobjects
