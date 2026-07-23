@@ -8,7 +8,7 @@ vim.g.mapleader = ";"
 
 -- Plugin Management
 vim.pack.add {
-  { src = "https://github.com/dracula/vim", name = "dracula" },
+  { src = "https://github.com/rebelot/kanagawa.nvim", name = "kanagawa" },
   { src = "https://github.com/nvim-lualine/lualine.nvim" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
   { src = "https://github.com/folke/snacks.nvim" },
@@ -127,12 +127,15 @@ require("snacks").setup {
 
 -- UI & Theme
 -- Guard the base colorscheme: on a fresh machine vim.pack may not have fetched
--- dracula/vim yet, and an unguarded call throws E185 (Cannot find color scheme),
+-- kanagawa.nvim yet, and an unguarded call throws E185 (Cannot find color scheme),
 -- aborting the rest of init. Degrade gracefully with a hint instead.
-if not pcall(vim.cmd.colorscheme, "dracula") then
-  vim.notify("colorscheme 'dracula' not installed yet — run :lua vim.pack.update() then restart", vim.log.levels.WARN)
+if not pcall(vim.cmd.colorscheme, "kanagawa-wave") then
+  vim.notify(
+    "colorscheme 'kanagawa-wave' not installed yet — run :lua vim.pack.update() then restart",
+    vim.log.levels.WARN
+  )
 end
-require("ui.dracula_pro").setup() -- Dracula PRO highlight overrides on top (self-contained palette)
+require("ui.kanagawa_wave").setup() -- highlight overrides on top (self-contained palette)
 require "ui.lualine"
 require("ui.diagnostics").setup() -- Diagnostic signs / virtual-text styling
 require("editor.treesitter").setup() -- Native TS highlighting + textobjects

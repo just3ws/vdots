@@ -1,35 +1,35 @@
-local dracula = require("ui.dracula_pro").palette
+local kanagawa = require("ui.kanagawa_wave").palette
 
-local dracula_pro_theme = {
+local kanagawa_wave_theme = {
   normal = {
-    a = { bg = dracula.purple, fg = dracula.bg, gui = "bold" },
-    b = { bg = dracula.bg_light, fg = dracula.fg },
-    c = { bg = dracula.bg_dark, fg = dracula.fg },
+    a = { bg = kanagawa.purple, fg = kanagawa.bg, gui = "bold" },
+    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
   },
   insert = {
-    a = { bg = dracula.green, fg = dracula.bg, gui = "bold" },
-    b = { bg = dracula.bg_light, fg = dracula.fg },
-    c = { bg = dracula.bg_dark, fg = dracula.fg },
+    a = { bg = kanagawa.green, fg = kanagawa.bg, gui = "bold" },
+    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
   },
   visual = {
-    a = { bg = dracula.pink, fg = dracula.bg, gui = "bold" },
-    b = { bg = dracula.bg_light, fg = dracula.fg },
-    c = { bg = dracula.bg_dark, fg = dracula.fg },
+    a = { bg = kanagawa.pink, fg = kanagawa.bg, gui = "bold" },
+    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
   },
   replace = {
-    a = { bg = dracula.red, fg = dracula.bg, gui = "bold" },
-    b = { bg = dracula.bg_light, fg = dracula.fg },
-    c = { bg = dracula.bg_dark, fg = dracula.fg },
+    a = { bg = kanagawa.red, fg = kanagawa.bg, gui = "bold" },
+    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
   },
   command = {
-    a = { bg = dracula.orange, fg = dracula.bg, gui = "bold" },
-    b = { bg = dracula.bg_light, fg = dracula.fg },
-    c = { bg = dracula.bg_dark, fg = dracula.fg },
+    a = { bg = kanagawa.orange, fg = kanagawa.bg, gui = "bold" },
+    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
   },
   inactive = {
-    a = { bg = dracula.bg_dark, fg = dracula.gray },
-    b = { bg = dracula.bg_dark, fg = dracula.gray },
-    c = { bg = dracula.bg_dark, fg = dracula.gray },
+    a = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
+    b = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
+    c = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
   },
 }
 
@@ -44,7 +44,7 @@ end
 
 require("lualine").setup {
   options = {
-    theme = dracula_pro_theme,
+    theme = kanagawa_wave_theme,
     section_separators = "",
     component_separators = "",
     globalstatus = true,

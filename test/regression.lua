@@ -151,9 +151,11 @@ test("Core plugins loaded: lualine", function()
   assert_exists "lualine"
 end)
 
-test("Theme loaded: ui.dracula_pro overrides on dracula", function()
-  assert_exists "ui.dracula_pro"
-  assert_eq(vim.g.colors_name, "dracula", "colorscheme should be dracula")
+test("Theme loaded: ui.kanagawa_wave overrides on kanagawa-wave", function()
+  assert_exists "ui.kanagawa_wave"
+  -- kanagawa.nvim's load() always sets colors_name to "kanagawa" regardless
+  -- of variant (wave/dragon/lotus) — this is upstream's own behavior.
+  assert_eq(vim.g.colors_name, "kanagawa", "colorscheme should be kanagawa (wave variant)")
 end)
 
 -- ============================================================================
@@ -304,8 +306,8 @@ end)
 -- ============================================================================
 print "\n[Theme / Highlights]"
 
-test("Dracula colorscheme active", function()
-  assert_eq(vim.g.colors_name, "dracula", "colorscheme")
+test("Kanagawa Wave colorscheme active", function()
+  assert_eq(vim.g.colors_name, "kanagawa", "colorscheme")
 end)
 
 test("Normal highlight exists", function()

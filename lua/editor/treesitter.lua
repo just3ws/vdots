@@ -56,25 +56,25 @@ function M.setup()
     }
   end
 
-  local dracula = require("ui.dracula_pro").palette
+  local kanagawa = require("ui.kanagawa_wave").palette
   local set_hl = vim.api.nvim_set_hl
 
-  -- --- Dracula PRO Highlight Overrides ---
+  -- --- Kanagawa Wave Highlight Overrides ---
   -- These still apply to Treesitter capture groups in 0.12
   local highlights = {
-    ["@comment"] = { fg = dracula.gray, italic = true },
-    ["@function"] = { fg = dracula.green, bold = true },
-    ["@keyword"] = { fg = dracula.pink, bold = true },
-    ["@string"] = { fg = dracula.yellow },
-    ["@type"] = { fg = dracula.cyan },
-    ["@variable"] = { fg = dracula.fg },
-    ["@constant"] = { fg = dracula.purple },
-    ["@tag"] = { fg = dracula.pink },
-    ["@tag.attribute"] = { fg = dracula.orange },
-    ["@tag.delimiter"] = { fg = dracula.fg },
-    ["@error"] = { fg = dracula.red, bold = true },
-    ["@warning"] = { fg = dracula.yellow },
-    ["@todo"] = { fg = dracula.orange, bold = true },
+    ["@comment"] = { fg = kanagawa.gray, italic = true },
+    ["@function"] = { fg = kanagawa.green, bold = true },
+    ["@keyword"] = { fg = kanagawa.pink, bold = true },
+    ["@string"] = { fg = kanagawa.yellow },
+    ["@type"] = { fg = kanagawa.cyan },
+    ["@variable"] = { fg = kanagawa.fg },
+    ["@constant"] = { fg = kanagawa.purple },
+    ["@tag"] = { fg = kanagawa.pink },
+    ["@tag.attribute"] = { fg = kanagawa.orange },
+    ["@tag.delimiter"] = { fg = kanagawa.fg },
+    ["@error"] = { fg = kanagawa.red, bold = true },
+    ["@warning"] = { fg = kanagawa.yellow },
+    ["@todo"] = { fg = kanagawa.orange, bold = true },
   }
 
   for group, opts in pairs(highlights) do

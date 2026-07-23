@@ -1,6 +1,6 @@
 local M = {}
 
----@class DraculaProPalette
+---@class KanagawaWavePalette
 ---@field none     string
 ---@field bg       string
 ---@field bg_dark  string
@@ -18,38 +18,68 @@ local M = {}
 ---@field gray     string
 ---@field gray_light string
 
----Dracula PRO color palette.
----@type DraculaProPalette
-M.palette = {
-  none = "NONE",
-  bg = "#22212C",
-  bg_dark = "#17161D",
-  bg_light = "#454158",
-  fg = "#F8F8F2",
-  fg_light = "#FFFFFF",
-  fg_dark = "#C6C6C2",
-  red = "#FF9580",
-  orange = "#FFCA80",
-  yellow = "#FFFF80",
-  green = "#8AFF80",
-  cyan = "#80FFEA",
-  pink = "#FF80BF",
-  purple = "#9580FF",
-  gray = "#7970A9",
-  gray_light = "#504C67",
+-- Fallback hex (verified against iTerm2-Color-Schemes' Kanagawa Wave.itermcolors)
+-- for the same-machine-not-yet-installed race guarded in init.lua.
+local fallback = {
+  bg = "#1F1F28",
+  bg_dark = "#16161D",
+  bg_light = "#2A2A37",
+  fg = "#DCD7BA",
+  fg_light = "#DCD7BA",
+  fg_dark = "#C8C093",
+  red = "#C34043",
+  orange = "#FFA066",
+  yellow = "#E6C384",
+  green = "#98BB6C",
+  cyan = "#7AA89F",
+  pink = "#D27E99",
+  purple = "#957FB8",
+  gray = "#727169",
+  gray_light = "#54546D",
 }
 
+local ok, kanagawa_colors = pcall(function()
+  return require("kanagawa.colors").setup { theme = "wave" }
+end)
+
+local resolved = fallback
+if ok and kanagawa_colors and kanagawa_colors.palette then
+  local p = kanagawa_colors.palette
+  resolved = {
+    bg = p.sumiInk3,
+    bg_dark = p.sumiInk0,
+    bg_light = p.sumiInk4,
+    fg = p.fujiWhite,
+    fg_light = p.fujiWhite,
+    fg_dark = p.oldWhite,
+    red = p.autumnRed,
+    orange = p.surimiOrange,
+    yellow = p.carpYellow,
+    green = p.springGreen,
+    cyan = p.waveAqua2,
+    pink = p.sakuraPink,
+    purple = p.oniViolet,
+    gray = p.fujiGray,
+    gray_light = p.sumiInk4,
+  }
+end
+
+resolved.none = "NONE"
+
+---Kanagawa Wave color palette (sourced from kanagawa.nvim when installed).
+---@type KanagawaWavePalette
+M.palette = resolved
+
 function M.setup()
-  -- Highlight overrides layered on the active colorscheme (dracula); there is
-  -- no dracula_pro colors file — this module owns the PRO palette + overrides.
-  -- Custom highlight overrides for maximum Dracula Pro integration
+  -- Highlight overrides layered on the active colorscheme (kanagawa-wave);
+  -- this module owns the same override set dracula_pro used to, recolored.
   local function hl(name, opts)
     vim.api.nvim_set_hl(0, name, opts)
   end
 
   local p = M.palette
 
-  -- Diagnostics (matching Dracula Pro palette)
+  -- Diagnostics
   hl("DiagnosticError", { fg = p.red, italic = false })
   hl("DiagnosticWarn", { fg = p.yellow, italic = false })
   hl("DiagnosticInfo", { fg = p.purple, italic = false })
@@ -70,8 +100,6 @@ function M.setup()
   -- Trailing whitespace highlight
   hl("BadWhitespace", { bg = p.red })
 
-  -- Ensure transparency is handled if desired (keeping the default background for now as requested)
-  -- But we can tweak some UI elements to be more "Pro"
   hl("Pmenu", { bg = p.bg_dark, fg = p.fg })
   hl("PmenuSel", { bg = p.bg_light, fg = p.fg_light, bold = true })
   hl("FloatBorder", { fg = p.purple, bg = "NONE" })

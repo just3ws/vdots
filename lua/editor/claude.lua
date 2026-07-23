@@ -53,7 +53,7 @@ function M.status()
 end
 
 function M.color()
-  local p = require("ui.dracula_pro").palette
+  local p = require("ui.kanagawa_wave").palette
   -- Breathe between bright and dim by walking the pulse cycle.
   local dim = frame > #PULSE / 2
   return { fg = dim and p.gray or p.green, gui = "bold" }
