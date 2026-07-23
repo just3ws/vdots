@@ -6,9 +6,9 @@ All plugins are declared via `vim.pack.add()` in `init.lua`. Configuration lives
 
 | Plugin | Role |
 |--------|------|
-| `dracula/vim` | Dracula colour scheme (OSS version, active in `init.lua`) |
-| `dracula-pro` | Dracula Pro (local path `~/github.com/dracula/Dracula Pro/themes/vim`); provides the lualine palette |
-| `nvim-lualine/lualine.nvim` | Status line — dracula-pro themed, shows mode/branch/diff/diagnostics/filename/rails env/location |
+| `rebelot/kanagawa.nvim` | Kanagawa colour scheme; `colorscheme kanagawa-wave` (Wave variant), configured via `kanagawa.setup{ theme = "wave" }` in `init.lua` with a hand-tuned `ui.bg` (#1A1B2F) |
+| `ui.kanagawa_wave` | Local override layer — sources the Wave palette from `kanagawa.colors` and provides the lualine palette + diagnostic/gutter highlight overrides |
+| `nvim-lualine/lualine.nvim` | Status line — Kanagawa Wave themed, shows mode/branch/diff/diagnostics/filename/rails env/location |
 | `nvim-tree/nvim-web-devicons` | File-type icons (dependency) |
 | `echasnovski/mini.nvim` | `mini.statusline` + `mini.pick` used; provides mini.icons for nvim-tree |
 | `folke/snacks.nvim` | Dashboard, picker, notifier, git-browse, words, scope, quickfile, statuscolumn, bigfile, image, scroll, input; priority 1000, never lazy |

@@ -1,6 +1,6 @@
 local M = {}
 
----Initialize native treesitter and apply Dracula PRO highlight overrides.
+---Initialize native treesitter and apply Kanagawa Wave highlight overrides.
 function M.setup()
   -- Neovim 0.12+ has built-in treesitter support.
   -- Highlighting is enabled by default for many languages.

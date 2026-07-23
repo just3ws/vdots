@@ -9,7 +9,7 @@ vdots is a single-repo Lua configuration for Neovim 0.12+. All modules live unde
 1. **Leader key** — `;` (all other options live in `lua/editor/options.lua`)
 2. **Plugin declarations** — `vim.pack.add({...})` — all plugins declared in one block
 3. **Module requires** — `editor.*` (options, keymaps, autocmds, commands, llm, claude, usage, errors, search, healthcheck)
-4. **Snacks + theme** — snacks setup, `colorscheme dracula`, dracula_pro highlight overrides, lualine, diagnostics, native treesitter
+4. **Snacks + theme** — snacks setup, `colorscheme kanagawa-wave`, kanagawa_wave highlight overrides, lualine, diagnostics, native treesitter
 5. **Plugin setup** — `require("plugins").setup_all()` configures every vim.pack plugin and binds its keymaps
 6. **LSP wiring** — `LspAttach` autocmd, per-server `vim.lsp.config()`, then `vim.lsp.enable()`
 7. **User commands** — `:PackSync`
@@ -37,8 +37,8 @@ lua/
     healthcheck.lua         Deprecation-warning filter/log
   ui/
     diagnostics.lua         Diagnostic display config
-    dracula_pro.lua         Dracula PRO palette + highlight overrides (colorscheme is "dracula")
-    lualine.lua             lualine theme (dracula-pro colours) + rails_env component
+    kanagawa_wave.lua       Kanagawa Wave palette + highlight overrides (colorscheme is "kanagawa-wave")
+    lualine.lua             lualine theme (kanagawa Wave colours) + rails_env component
   zdots/
     init.lua                Lua bridge to the zdots shell platform (zdots-ctx, ztask, pi-ctx-*)
 after/

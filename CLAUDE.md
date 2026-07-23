@@ -49,11 +49,11 @@ lua/
 ├── ui/
 │   ├── diagnostics.lua     # vim.diagnostic.config styling
 │   ├── lualine.lua         # Statusline config
-│   └── dracula_pro.lua     # PRO palette + highlight overrides (colorscheme itself is "dracula")
+│   └── kanagawa_wave.lua   # Wave palette + highlight overrides (colorscheme itself is "kanagawa-wave")
 └── zdots/init.lua          # Bridge to the zdots shell platform (~/.config/zsh/bin)
 ```
 
-Load order in init.lua: leader → `vim.pack.add` → `editor.*` modules → snacks → theme (`dracula` + dracula_pro overrides, lualine, diagnostics, treesitter) → `require("plugins").setup_all()` → LSP wiring.
+Load order in init.lua: leader → `vim.pack.add` → `editor.*` modules → snacks → theme (`kanagawa-wave` + kanagawa_wave overrides, lualine, diagnostics, treesitter) → `require("plugins").setup_all()` → LSP wiring.
 
 ## Key Patterns & 2026 Standards
 
