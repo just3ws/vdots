@@ -339,6 +339,8 @@ function M.setup_all()
       { "<leader>s", group = "search" },
       { "<leader>t", group = "test" },
       { "<leader>d", group = "debug" },
+      { "<leader>w", group = "window" },
+      { "<leader>q", group = "quit" },
     },
   }
 end

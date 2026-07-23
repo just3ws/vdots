@@ -84,4 +84,26 @@ if ok_builtin then
   vim.keymap.set("n", "<Leader>fF", builtin.live_grep, { desc = "Telescope: Live grep" })
   vim.keymap.set("n", "<Leader>fb", builtin.buffers, { desc = "Telescope: Buffers" })
   vim.keymap.set("n", "<Leader>fh", builtin.help_tags, { desc = "Telescope: Help tags" })
+
+  -- LazyVim-standard picker set, adapted to leader `;`. Telescope is the primary
+  -- picker (it owns the <leader>f* family + editor/telescope.lua config); the
+  -- Snacks picker stays for dashboard actions. <leader>ff is already the
+  -- grep→quickfix workflow, so find-files lands on the LazyVim <leader><space>.
+  vim.keymap.set("n", "<Leader><Space>", builtin.find_files, { desc = "Find files" })
+  vim.keymap.set("n", "<Leader>/", builtin.live_grep, { desc = "Grep (live)" })
+  vim.keymap.set("n", "<Leader>fg", builtin.live_grep, { desc = "Grep (live)" })
+  vim.keymap.set("n", "<Leader>fr", builtin.oldfiles, { desc = "Recent files" })
+  vim.keymap.set("n", "<Leader>:", builtin.command_history, { desc = "Command history" })
+  vim.keymap.set("n", "<Leader>fc", function()
+    builtin.find_files { cwd = vim.fn.stdpath "config" }
+  end, { desc = "Find config file" })
 end
+
+-- Buffer / window / quit convenience (LazyVim-standard, adapted to leader `;`).
+-- Snacks.bufdelete closes the buffer while preserving the window layout.
+map("n", "<Leader>bd", function()
+  Snacks.bufdelete()
+end, { desc = "Delete buffer" })
+map("n", "<Leader>ww", "<C-w>p", { desc = "Other window" })
+map("n", "<Leader>wd", "<C-w>c", { desc = "Delete window" })
+map("n", "<Leader>qq", "<cmd>qa<CR>", { desc = "Quit all" })

@@ -166,10 +166,21 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 
     map("n", "gd", vim.lsp.buf.definition, "Go to definition")
+    map("n", "gI", vim.lsp.buf.implementation, "Go to implementation")
+    map("n", "gy", vim.lsp.buf.type_definition, "Go to type definition")
     map("n", "K", vim.lsp.buf.hover, "Hover")
     map("n", "gr", vim.lsp.buf.references, "References")
     map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
     map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
+    map("n", "<leader>cd", vim.diagnostic.open_float, "Line diagnostics")
+    -- Diagnostic jumps use the newer vim.diagnostic.jump API (0.11+); the
+    -- {count} form supersedes goto_next/goto_prev deprecated in 0.10.
+    map("n", "]d", function()
+      vim.diagnostic.jump { count = 1, float = true }
+    end, "Next diagnostic")
+    map("n", "[d", function()
+      vim.diagnostic.jump { count = -1, float = true }
+    end, "Prev diagnostic")
 
     if client.name == "ruby_lsp" then
       map("n", "<leader>ih", function()
