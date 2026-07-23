@@ -64,6 +64,10 @@ if ok and kanagawa_colors and kanagawa_colors.palette then
   }
 end
 
+-- ponytail: bg hand-tuned bluer/more saturated than canonical Sumi Ink3
+-- (#1F1F28 -> #1A1B2F), overriding both the fallback and the live plugin
+-- value; every other field stays exactly what kanagawa.nvim reports.
+resolved.bg = "#1A1B2F"
 resolved.none = "NONE"
 
 ---Kanagawa Wave color palette (sourced from kanagawa.nvim when installed).
@@ -99,6 +103,13 @@ function M.setup()
 
   -- Trailing whitespace highlight
   hl("BadWhitespace", { bg = p.red })
+
+  -- Force the editor background to the hand-tuned bg (kanagawa.nvim's own
+  -- Normal highlight otherwise still uses canonical Sumi Ink3, #1F1F28).
+  hl("Normal", { bg = p.bg, fg = p.fg })
+  hl("NormalNC", { bg = p.bg, fg = p.fg })
+  hl("SignColumn", { bg = p.bg })
+  hl("EndOfBuffer", { bg = p.bg, fg = p.bg })
 
   hl("Pmenu", { bg = p.bg_dark, fg = p.fg })
   hl("PmenuSel", { bg = p.bg_light, fg = p.fg_light, bold = true })
