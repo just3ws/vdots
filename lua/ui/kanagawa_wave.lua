@@ -104,8 +104,9 @@ function M.setup()
   -- Trailing whitespace highlight
   hl("BadWhitespace", { bg = p.red })
 
-  -- Force the editor background to the hand-tuned bg (kanagawa.nvim's own
-  -- Normal highlight otherwise still uses canonical Sumi Ink3, #1F1F28).
+  -- Flush the gutter and end-of-buffer to the editor bg: the kanagawa.setup
+  -- ui.bg override (init.lua) already recolors Normal, but SignColumn and
+  -- EndOfBuffer keep their own shades unless forced, breaking the seamless bg.
   hl("Normal", { bg = p.bg, fg = p.fg })
   hl("NormalNC", { bg = p.bg, fg = p.fg })
   hl("SignColumn", { bg = p.bg })
