@@ -16,7 +16,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y luarocks neovim ripgrep
           sudo luarocks install luacheck
-          curl -sSLo stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux.zip
+          curl -sSLo stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip
           sudo unzip -o stylua.zip -d /usr/local/bin
 
       - name: Run lint checks
