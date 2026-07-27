@@ -129,17 +129,19 @@ require("snacks").setup {
 -- Guard the base colorscheme: on a fresh machine vim.pack may not have fetched
 -- kanagawa.nvim yet, and an unguarded require/colorscheme throws (E185 / module
 -- not found), aborting the rest of init. Degrade gracefully with a hint instead.
-if not pcall(function()
-  require("kanagawa").setup {
-    theme = "wave",
-    background = { dark = "wave" },
-    -- Operator hand-tuned the platform background bluer than canonical Sumi
-    -- Ink3 (#1F1F28); overriding ui.bg propagates #1A1B2F to every
-    -- kanagawa-generated highlight, not just Normal.
-    colors = { theme = { wave = { ui = { bg = "#1A1B2F" } } } },
-  }
-  vim.cmd.colorscheme "kanagawa-wave"
-end) then
+if
+  not pcall(function()
+    require("kanagawa").setup {
+      theme = "wave",
+      background = { dark = "wave" },
+      -- Operator hand-tuned the platform background bluer than canonical Sumi
+      -- Ink3 (#1F1F28); overriding ui.bg propagates #1A1B2F to every
+      -- kanagawa-generated highlight, not just Normal.
+      colors = { theme = { wave = { ui = { bg = "#1A1B2F" } } } },
+    }
+    vim.cmd.colorscheme "kanagawa-wave"
+  end)
+then
   vim.notify(
     "colorscheme 'kanagawa-wave' not installed yet — run :lua vim.pack.update() then restart",
     vim.log.levels.WARN
