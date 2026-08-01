@@ -14,13 +14,23 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y luarocks neovim ripgrep
+          sudo apt-get install -y luarocks ripgrep
           sudo luarocks install luacheck
           curl -sSLo stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip
           sudo unzip -o stylua.zip -d /usr/local/bin
 
+      # apt neovim is 0.9.x — no vim.pack. Pin the 0.12 release the config targets.
+      - name: Install Neovim 0.12
+        run: |
+          curl -sSL https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz | sudo tar xz -C /opt
+          echo "/opt/nvim-linux-x86_64/bin" >> "$GITHUB_PATH"
+
       - name: Run lint checks
         run: ./test/lint.sh
+
+      # First headless boot lets vim.pack clone the plugin list before tests assert on it.
+      - name: Install plugins
+        run: nvim --headless -u init.lua +q
 
       - name: Run smoke + unit tests
         run: ./test/run.sh
