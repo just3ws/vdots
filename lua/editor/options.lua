@@ -105,14 +105,53 @@ else
   g.loaded_ruby_provider = 0
 end
 
-for _, python in ipairs { vim.fn.expand "~/.local/share/mise/shims/python3", "python3" } do
-  if has_python_module(python, "neovim") or has_python_module(python, "pynvim") then
-    g.python3_host_prog = python
-    break
+-- Python provider: probing for neovim/pynvim spawns up to 4 interpreters
+-- through the mise shims (~200ms of startup), so the result — including the
+-- negative "no candidate has the module" case — is cached on disk, keyed on
+-- each candidate's resolved path + mtime. Cache hit: zero subprocess spawns.
+-- The key invalidates when a shim or interpreter changes; installing pynvim
+-- into an existing interpreter does not touch its mtime, so after
+-- `pip install pynvim` delete the cache file to force a re-probe.
+local python_candidates = { vim.fn.expand "~/.local/share/mise/shims/python3", "python3" }
+local python_cache = vim.fn.stdpath "cache" .. "/python3_host_prog"
+
+local function python_cache_key()
+  local parts = {}
+  for _, python in ipairs(python_candidates) do
+    local resolved = vim.fn.exepath(python)
+    parts[#parts + 1] = resolved .. "@" .. vim.fn.getftime(resolved)
   end
+  return table.concat(parts, ";")
 end
 
-if not g.python3_host_prog or g.python3_host_prog == "" then
+local function probe_python_host()
+  for _, python in ipairs(python_candidates) do
+    if has_python_module(python, "neovim") or has_python_module(python, "pynvim") then
+      return python
+    end
+  end
+  return ""
+end
+
+local function resolve_python_host()
+  local key = python_cache_key()
+  local ok, cached = pcall(vim.fn.readfile, python_cache)
+  if ok and cached[1] == key and cached[2] ~= nil then
+    return cached[2]
+  end
+  local host = probe_python_host()
+  local cache_dir = vim.fn.stdpath "cache"
+  if vim.fn.isdirectory(cache_dir) == 0 then
+    vim.fn.mkdir(cache_dir, "p")
+  end
+  pcall(vim.fn.writefile, { key, host }, python_cache)
+  return host
+end
+
+local python_host = resolve_python_host()
+if python_host ~= "" then
+  g.python3_host_prog = python_host
+else
   g.loaded_python3_provider = 0
 end
 
