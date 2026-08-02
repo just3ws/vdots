@@ -28,6 +28,11 @@ jobs:
       - name: Run lint checks
         run: ./test/lint.sh
 
+      # -u init.lua does not put the checkout's lua/ on runtimepath — only
+      # ~/.config/nvim is. Symlink so require('ui.*')/require('plugins') resolve.
+      - name: Link checkout as nvim config
+        run: mkdir -p ~/.config && ln -sfn "$PWD" ~/.config/nvim
+
       # First headless boot lets vim.pack clone the plugin list before tests assert on it.
       - name: Install plugins
         run: nvim --headless -u init.lua +q
