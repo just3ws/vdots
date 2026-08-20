@@ -36,9 +36,14 @@ map("n", "Q", "<nop>", opts)
 map("x", "<", "<gv", opts)
 map("x", ">", ">gv", opts)
 
--- Move visually-selected lines up/down (with auto-reindent)
-map("x", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
-map("x", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+-- Keep cursor position when joining lines in normal mode
+map("n", "J", "mzJ`z", { desc = "Join lines" })
+
+-- Move lines up/down (with auto-reindent)
+map("n", "<A-j>", "<cmd>m .+1<CR>==", { desc = "Move line down" })
+map("n", "<A-k>", "<cmd>m .-2<CR>==", { desc = "Move line up" })
+map("x", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+map("x", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
 -- Register-safe paste/delete (don't clobber the unnamed register)
 map("x", "p", '"_dP', { desc = "Paste without yanking selection" })

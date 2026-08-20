@@ -267,6 +267,38 @@ test("Keymap: Visual indent </> with reselect", function()
   assert_true(lt and gt, "Visual indent keys should be mapped")
 end)
 
+test("Keymap: Joining lines in normal mode (cursor preserved)", function()
+  vim.cmd "enew"
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "first line", "second line" })
+  vim.api.nvim_win_set_cursor(0, { 1, 0 })
+  vim.cmd "normal J"
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  assert_eq(#lines, 1, "lines joined count")
+  assert_eq(lines[1], "first line second line", "joined text content")
+  vim.cmd "bwipeout!"
+end)
+
+test("Keymap: Joining lines in visual mode (not moving lines)", function()
+  vim.cmd "enew"
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "alpha", "beta", "gamma" })
+  vim.api.nvim_win_set_cursor(0, { 1, 0 })
+  vim.cmd "normal VjJ"
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  assert_eq(#lines, 2, "visual J should join 2 lines into 1")
+  assert_eq(lines[1], "alpha beta", "visual J joined result")
+  assert_eq(lines[2], "gamma", "remaining line untouched")
+  vim.cmd "bwipeout!"
+end)
+
+test("Keymap: Line moving with <A-j> / <A-k>", function()
+  local j_exists, _ = keymap_exists("x", "<A-j>")
+  local k_exists, _ = keymap_exists("x", "<A-k>")
+  assert_true(
+    j_exists and k_exists,
+    "<A-j> and <A-k> should be mapped in visual mode for line moving"
+  )
+end)
+
 -- ============================================================================
 -- SECTION 7: Commands
 -- ============================================================================

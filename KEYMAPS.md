@@ -75,7 +75,8 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader>p` / `<leader>P` | **Paste (clipboard)** | Paste from the system clipboard (after/before) |
 | `<leader>D` | **Black-hole Delete** | Delete without touching any register |
 | `p` *(visual)* | **Paste over** | Replace selection without losing the yank |
-| `J` / `K` *(visual)* | **Move Lines** | Move selected lines down/up with reindent |
+| `J` | **Join Lines** | Join lines with next while preserving cursor position (or selection in visual mode) |
+| `<A-j>` / `<A-k>` | **Move Lines** | Move line or visual selection down/up with reindent |
 | `<C-d>` / `<C-u>` | **Half-page + center** | Scroll keeping the cursor centered |
 | `n` / `N` | **Search + center** | Next/prev match, recentered with folds opened |
 | `]q` / `[q` | **Quickfix Next/Prev** | Navigate the quickfix list (recentered) |
