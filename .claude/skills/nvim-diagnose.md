@@ -60,7 +60,7 @@ nvim --headless -u init.lua \
 1. If a Lua stack trace is present in the error message, go directly to that file.
 2. If not, grep for the error string across lua/:
    ```bash
-   grep -r "ERROR_PATTERN" /Users/mike.hall/.config/nvim/lua/
+   grep -r "ERROR_PATTERN" "$HOME/.config/nvim/lua/"
    ```
 3. Check the `ctx.diagnostics` field from the log — active diagnostics at error
    time often point at the root cause (e.g. a syntax error in the file being edited).
