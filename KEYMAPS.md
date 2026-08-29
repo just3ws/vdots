@@ -81,6 +81,16 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader>dr` | **Open REPL** | Open DAP interactive REPL |
 | `<leader>dt` | **Terminate** | Terminate DAP debug session |
 
+### Plugin & Package Management (`vim.pack`)
+| Key / Command | Action | Description |
+| :--- | :--- | :--- |
+| `<leader>L` / `<leader>Pu` | **PackUpdate** | Interactive update with visual changelog review buffer (`:PackUpdate`) |
+| `<leader>Ps` | **PackSync** | Synchronize plugins to lockfile revisions (`:PackSync`) |
+| `<leader>Pc` | **PackClean** | Prune unmanaged/inactive plugins from disk (`:PackClean`) |
+| `<leader>PS` | **PackStatus** | View active plugin count and status overview (`:PackStatus`) |
+| `./bin/vdots-update` | **CLI Updater** | Headless update, prune unmanaged, run tests, show diff |
+| `./bin/vdots-update -c` | **Update & Commit** | Update, verify tests, and auto-commit `nvim-pack-lock.json` |
+
 ### Editing & Clipboard
 *Copy-on-yank model: yanks auto-copy to the system clipboard; deletes never clobber it.*
 | Key | Action | Description |

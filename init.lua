@@ -218,7 +218,3 @@ vim.lsp.enable {
   "yamlls",
   "terraformls",
 }
-
-vim.api.nvim_create_user_command("PackSync", function()
-  vim.pack.update()
-end, {})

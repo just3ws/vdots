@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+# ============================================================================
+# bin/vdots-update — One-command Neovim plugin updater
+# ============================================================================
+# Updates plugins via vim.pack, cleans inactive packages, runs the test suite,
+# and shows a structured diff of bumped revisions.
+#
+# Usage:
+#   ./bin/vdots-update              # Update plugins, test, show summary
+#   ./bin/vdots-update --commit     # Update, test, and git commit changes
+#   ./bin/vdots-update --interactive # Open interactive review inside nvim
+#   ./bin/vdots-update --clean-only # Only prune unmanaged/inactive plugins
+# ============================================================================
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_DIR="$(dirname "$SCRIPT_DIR")"
+cd "$CONFIG_DIR"
+
+# Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+DO_COMMIT=false
+INTERACTIVE=false
+CLEAN_ONLY=false
+RUN_TESTS=true
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --commit|-c)
+      DO_COMMIT=true
+      shift
+      ;;
+    --interactive|-i)
+      INTERACTIVE=true
+      shift
+      ;;
+    --clean-only)
+      CLEAN_ONLY=true
+      shift
+      ;;
+    --no-test)
+      RUN_TESTS=false
+      shift
+      ;;
+    --help|-h)
+      echo "Usage: $(basename "$0") [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  --commit, -c        Auto-commit lockfile changes on successful test"
+      echo "  --interactive, -i   Open interactive changelog review buffer in nvim"
+      echo "  --clean-only        Only prune unmanaged/inactive plugins from disk"
+      echo "  --no-test           Skip running regression test suite after update"
+      echo "  --help, -h          Show this help message"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [ "$INTERACTIVE" = true ]; then
+  echo -e "${BLUE}Opening interactive plugin review buffer...${NC}"
+  nvim -c "lua vim.pack.update()"
+  exit 0
+fi
+
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BOLD}  Neovim Plugin Updater (vim.pack)${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+if [ "$CLEAN_ONLY" = false ]; then
+  echo -e "📦 ${BLUE}Fetching & applying plugin updates...${NC}"
+  nvim --headless -c "lua vim.pack.update(nil, { force = true })" -c "qa!"
+fi
+
+echo -e "🧹 ${BLUE}Pruning unmanaged / inactive plugins...${NC}"
+nvim --headless -c "lua local p = vim.pack.get(); local inactive = {}; for _, x in ipairs(p) do if not x.active then table.insert(inactive, x.spec.name) end end; if #inactive > 0 then vim.pack.del(inactive, { force = true }); print('Pruned ' .. #inactive .. ' inactive plugins: ' .. table.concat(inactive, ', ')) else print('No inactive plugins found.') end" -c "qa!"
+
+# Check if nvim-pack-lock.json changed
+LOCK_CHANGED=false
+if ! git diff --quiet nvim-pack-lock.json; then
+  LOCK_CHANGED=true
+fi
+
+echo ""
+if [ "$LOCK_CHANGED" = true ]; then
+  echo -e "${GREEN}✓ Plugin lockfile updated.${NC}"
+  echo ""
+  echo -e "${BOLD}Summary of changes:${NC}"
+  git diff -U0 nvim-pack-lock.json | grep -E '^[+-]      "(rev|version)":' || true
+  echo ""
+else
+  echo -e "${GREEN}✓ All plugins are already up to date.${NC}"
+  echo ""
+fi
+
+if [ "$RUN_TESTS" = true ]; then
+  echo -e "🧪 ${BLUE}Running regression tests...${NC}"
+  if ./test/run.sh; then
+    echo -e "${GREEN}✓ Verification suite passed clean.${NC}"
+  else
+    echo -e "${RED}✗ Regression tests failed after plugin update!${NC}" >&2
+    echo -e "${YELLOW}You can revert to the previous lockfile with:${NC}"
+    echo "  git checkout nvim-pack-lock.json"
+    echo "  nvim --headless -c \"lua vim.pack.update(nil, { target = 'lockfile', force = true })\" -c \"qa!\""
+    exit 1
+  fi
+fi
+
+if [ "$DO_COMMIT" = true ] && [ "$LOCK_CHANGED" = true ]; then
+  echo ""
+  echo -e "💾 ${BLUE}Creating git commit...${NC}"
+  git add nvim-pack-lock.json
+  git commit -m "chore(deps): update plugins via vim.pack"
+  echo -e "${GREEN}✓ Committed: $(git log -1 --oneline)${NC}"
+fi
+
+echo ""
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}✓ Plugin update complete!${NC}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"

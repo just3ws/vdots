@@ -349,6 +349,18 @@ test("Command: :PackSync (vim.pack update)", function()
   assert_true(command_exists "PackSync", ":PackSync should exist")
 end)
 
+test("Command: :PackUpdate (vim.pack update)", function()
+  assert_true(command_exists "PackUpdate", ":PackUpdate should exist")
+end)
+
+test("Command: :PackClean (vim.pack prune)", function()
+  assert_true(command_exists "PackClean", ":PackClean should exist")
+end)
+
+test("Command: :PackStatus (vim.pack status)", function()
+  assert_true(command_exists "PackStatus", ":PackStatus should exist")
+end)
+
 -- ============================================================================
 -- SECTION 8: Highlights / Theme
 -- ============================================================================

@@ -41,6 +41,10 @@ function check() {
 
 if [[ "$1" == "check" ]]; then
     check "${@:2}"
+elif [[ "$1" == "update" ]]; then
+    exec "$SCRIPT_DIR/vdots-update" "${@:2}"
 else
-    echo "Usage: vdots-ctl check [--json]"
+    echo "Usage: vdots-ctl {check|update} [options]"
+    echo "  check [--json]     Run deep runtime healthcheck"
+    echo "  update [options]   Update plugins, prune unmanaged, and test"
 fi
