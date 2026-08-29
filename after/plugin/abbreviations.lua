@@ -31,6 +31,7 @@ local typos = {
   { "flase", "false" },
   { "taht", "that" },
   { "resposne", "response" },
+  { "fro", "for" },
 }
 for _, pair in ipairs(typos) do
   cmd(string.format("iabbrev %s %s", pair[1], pair[2]))
@@ -40,7 +41,3 @@ end
 cmd [[iabbrev /} //}}}]]
 cmd [[iabbrev /{ //{{{]]
 cmd [[iabbrev dt <C-r>=strftime("%Y-%m-%d %H:%M:%S")<CR>]]
-
--- --- Global normal-mode abbreviation (legacy style) ---
-cmd [[ab teh the]]
-cmd [[ab fro for]]
