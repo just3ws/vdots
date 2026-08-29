@@ -16,8 +16,18 @@ git clone git@github.com:just3ws/vdots.git ~/.config/nvim
 # Run smoke + unit tests
 ./test/run.sh
 
+# Update plugins, prune unmanaged packages, test, and show diff
+./bin/vdots-update
+
+# Update plugins and auto-commit lockfile changes
+./bin/vdots-update --commit
+
+# Check health & diagnostics
+./bin/vdots-doctor
+
 # Lint/format checks
-./test/lint.sh
+luacheck . --config .luacheckrc
+stylua --check .
 
 # Apply formatting
 stylua .
@@ -25,19 +35,29 @@ stylua .
 
 ## Keymaps
 
-Leader key is `;`. Because `;` is also mapped to `:` in normal mode,
-leader sequences must be typed without delay (or within `timeoutlen`).
+Leader key is `;`. In normal mode `;` enters command mode (`:`), so
+leader sequences should be typed promptly (or within `timeoutlen`).
 
 **which-key** is active: pause after `;` for ~300 ms and a popup appears showing
 all available bindings. Multi-key prefixes are labelled by group:
 
 | Prefix | Group |
 | --- | --- |
-| `;-` | explorer |
-| `;a` | AI |
+| `;ai` | AI (CodeCompanion & Local LLM) |
+| `;b` | buffer |
 | `;c` | code |
-| `;f` | find |
-| `;r` | refactor |
+| `;d` | debug (DAP) |
+| `;e` | explorer (nvim-tree) |
+| `;f` | find / format |
+| `;g` | git (Diffview, Gitsigns, Claude diff) |
+| `;h` | git hunks |
+| `;n` | notifications (Snacks) |
+| `;P` | plugins (vim.pack) |
+| `;s` | search (Telescope, Todo) |
+| `;t` | test (Neotest) |
+| `;u` | ui / toggle |
+| `;w` | window |
+| `;x` | diagnostics (Trouble) |
 
 ### General
 
@@ -45,8 +65,11 @@ all available bindings. Multi-key prefixes are labelled by group:
 | --- | --- |
 | `;` | Enter command mode (`:`) |
 | `<CR>` | Clear search highlight |
-| `n` / `N` | Next / prev match (direction-aware) |
+| `n` / `N` | Next / prev match (centered + opens folds) |
+| `<C-d>` / `<C-u>` | Half-page down / up (centered) |
 | `j` / `k` | Move by visual line (`gj` / `gk`) |
+| `J` | Join lines (preserves cursor position) |
+| `<A-j>` / `<A-k>` | Move line down / up (with auto-reindent) |
 | `;;` | Select current line (`V`) |
 | `Q` | Disabled (prevent accidental Ex mode) |
 
@@ -55,137 +78,145 @@ all available bindings. Multi-key prefixes are labelled by group:
 | Key | Action |
 | --- | --- |
 | `<C-h/j/k/l>` | Move between splits |
-| `<S-h>` | Previous tab |
-| `<S-l>` | Next tab |
+| `<S-h>` | Previous tab (`gT`) |
+| `<S-l>` | Next tab (`gt`) |
 
-### Visual Mode
+### Visual Mode & Clipboard
 
 | Key | Action |
 | --- | --- |
 | `<` | Indent left, keep selection |
 | `>` | Indent right, keep selection |
+| `p` *(visual)* | Paste without clobbering register |
+| `;p` / `;P` | Paste from system clipboard (after / before) |
+| `;D` | Delete into black-hole register |
+| `<A-j>` / `<A-k>` | Move visual selection down / up |
 
 ### Command-line
 
 | Key | Action |
 | --- | --- |
-| `<C-p>` | Previous history entry |
-| `<C-n>` | Next history entry |
+| `<C-p>` | Previous command history entry |
+| `<C-n>` | Next command history entry |
 
-### Explorer (NERDTree)
-
-| Key | Action |
-| --- | --- |
-| `;-e` | Toggle NERDTree |
-| `;-ef` | Toggle + reveal current file |
-| `;n` | Toggle NERDTree (alias) |
-| `;ef` | Toggle + reveal current file (alias) |
-
-### Search & Files
+### Explorer (nvim-tree with NERDTree compatibility)
 
 | Key | Action |
 | --- | --- |
-| `<C-p>` | Telescope: find files |
-| `;ff` | Grep prompt → quickfix (ripgrep) |
-| `;fF` | Telescope: live grep |
-| `;fb` | Telescope: open buffers |
-| `;fh` | Telescope: help tags |
+| `;e` | Toggle nvim-tree sidebar |
+| `;ef` | Reveal and focus current file in tree (`:NERDTreeFind`) |
+| `;er` | Collapse tree and re-reveal current file |
+| `-` | Open parent directory in buffer with Oil.nvim |
 
-### LSP (buffer-local, attached per language server)
+*Inside the nvim-tree buffer, full NERDTree muscle-memory keys work (`t` new tab, `T` background tab, `i` split, `go`/`gi`/`gs` stay in tree, `X` collapse children, `A` zoom, `r` refresh, `<F2>` rename).*
+
+### Search & Pickers
+
+| Key | Action |
+| --- | --- |
+| `<C-p>` / `;<space>` | Telescope: find files |
+| `;,` / `;fb` | Telescope: switch open buffers |
+| `;/` / `;fg` | Telescope: live grep |
+| `;ff` | Grep prompt → quickfix (`:Ack`, `:Ag`, `:Rg`) |
+| `;fr` | Telescope: recent files |
+| `;fc` | Telescope: find config file |
+| `;:` | Telescope: command history |
+| `;gB` | Snacks: open file/line in GitHub/GitLab browser |
+| `;n` | Snacks: notification history |
+| `;un` | Snacks: dismiss all notifications |
+| `;bd` | Snacks: delete buffer (preserves window layout) |
+
+### LSP & Diagnostics
 
 | Key | Action |
 | --- | --- |
 | `gd` | Go to definition |
+| `gI` | Go to implementation |
+| `gy` | Go to type definition |
 | `K` | Hover documentation |
 | `gr` | References |
 | `;rn` | Rename symbol |
 | `;ca` | Code action |
-| `[d` / `]d` | Previous / next diagnostic |
-| `;e` | Show diagnostic float |
-| `;q` | Send diagnostics to location list |
+| `;cd` | Show line diagnostic float |
+| `]d` / `[d` | Next / previous diagnostic |
+| `;ih` | Toggle LSP inlay hints (RubyLSP) |
+| `;xx` | Toggle project diagnostics in Trouble |
+| `;xX` | Toggle buffer diagnostics in Trouble |
 
-### Completion (blink.cmp, insert mode)
+### Completion (blink.cmp)
 
 | Key | Action |
 | --- | --- |
-| `<C-Space>` | Trigger completion |
-| `<CR>` | Confirm selection |
-| `<Tab>` | Next item / expand or jump snippet |
-| `<S-Tab>` | Previous item / jump back in snippet |
-| `<C-b>` / `<C-f>` | Scroll docs up / down |
+| `<Tab>` | Accept completion item / expand snippet |
+| `<C-n>` / `<C-p>` | Navigate completion list |
+| `<C-Space>` | Trigger completion menu |
 | `<C-e>` | Abort completion |
 
-### Text Objects
-
-Text objects work in visual mode and with operators (`d`, `c`, `y`, etc.). Native Neovim 0.12 Treesitter handles the heavy lifting.
-
-#### Ruby files (vim-textobj-rubyblock + vim-textobj-ruby)
-
-| Key | Text object |
-| --- | --- |
-| `ar` / `ir` | Ruby block (`do…end`, `if…end`, `def…end`, etc.) |
-| `af` / `if` | Ruby function |
-| `ac` / `ic` | Ruby class |
-| `an` / `in` | Ruby name (identifier) |
-
-#### All languages (nvim-treesitter-textobjects)
-
-In Ruby files, `af`/`if` and `ac`/`ic` above take priority.
-
-| Key | Text object |
-| --- | --- |
-| `af` / `if` | Function outer / inner |
-| `ac` / `ic` | Class outer / inner |
-| `ab` / `ib` | Block outer / inner |
-
-### Function Navigation (treesitter, normal mode)
+### AI & Code Intelligence
 
 | Key | Action |
 | --- | --- |
-| `]m` | Jump to next function start |
-| `]M` | Jump to next function end |
-| `[m` | Jump to prev function start |
-| `[M` | Jump to prev function end |
+| `;aia` | CodeCompanion: actions menu |
+| `;aic` | CodeCompanion: chat window |
+| `;aiq` | Local LLM: prompt with buffer / selection (injection-safe) |
+| `;aiE` | Local LLM: explain buffer / selection |
+| `;air` | Local LLM: review buffer / selection for bugs & smells |
+| `:Llm {task}` | Local LLM: send buffer/range (e.g. `:'<,'>Llm refactor`) |
 
-### AI
+### Git & Diffing
 
 | Key | Action |
 | --- | --- |
-| `;aa` | CodeCompanion: action menu |
-| `;ac` | CodeCompanion: open chat |
+| `;gd` | Diffview: open git diff |
+| `;gD` | Diffview: close diff |
+| `;gh` | Diffview: file history for current buffer |
+| `;gC` | Diffview: open diff of file Claude Code last touched (`:ClaudeDiff`) |
+| `]h` / `[h` | Jump to next / previous git hunk (Gitsigns) |
+| `;hs` / `;hr` | Stage / reset git hunk |
+| `;hp` | Preview git hunk in floating window |
 
-### zdots Platform
+### Testing & Debugging
+
+| Key | Action |
+| --- | --- |
+| `;tr` / `;tf` | Neotest: run nearest test / run file |
+| `;tl` / `;tS` | Neotest: re-run last test / stop tests |
+| `;ts` / `;to` / `;tO` | Neotest: test summary / test output / output panel |
+| `;db` / `;dc` | DAP: toggle breakpoint / continue debugging |
+| `;di` / `;do` | DAP: step into / step over |
+| `;du` / `;dr` / `;dt` | DAP: toggle UI / open REPL / terminate session |
+
+### Plugin & Package Management (`vim.pack`)
 
 | Key / Command | Action |
 | --- | --- |
-| `;zi` | Ingest current buffer into context engine |
-| `;zt` | Open interactive task picker (ztask) |
-| `:ZdotsIngest` | Command to ingest current buffer |
-| `:Zshenv` | Edit your zdots environment config |
-
-### Copilot (insert mode)
-
-| Key | Action |
-| --- | --- |
-| `<M-CR>` | Accept suggestion |
-| `<M-]>` | Next suggestion |
-| `<M-[>` | Previous suggestion |
-| `<M-\>` | Dismiss suggestion |
+| `;L` / `;Pu` | Open interactive plugin update buffer (`:PackUpdate`) |
+| `;Ps` | Sync plugins to lockfile (`:PackSync`) |
+| `;Pc` | Prune unmanaged/inactive plugins from disk (`:PackClean`) |
+| `;PS` | View installed plugin count & status (`:PackStatus`) |
+| `./bin/vdots-update` | Terminal script: update, clean, test, and show diff |
+| `./bin/vdots-update -c` | Terminal script: update, test, and auto-commit |
 
 ### Commands
 
-Config editing shortcuts (all open `$MYVIMRC` or `$ZDOTDIR/.zshenv`):
-
 | Command | Action |
 | --- | --- |
+| `:Ack [query]` | Ripgrep text across project into quickfix |
+| `:Ag [query]` | Alias for `:Ack` / `:Rg` |
+| `:Rg [query]` | Ripgrep text across project into quickfix |
+| `:PackUpdate` | Interactive plugin update review buffer |
+| `:PackSync` | Synchronize plugins to lockfile revisions |
+| `:PackClean` | Prune unmanaged plugins from disk |
+| `:PackStatus` | Display active plugin summary toast |
+| `:ClaudeDiff` | Diff the file Claude Code last touched |
+| `:NvimUsage` | Display usage & friction telemetry report |
+| `:NvimUsageReset` | Clear the local friction telemetry log |
+| `:NvimErrors` | Open recent error log with diagnostic context |
 | `:Reload` | Re-source `$MYVIMRC` |
 | `:Vimrc` / `:Svimrc` / `:Tvimrc` / `:Vvimrc` | Edit / split / tab / vsplit vimrc |
 | `:Zshenv` / `:Szshenv` / `:Tzshenv` / `:Vzshenv` | Edit / split / tab / vsplit `.zshenv` |
-| `:Rg [query]` | Grep via ripgrep → quickfix |
-| `:Ack [query]` | Alias for `:Rg` |
-| `:Files` / `:GFiles` | Telescope find files / git files |
-| `:Buffers` | Telescope buffer list |
-| `:Commits` / `:BCommits` | Telescope git commits / buffer commits |
+| `:ZdotsIngest` | Ingest buffer into zdots platform |
+| `:ZdotsStatus` | Show zdots platform status in float |
 
 ## Abbreviations
 
@@ -196,7 +227,7 @@ buffer-local — they only expand in the listed filetypes.
 
 Common misspellings auto-corrected in insert mode: `cant`, `dont`, `wont`,
 `teh`, `alos`, `aslo`, `becuase`, `bianry`, `charcter`, `exmaple`, `shoudl`,
-`seperate`, `tpyo`, `optino`, `udpate`, `typdef`, `flase`, `taht`, `resposne`.
+`seperate`, `tpyo`, `optino`, `udpate`, `typdef`, `flase`, `taht`, `resposne`, `fro`.
 
 ### Programming shortcuts (filetype-scoped)
 
@@ -208,9 +239,9 @@ Common misspellings auto-corrected in insert mode: `cant`, `dont`, `wont`,
 | `im` | `import` | Go, JavaScript, TypeScript |
 | `pa` | `package` | Go |
 | `ma` | `main` | Go |
-| pu | `public` | Ruby, JavaScript, TypeScript |
-| pr | `private` | Ruby, JavaScript, TypeScript |
-| it | `it {  }` | Ruby (RSpec) |
-| desc | `describe "" do end` | Ruby (RSpec) |
-| cont | `context "" do end` | Ruby (RSpec) |
+| `pu` | `public` | Ruby, JavaScript, TypeScript |
+| `pr` | `private` | Ruby, JavaScript, TypeScript |
+| `it` | `it {  }` | Ruby (RSpec) |
+| `desc` | `describe "" do end` | Ruby (RSpec) |
+| `cont` | `context "" do end` | Ruby (RSpec) |
 

@@ -15,8 +15,12 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | `<leader>g` | git |
 | `<leader>h` | git hunks |
 | `<leader>n` | notifications |
+| `<leader>P` | plugins |
 | `<leader>s` | search |
 | `<leader>t` | test |
+| `<leader>u` | ui / toggle |
+| `<leader>w` | window |
+| `<leader>q` | quit |
 | `<leader>x` | diagnostics (Trouble) |
 
 ## General
@@ -91,6 +95,7 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | `<leader>gd` | Diffview open |
 | `<leader>gD` | Diffview close |
 | `<leader>gh` | File history (Diffview) |
+| `<leader>gC` | Diff file Claude Code last touched (`:ClaudeDiff`) |
 | `<leader>gB` | Git browse (open in GitHub) |
 | `]h` / `[h` | Next / prev hunk (Gitsigns) |
 | `<leader>hs` | Stage hunk |
@@ -102,14 +107,26 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | Key | Action |
 |-----|--------|
 | `gd` | Go to definition |
+| `gI` | Go to implementation |
+| `gy` | Go to type definition |
 | `K` | Hover documentation |
 | `gr` | References |
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code action |
 | `[d` / `]d` | Previous / next diagnostic |
-| `<leader>d` | Diagnostic float |
-| `<leader>q` | Diagnostics → location list |
+| `<leader>cd` | Diagnostic float (current line) |
 | `<leader>ih` | Toggle inlay hints (ruby_lsp only) |
+
+## Plugin & Package Management (`vim.pack`)
+
+| Key / Command | Action |
+|---------------|--------|
+| `<leader>L` / `<leader>Pu` | Interactive plugin update review buffer (`:PackUpdate`) |
+| `<leader>Ps` | Sync plugins to lockfile (`:PackSync`) |
+| `<leader>Pc` | Prune unmanaged/inactive plugins from disk (`:PackClean`) |
+| `<leader>PS` | Active plugin status toast (`:PackStatus`) |
+| `./bin/vdots-update` | CLI script: update, clean, test, diff |
+| `./bin/vdots-update -c` | CLI script: update, test, and auto-commit |
 
 ## Formatting & Diagnostics
 
@@ -147,12 +164,16 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | `<leader>dr` | Open REPL |
 | `<leader>dt` | Terminate session |
 
-## AI (CodeCompanion)
+## AI & Local LLM
 
 | Key | Action |
 |-----|--------|
 | `<leader>aia` | CodeCompanion action menu |
 | `<leader>aic` | CodeCompanion chat |
+| `<leader>aiq` | Local LLM query on buffer / selection |
+| `<leader>aiE` | Local LLM explain buffer / selection |
+| `<leader>air` | Local LLM review buffer / selection |
+| `:Llm {task}` | Local LLM command |
 
 ## zdots Platform Integration
 
@@ -185,7 +206,16 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 
 | Command | Action |
 |---------|--------|
-| `:PackSync` | Update all plugins (`vim.pack.update()`) |
+| `:Ack [query]` | Ripgrep search into quickfix list |
+| `:Ag [query]` | Ripgrep search into quickfix list |
+| `:Rg [query]` | Ripgrep search into quickfix list |
+| `:PackUpdate` | Interactive plugin update review buffer |
+| `:PackSync` | Sync plugins to lockfile revisions |
+| `:PackClean` | Prune unmanaged plugins from disk |
+| `:PackStatus` | Display active plugin summary toast |
+| `:ClaudeDiff` | Diff the file Claude Code last touched |
+| `:NvimUsage` | Display typing telemetry & friction report |
+| `:NvimErrors` | Open recent error log with diagnostic context |
 | `:Reload` | Re-source `$MYVIMRC` |
 | `:Vimrc` / `:Svimrc` / `:Tvimrc` / `:Vvimrc` | Edit / split / tab / vsplit vimrc |
 | `:Zshenv` / `:Szshenv` / `:Tzshenv` / `:Vzshenv` | Edit / split / tab / vsplit `.zshenv` |

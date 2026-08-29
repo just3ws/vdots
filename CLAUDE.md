@@ -12,6 +12,12 @@ Personal Neovim configuration using Lua, built on native Neovim 0.12 features: `
 # Run regression tests
 ./test/run.sh
 
+# Update plugins, prune unmanaged packages, test, and show diff
+./bin/vdots-update
+
+# Update plugins and auto-commit lockfile
+./bin/vdots-update --commit
+
 # Lint Lua files
 luacheck . --config .luacheckrc
 
@@ -36,9 +42,9 @@ lua/
 │   ├── options.lua         # ALL vim.opt/vim.g settings (never set options in init.lua)
 │   ├── keymaps/init.lua    # Global non-plugin keybindings
 │   ├── autocmds.lua        # Autocommands
-│   ├── commands.lua        # User commands (:Reload, :Zdots*)
+│   ├── commands.lua        # User commands (:Reload, :Pack*, :Zdots*)
 │   ├── explorer.lua        # Nvim-tree NERDTree-style mappings
-│   ├── search.lua          # Native rg grep → quickfix (:Rg, <leader>ff)
+│   ├── search.lua          # Native rg grep → quickfix (:Ack, :Ag, :Rg, <leader>ff)
 │   ├── telescope.lua       # Telescope defaults
 │   ├── treesitter.lua      # Native TS highlighting + textobjects
 │   ├── llm.lua             # Local llama.cpp integration (ai-query)
@@ -57,7 +63,7 @@ Load order in init.lua: leader → `vim.pack.add` → `editor.*` modules → sna
 
 ## Key Patterns & 2026 Standards
 
-**Plugin management**: Native **`vim.pack`** (declared in init.lua, `:PackSync` to update, `nvim-pack-lock.json` is the lockfile). Plugin *setup* lives in `lua/plugins.lua` — add new plugins in both places.
+**Plugin management**: Native **`vim.pack`** (declared in init.lua, `./bin/vdots-update` or `:PackUpdate`/`:PackSync` to update, `nvim-pack-lock.json` is the lockfile). Plugin *setup* lives in `lua/plugins.lua` — add new plugins in both places.
 
 **Treesitter**: Native Neovim 0.12 (`vim.treesitter.start` via FileType autocmd in `lua/editor/treesitter.lua`).
 

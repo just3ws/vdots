@@ -18,6 +18,7 @@ This repository is a Lua-based Neovim configuration.
 Use these from repo root:
 
 - `./test/run.sh`: run the full headless regression suite (required before/after changes).
+- `./bin/vdots-update`: update plugins via `vim.pack`, prune inactive packages, run tests, show diff.
 - `luacheck . --config .luacheckrc`: static lint for Lua.
 - `stylua --check .`: formatting check (CI matches this).
 - `stylua .`: apply formatting.
