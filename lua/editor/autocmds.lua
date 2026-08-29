@@ -119,14 +119,25 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
--- Remove trailing whitespace and collapse excessive blank lines on save
+-- Remove trailing whitespace on save (skipping filetypes where trailing whitespace
+-- is semantically significant, like markdown hard line breaks, diffs, and gitcommit).
+local whitespace_exclude_ft = {
+  markdown = true,
+  diff = true,
+  gitcommit = true,
+  mail = true,
+}
+
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = augroup,
   callback = function()
+    local ft = vim.bo.filetype
+    if whitespace_exclude_ft[ft] or vim.bo.buftype ~= "" then
+      return
+    end
     local save_cursor = vim.fn.getpos "."
     pcall(function()
       vim.cmd [[silent! %s/\s\+$//e]]
-      vim.cmd [[silent! %s/\n\{3,\}/\r\r/e]]
     end)
     vim.fn.setpos(".", save_cursor)
   end,
