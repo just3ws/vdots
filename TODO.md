@@ -86,7 +86,7 @@ open one, no `<Esc>` to exit terminal mode. A daily-driver config needs this.
 **Options:** `akinsho/toggleterm.nvim` (floating + split + persistent) or manual keymaps.
 **Commit:** `feat(terminal): add terminal keymaps and toggleterm`
 
-### [ ] H-2: Add gitsigns.nvim
+### [x] H-2: Add gitsigns.nvim
 
 **Why:** No inline git sign column (added/changed/removed lines). No hunk operations (stage,
 reset, preview). No inline blame. Fugitive handles repo-level git; gitsigns handles
@@ -100,7 +100,7 @@ line-level — they are complementary, not overlapping.
 **Fix:** Removed archived plugin, enabled native highlighting, and updated extensions to 0.12 compatible versions.
 **Commit:** `feat(treesitter): migrate to native neovim 0.12 support`
 
-### [ ] H-4: Remove CursorHold auto-diagnostic float
+### [x] H-4: Remove CursorHold auto-diagnostic float
 
 **File:** `lua/ui/diagnostics.lua`
 **Why:** Opening a float on every `CursorHold` (every 250 ms of idle) causes constant popup
@@ -108,7 +108,7 @@ flicker while reading code. The explicit `<leader>e` binding is sufficient.
 **Fix:** Remove the `CursorHold` autocmd from `diagnostics.lua`.
 **Commit:** `fix(diagnostics): remove CursorHold auto-float; use explicit leader-e`
 
-### [ ] H-5: Enable LSP inlay hints
+### [x] H-5: Enable LSP inlay hints
 
 **File:** `lua/lsp/init.lua`
 **Why:** Neovim 0.10+ supports native inlay hints. `gopls` and `lua_ls` both provide them.
@@ -117,7 +117,7 @@ Inline type annotations and parameter names significantly reduce context-switchi
 by `client.supports_method("textDocument/inlayHint")`.
 **Commit:** `feat(lsp): enable inlay hints for supporting servers`
 
-### [ ] H-6: Richer lualine statusline
+### [x] H-6: Richer lualine statusline
 
 **File:** `lua/ui/lualine.lua`
 **Why:** Current statusline shows filename, mode, location. Missing: LSP server name,
@@ -130,7 +130,7 @@ diagnostic counts, git branch (fugitive available), ALE lint status.
 
 ## Expert Audit (2026-02-28) — Medium Impact
 
-### [ ] M-1: Migrate nvim-cmp → blink.cmp
+### [x] M-1: Migrate nvim-cmp → blink.cmp
 
 **Why:** `hrsh7th/nvim-cmp` is effectively unmaintained. `Saghen/blink.cmp` is the active
 successor, written in Rust, significantly faster, and drop-in compatible.
@@ -142,7 +142,7 @@ successor, written in Rust, significantly faster, and drop-in compatible.
 dot-repeat. Keymaps (`cs`, `ds`, `ys`) are identical — migration is transparent.
 **Commit:** `feat(plugins): replace vim-surround with nvim-surround`
 
-### [ ] M-3: Add flash.nvim for jump navigation
+### [x] M-3: Add flash.nvim for jump navigation
 
 **Why:** No EasyMotion/Sneak-style jump-to-position. `folke/flash.nvim` provides `s`/`S`
 jumps, treesitter-aware selection, and search labels. High productivity gain.
@@ -154,7 +154,7 @@ jumps, treesitter-aware selection, and search labels. High productivity gain.
 nvim-cmp/blink.cmp to prevent double-closing-bracket on completion confirm.
 **Commit:** `feat(editing): add nvim-autopairs`
 
-### [ ] M-5: Narrow ALE to non-LSP tools only; add conform.nvim for formatting
+### [x] M-5: Narrow ALE to non-LSP tools only; add conform.nvim for formatting
 
 **Why:** ALE currently handles both linting and formatting for languages where LSP already
 formats. `conform.nvim` provides a cleaner formatting pipeline with LSP fallback and
@@ -169,7 +169,7 @@ pyinilint, markdownlint).
 a 1-second wait before `; → :` fires. `timeoutlen = 400` is a better balance.
 **Commit:** `fix(options): set timeoutlen = 400 for snappier leader key fallback`
 
-### [ ] M-7: Use vim.filetype.add() for filetype overrides
+### [x] M-7: Use vim.filetype.add() for filetype overrides
 
 **File:** `lua/editor/autocmds.lua`
 **Why:** 14 filetype patterns are set via BufRead/BufNewFile autocmds. Neovim has
@@ -200,14 +200,14 @@ supports `vim.lsp.config("*", { on_attach = ..., capabilities = ... })` to set t
 unconditionally. The `sign_define` warnings it suppresses are already fixed upstream.
 **Commit:** `fix(healthcheck): remove vim.deprecate monkey-patch`
 
-### [ ] L-3: Evaluate nvim-tree.lua as NERDTree replacement
+### [x] L-3: Evaluate nvim-tree.lua as NERDTree replacement
 
 **Why:** NERDTree is unmaintained (last significant commit 2022). `nvim-tree/nvim-tree.lua`
 provides the same workflow with LSP file operations, async git status, and active
 maintenance. This is a muscle-memory migration — plan carefully.
 **Commit:** `feat(explorer): migrate from NERDTree to nvim-tree`
 
-### [ ] L-4: Add nvim-dap for debugging
+### [x] L-4: Add nvim-dap for debugging
 
 **Why:** No debugging support for any language. `mfussenegger/nvim-dap` with `nvim-dap-ui`
 and language-specific adapters (ruby, go) provides full DAP debugging inside Neovim.
@@ -221,8 +221,8 @@ and language-specific adapters (ruby, go) provides full DAP debugging inside Neo
 | -------- | ------ | ----- |
 | Original remediation (P0–P5) | ✓ Complete | 30 |
 | B - Bugs / Defects | 6/6 done | 0 remaining |
-| H - High Impact | 0/6 done | 6 remaining |
-| M - Medium Impact | 0/8 done | 8 remaining |
-| L - Long Term | 0/4 done | 4 remaining |
+| H - High Impact | 5/6 done | 1 remaining (H-1) |
+| M - Medium Impact | 4/8 done | 4 remaining (M-2, M-4, M-6, M-8) |
+| L - Long Term | 2/4 done | 2 remaining (L-1, L-2) |
 
-Total from expert audit: 6 completed, 18 remaining
+Total from expert audit: 17 completed, 7 remaining
