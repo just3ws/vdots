@@ -121,6 +121,7 @@ function M.setup_all()
 
   -- Nvim-tree
   require("nvim-tree").setup {
+    on_attach = require("editor.explorer").on_attach,
     view = { width = 36, side = "left" },
     renderer = {
       group_empty = true,

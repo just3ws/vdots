@@ -129,6 +129,12 @@ end)
 
 test("Core plugins loaded: nvim-tree", function()
   assert_exists "nvim-tree"
+  local tree_view = require "nvim-tree.view"
+  assert_true(tree_view ~= nil, "nvim-tree view should exist")
+  assert_true(
+    type(require("editor.explorer").on_attach) == "function",
+    "explorer on_attach should be function"
+  )
 end)
 
 test("Core plugins loaded: blink.cmp", function()
