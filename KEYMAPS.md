@@ -2,18 +2,22 @@
 
 This document tracks the most important keybindings, focusing on new performance-oriented additions and critical tools for Ruby, Go, and JS development.
 
-## 🚀 New High-Performance Pickers (Snacks.nvim)
-*Faster alternatives to Telescope for daily tasks.*
+## 🚀 Pickers & Convenience (Telescope / Snacks)
+*Fast pickers for files, text, buffers, and session helpers.*
 
 | Key | Action | Description |
 | :--- | :--- | :--- |
-| `<leader><space>` | **Smart Find** | Intelligently finds files (replaces `<C-p>`) |
-| `<leader>,` | **Buffers** | Instant switch between open files |
-| `<leader>/` | **Live Grep** | Highly optimized project-wide search |
-| `<leader>:` | **Command History** | Search and re-run recent commands |
-| `<leader>n` | **Notifications** | View notification history |
-| `<leader>un` | **Dismiss All** | Clear all active notifications |
-| `<leader>bd` | **Delete Buffer** | Cleanly close current buffer (keeps layout) |
+| `<leader><space>` / `<C-p>` | **Find Files** | Fast file search (Telescope) |
+| `<leader>,` / `<leader>fb` | **Buffers** | Instant switch between open buffers (Telescope) |
+| `<leader>/` / `<leader>fg` | **Live Grep** | Highly optimized project-wide search (Telescope) |
+| `<leader>ff` | **Grep → Quickfix** | Native `rg` grep populated into quickfix (`:Rg`) |
+| `<leader>fr` | **Recent Files** | Browse recently opened files (Telescope) |
+| `<leader>fc` | **Find Config** | Find files within `~/.config/nvim` (Telescope) |
+| `<leader>:` | **Command History** | Search and re-run recent commands (Telescope) |
+| `<leader>gB` | **Git Browse** | Open current line/file in GitHub/GitLab (Snacks) |
+| `<leader>n` | **Notifications** | View notification history (Snacks) |
+| `<leader>un` | **Dismiss All** | Clear all active notifications (Snacks) |
+| `<leader>bd` | **Delete Buffer** | Cleanly close current buffer preserving layout (Snacks) |
 
 ## 🛠️ Essential Development Tools
 
@@ -43,7 +47,9 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader>gC` | **Diff Claude's Change** | Diffview the file Claude Code last touched (`:ClaudeDiff`) |
 | `<leader>gB` | **Git Browse** | Open current line/file in GitHub/GitLab |
 | `]h` / `[h` | **Next/Prev Hunk** | Jump between Git changes (Gitsigns) |
-| `<leader>hp` | **Preview Hunk** | Floating window with hunk diff |
+| `<leader>hs` | **Stage Hunk** | Stage git hunk at cursor (Gitsigns) |
+| `<leader>hr` | **Reset Hunk** | Reset git hunk at cursor (Gitsigns) |
+| `<leader>hp` | **Preview Hunk** | Floating window with hunk diff (Gitsigns) |
 
 ### Navigation & UI
 | Key | Action | Description |
@@ -52,8 +58,10 @@ This document tracks the most important keybindings, focusing on new performance
 | `s` | **Flash Jump** | Teleport to any visible character |
 | `-` | **Oil.nvim** | Open parent directory as a buffer |
 | `<leader>e` | **Nvim-Tree** | Toggle file explorer sidebar |
-| `<leader>d` | **Diagnostic Float** | Show diagnostic detail for current line |
+| `<leader>cd` | **Diagnostic Float** | Show diagnostic detail for current line |
+| `]d` / `[d` | **Next/Prev Diagnostic** | Jump between diagnostic warnings/errors |
 | `<leader>xx` | **Trouble** | Toggle project diagnostics list |
+| `<leader>xX` | **Buffer Diagnostics** | Toggle buffer diagnostics in Trouble |
 
 ### Testing & Debugging
 | Key | Action | Description |
@@ -64,8 +72,14 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader>ts` | **Test Summary** | Toggle visual test status sidebar |
 | `<leader>to` | **Test Output** | Open full test output (floating) |
 | `<leader>tO` | **Output Panel** | Toggle persistent output panel |
+| `<leader>tS` | **Stop Test** | Cancel running tests |
 | `<leader>db` | **Breakpoint** | Toggle DAP breakpoint |
 | `<leader>dc` | **Continue** | Start/Continue debugging session |
+| `<leader>di` | **Step Into** | Step into function |
+| `<leader>do` | **Step Over** | Step over statement |
+| `<leader>du` | **Toggle UI** | Toggle DAP UI windows |
+| `<leader>dr` | **Open REPL** | Open DAP interactive REPL |
+| `<leader>dt` | **Terminate** | Terminate DAP debug session |
 
 ### Editing & Clipboard
 *Copy-on-yank model: yanks auto-copy to the system clipboard; deletes never clobber it.*

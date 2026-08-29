@@ -254,6 +254,16 @@ test("Keymap: <leader>ff mapped (grep to quickfix)", function()
   assert_true(exists, "<leader>ff should be mapped")
 end)
 
+test("Keymap: <leader>, mapped (Telescope buffers)", function()
+  local exists, _ = keymap_exists("n", ";,")
+  assert_true(exists, "<leader>, should be mapped")
+end)
+
+test("Keymap: <leader>gB mapped (Snacks gitbrowse)", function()
+  local exists, _ = keymap_exists("n", ";gB")
+  assert_true(exists, "<leader>gB should be mapped")
+end)
+
 test("Keymap: <leader>f mapped (Conform format — plugins.lua wiring)", function()
   local exists, _ = keymap_exists("n", ";f")
   assert_true(exists, "<leader>f should be mapped")
