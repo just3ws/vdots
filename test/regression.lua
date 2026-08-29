@@ -341,6 +341,14 @@ test("Command: :Rg (native grep)", function()
   assert_true(command_exists "Rg", ":Rg should exist")
 end)
 
+test("Command: :Ack (native grep alias)", function()
+  assert_true(command_exists "Ack", ":Ack should exist")
+end)
+
+test("Command: :Ag (native grep alias)", function()
+  assert_true(command_exists "Ag", ":Ag should exist")
+end)
+
 test("Command: :DiffviewOpen (plugins.lua wiring)", function()
   assert_true(command_exists "DiffviewOpen", ":DiffviewOpen should exist")
 end)

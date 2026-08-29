@@ -35,10 +35,29 @@ function M.setup()
     vim.opt.grepformat = "%f:%l:%c:%m"
   end
 
-  -- 2. Commands
-  vim.api.nvim_create_user_command("Rg", function(opts)
-    M.run_grep(opts.args ~= "" and opts.args or vim.fn.input "Rg> ")
-  end, { nargs = "*" })
+  -- 2. Commands (:Rg, :Ack, :Ag)
+  local function grep_cmd(prompt_name)
+    return function(opts)
+      local query = opts.args ~= "" and opts.args or vim.fn.input(prompt_name .. "> ")
+      M.run_grep(query)
+    end
+  end
+
+  vim.api.nvim_create_user_command("Rg", grep_cmd "Rg", {
+    bang = true,
+    nargs = "*",
+    desc = "Grep text into quickfix (ripgrep)",
+  })
+  vim.api.nvim_create_user_command("Ack", grep_cmd "Ack", {
+    bang = true,
+    nargs = "*",
+    desc = "Ack/Ripgrep search into quickfix",
+  })
+  vim.api.nvim_create_user_command("Ag", grep_cmd "Ag", {
+    bang = true,
+    nargs = "*",
+    desc = "SilverSearcher/Ripgrep search into quickfix",
+  })
 end
 
 return M

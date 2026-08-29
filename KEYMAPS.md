@@ -10,7 +10,7 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader><space>` / `<C-p>` | **Find Files** | Fast file search (Telescope) |
 | `<leader>,` / `<leader>fb` | **Buffers** | Instant switch between open buffers (Telescope) |
 | `<leader>/` / `<leader>fg` | **Live Grep** | Highly optimized project-wide search (Telescope) |
-| `<leader>ff` | **Grep → Quickfix** | Native `rg` grep populated into quickfix (`:Rg`) |
+| `<leader>ff` | **Grep → Quickfix** | Native `rg` grep populated into quickfix (`:Ack`, `:Ag`, `:Rg`) |
 | `<leader>fr` | **Recent Files** | Browse recently opened files (Telescope) |
 | `<leader>fc` | **Find Config** | Find files within `~/.config/nvim` (Telescope) |
 | `<leader>:` | **Command History** | Search and re-run recent commands (Telescope) |
