@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+<!-- COLD-START RESUME STATE lives in the CURRENT FOCUS block at the top of
+     >>> AGENTS.md <<< — read it first. Closing a session = rewrite that
+     block in AGENTS.md, then commit. -->
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Repository Overview

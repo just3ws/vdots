@@ -1,3 +1,19 @@
+<!-- ═══════════════════════════════════════════════════════════════════════
+     CURRENT FOCUS  —  last updated 2026-08-31
+     Cold-start resume state, canonical for every agent tool. Whoever closes
+     a session rewrites this block in place — step one, before the wrap-up.
+     git log is truth for exact SHAs; if this contradicts it, trust git.
+
+       In flight: nothing tracked. vdots is stable; changes are ad-hoc
+       config tweaks. See TODO.md for the standing remediation list.
+       Deep handoff (only if a session was mid-task):
+         ~/.config/adots/handoffs/YYYY-MM-DD-vdots.md  (local-only, never commit)
+
+     Close ritual: rewrite this block + commit; write a deep handoff only if
+     work is genuinely unfinished. Reference impl: wwworkremote/core's
+     docs/agents/session-handoff.md.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
 # Repository Guidelines
 
 ## Project Structure & Module Organization
