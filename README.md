@@ -1,13 +1,15 @@
 # Vdots
 
-My Neovim dotfiles.
+A native-first Neovim configuration: Lua, `vim.pack` for plugins, built-in LSP,
+and a `;`-leader keymap surfaced through which-key. Ships its own doctor, update,
+and test tooling. Part of a four-repo personal platform (see
+[zdots](https://github.com/just3ws/zdots)); works standalone.
 
 ## Installation
 
 ```shell
-cd
-mkdir -p ~/.local/share/nvim
-git clone git@github.com:just3ws/vdots.git ~/.config/nvim
+git clone https://github.com/just3ws/vdots.git ~/.config/nvim
+nvim   # plugins install on first launch
 ```
 
 ## Development
