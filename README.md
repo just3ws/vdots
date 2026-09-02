@@ -261,21 +261,24 @@ Keymaps — buffer-local to `markdown` and the preview pane, prefix `;r`:
 | `;rs` / `;rq` | Stop / close the preview pane |
 | `;rf` | Refresh the preview now |
 | `;rx` | Quick export (throwaway .m4a) + open player |
-| `;rP` | Publish to the listen library (see below) |
+| `;rP` | Publish to the listen library (`:VdotsReadPublish!` to re-record) |
 
 Hardware media keys (F7/F8/F9, Touch Bar, AirPods) work via a Swift Now-Playing
 helper — best-effort; the reliable remote is a SwiftBar menu-bar item
 (`vdots doctor --fix` installs it). Full docs: `:help vdots-readaloud`.
 `:checkhealth vdots.readaloud`.
 
-Config (all optional). `voice = nil` auto-picks by `tone`: **`warm`** (default —
-natural, human) or `clarity` (crisp, `Alex`-first). The warm neural voices
-(`Ava`/`Evan` Enhanced) are a free download — System Settings ▸ Accessibility ▸
-Spoken Content ▸ Manage Voices — and are picked up automatically.
+Config (all optional). `voice = nil` auto-picks by `tone` (**`warm`** default /
+`clarity`); `pace` (**`follow`** = slow with beats between sections / `relaxed` /
+`natural`) sets the words-per-minute and pause lengths. The Premium/Enhanced
+neural voices are what make it sound human — download **`Zoe (Premium)`** from
+System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices and it's
+auto-picked. Audition: `vdots-read --sample --voice "Zoe (Premium)"`.
 
 ```lua
 vim.g.vdots_readaloud = {
-  voice = nil, tone = "warm", rate = 220, skip_code = true, skip_tables = false,
+  voice = nil, tone = "warm", pace = "follow", rate = nil,
+  skip_code = true, skip_tables = false,
   preview = true, sync_cursor = true, stop_on_edit = true, media_keys = true,
   pronounce = { kubectl = "koob cuttle", myjargon = "my jargon" },
   player = nil, -- external player for :VdotsReadExport; nil = vim.ui.open

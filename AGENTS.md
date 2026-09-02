@@ -9,18 +9,20 @@
        zdots/phx) + bin/vdots-ctl/-doctor bug fixes. (2) Read-aloud plugin
        `lua/vdots/readaloud/`: two-pane rendered preview + synced cursor,
        line-anchored playback (pause / jump / resume-from-block), macOS `say`
-       with warm|clarity voice tone + tech-pronunciation map, hardware media
-       keys via a compiled Swift Now-Playing helper (best-effort) and a SwiftBar
-       remote, `:checkhealth vdots.readaloud`, `:help vdots-readaloud`. (3)
-       `:VdotsReadPublish` / `vdots-listen` — clean doc + recorded read-through
-       into ~/ai/outbox/listen with a self-contained index.html catalog,
-       auto-synced by Google Drive desktop. (4) Dashboard Recent Files + Recent
-       Markdown sections (lua/editor/mdfiles.lua; shada '1000). Tests green
-       (57 smoke + 16 unit).
-       Blocked on human: merge decision for the branch; a warmer voice
-       (base install resolves to Flo — Ava/Evan Enhanced recommended, free
-       download). PATH for ~/.config/nvim/bin is interim via zdots
-       .zshrc.local; zdots request Z-337 tracks the native env.sh pickup.
+       with warm|clarity voice tone, `pace` presets (follow/relaxed/natural)
+       that insert `[[slnc]]` beats between paragraphs + sections, tech-
+       pronunciation map, hardware media keys via a compiled Swift Now-Playing
+       helper (best-effort) and a SwiftBar remote, `:checkhealth
+       vdots.readaloud`, `:help vdots-readaloud`. (3) `:VdotsReadPublish[!]` /
+       `vdots-listen` — clean doc + recorded read-through into ~/ai/outbox/listen
+       with a self-contained index.html catalog, auto-synced by Google Drive
+       desktop; same-day re-publish refused unless `!`/`--force`. (4) Dashboard
+       Recent Files + Recent Markdown sections (lua/editor/mdfiles.lua; shada
+       '1000). Tests green (57 smoke + 19 unit).
+       Blocked on human: merge decision for the branch. Operator picked
+       `Zoe (Premium)` (downloaded, auto-resolves). PATH for ~/.config/nvim/bin
+       is interim via zdots .zshrc.local; zdots request Z-337 tracks the
+       native env.sh pickup.
        Deep handoff: none (committed on the branch, not mid-task).
 
      Close ritual: rewrite this block + commit; write a deep handoff only if
@@ -38,9 +40,10 @@ This repository is a Lua-based Neovim configuration.
 - `lua/`: main modules by concern:
   - `lua/editor/` for options, keymaps, commands, autocmds, Telescope, Treesitter, search,
     `mdfiles.lua` (Markdown-file predicate for the dashboard).
-  - `lua/vdots/readaloud/` — the read-aloud plugin: `parse` (Markdown→speech, pure/tested),
-    `preview` (rendered vsplit + cursor sync), `player` (say state machine + publish),
-    `pronounce` (tech-term map), `mediakeys` (Swift Now-Playing helper), `config`, `health`.
+  - `lua/vdots/readaloud/` — the read-aloud plugin: `parse` (Markdown→speech blocks, pure/tested),
+    `pace` (rate + `[[slnc]]` beats), `preview` (rendered vsplit + cursor sync),
+    `player` (say state machine + publish), `pronounce` (tech-term map),
+    `mediakeys` (Swift Now-Playing helper), `config`, `health`.
   - `lua/plugins.lua` for all plugin `setup()` calls and their keymaps.
   - `lua/ui/` for colors and diagnostics display.
   - `lua/zdots/` for the zdots shell-platform bridge.

@@ -15,22 +15,32 @@ function M.check()
   if vim.fn.executable "say" == 1 then
     h.ok "`say` found"
     local cfg = require "vdots.readaloud.config"
-    local tone = cfg.get().tone
+    local c = cfg.get()
     local v = cfg.resolve_voice(true)
-    if v and v:find "Enhanced" or v and v:find "Premium" then
-      h.ok(("voice: %s (%s) — warm neural voice"):format(v, tone))
+    local neural = v and (v:find "Enhanced" or v:find "Premium")
+    if neural then
+      h.ok(("voice: %s (tone=%s) — warm neural voice"):format(v, c.tone))
     elseif v then
-      h.ok(("voice: %s (tone=%s)"):format(v, tone))
+      h.ok(("voice: %s (tone=%s)"):format(v, c.tone))
     else
-      h.warn("voice: system default (tone=" .. tone .. ") — no preferred voice installed")
+      h.warn("voice: system default (tone=" .. c.tone .. ") — no preferred voice installed")
     end
-    if not (v and (v:find "Enhanced" or v:find "Premium")) then
+    if not neural then
       h.info(
-        "For a warmer, more human voice install an Enhanced one (Ava or Evan are "
-          .. "the standouts): System Settings ▸ Accessibility ▸ Spoken Content ▸ "
-          .. "Manage Voices. Then it is picked up automatically."
+        "For a warm, human voice download a Premium/Enhanced one (Zoe, Ava, Evan): "
+          .. "System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices — "
+          .. 'auto-picked once installed. Siri voices: set voice = "Siri Voice 4".'
       )
     end
+    local s = require("vdots.readaloud.pace").settings(c)
+    h.ok(
+      ("pace: %s (%d wpm; %dms between paragraphs, %dms before a section)"):format(
+        c.pace,
+        s.rate,
+        s.para,
+        s.section
+      )
+    )
   else
     h.error "`say` not found — read-aloud will not work"
   end

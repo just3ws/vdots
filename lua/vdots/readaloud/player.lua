@@ -10,6 +10,7 @@ local M = {}
 local uv = vim.uv or vim.loop
 local cfg = require "vdots.readaloud.config"
 local parse = require "vdots.readaloud.parse"
+local pace = require "vdots.readaloud.pace"
 local preview = require "vdots.readaloud.preview"
 local mediakeys = require "vdots.readaloud.mediakeys"
 
@@ -122,12 +123,15 @@ local function speak(i)
   write_state(true)
 
   local c = cfg.get()
-  local args = { "say", "-r", tostring(c.rate) }
+  local s = pace.settings(c)
+  local args = { "say", "-r", tostring(s.rate) }
   local voice = cfg.resolve_voice()
   if voice then
     vim.list_extend(args, { "-v", voice })
   end
-  args[#args + 1] = require("vdots.readaloud.pronounce").apply(b.speak, c.pronounce)
+  local prev = st.blocks[i - 1] and st.blocks[i - 1].kind or nil
+  local lead = pace.marker(pace.lead(prev, b.kind, s))
+  args[#args + 1] = lead .. require("vdots.readaloud.pronounce").apply(b.speak, c.pronounce)
 
   st.gen = st.gen + 1
   local gen = st.gen
@@ -368,16 +372,17 @@ function M.export(range)
   end
   local c = cfg.get()
   local pron = require "vdots.readaloud.pronounce"
-  local text = vim.tbl_map(function(b)
-    return pron.apply(b.speak, c.pronounce)
-  end, blocks)
+  for _, b in ipairs(blocks) do
+    b.speak = pron.apply(b.speak, c.pronounce)
+  end
+  local script = pace.script(blocks, c)
   local out = vim.fn.tempname() .. ".m4a"
-  local args = { "say", "-r", tostring(c.rate) }
+  local args = { "say", "-r", tostring(pace.settings(c).rate) }
   local voice = cfg.resolve_voice()
   if voice then
     vim.list_extend(args, { "-v", voice })
   end
-  vim.list_extend(args, { "-o", out, table.concat(text, "\n") })
+  vim.list_extend(args, { "-o", out, script })
   vim.notify("readaloud: rendering audio…", vim.log.levels.INFO)
   vim.system(
     args,
@@ -401,7 +406,9 @@ end
 ---Publish the current buffer to the listen library (bin/vdots-listen): a clean
 ---readable doc + a pre-recorded read-through, added to the Google-Drive-synced
 ---catalog under ~/ai/outbox/listen.
-function M.publish()
+---@param opts { force?: boolean }?  force = overwrite an existing same-day session
+function M.publish(opts)
+  opts = opts or {}
   if vim.fn.executable "say" == 0 then
     return vim.notify("readaloud: `say` not found (macOS only)", vim.log.levels.ERROR)
   end
@@ -421,10 +428,16 @@ function M.publish()
   end
 
   local c = cfg.get()
-  local args = { vdots_listen, "publish", src, "--tone", c.tone, "--rate", tostring(c.rate) }
+  local args = { vdots_listen, "publish", src, "--tone", c.tone, "--pace", c.pace }
+  if c.rate then
+    vim.list_extend(args, { "--rate", tostring(c.rate) })
+  end
   local voice = cfg.resolve_voice()
   if voice then
     vim.list_extend(args, { "--voice", voice })
+  end
+  if opts.force then
+    args[#args + 1] = "--force"
   end
   if c.publish_open then
     args[#args + 1] = "--open"

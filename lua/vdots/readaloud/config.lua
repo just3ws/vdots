@@ -3,8 +3,10 @@
 local M = {}
 
 M.defaults = {
-  voice = nil, -- nil = auto (best installed from voice_prefs); or a `say -v ?` name
-  rate = 220, -- words per minute
+  voice = nil, -- nil = auto (best installed from voice_prefs); or a `say -v ?` name.
+  -- Siri voices ("Siri Voice 4" …) are NOT auto-detected — set them explicitly.
+  rate = nil, -- words per minute; nil = the pace preset's rate
+  pace = "follow", -- "follow" (slow, generous beats) | "relaxed" | "natural" — see pace.lua
   skip_code = true, -- announce fenced code blocks instead of reading them
   skip_tables = false, -- false = read tables row by row
   preview = true, -- open the rendered preview vsplit on start
@@ -17,12 +19,12 @@ M.defaults = {
   listen_dir = nil, -- :VdotsReadPublish target; nil = vdots-listen default (~/ai/outbox/listen)
   publish_open = false, -- open the catalog after :VdotsReadPublish
   -- Auto-voice preference per tone, best → acceptable; first one installed wins.
-  -- The Premium / Enhanced neural voices are the warm, human ones but need a
-  -- download: System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices
-  -- (Ava and Evan are the standouts). `Alex` is unmatched for pure technical
-  -- clarity but sounds robotic.
+  -- Premium > Enhanced > compact. Download the good ones from System Settings ▸
+  -- Accessibility ▸ Spoken Content ▸ Manage Voices. For a Siri voice, set
+  -- `voice = "Siri Voice 4"` — they are not in `say -v ?` so cannot auto-resolve.
   voice_prefs = {
     warm = {
+      "Zoe (Premium)",
       "Ava (Premium)",
       "Ava (Enhanced)",
       "Evan (Premium)",
@@ -31,7 +33,6 @@ M.defaults = {
       "Nathan (Enhanced)",
       "Samantha (Enhanced)",
       "Allison (Enhanced)",
-      "Zoe (Premium)",
       "Sandy",
       "Flo",
       "Samantha",
@@ -113,8 +114,12 @@ function M.diagnose()
     out[#out + 1] = { ok = ok, msg = msg }
   end
   chk(
-    type(c.rate) == "number" and c.rate > 0,
-    "rate is a positive number (" .. tostring(c.rate) .. ")"
+    c.rate == nil or (type(c.rate) == "number" and c.rate > 0),
+    "rate is nil or a positive number (" .. tostring(c.rate) .. ")"
+  )
+  chk(
+    require("vdots.readaloud.pace").presets[c.pace] ~= nil,
+    'pace is "follow" / "relaxed" / "natural" (' .. tostring(c.pace) .. ")"
   )
   chk(c.voice == nil or type(c.voice) == "string", "voice is a string or nil")
   chk(c.player == nil or type(c.player) == "string", "player is a string or nil")

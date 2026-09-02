@@ -1,10 +1,9 @@
 -- bin/vdots-read.lua — headless bridge for `vdots-read`.
--- Runs the shared Markdown→speech transform (lua/vdots/readaloud/parse.lua) and
--- prints the spoken text to stdout, one block per line. The `vdots-read` shell
--- script pipes that into `say` (or `say -o`).
+-- Runs the shared Markdown→speech transform (parse + tech-pronunciation + paced
+-- silences) and prints the spoken script to stdout. `vdots-read` pipes it to `say`.
 --
 -- Invoked as:  nvim --headless -u NONE -l bin/vdots-read.lua <file.md>
--- Repo root is passed via $VDOTS_REPO.
+-- Env: $VDOTS_REPO (repo root), $VDOTS_PACE (follow|relaxed|natural).
 
 local repo = vim.env.VDOTS_REPO or vim.fn.fnamemodify(vim.fn.expand "<sfile>:p", ":h:h")
 local file = _G.arg and _G.arg[1] or nil
@@ -13,15 +12,31 @@ if not file or file == "" then
   vim.cmd "cquit 1"
 end
 
-local ok, parse = pcall(dofile, repo .. "/lua/vdots/readaloud/parse.lua")
-if not ok then
-  io.stderr:write("vdots-read.lua: cannot load parser: " .. tostring(parse) .. "\n")
+local function load(mod)
+  local ok, m = pcall(dofile, repo .. "/lua/vdots/readaloud/" .. mod .. ".lua")
+  return ok and m or nil
+end
+
+local parse = load "parse"
+if not parse then
+  io.stderr:write "vdots-read.lua: cannot load parser\n"
   vim.cmd "cquit 1"
 end
-local ok2, pron = pcall(dofile, repo .. "/lua/vdots/readaloud/pronounce.lua")
+local pron = load "pronounce"
+local pace = load "pace"
 
-local lines = vim.fn.readfile(file)
-for _, b in ipairs(parse.parse(lines)) do
-  io.write(ok2 and pron.apply(b.speak) or b.speak, "\n")
+local blocks = parse.parse(vim.fn.readfile(file))
+if pron then
+  for _, b in ipairs(blocks) do
+    b.speak = pron.apply(b.speak)
+  end
+end
+
+if pace then
+  io.write(pace.script(blocks, { pace = vim.env.VDOTS_PACE or "follow" }), "\n")
+else
+  for _, b in ipairs(blocks) do
+    io.write(b.speak, "\n")
+  end
 end
 vim.cmd "quit"

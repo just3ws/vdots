@@ -81,3 +81,33 @@ describe("vdots.readaloud.pronounce", function()
     )
   end)
 end)
+
+describe("vdots.readaloud.pace", function()
+  local pace = require "vdots.readaloud.pace"
+
+  it("tags block kinds and inserts a bigger beat before a section", function()
+    local bs = P.parse(vim.split("# One\n\npara a.\n\n## Two\n\npara b.\n", "\n", { plain = true }))
+    local kinds = vim.tbl_map(function(b)
+      return b.kind
+    end, bs)
+    assert.same({ "heading", "para", "heading", "para" }, kinds)
+
+    local script = pace.script(bs, { pace = "follow" })
+    -- section lead (750) > paragraph lead (400) > after-heading lead (250)
+    assert.truthy(script:find "%[%[slnc 750%]%] Heading level 2")
+    assert.truthy(script:find "%[%[slnc 250%]%] para a")
+    assert.is_nil(script:match "^%[%[slnc") -- no lead on the very first block
+  end)
+
+  it("keeps list items moving (shorter gap than paragraphs)", function()
+    local bs = P.parse(vim.split("- one\n- two\n", "\n", { plain = true }))
+    local s = pace.settings { pace = "follow" }
+    assert.is_true(pace.lead("list", "list", s) < pace.lead("para", "para", s))
+  end)
+
+  it("rate follows the preset unless overridden", function()
+    assert.equals(160, pace.settings({ pace = "follow" }).rate)
+    assert.equals(210, pace.settings({ pace = "natural" }).rate)
+    assert.equals(999, pace.settings({ pace = "follow", rate = 999 }).rate)
+  end)
+end)

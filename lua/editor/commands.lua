@@ -48,9 +48,9 @@ cmd("VdotsReadExport", function(o)
   require("vdots.readaloud").export(range)
 end, { range = true, desc = "Render read-aloud audio to a file and open it" })
 
-cmd("VdotsReadPublish", function()
-  require("vdots.readaloud").publish()
-end, { desc = "Publish this document + read-through to the listen library (Google Drive)" })
+cmd("VdotsReadPublish", function(o)
+  require("vdots.readaloud").publish { force = o.bang }
+end, { bang = true, desc = "Publish doc + read-through to the listen library (! = re-record)" })
 
 -- Recent files, Markdown only (dashboard `m` key + standalone)
 cmd("VdotsRecentMarkdown", function()

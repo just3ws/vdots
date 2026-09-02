@@ -3,21 +3,21 @@
 #
 # The in-editor experience (rendered preview pane, follow-along, pause/jump,
 # media keys) lives in lua/vdots/readaloud/ and the `;r` keymaps. This is the
-# CLI path: the same Markdown parse + tech-pronunciation pass, piped to `say`.
+# CLI path: the same Markdown parse + tech-pronunciation + paced silences.
 #
 # Usage:
-#   vdots-read [--voice V] [--tone warm|clarity] [--rate N] FILE.md   speak it
-#   vdots-read --export [...] FILE.md              render <FILE>.m4a and open it
-#   vdots-read --publish [...] FILE.md             add to the listen library (vdots-listen)
-#   vdots-read --dry-run FILE.md                   print the spoken text, don't speak
-#   vdots-read --print-voice [--tone T]            print the auto-picked voice
+#   vdots-read [--voice V] [--tone warm|clarity] [--pace follow|relaxed|natural] [--rate N] FILE.md
+#   vdots-read --export [...] FILE.md      render <FILE>.m4a and open it
+#   vdots-read --publish [...] FILE.md     add to the listen library (vdots-listen)
+#   vdots-read --dry-run FILE.md           print the spoken script, don't speak
+#   vdots-read --sample [--voice V] [FILE] speak a short sample (audition a voice)
+#   vdots-read --print-voice [--tone T]    print the auto-picked voice
 #
-# With no --voice, the best installed voice for the tone is auto-picked
-# (--tone warm is the default: natural/human; --clarity: crisp, Alex-first).
+# No --voice: the best installed voice for the tone is auto-picked. Siri voices
+# ("Siri Voice 4") are not auto-detected — pass --voice "Siri Voice 4".
 set -euo pipefail
 
-# Best installed voice, first match wins (mirrors lua/vdots/readaloud/config.lua
-# voice_prefs). $1 = tone: "warm" (default) | "clarity".
+# Mirrors lua/vdots/readaloud/config.lua voice_prefs. $1 = tone.
 auto_voice() {
   command -v say >/dev/null || return 0
   local have; have="$(say -v '?' 2>/dev/null)"
@@ -25,7 +25,7 @@ auto_voice() {
   if [[ "${1:-warm}" == clarity ]]; then
     list=("Alex" "Ava (Enhanced)" "Evan (Enhanced)" "Samantha (Enhanced)" "Samantha" "Daniel")
   else
-    list=("Ava (Premium)" "Ava (Enhanced)" "Evan (Premium)" "Evan (Enhanced)" \
+    list=("Zoe (Premium)" "Ava (Premium)" "Ava (Enhanced)" "Evan (Premium)" "Evan (Enhanced)" \
           "Joelle (Enhanced)" "Samantha (Enhanced)" "Sandy" "Flo" "Samantha" "Karen" "Moira")
   fi
   for v in "${list[@]}"; do
@@ -33,46 +33,61 @@ auto_voice() {
   done
 }
 
+pace_rate() { case "$1" in natural) echo 210 ;; relaxed) echo 185 ;; *) echo 160 ;; esac; }
+
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VDOTS_REPO="$(dirname "$HERE")"
 export VDOTS_REPO
 
-voice="" ; rate="220" ; mode="say" ; tone="warm" ; file=""
+voice="" ; rate="" ; mode="say" ; tone="warm" ; paceval="follow" ; file=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --voice) voice="$2"; shift 2 ;;
     --rate)  rate="$2";  shift 2 ;;
     --tone)  tone="$2";  shift 2 ;;
+    --pace)  paceval="$2"; shift 2 ;;
     --clarity) tone="clarity"; shift ;;
     --publish) mode="publish"; shift ;;
     --export) mode="export"; shift ;;
     --dry-run) mode="dry"; shift ;;
+    --sample) mode="sample"; shift ;;
     --print-voice) mode="print-voice"; shift ;;
-    -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "vdots-read: unknown option: $1" >&2; exit 1 ;;
     *) file="$1"; shift ;;
   esac
 done
 
+export VDOTS_PACE="$paceval"
+[[ -n "$voice" ]] || voice="$(auto_voice "$tone")"
+[[ -n "$rate" ]]  || rate="$(pace_rate "$paceval")"
+
 if [[ "$mode" == print-voice ]]; then
-  [[ -n "$voice" ]] || voice="$(auto_voice "$tone")"
-  printf '%s\n' "$voice"
+  printf '%s\n' "$voice"; exit 0
+fi
+
+if [[ "$mode" == sample ]]; then
+  command -v say >/dev/null || { echo "vdots-read: \`say\` not found" >&2; exit 1; }
+  txt="This is a calm, well paced reading. [[slnc 400]] A brief pause between thoughts, [[slnc 250]] and a longer beat before a new section."
+  [[ -n "$file" && -r "$file" ]] && txt="$(nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null | head -c 600)"
+  echo "vdots-read: sample — voice='${voice:-system default}' pace=$paceval rate=$rate"
+  printf '%s\n' "$txt" | say -r "$rate" ${voice:+-v "$voice"}
   exit 0
 fi
 
+[[ -n "$file" ]] || { echo "vdots-read: no input file" >&2; exit 1; }
+
 if [[ "$mode" == publish ]]; then
-  [[ -n "$file" ]] || { echo "vdots-read: no input file" >&2; exit 1; }
-  exec "$HERE/vdots-listen" publish "$file" --tone "$tone" --rate "$rate" ${voice:+--voice "$voice"}
+  exec "$HERE/vdots-listen" publish "$file" --tone "$tone" --pace "$paceval" \
+    ${rate:+--rate "$rate"} ${voice:+--voice "$voice"}
 fi
 
-[[ -n "$file" ]] || { echo "vdots-read: no input file" >&2; exit 1; }
 [[ -r "$file" ]] || { echo "vdots-read: cannot read: $file" >&2; exit 1; }
 command -v nvim >/dev/null || { echo "vdots-read: nvim not found" >&2; exit 1; }
 
 text="$(nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null)"
 [[ -n "$text" ]] || { echo "vdots-read: nothing to read in $file" >&2; exit 1; }
 
-[[ -n "$voice" ]] || voice="$(auto_voice "$tone")"
 say_args=(-r "$rate")
 [[ -n "$voice" ]] && say_args+=(-v "$voice")
 

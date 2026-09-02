@@ -55,7 +55,13 @@ local MAPS = {
     end,
     "Read aloud: export audio",
   },
-  { "<leader>rP", M.publish, "Read aloud: publish to listen library" },
+  {
+    "<leader>rP",
+    function()
+      M.publish()
+    end,
+    "Read aloud: publish to listen library (:VdotsReadPublish! to re-record)",
+  },
 }
 
 ---Set the buffer-local `;r` keymaps. Called from after/ftplugin/markdown.lua

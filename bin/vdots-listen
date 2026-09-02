@@ -14,7 +14,8 @@
 # shows up on every device automatically.
 #
 # Usage:
-#   vdots-listen publish FILE.md [--voice V] [--rate N] [--tone warm|clarity] [--open]
+#   vdots-listen publish FILE.md [--voice V] [--tone T] [--pace P] [--rate N] [--force] [--open]
+#     Re-publishing the same doc on the same day is refused unless --force.
 #   vdots-listen rebuild        regenerate the catalog from existing sessions
 #   vdots-listen open           open the catalog (index.html)
 #   vdots-listen ls             list published sessions
@@ -54,13 +55,15 @@ rebuild() {
 }
 
 cmd_publish() {
-  local file="" voice="" rate="220" tone="warm" do_open=0
+  local file="" voice="" rate="" tone="warm" paceval="follow" do_open=0 force=0
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --voice) voice="$2"; shift 2 ;;
       --rate)  rate="$2";  shift 2 ;;
       --tone)  tone="$2";  shift 2 ;;
+      --pace)  paceval="$2"; shift 2 ;;
       --open)  do_open=1;  shift ;;
+      --force) force=1;    shift ;;
       -*) die "unknown option: $1" ;;
       *) file="$1"; shift ;;
     esac
@@ -73,13 +76,20 @@ cmd_publish() {
   date="$(date +%Y-%m-%d)"
   slug="$(slugify "$title")"; [[ -n "$slug" ]] || slug="document"
   dir="$LISTEN_DIR/$date-$slug"
+
+  if [[ -d "$dir" && "$force" -ne 1 ]]; then
+    echo "vdots-listen: already published today — $dir" >&2
+    echo "             re-run with --force (or :VdotsReadPublish!) to re-record" >&2
+    return 3
+  fi
+  [[ "$force" -eq 1 ]] && rm -rf "$dir"
   mkdir -p "$dir"
 
   # resolve the voice we will actually use (respects --voice / --tone)
   [[ -n "$voice" ]] || voice="$("$HERE/vdots-read" --print-voice --tone "$tone" 2>/dev/null || true)"
 
-  # spoken text (shared Markdown parse + tech-pronunciation)
-  "$HERE/vdots-read" --dry-run --tone "$tone" "$file" > "$dir/$slug.txt"
+  # spoken text (shared Markdown parse + tech-pronunciation + paced silences)
+  "$HERE/vdots-read" --dry-run --pace "$paceval" --tone "$tone" "$file" > "$dir/$slug.txt"
   [[ -s "$dir/$slug.txt" ]] || die "nothing to read in $file"
   local words; words="$(wc -w < "$dir/$slug.txt" | tr -d ' ')"
 
@@ -99,7 +109,12 @@ cmd_publish() {
     ' "$file"
   } > "$dir/$slug.md"
 
-  # audio
+  # audio — rate from --rate, else the pace preset (mirrors pace.lua)
+  if [[ -z "$rate" ]]; then
+    case "$paceval" in
+      natural) rate=210 ;; relaxed) rate=185 ;; *) rate=160 ;;
+    esac
+  fi
   local say_args=(-r "$rate" -o "$dir/$slug.m4a" -f "$dir/$slug.txt")
   [[ -n "$voice" ]] && say_args=(-v "$voice" "${say_args[@]}")
   say "${say_args[@]}"
@@ -126,6 +141,8 @@ iso=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 duration=$dur
 voice=${voice:-auto}
 rate=$rate
+pace=$paceval
+source=$file
 words=$words
 audio=$slug.m4a
 doc=$slug.md
@@ -149,6 +166,6 @@ case "${1:-}" in
     (( found )) || echo "(no sessions yet)"
     ;;
   path)    echo "$LISTEN_DIR" ;;
-  -h|--help|"") sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help|"") sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//' ;;
   *) die "unknown command: $1 (try: publish, rebuild, open, ls, path)" ;;
 esac
