@@ -110,4 +110,26 @@ describe("vdots.readaloud.pace", function()
     assert.equals(210, pace.settings({ pace = "natural" }).rate)
     assert.equals(999, pace.settings({ pace = "follow", rate = 999 }).rate)
   end)
+
+  it("builds timed cues that fit the audio duration and carry verbatim text", function()
+    local bs = P.parse(
+      vim.split("# Head\n\nA short paragraph here.\n\nAnother one.\n", "\n", { plain = true })
+    )
+    local cues = pace.cues(bs, { pace = "follow" }, 30)
+    assert.equals(3, #cues)
+    assert.equals(0, cues[1].start)
+    assert.is_true(cues[#cues].stop <= 30.001)
+    for i = 2, #cues do
+      assert.is_true(cues[i].start >= cues[i - 1].stop - 0.001) -- monotonic
+    end
+    assert.equals("Head", cues[1].text) -- verbatim, not "Heading level 1. Head."
+    assert.equals("heading", cues[1].kind)
+  end)
+
+  it("renders WebVTT with a header and HH:MM:SS.mmm cues", function()
+    local bs = P.parse(vim.split("# H\n\npara.\n", "\n", { plain = true }))
+    local vtt = pace.vtt(bs, { pace = "follow" }, 12)
+    assert.truthy(vtt:match "^WEBVTT")
+    assert.truthy(vtt:match "%d%d:%d%d:%d%d%.%d%d%d %-%-> %d%d:%d%d:%d%d%.%d%d%d")
+  end)
 end)

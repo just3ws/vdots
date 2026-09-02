@@ -210,20 +210,30 @@ Both remotes reach Neovim over its RPC address (`v:servername`), published in
 `:VdotsReadPublish` (`;rP`) files the current document into a listenable
 library under `~/ai/outbox/listen` (override with `listen_dir`). Because `~/ai`
 is already synced by the Google Drive desktop app, the library appears on
-every device automatically — open `index.html` and pick something to hear.
+every device automatically — open `index.html`, pick an article, and the
+article page plays the audio while the verbatim transcript highlights and
+scrolls along; click any paragraph to seek there.
 
 Each publish writes a dated, slugged folder: >
 
         ~/ai/outbox/listen/
-          index.html        the catalog — list of articles, each with a player
+          index.html        the catalog — articles with grade + a player each
           index.md          plain-text catalog
-          2026-09-02-designing-a-clean-api/
-            designing-a-clean-api.md            clean readable document
-            designing-a-clean-api.article.html  standalone page (player + text)
-            designing-a-clean-api.txt           exactly what was spoken
-            designing-a-clean-api.m4a           the read-through
-            meta.json                           title, date, duration, voice
+          2026-09-02-a-clean-api/
+            a-clean-api.article.html   the page: player + readability + transcript
+            a-clean-api.md             clean readable document
+            a-clean-api.m4a            the read-through
+            a-clean-api.transcript.txt verbatim prose (plain text)
+            a-clean-api.vtt            WebVTT captions (for VLC / other players)
+            a-clean-api.cues.json      timed transcript that drives the page
+            a-clean-api.readability.json  Flesch / grade / times / long sentences
+            a-clean-api.txt            exactly what `say` was given
+            meta.json                  title, date, duration, voice, pace, metrics
 <
+The transcript is verbatim document prose. `say` reports no timings, so each
+block's time is modelled from its share of the spoken words plus the exact
+inserted pauses — block-level, enough to follow along.
+
 Re-publishing the same document on the same day is refused; pass `--force`
 (or use `:VdotsReadPublish!`) to re-record over it.
 

@@ -289,12 +289,14 @@ Headless: `vdots read [--export|--dry-run] [--voice V] [--rate N] FILE.md`.
 
 ### Listen library
 
-`;rP` / `:VdotsReadPublish` files the document into `~/ai/outbox/listen/` — a
-clean readable copy, a standalone article page, and a pre-recorded read-through
-(`.m4a`), added to a self-contained `index.html` catalog. `~/ai` is already
-synced by Google Drive desktop, so it shows up on every device: open
-`index.html`, pick an article, hit play. The `vdots-listen` CLI
-(`publish`/`rebuild`/`open`/`ls`) manages it directly.
+`;rP` / `:VdotsReadPublish` files the document into `~/ai/outbox/listen/`: the
+read-through (`.m4a`), a clean readable copy, a **readability report** (Flesch /
+grade / listen time / longest sentences), and a **verbatim transcript** with
+timed cues. The self-contained article page plays the audio while the
+transcript highlights and auto-scrolls — click a paragraph to seek. A standard
+`.vtt` is written too, for VLC and other players. `~/ai` is synced by Google
+Drive desktop, so the catalog shows up on every device. `:VdotsReadPublish!`
+re-records after edits; `vdots-listen` (`publish`/`rebuild`/`open`/`ls`) is the CLI.
 
 **Tips:** `;r[` re-hears a missed paragraph · pause → edit → `:w` → `;rr` resumes
 from that block · slow `rate` for dense docs · teach it project jargon once in

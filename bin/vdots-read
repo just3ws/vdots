@@ -39,7 +39,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VDOTS_REPO="$(dirname "$HERE")"
 export VDOTS_REPO
 
-voice="" ; rate="" ; mode="say" ; tone="warm" ; paceval="follow" ; file=""
+voice="" ; rate="" ; mode="say" ; tone="warm" ; paceval="follow" ; file="" ; cues_dur=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --voice) voice="$2"; shift 2 ;;
@@ -51,6 +51,9 @@ while [[ $# -gt 0 ]]; do
     --export) mode="export"; shift ;;
     --dry-run) mode="dry"; shift ;;
     --sample) mode="sample"; shift ;;
+    --transcript) mode="transcript"; shift ;;
+    --cues) mode="cues"; cues_dur="$2"; shift 2 ;;
+    --cues-json) mode="cues-json"; cues_dur="$2"; shift 2 ;;
     --print-voice) mode="print-voice"; shift ;;
     -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "vdots-read: unknown option: $1" >&2; exit 1 ;;
@@ -84,6 +87,19 @@ fi
 
 [[ -r "$file" ]] || { echo "vdots-read: cannot read: $file" >&2; exit 1; }
 command -v nvim >/dev/null || { echo "vdots-read: nvim not found" >&2; exit 1; }
+
+if [[ "$mode" == transcript ]]; then
+  VDOTS_MODE=transcript nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
+  exit 0
+fi
+if [[ "$mode" == cues ]]; then
+  VDOTS_MODE=vtt VDOTS_DURATION="$cues_dur" nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
+  exit 0
+fi
+if [[ "$mode" == cues-json ]]; then
+  VDOTS_MODE=cues-json VDOTS_DURATION="$cues_dur" nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
+  exit 0
+fi
 
 text="$(nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null)"
 [[ -n "$text" ]] || { echo "vdots-read: nothing to read in $file" >&2; exit 1; }

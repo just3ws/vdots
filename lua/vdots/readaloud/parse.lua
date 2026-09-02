@@ -114,10 +114,18 @@ function M.parse(lines, opts)
   local blocks = {}
   local n = #lines
   local i = 1
-  local function emit(s, e, speak, kind)
+  -- `speak` = the TTS form ("Heading level 2. Foo."); `text` = the verbatim
+  -- reading-transcript prose ("Foo"), defaulting to `speak`.
+  local function emit(s, e, speak, kind, text)
     speak = vim.trim(speak or "")
     if speak ~= "" then
-      blocks[#blocks + 1] = { s = s, e = e, speak = speak, kind = kind or "para" }
+      blocks[#blocks + 1] = {
+        s = s,
+        e = e,
+        speak = speak,
+        kind = kind or "para",
+        text = vim.trim(text or speak),
+      }
     end
   end
 
@@ -129,7 +137,7 @@ function M.parse(lines, opts)
           local title = lines[k]:match "^title:%s*(.+)$"
           if title then
             title = title:gsub("^[\"']", ""):gsub("[\"']$", "")
-            emit(1, j, "Title. " .. clean(title), "title")
+            emit(1, j, "Title. " .. clean(title), "title", clean(title))
           end
         end
         i = j + 1
@@ -160,12 +168,13 @@ function M.parse(lines, opts)
             count,
             count == 1 and "" or "s"
           ),
-          "code"
+          "code",
+          ("(code block%s)"):format(lang ~= "" and (": " .. lang) or "")
         )
       else
         for k = i + 1, close - 1 do
           if not is_blank(lines[k]) then
-            emit(k, k, lines[k], "code")
+            emit(k, k, lines[k], "code", lines[k])
           end
         end
       end
@@ -174,10 +183,10 @@ function M.parse(lines, opts)
       i = i + 1
     elseif atx_heading(line) then
       local level, text = atx_heading(line)
-      emit(i, i, ("Heading level %d. %s."):format(level, clean(text)), "heading")
+      emit(i, i, ("Heading level %d. %s."):format(level, clean(text)), "heading", clean(text))
       i = i + 1
     elseif lines[i + 1] and lines[i + 1]:match "^%s*=+%s*$" and not is_blank(line) then
-      emit(i, i + 1, "Heading level 1. " .. clean(line) .. ".", "heading")
+      emit(i, i + 1, "Heading level 1. " .. clean(line) .. ".", "heading", clean(line))
       i = i + 2
     elseif
       lines[i + 1]
@@ -185,7 +194,7 @@ function M.parse(lines, opts)
       and not is_blank(line)
       and not list_body(line)
     then
-      emit(i, i + 1, "Heading level 2. " .. clean(line) .. ".", "heading")
+      emit(i, i + 1, "Heading level 2. " .. clean(line) .. ".", "heading", clean(line))
       i = i + 2
     elseif is_table_row(line) then
       local start = i
@@ -197,7 +206,13 @@ function M.parse(lines, opts)
         i = i + 1
       end
       if skip_tables then
-        emit(start, i - 1, ("Table. %d rows."):format(math.max(#rows - 1, 0)), "table")
+        emit(
+          start,
+          i - 1,
+          ("Table. %d rows."):format(math.max(#rows - 1, 0)),
+          "table",
+          ("(table, %d rows)"):format(math.max(#rows - 1, 0))
+        )
       else
         local header = rows[1] or {}
         for r = 2, #rows do
@@ -206,7 +221,7 @@ function M.parse(lines, opts)
             local h = header[c]
             parts[#parts + 1] = (h and h ~= "") and (h .. ": " .. val) or val
           end
-          emit(start, i - 1, table.concat(parts, ". ") .. ".", "table")
+          emit(start, i - 1, table.concat(parts, ". ") .. ".", "table", table.concat(parts, ", "))
         end
       end
     elseif quote_body(line) then
@@ -216,7 +231,8 @@ function M.parse(lines, opts)
         buf[#buf + 1] = quote_body(lines[i])
         i = i + 1
       end
-      emit(start, i - 1, "Quote. " .. clean(table.concat(buf, " ")), "quote")
+      local qt = clean(table.concat(buf, " "))
+      emit(start, i - 1, "Quote. " .. qt, "quote", qt)
     elseif list_body(line) then
       emit(i, i, clean(list_body(line)), "list")
       i = i + 1

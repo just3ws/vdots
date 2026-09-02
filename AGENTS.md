@@ -14,11 +14,13 @@
        pronunciation map, hardware media keys via a compiled Swift Now-Playing
        helper (best-effort) and a SwiftBar remote, `:checkhealth
        vdots.readaloud`, `:help vdots-readaloud`. (3) `:VdotsReadPublish[!]` /
-       `vdots-listen` — clean doc + recorded read-through into ~/ai/outbox/listen
-       with a self-contained index.html catalog, auto-synced by Google Drive
-       desktop; same-day re-publish refused unless `!`/`--force`. (4) Dashboard
-       Recent Files + Recent Markdown sections (lua/editor/mdfiles.lua; shada
-       '1000). Tests green (57 smoke + 19 unit).
+       `vdots-listen` — clean doc + recorded read-through + readability report
+       (bin/vdots-readability, Flesch/grade) + verbatim timed transcript
+       (.vtt + .cues.json) into ~/ai/outbox/listen; self-contained article page
+       plays audio while the transcript highlights + auto-scrolls; catalog
+       auto-synced by Google Drive desktop; same-day re-publish refused unless
+       `!`/`--force`. (4) Dashboard Recent Files + Recent Markdown sections
+       (lua/editor/mdfiles.lua; shada '1000). Tests green (57 smoke + 21 unit).
        Blocked on human: merge decision for the branch. Operator picked
        `Zoe (Premium)` (downloaded, auto-resolves). PATH for ~/.config/nvim/bin
        is interim via zdots .zshrc.local; zdots request Z-337 tracks the
@@ -50,8 +52,8 @@ This repository is a Lua-based Neovim configuration.
 - `after/`: filetype and late-loading overrides (`after/ftplugin/markdown.lua` = `;r` read-aloud keys).
 - `bin/`: the `vdots` control-plane shim (`vdots <noun>` → `vdots-<noun>`) plus
   `vdots-{ctl,doctor,update,read,listen}`, `vdots-listen-catalog.py`,
-  `vdots-mediakey-helper.swift`, `vdots-readaloud-swiftbar`. Each is standalone;
-  the shim just dispatches.
+  `vdots-readability`, `vdots-mediakey-helper.swift`, `vdots-readaloud-swiftbar`.
+  Each is standalone; the shim just dispatches.
 - `test/`: regression suite (`test/regression.lua`), Busted specs (`test/unit/`), runner (`test/run.sh`).
 
 ## Build, Test, and Development Commands

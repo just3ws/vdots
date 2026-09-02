@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Rebuild the vdots-listen catalog (index.html + index.md) from meta.json files.
+"""Rebuild the vdots-listen catalog + per-session article pages.
 
-Reads $VDOTS_LISTEN_DIR, one session per subdirectory. Self-contained HTML —
-no external assets — so it opens straight from Google Drive on any device.
+Reads $VDOTS_LISTEN_DIR, one session per subdirectory (meta.json + cues.json +
+readability.json). Self-contained HTML (no external assets) so it opens straight
+from Google Drive on any device. Each article page shows the audio player, a
+readability report, and the verbatim transcript that follows along with playback.
 """
 import html
 import json
@@ -12,18 +14,22 @@ import sys
 ROOT = os.environ.get("VDOTS_LISTEN_DIR") or os.path.expanduser("~/ai/outbox/listen")
 
 
-def load_sessions(root):
+def load_json(path):
+    try:
+        with open(path) as fh:
+            return json.load(fh)
+    except (OSError, ValueError):
+        return None
+
+
+def sessions(root):
     out = []
-    for name in os.listdir(root):
-        meta = os.path.join(root, name, "meta.json")
-        if not os.path.isfile(meta):
-            continue
-        try:
-            with open(meta) as fh:
-                d = json.load(fh)
-        except (OSError, ValueError):
+    for name in sorted(os.listdir(root)):
+        d = load_json(os.path.join(root, name, "meta.json"))
+        if not d:
             continue
         d["_dir"] = name
+        d["_read"] = load_json(os.path.join(root, name, d.get("readability", "") or "x")) or {}
         out.append(d)
     out.sort(key=lambda d: d.get("iso", ""), reverse=True)
     return out
@@ -37,86 +43,193 @@ def dur(s):
     return f"{s // 60}m {s % 60:02d}s"
 
 
-CSS = """
-:root{color-scheme:light dark;--fg:#1a1a1a;--bg:#fafafa;--card:#fff;--muted:#666;--line:#e3e3e3;--accent:#3b6ea5}
-@media(prefers-color-scheme:dark){:root{--fg:#e8e8e8;--bg:#16161a;--card:#1f1f24;--muted:#9a9a9a;--line:#33333a;--accent:#7fb0dd}}
+PALETTE = """
+:root{color-scheme:light dark;--fg:#1a1a1a;--bg:#fafafa;--card:#fff;--muted:#666;--line:#e3e3e3;--accent:#3b6ea5;--hl:#fff3c4}
+@media(prefers-color-scheme:dark){:root{--fg:#e8e8e8;--bg:#16161a;--card:#1f1f24;--muted:#9a9a9a;--line:#33333a;--accent:#7fb0dd;--hl:#3a3620}}
 *{box-sizing:border-box}
-body{margin:0;font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--fg);background:var(--bg)}
+body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--fg);background:var(--bg)}
 .wrap{max-width:760px;margin:0 auto;padding:2rem 1.25rem 4rem}
-h1{font-size:1.6rem;margin:0 0 .25rem}
-.sub{color:var(--muted);margin:0 0 2rem}
+a{color:var(--accent)}
+h1{font-size:1.5rem;margin:0 0 .25rem}
+.sub{color:var(--muted);margin:0 0 1.5rem;font-size:.9rem}
+"""
+
+CATALOG_CSS = PALETTE + """
 article{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.15rem;margin:0 0 1rem}
-article h2{font-size:1.15rem;margin:0 0 .3rem}
+article h2{font-size:1.12rem;margin:0 0 .3rem}
 article h2 a{color:var(--fg);text-decoration:none}
 article h2 a:hover{color:var(--accent)}
-.meta{color:var(--muted);font-size:.85rem;margin:0 0 .7rem}
+.meta{color:var(--muted);font-size:.83rem;margin:0 0 .7rem}
 audio{width:100%;height:38px}
 .empty{color:var(--muted);text-align:center;padding:3rem 0}
 footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:2rem}
 """
 
+ARTICLE_CSS = PALETTE + """
+.back{font-size:.85rem;margin:0 0 1rem}
+audio{width:100%;margin:0 0 1rem}
+.report{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.8rem 1rem;margin:0 0 1.5rem;font-size:.9rem}
+.report b{font-weight:600}
+.report .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.4rem .9rem;margin-top:.5rem;color:var(--muted)}
+#t p,#t h2,#t li,#t blockquote{margin:.5rem 0;padding:.15rem .4rem;border-radius:5px;cursor:pointer;transition:background .15s}
+#t h2{font-size:1.15rem;margin-top:1.4rem}
+#t blockquote{border-left:3px solid var(--line);color:var(--muted)}
+#t .active{background:var(--hl)}
+#t .code{font-family:ui-monospace,Menlo,monospace;color:var(--muted);font-size:.9rem}
+"""
 
-def build_html(sessions, machine):
-    parts = [
+
+def esc(s):
+    return html.escape(str(s or ""))
+
+
+def build_catalog(items, machine):
+    p = [
         "<!doctype html><html lang=en><head><meta charset=utf-8>",
         '<meta name=viewport content="width=device-width,initial-scale=1">',
-        "<title>Listen</title><style>",
-        CSS,
-        "</style></head><body><div class=wrap>",
+        "<title>Listen</title><style>", CATALOG_CSS, "</style></head><body><div class=wrap>",
         "<h1>🎧 Listen</h1>",
-        f'<p class="sub">{len(sessions)} read-through'
-        f'{"" if len(sessions)==1 else "s"} · synced from {html.escape(machine)}</p>',
+        f'<p class="sub">{len(items)} read-through{"" if len(items)==1 else "s"} · synced from {esc(machine)}</p>',
     ]
-    if not sessions:
-        parts.append('<p class="empty">Nothing published yet. '
-                     "Run <code>vdots-listen publish FILE.md</code>.</p>")
-    for s in sessions:
-        d = html.escape(s["_dir"])
-        title = html.escape(s.get("title", s["_dir"]))
-        article = s.get("article") or ""
-        link = f"{d}/{html.escape(article)}" if article else f"{d}/{html.escape(s.get('doc',''))}"
+    if not items:
+        p.append('<p class="empty">Nothing published yet. Run <code>vdots-listen publish FILE.md</code>.</p>')
+    for s in items:
+        d = esc(s["_dir"])
+        r = s["_read"]
         meta = " · ".join(x for x in (
-            html.escape(s.get("date", "")),
-            dur(s.get("duration")),
-            html.escape(s.get("voice", "")) if s.get("voice") not in (None, "auto") else "",
-            f'{s.get("words","")} words' if s.get("words") else "",
+            esc(s.get("date")), dur(s.get("duration")),
+            esc(s.get("voice")) if s.get("voice") not in (None, "auto") else "",
+            (f'grade {r["flesch_kincaid_grade"]}' if r.get("flesch_kincaid_grade") is not None else ""),
+            (r.get("reading_ease_band") or ""),
+            (f'{r["words"]} words' if r.get("words") else ""),
         ) if x)
-        audio = f"{d}/{html.escape(s.get('audio',''))}"
-        parts += [
+        p += [
             "<article>",
-            f'<h2><a href="{link}">{title}</a></h2>',
+            f'<h2><a href="{d}/{esc(s.get("article"))}">{esc(s.get("title", s["_dir"]))}</a></h2>',
             f'<p class="meta">{meta}</p>',
-            f'<audio controls preload=none><source src="{audio}" type="audio/mp4">'
-            "Your browser cannot play this audio.</audio>",
+            f'<audio controls preload=none><source src="{d}/{esc(s.get("audio"))}" type="audio/mp4"></audio>',
             "</article>",
         ]
-    parts += ["<footer>generated by vdots-listen</footer>", "</div></body></html>"]
-    return "\n".join(parts)
+    p += ["<footer>generated by vdots-listen</footer>", "</div></body></html>"]
+    return "\n".join(p)
 
 
-def build_md(sessions):
-    lines = ["# Listen", ""]
-    if not sessions:
-        lines.append("_Nothing published yet._")
-    for s in sessions:
+ARTICLE_JS = """
+(function(){
+  var a=document.getElementById('player'), t=document.getElementById('t');
+  if(!a||!t) return;
+  var nodes=[].slice.call(t.children), cur=-1;
+  nodes.forEach(function(n,i){ n.addEventListener('click',function(){
+    var s=parseFloat(n.dataset.start); if(!isNaN(s)){ a.currentTime=s; a.play(); }
+  });});
+  a.addEventListener('timeupdate',function(){
+    var ct=a.currentTime, hit=-1;
+    for(var i=0;i<nodes.length;i++){
+      var s=parseFloat(nodes[i].dataset.start), e=parseFloat(nodes[i].dataset.stop);
+      if(ct>=s && ct<e){ hit=i; break; }
+      if(ct>=s) hit=i;
+    }
+    if(hit!==cur){
+      if(cur>=0) nodes[cur].classList.remove('active');
+      if(hit>=0){ nodes[hit].classList.add('active');
+        nodes[hit].scrollIntoView({block:'center',behavior:'smooth'}); }
+      cur=hit;
+    }
+  });
+})();
+"""
+
+
+def build_article(s, sdir):
+    cues = load_json(os.path.join(sdir, s.get("cues", "") or "x")) or []
+    r = s["_read"]
+    title = esc(s.get("title", s["_dir"]))
+
+    body = []
+    open_ul = False
+    for c in cues:
+        kind = c.get("kind", "para")
+        txt = esc(c.get("text", ""))
+        attrs = f'data-start="{c.get("start",0):.2f}" data-stop="{c.get("stop",0):.2f}"'
+        if kind != "list" and open_ul:
+            body.append("</ul>"); open_ul = False
+        if kind == "heading":
+            body.append(f"<h2 {attrs}>{txt}</h2>")
+        elif kind == "list":
+            if not open_ul:
+                body.append("<ul>"); open_ul = True
+            body.append(f"<li {attrs}>{txt}</li>")
+        elif kind == "quote":
+            body.append(f"<blockquote {attrs}>{txt}</blockquote>")
+        elif kind == "code":
+            body.append(f'<p class="code" {attrs}>{txt}</p>')
+        else:
+            body.append(f"<p {attrs}>{txt}</p>")
+    if open_ul:
+        body.append("</ul>")
+
+    report = ""
+    if r:
+        report = (
+            '<div class="report">'
+            f'<b>Readability</b> — grade {r.get("flesch_kincaid_grade","?")} · '
+            f'{esc(r.get("reading_ease_band",""))} '
+            f'(Flesch {r.get("flesch_reading_ease","?")})'
+            '<div class="grid">'
+            f'<span>{r.get("words","?")} words</span>'
+            f'<span>{r.get("sentences","?")} sentences</span>'
+            f'<span>{r.get("avg_words_per_sentence","?")} words/sentence</span>'
+            f'<span>~{r.get("listening_time_min","?")} min listen</span>'
+            f'<span>~{r.get("reading_time_min","?")} min read</span>'
+            f'<span>{r.get("polysyllabic_words","?")} long words</span>'
+            "</div></div>"
+        )
+
+    return "\n".join([
+        "<!doctype html><html lang=en><head><meta charset=utf-8>",
+        '<meta name=viewport content="width=device-width,initial-scale=1">',
+        f"<title>{title}</title><style>", ARTICLE_CSS, "</style></head><body><div class=wrap>",
+        '<p class="back"><a href="../index.html">&larr; Listen</a></p>',
+        f"<h1>{title}</h1>",
+        f'<p class="sub">{esc(s.get("date"))} · {dur(s.get("duration"))} · '
+        f'{esc(s.get("voice"))} · <a href="{esc(s.get("doc"))}">document</a> · '
+        f'<a href="{esc(s.get("vtt"))}">captions</a></p>',
+        f'<audio id="player" controls preload="none" src="{esc(s.get("audio"))}"></audio>',
+        report,
+        '<div id="t">', *body, "</div>",
+        f"<script>{ARTICLE_JS}</script>",
+        "</div></body></html>",
+    ])
+
+
+def build_md(items):
+    out = ["# Listen", ""]
+    if not items:
+        out.append("_Nothing published yet._")
+    for s in items:
         d = s["_dir"]
+        r = s["_read"]
         bits = " · ".join(x for x in (
             s.get("date", ""), dur(s.get("duration")),
+            (f'grade {r["flesch_kincaid_grade"]}' if r.get("flesch_kincaid_grade") is not None else ""),
             f'[audio]({d}/{s.get("audio","")})',
         ) if x)
-        lines.append(f'- [{s.get("title", d)}]({d}/{s.get("doc","")}) — {bits}')
-    return "\n".join(lines) + "\n"
+        out.append(f'- [{s.get("title", d)}]({d}/{s.get("article","")}) — {bits}')
+    return "\n".join(out) + "\n"
 
 
 def main():
-    if not os.path.isdir(ROOT):
-        os.makedirs(ROOT, exist_ok=True)
-    sessions = load_sessions(ROOT)
+    os.makedirs(ROOT, exist_ok=True)
+    items = sessions(ROOT)
     machine = os.uname().nodename.split(".")[0]
+    for s in items:
+        sdir = os.path.join(ROOT, s["_dir"])
+        with open(os.path.join(sdir, s.get("article", "article.html")), "w") as fh:
+            fh.write(build_article(s, sdir))
     with open(os.path.join(ROOT, "index.html"), "w") as fh:
-        fh.write(build_html(sessions, machine))
+        fh.write(build_catalog(items, machine))
     with open(os.path.join(ROOT, "index.md"), "w") as fh:
-        fh.write(build_md(sessions))
+        fh.write(build_md(items))
     return 0
 
 
