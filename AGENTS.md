@@ -4,18 +4,21 @@
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
-       In flight: branch `feat/vdots-shim-readaloud` (not merged, not pushed) —
-       adds the `vdots` control-plane shim (bin/vdots → vdots-<noun>, matching
-       zdots/phx), fixes bin/vdots-ctl (unset SCRIPT_DIR) + bin/vdots-doctor
-       (cwd-bound ./bin path), and ships a Markdown read-aloud feature
-       (lua/editor/readaloud.lua, `;r` keymaps, :VdotsRead*, bin/vdots-read,
-       macOS `say`). Dashboard gained inline Recent Files + Recent Markdown
-       sections (lua/editor/mdfiles.lua; shada '1000). Tests green (57 smoke +
-       9 unit).
-       Blocked on human: merge decision for the branch. PATH for
-       ~/.config/nvim/bin is interim-only via zdots ~/.config/zsh/.zshrc.local;
-       zdots request Z-337 tracks the native env.sh pickup.
-       Deep handoff: none (work is committed on the branch, not mid-task).
+       In flight: branch `feat/vdots-shim-readaloud` (not merged, not pushed).
+       (1) `vdots` control-plane shim (bin/vdots → vdots-<noun>, matching
+       zdots/phx) + bin/vdots-ctl/-doctor bug fixes. (2) Read-aloud plugin
+       `lua/vdots/readaloud/`: two-pane rendered preview + synced cursor,
+       line-anchored playback (pause / jump / resume-from-block), macOS `say`
+       with auto voice + tech-pronunciation map, hardware media keys via a
+       compiled Swift Now-Playing helper (best-effort) and a SwiftBar remote,
+       `:checkhealth vdots.readaloud`, `:help vdots-readaloud`. (3) Dashboard
+       Recent Files + Recent Markdown sections (lua/editor/mdfiles.lua; shada
+       '1000). Tests green (57 smoke + 16 unit).
+       Blocked on human: merge decision for the branch; audition the voice
+       (only base `Samantha` installed here — `Alex`/Enhanced recommended).
+       PATH for ~/.config/nvim/bin is interim via zdots .zshrc.local; zdots
+       request Z-337 tracks the native env.sh pickup.
+       Deep handoff: none (committed on the branch, not mid-task).
 
      Close ritual: rewrite this block + commit; write a deep handoff only if
      work is genuinely unfinished. Reference impl: wwworkremote/core's
@@ -31,13 +34,17 @@ This repository is a Lua-based Neovim configuration.
 - `init.lua`: bootstrap entrypoint (leader key, `vim.pack.add`, module loading, native LSP wiring).
 - `lua/`: main modules by concern:
   - `lua/editor/` for options, keymaps, commands, autocmds, Telescope, Treesitter, search,
-    `readaloud.lua` (Markdown text-to-speech), `mdfiles.lua` (Markdown-file predicate).
+    `mdfiles.lua` (Markdown-file predicate for the dashboard).
+  - `lua/vdots/readaloud/` — the read-aloud plugin: `parse` (Markdown→speech, pure/tested),
+    `preview` (rendered vsplit + cursor sync), `player` (say state machine), `pronounce`
+    (tech-term map), `mediakeys` (Swift Now-Playing helper), `config`, `health`.
   - `lua/plugins.lua` for all plugin `setup()` calls and their keymaps.
   - `lua/ui/` for colors and diagnostics display.
   - `lua/zdots/` for the zdots shell-platform bridge.
 - `after/`: filetype and late-loading overrides (`after/ftplugin/markdown.lua` = `;r` read-aloud keys).
 - `bin/`: the `vdots` control-plane shim (`vdots <noun>` → `vdots-<noun>`) plus
-  `vdots-{ctl,doctor,update,read}`. Each is standalone; the shim just dispatches.
+  `vdots-{ctl,doctor,update,read}` and `vdots-mediakey-helper.swift` /
+  `vdots-readaloud-swiftbar`. Each is standalone; the shim just dispatches.
 - `test/`: regression suite (`test/regression.lua`), Busted specs (`test/unit/`), runner (`test/run.sh`).
 
 ## Build, Test, and Development Commands

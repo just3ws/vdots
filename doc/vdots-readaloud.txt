@@ -1,78 +1,218 @@
-*vdots-readaloud.txt*  Read a Markdown buffer aloud, following along with the text
+*vdots-readaloud.txt*   Read Markdown aloud with a rendered preview pane
 
 ==============================================================================
-READ MARKDOWN ALOUD                                          *vdots-readaloud*
+CONTENTS                                              *vdots-readaloud-contents*
 
-`lua/editor/readaloud.lua` speaks the current Markdown buffer with the macOS
-`say` voice (offline; macOS only), highlighting and centering each block as it
-is read. YAML frontmatter is skipped, fenced code is announced instead of read,
-and links are read as their text (not the URL). Editing the buffer stops
-playback; you then resume from the cursor.
-
-1. Commands                          |vdots-readaloud-commands|
-2. Keymaps                           |vdots-readaloud-keymaps|
-3. Configuration                     |vdots-readaloud-config|
-4. Command line                      |vdots-readaloud-cli|
+  1. Overview .................... |vdots-readaloud-overview|
+  2. The two-pane workflow ....... |vdots-readaloud-workflow|
+  3. Commands .................... |vdots-readaloud-commands|
+  4. Keymaps .................... |vdots-readaloud-keymaps|
+  5. Configuration .............. |vdots-readaloud-config|
+  6. Voice & pronunciation ...... |vdots-readaloud-voice|
+  7. Media keys & SwiftBar ...... |vdots-readaloud-remote|
+  8. Command line ............... |vdots-readaloud-cli|
+  9. Tips ....................... |vdots-readaloud-tips|
+ 10. Troubleshooting ........... |vdots-readaloud-trouble|
 
 ==============================================================================
-COMMANDS                                            *vdots-readaloud-commands*
+1. OVERVIEW                                           *vdots-readaloud-overview*
+                                                              *vdots-readaloud*
+
+Reads the current Markdown buffer aloud with the macOS `say` voice (offline),
+in two panes: you edit on the left, a read-only rendered copy on the right
+follows along block by block. The spoken text is markup-stripped and run
+through a technical-pronunciation pass, so you hear "engine ex" not
+"asterisk asterisk n g i n x asterisk asterisk".
+
+macOS only (engine is `say`). Health: `:checkhealth vdots.readaloud`.
+Lives in `lua/vdots/readaloud/`; `parse.lua` (Markdown → speech blocks) is a
+pure, unit-tested function shared with the `vdots-read` CLI.
+
+==============================================================================
+2. THE TWO-PANE WORKFLOW                              *vdots-readaloud-workflow*
+
+`;rr` (or `:VdotsRead`) opens a vertical split:
+
+  ┌───────────────────┬───────────────────┐
+  │ your Markdown      │ [reading] file.md │
+  │ (editable)         │ (rendered, r/o)   │
+  │                    │  ▓▓▓ ← spoken     │
+  └───────────────────┴───────────────────┘
+
+- The active block is highlighted and centered in BOTH panes.
+- Moving the cursor in either pane moves it in the other (line ↔ line).
+- Playback is anchored to source lines. Pause with `;rp`, move the cursor to
+  any block, `;rp` again (or `;rr`) — it re-reads that block from its start,
+  then advances.
+- `;r]` / `;r[` jump to the next / previous block and re-read from the start.
+- Typing in the source pane halts playback. `:w` re-renders the preview.
+  `;rr` resumes from the cursor.
+- `;rq` closes the preview pane and stops everything.
+
+==============================================================================
+3. COMMANDS                                           *vdots-readaloud-commands*
 
 :VdotsRead                                                        *:VdotsRead*
-        Read the whole buffer aloud from the top.
+        Open the preview pane and read from the top.
 
 :VdotsReadFromHere                                        *:VdotsReadFromHere*
-        Read aloud starting at the block under the cursor.
+        Read from the block under the cursor.
 
 :VdotsReadStop                                                *:VdotsReadStop*
-        Stop playback and clear the follow-along highlight.
+        Stop the voice; keep the preview pane and position.
+
+:VdotsReadClose                                              *:VdotsReadClose*
+        Close the preview pane and tear everything down.
+
+:VdotsReadRefresh                                          *:VdotsReadRefresh*
+        Re-copy the source into the preview and re-parse (also happens on `:w`).
 
 :[range]VdotsReadExport                                     *:VdotsReadExport*
-        Render the buffer (or the given range) to an .m4a file and open it in
-        the external player. No follow-along — fire and forget.
+        Render the buffer (or range) to an .m4a and open it in the external
+        player. No follow-along — for offline listening.
 
 :VdotsRecentMarkdown                                    *:VdotsRecentMarkdown*
-        Open the picker over recently opened Markdown files only. Also the
-        dashboard `m` key.
+        Picker over recently opened Markdown files (also the dashboard `m` key).
+
+:checkhealth vdots.readaloud
 
 ==============================================================================
-KEYMAPS                                              *vdots-readaloud-keymaps*
+4. KEYMAPS                                             *vdots-readaloud-keymaps*
 
-Buffer-local to `markdown`, prefix `;r` ("read aloud"): >
+Buffer-local to `markdown` and to the preview pane. Prefix `;r`
+("read aloud"). >
 
-        ;rr        read from cursor
-        ;ra        read whole document
-        ;rs        stop
-        ;r<space>  pause / resume
-        ;r]        next block
+        ;rr        start / play from cursor (opens the preview)
+        ;rp        pause / resume
+        ;r]        next block (re-reads from its start)
         ;r[        previous block
-        ;rc        read the current block only
-        ;rx        export audio + open external player
+        ;rs        stop (keep the panes)
+        ;rq        quit — close the preview pane
+        ;rf        refresh the preview now
+        ;rx        export audio + open the player
 <
 ==============================================================================
-CONFIGURATION                                        *vdots-readaloud-config*
+5. CONFIGURATION                                        *vdots-readaloud-config*
 
-Set `vim.g.vdots_readaloud` before or after startup: >
+Set `vim.g.vdots_readaloud` (a table). Defaults: >
 
         vim.g.vdots_readaloud = {
-          voice = nil,        -- `say -v ?` to list; nil = system default
-          rate = 220,         -- words per minute
-          skip_code = true,   -- announce fenced code instead of reading it
-          skip_tables = false,
-          stop_on_edit = true,
-          player = nil,       -- external player for export; nil = vim.ui.open
+          voice        = nil,   -- nil = auto (best installed); or a `say -v ?` name
+          rate         = 220,   -- words per minute
+          skip_code    = true,  -- announce code fences instead of reading them
+          skip_tables  = false, -- false = read tables row by row
+          preview      = true,  -- open the rendered preview pane on start
+          sync_cursor  = true,  -- keep the cursor synced between panes
+          stop_on_edit = true,  -- halt playback when the source is modified
+          media_keys   = true,  -- run the macOS Now-Playing helper (hardware keys)
+          pronounce    = {},    -- per-term overrides (see below)
+          player       = nil,   -- external player for export; nil = vim.ui.open
         }
 <
+`require("vdots.readaloud").setup(opts)` merges `opts` into the global.
+
 ==============================================================================
-COMMAND LINE                                            *vdots-readaloud-cli*
+6. VOICE & PRONUNCIATION                                 *vdots-readaloud-voice*
 
-`vdots read` (via bin/vdots) or `vdots-read` directly: >
+Voice ~
+With `voice = nil` the best installed voice is chosen from a preference list
+(`config.lua` `voice_prefs`). The classic `Alex` wins when present — it is
+still unmatched for technical prose (crisp consonants, punctuation-aware
+pauses). The Enhanced / Premium neural voices sound better but need a
+download: System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices
+(get `Alex`, or an Enhanced voice like `Ava`, `Evan`, `Samantha`).
+`:checkhealth vdots.readaloud` reports which voice is in use.
 
-        vdots-read FILE.md                     speak it
-        vdots-read --export FILE.md            render FILE.m4a and open it
-        vdots-read --dry-run FILE.md           print the spoken text
-        vdots-read --voice Daniel --rate 260 FILE.md
+Pronunciation ~
+Spoken text passes through `vdots.readaloud.pronounce` — a word-boundary
+substitution map that spells acronyms (`API` → "A P I") and phonetic-izes
+tool names (`kubectl` → "cube cuttle", `nginx` → "engine ex", `PostgreSQL`
+→ "postgres Q L"). It only touches what is spoken, never your buffer.
+
+Add or override terms; set one to `false` to disable a built-in: >
+
+        vim.g.vdots_readaloud = {
+          pronounce = {
+            kubectl   = "koob cuttle",
+            mycompany = "my company",
+            homelab   = "home lab",
+            regex     = false,       -- read it literally
+          },
+        }
 <
-The CLI shares the same Markdown parse as the editor (bin/vdots-read.lua calls
-`lua/editor/readaloud.lua`).
+Multi-word replacements are fine ("A P I" spells it out). Terms with `/` or
+`.` match as one token (`ci/cd`, `node.js`).
 
- vim:tw=78:ts=8:noet:ft=help:norl:
+==============================================================================
+7. MEDIA KEYS & SWIFTBAR                                *vdots-readaloud-remote*
+
+Hardware media keys ~
+With `media_keys = true` a small Swift helper
+(`bin/vdots-mediakey-helper.swift`, compiled on demand to
+`$XDG_CACHE_HOME/vdots/`) registers as the macOS "Now Playing" app while you
+read, so F7/F8/F9, the Touch Bar, AirPods and Control Center control
+playback. `swiftc` (Xcode CLT) is required; `vdots doctor` builds it.
+
+Best-effort: macOS gives the media keys to whichever media app played most
+recently. If Music / Spotify / a browser video is active it can win the keys —
+use the SwiftBar remote or the `;r` maps instead.
+
+SwiftBar remote ~
+`bin/vdots-readaloud-swiftbar` shows a menu-bar item (`⏸ 3/12`) with
+Pause / Resume / Next / Prev / Stop while reading, and nothing when idle. It
+never contends for the keys. Install: >
+
+        vdots doctor --fix     # writes ~/.swiftbar/vdots-readaloud.5s.sh
+<
+Both remotes reach Neovim over its RPC address (`v:servername`), published in
+`$XDG_CACHE_HOME/vdots/readaloud.json` while reading. One reader at a time.
+
+==============================================================================
+8. COMMAND LINE                                           *vdots-readaloud-cli*
+
+`vdots read` (via `bin/vdots`) or `vdots-read` directly — same Markdown parse
+and pronunciation pass, no editor: >
+
+        vdots-read FILE.md                  speak it (auto-picks a clear voice)
+        vdots-read --export FILE.md         render FILE.m4a and open it
+        vdots-read --dry-run FILE.md        print the spoken text
+        vdots-read --voice Alex --rate 260 FILE.md
+<
+==============================================================================
+9. TIPS                                                   *vdots-readaloud-tips*
+
+- `;r[` re-hears the paragraph you just missed; `;r]` skips ahead.
+- Pause (`;rp`), fix a typo, `:w`, put the cursor back, `;rr` — it resumes
+  from that block.
+- The preview pane is read-only on purpose. Edit on the left; it re-renders
+  on `:w`.
+- `say -v '?'` lists installed voices; `say -v Alex "test"` to audition one.
+- Slow the rate for dense technical docs: `:lua vim.g.vdots_readaloud.rate = 180`.
+- Teach it your project's jargon once in `pronounce` (see |vdots-readaloud-voice|).
+- `:VdotsReadExport` a long doc to `.m4a` and listen on a walk.
+- Run `:checkhealth vdots.readaloud` if anything seems off.
+
+==============================================================================
+10. TROUBLESHOOTING                                    *vdots-readaloud-trouble*
+
+Nothing is spoken ~
+        `say` missing (not macOS), or another process holds the audio device.
+        `:checkhealth vdots.readaloud`.
+
+It reads markup / weird tokens ~
+        File a case — `parse.clean_inline` should strip it. As a stopgap add a
+        `pronounce` entry.
+
+Media keys do nothing ~
+        Expected if Music/Spotify/a video is the active Now-Playing app. Use
+        the SwiftBar remote (`vdots doctor --fix`) or `;rp`.
+
+The preview drifts from the source ~
+        `render-markdown.nvim` adds a few virtual lines; the cursor still maps
+        by real line. `;rf` forces a refresh.
+
+Wrong / robotic voice ~
+        Install `Alex` or an Enhanced voice (see |vdots-readaloud-voice|), or
+        pin one: `vim.g.vdots_readaloud.voice = "Samantha"`.
+
+ vim:tw=78:ts=8:et:ft=help:norl:

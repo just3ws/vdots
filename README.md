@@ -235,45 +235,54 @@ all available bindings. Multi-key prefixes are labelled by group:
 | `:Zshenv` / `:Szshenv` / `:Tzshenv` / `:Vzshenv` | Edit / split / tab / vsplit `.zshenv` |
 | `:ZdotsIngest` | Ingest buffer into zdots platform |
 | `:ZdotsStatus` | Show zdots platform status in float |
-| `:VdotsRead` / `:VdotsReadFromHere` | Read the Markdown buffer aloud (whole / from cursor) |
-| `:VdotsReadStop` | Stop read-aloud playback |
+| `:VdotsRead` / `:VdotsReadFromHere` | Read Markdown aloud (top / from cursor) — opens the preview pane |
+| `:VdotsReadStop` / `:VdotsReadClose` | Stop the voice / close the preview pane |
+| `:VdotsReadRefresh` | Re-render the preview from the source |
 | `:VdotsReadExport` | Render read-aloud audio to a file and open it (accepts a range) |
 | `:VdotsRecentMarkdown` | Pick from recently opened Markdown files |
 
 ## Read Markdown aloud
 
-`lua/editor/readaloud.lua` reads a Markdown buffer aloud with the macOS `say`
-voice (offline; macOS only), highlighting and centering each block as it's
-spoken. Frontmatter is skipped, fenced code is announced not read, links are
-read as their text. Editing the buffer stops playback; resume from the cursor.
+A two-pane reader (`lua/vdots/readaloud/`, macOS `say`, offline). `;rr` opens a
+read-only **rendered preview** vsplit; you keep editing on the left while it
+reads the right pane block by block, highlighting and centering the active
+block in both panes with the cursor synced. Spoken text is markup-stripped and
+run through a tech-pronunciation pass (`API` → "A P I", `nginx` → "engine ex").
+Editing halts playback; `:w` re-renders; `;rr` resumes from the cursor.
 
-Keymaps are buffer-local to `markdown` (prefix `;r`, "read aloud"):
+Keymaps — buffer-local to `markdown` and the preview pane, prefix `;r`:
 
 | Key | Action |
 | --- | --- |
-| `;rr` | Read from cursor |
-| `;ra` | Read whole document |
-| `;rs` | Stop |
-| `;r<space>` | Pause / resume |
-| `;r]` / `;r[` | Next / previous block |
-| `;rc` | Read the current block only |
+| `;rr` | Start / play from cursor (opens the preview) |
+| `;rp` | Pause / resume |
+| `;r]` / `;r[` | Next / previous block (re-reads from its start) |
+| `;rs` / `;rq` | Stop / close the preview pane |
+| `;rf` | Refresh the preview now |
 | `;rx` | Export audio + open external player |
 
-Config (all optional):
+Hardware media keys (F7/F8/F9, Touch Bar, AirPods) work via a Swift Now-Playing
+helper — best-effort; the reliable remote is a SwiftBar menu-bar item
+(`vdots doctor --fix` installs it). Full docs: `:help vdots-readaloud`.
+`:checkhealth vdots.readaloud`.
+
+Config (all optional; `voice = nil` auto-picks the clearest installed voice —
+install `Alex` or an Enhanced voice for best technical clarity):
 
 ```lua
 vim.g.vdots_readaloud = {
-  voice = nil,        -- `say -v ?` to list; nil = system default
-  rate = 220,         -- words per minute
-  skip_code = true,   -- announce fenced code instead of reading it
-  skip_tables = false,
-  stop_on_edit = true,
-  player = nil,       -- external player for :VdotsReadExport; nil = vim.ui.open
+  voice = nil, rate = 220, skip_code = true, skip_tables = false,
+  preview = true, sync_cursor = true, stop_on_edit = true, media_keys = true,
+  pronounce = { kubectl = "koob cuttle", myjargon = "my jargon" },
+  player = nil, -- external player for :VdotsReadExport; nil = vim.ui.open
 }
 ```
 
-Headless: `vdots read [--export] [--voice V] [--rate N] FILE.md`
-(`--dry-run` prints the spoken text).
+Headless: `vdots read [--export|--dry-run] [--voice V] [--rate N] FILE.md`.
+
+**Tips:** `;r[` re-hears a missed paragraph · pause → edit → `:w` → `;rr` resumes
+from that block · slow `rate` for dense docs · teach it project jargon once in
+`pronounce` · `:VdotsReadExport` a long doc and listen on a walk.
 
 ## The homepage (dashboard)
 

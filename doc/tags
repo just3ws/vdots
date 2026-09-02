@@ -1,6 +1,8 @@
 :VdotsRead	vdots-readaloud.txt	/*:VdotsRead*
+:VdotsReadClose	vdots-readaloud.txt	/*:VdotsReadClose*
 :VdotsReadExport	vdots-readaloud.txt	/*:VdotsReadExport*
 :VdotsReadFromHere	vdots-readaloud.txt	/*:VdotsReadFromHere*
+:VdotsReadRefresh	vdots-readaloud.txt	/*:VdotsReadRefresh*
 :VdotsReadStop	vdots-readaloud.txt	/*:VdotsReadStop*
 :VdotsRecentMarkdown	vdots-readaloud.txt	/*:VdotsRecentMarkdown*
 :ZdotsIngest	zdots.txt	/*:ZdotsIngest*
@@ -9,7 +11,14 @@ vdots-readaloud	vdots-readaloud.txt	/*vdots-readaloud*
 vdots-readaloud-cli	vdots-readaloud.txt	/*vdots-readaloud-cli*
 vdots-readaloud-commands	vdots-readaloud.txt	/*vdots-readaloud-commands*
 vdots-readaloud-config	vdots-readaloud.txt	/*vdots-readaloud-config*
+vdots-readaloud-contents	vdots-readaloud.txt	/*vdots-readaloud-contents*
 vdots-readaloud-keymaps	vdots-readaloud.txt	/*vdots-readaloud-keymaps*
+vdots-readaloud-overview	vdots-readaloud.txt	/*vdots-readaloud-overview*
+vdots-readaloud-remote	vdots-readaloud.txt	/*vdots-readaloud-remote*
+vdots-readaloud-tips	vdots-readaloud.txt	/*vdots-readaloud-tips*
+vdots-readaloud-trouble	vdots-readaloud.txt	/*vdots-readaloud-trouble*
+vdots-readaloud-voice	vdots-readaloud.txt	/*vdots-readaloud-voice*
+vdots-readaloud-workflow	vdots-readaloud.txt	/*vdots-readaloud-workflow*
 vdots-readaloud.txt	vdots-readaloud.txt	/*vdots-readaloud.txt*
 zdots	zdots.txt	/*zdots*
 zdots-ai	zdots.txt	/*zdots-ai*
