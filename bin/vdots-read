@@ -8,7 +8,9 @@
 # Usage:
 #   vdots-read [--voice V] [--tone warm|clarity] [--rate N] FILE.md   speak it
 #   vdots-read --export [...] FILE.md              render <FILE>.m4a and open it
+#   vdots-read --publish [...] FILE.md             add to the listen library (vdots-listen)
 #   vdots-read --dry-run FILE.md                   print the spoken text, don't speak
+#   vdots-read --print-voice [--tone T]            print the auto-picked voice
 #
 # With no --voice, the best installed voice for the tone is auto-picked
 # (--tone warm is the default: natural/human; --clarity: crisp, Alex-first).
@@ -42,13 +44,26 @@ while [[ $# -gt 0 ]]; do
     --rate)  rate="$2";  shift 2 ;;
     --tone)  tone="$2";  shift 2 ;;
     --clarity) tone="clarity"; shift ;;
+    --publish) mode="publish"; shift ;;
     --export) mode="export"; shift ;;
     --dry-run) mode="dry"; shift ;;
-    -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --print-voice) mode="print-voice"; shift ;;
+    -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "vdots-read: unknown option: $1" >&2; exit 1 ;;
     *) file="$1"; shift ;;
   esac
 done
+
+if [[ "$mode" == print-voice ]]; then
+  [[ -n "$voice" ]] || voice="$(auto_voice "$tone")"
+  printf '%s\n' "$voice"
+  exit 0
+fi
+
+if [[ "$mode" == publish ]]; then
+  [[ -n "$file" ]] || { echo "vdots-read: no input file" >&2; exit 1; }
+  exec "$HERE/vdots-listen" publish "$file" --tone "$tone" --rate "$rate" ${voice:+--voice "$voice"}
+fi
 
 [[ -n "$file" ]] || { echo "vdots-read: no input file" >&2; exit 1; }
 [[ -r "$file" ]] || { echo "vdots-read: cannot read: $file" >&2; exit 1; }

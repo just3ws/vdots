@@ -10,9 +10,10 @@ CONTENTS                                              *vdots-readaloud-contents*
   5. Configuration .............. |vdots-readaloud-config|
   6. Voice & pronunciation ...... |vdots-readaloud-voice|
   7. Media keys & SwiftBar ...... |vdots-readaloud-remote|
-  8. Command line ............... |vdots-readaloud-cli|
-  9. Tips ....................... |vdots-readaloud-tips|
- 10. Troubleshooting ........... |vdots-readaloud-trouble|
+  8. The listen library ......... |vdots-readaloud-listen|
+  9. Command line ............... |vdots-readaloud-cli|
+ 10. Tips ....................... |vdots-readaloud-tips|
+ 11. Troubleshooting ........... |vdots-readaloud-trouble|
 
 ==============================================================================
 1. OVERVIEW                                           *vdots-readaloud-overview*
@@ -68,8 +69,13 @@ pure, unit-tested function shared with the `vdots-read` CLI.
         Re-copy the source into the preview and re-parse (also happens on `:w`).
 
 :[range]VdotsReadExport                                     *:VdotsReadExport*
-        Render the buffer (or range) to an .m4a and open it in the external
-        player. No follow-along — for offline listening.
+        Render the buffer (or range) to a temp .m4a and open it in the external
+        player. Quick one-off — nothing is kept.
+
+:VdotsReadPublish                                              *:VdotsReadPublish*
+        Add this document to the listen library — a clean readable copy plus a
+        pre-recorded read-through, filed under ~/ai/outbox/listen and synced to
+        Google Drive. See |vdots-readaloud-listen|.
 
 :VdotsRecentMarkdown                                    *:VdotsRecentMarkdown*
         Picker over recently opened Markdown files (also the dashboard `m` key).
@@ -89,7 +95,8 @@ Buffer-local to `markdown` and to the preview pane. Prefix `;r`
         ;rs        stop (keep the panes)
         ;rq        quit — close the preview pane
         ;rf        refresh the preview now
-        ;rx        export audio + open the player
+        ;rx        export audio + open the player (quick one-off)
+        ;rP        publish to the listen library (|vdots-readaloud-listen|)
 <
 ==============================================================================
 5. CONFIGURATION                                        *vdots-readaloud-config*
@@ -108,6 +115,8 @@ Set `vim.g.vdots_readaloud` (a table). Defaults: >
           media_keys   = true,    -- run the macOS Now-Playing helper (hardware keys)
           pronounce    = {},      -- per-term overrides (see below)
           player       = nil,     -- external player for export; nil = vim.ui.open
+          listen_dir   = nil,     -- :VdotsReadPublish target; nil = ~/ai/outbox/listen
+          publish_open = false,   -- open the catalog after :VdotsReadPublish
         }
 <
 `require("vdots.readaloud").setup(opts)` merges `opts` into the global.
@@ -179,18 +188,54 @@ Both remotes reach Neovim over its RPC address (`v:servername`), published in
 `$XDG_CACHE_HOME/vdots/readaloud.json` while reading. One reader at a time.
 
 ==============================================================================
-8. COMMAND LINE                                           *vdots-readaloud-cli*
+8. THE LISTEN LIBRARY                                    *vdots-readaloud-listen*
+
+`:VdotsReadPublish` (`;rP`) files the current document into a listenable
+library under `~/ai/outbox/listen` (override with `listen_dir`). Because `~/ai`
+is already synced by the Google Drive desktop app, the library appears on
+every device automatically — open `index.html` and pick something to hear.
+
+Each publish writes a dated, slugged folder: >
+
+        ~/ai/outbox/listen/
+          index.html        the catalog — list of articles, each with a player
+          index.md          plain-text catalog
+          2026-09-02-designing-a-clean-api/
+            designing-a-clean-api.md            clean readable document
+            designing-a-clean-api.article.html  standalone page (player + text)
+            designing-a-clean-api.txt           exactly what was spoken
+            designing-a-clean-api.m4a           the read-through
+            meta.json                           title, date, duration, voice
+<
+Re-publishing the same document on the same day replaces that folder.
+
+The `vdots-listen` CLI manages it directly: >
+
+        vdots-listen publish FILE.md [--voice V] [--tone T] [--rate N] [--open]
+        vdots-listen rebuild      regenerate the catalog from existing folders
+        vdots-listen open         open index.html
+        vdots-listen ls           list sessions
+        vdots-listen path         print the library directory
+<
+`vdots-read --publish FILE.md` is the same as `vdots-listen publish`.
+
+`:VdotsReadExport` (`;rx`) is the unrelated quick path — a throwaway temp .m4a,
+nothing kept.
+
+==============================================================================
+9. COMMAND LINE                                           *vdots-readaloud-cli*
 
 `vdots read` (via `bin/vdots`) or `vdots-read` directly — same Markdown parse
 and pronunciation pass, no editor: >
 
-        vdots-read FILE.md                  speak it (auto-picks a clear voice)
+        vdots-read FILE.md                  speak it (auto-picks a voice by tone)
         vdots-read --export FILE.md         render FILE.m4a and open it
+        vdots-read --publish FILE.md        add it to the listen library
         vdots-read --dry-run FILE.md        print the spoken text
-        vdots-read --voice Alex --rate 260 FILE.md
+        vdots-read --tone clarity --rate 260 FILE.md
 <
 ==============================================================================
-9. TIPS                                                   *vdots-readaloud-tips*
+10. TIPS                                                  *vdots-readaloud-tips*
 
 - `;r[` re-hears the paragraph you just missed; `;r]` skips ahead.
 - Pause (`;rp`), fix a typo, `:w`, put the cursor back, `;rr` — it resumes
@@ -204,7 +249,7 @@ and pronunciation pass, no editor: >
 - Run `:checkhealth vdots.readaloud` if anything seems off.
 
 ==============================================================================
-10. TROUBLESHOOTING                                    *vdots-readaloud-trouble*
+11. TROUBLESHOOTING                                    *vdots-readaloud-trouble*
 
 Nothing is spoken ~
         `say` missing (not macOS), or another process holds the audio device.

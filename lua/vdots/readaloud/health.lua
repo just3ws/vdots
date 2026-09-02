@@ -68,6 +68,26 @@ function M.check()
     h.info "SwiftBar remote not installed (optional) — `vdots doctor --fix` installs it"
   end
 
+  local ldir =
+    vim.fn.expand(require("vdots.readaloud.config").get().listen_dir or "~/ai/outbox/listen")
+  if vim.fn.isdirectory(ldir) == 1 then
+    h.ok("listen library: " .. ldir)
+  else
+    h.info(
+      "listen library not created yet: "
+        .. ldir
+        .. " (:VdotsReadPublish or `vdots doctor --fix` creates it)"
+    )
+  end
+  if
+    vim.fn.isdirectory((vim.env.HOME or "") .. "/ai/.tmp.driveupload") == 1
+    or vim.fn.isdirectory((vim.env.HOME or "") .. "/Library/CloudStorage") == 1
+  then
+    h.ok "Google Drive desktop present — the listen library syncs automatically"
+  else
+    h.info "Google Drive desktop not detected — published sessions stay local"
+  end
+
   for _, d in ipairs(require("vdots.readaloud.config").diagnose()) do
     if d.ok then
       h.ok("config: " .. d.msg)

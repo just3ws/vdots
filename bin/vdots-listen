@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+# vdots-listen — publish read-aloud sessions to a listenable library.
+#
+# Each `publish` writes, under $VDOTS_LISTEN_DIR (default ~/ai/outbox/listen):
+#     <YYYY-MM-DD-title-slug>/
+#         <slug>.md     clean readable document (frontmatter -> header)
+#         <slug>.html   standalone article page (audio player + rendered text)
+#         <slug>.txt    the exact text that was spoken
+#         <slug>.m4a    the pre-recorded read-through
+#         meta.json     title, date, duration, voice, word count
+# then rebuilds index.html / index.md — the catalog you open to pick an article.
+#
+# ~/ai is already synced to Google Drive (the desktop app), so the library
+# shows up on every device automatically.
+#
+# Usage:
+#   vdots-listen publish FILE.md [--voice V] [--rate N] [--tone warm|clarity] [--open]
+#   vdots-listen rebuild        regenerate the catalog from existing sessions
+#   vdots-listen open           open the catalog (index.html)
+#   vdots-listen ls             list published sessions
+#   vdots-listen path           print the library directory
+set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LISTEN_DIR="${VDOTS_LISTEN_DIR:-$HOME/ai/outbox/listen}"
+
+die() { echo "vdots-listen: $*" >&2; exit 1; }
+
+slugify() {
+  printf '%s' "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' \
+    | cut -c1-60
+}
+
+doc_title() {
+  local f="$1" t
+  t="$(sed -nE 's/^# +(.+)/\1/p' "$f" | head -1)"
+  [[ -z "$t" ]] && t="$(sed -nE '/^---$/,/^---$/s/^title: *["'\'']?([^"'\'']+)["'\'']?/\1/p' "$f" | head -1)"
+  [[ -z "$t" ]] && t="$(basename "${f%.*}" | tr '-_' '  ')"
+  printf '%s' "$t"
+}
+
+human_dur() { # seconds -> "4m 12s"
+  local s=${1%.*}
+  printf '%dm %02ds' $((s / 60)) $((s % 60))
+}
+
+rebuild() {
+  command -v python3 >/dev/null || die "python3 required for the catalog"
+  mkdir -p "$LISTEN_DIR"
+  VDOTS_LISTEN_DIR="$LISTEN_DIR" python3 "$HERE/vdots-listen-catalog.py"
+  echo "vdots-listen: catalog rebuilt — $LISTEN_DIR/index.html"
+}
+
+cmd_publish() {
+  local file="" voice="" rate="220" tone="warm" do_open=0
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --voice) voice="$2"; shift 2 ;;
+      --rate)  rate="$2";  shift 2 ;;
+      --tone)  tone="$2";  shift 2 ;;
+      --open)  do_open=1;  shift ;;
+      -*) die "unknown option: $1" ;;
+      *) file="$1"; shift ;;
+    esac
+  done
+  [[ -n "$file" && -r "$file" ]] || die "cannot read file: ${file:-<none>}"
+  command -v say >/dev/null || die "\`say\` not found (macOS only)"
+
+  local title slug date dir
+  title="$(doc_title "$file")"
+  date="$(date +%Y-%m-%d)"
+  slug="$(slugify "$title")"; [[ -n "$slug" ]] || slug="document"
+  dir="$LISTEN_DIR/$date-$slug"
+  mkdir -p "$dir"
+
+  # resolve the voice we will actually use (respects --voice / --tone)
+  [[ -n "$voice" ]] || voice="$("$HERE/vdots-read" --print-voice --tone "$tone" 2>/dev/null || true)"
+
+  # spoken text (shared Markdown parse + tech-pronunciation)
+  "$HERE/vdots-read" --dry-run --tone "$tone" "$file" > "$dir/$slug.txt"
+  [[ -s "$dir/$slug.txt" ]] || die "nothing to read in $file"
+  local words; words="$(wc -w < "$dir/$slug.txt" | tr -d ' ')"
+
+  # clean readable doc: drop leading YAML frontmatter + a redundant leading H1,
+  # prepend our own header.
+  {
+    printf '# %s\n\n' "$title"
+    printf '> Read-through · %s · %s · %s words\n' "$date" "${voice:-system voice}" "$words"
+    printf '> Source: `%s`\n\n---\n\n' "$file"
+    awk '
+      NR==1 && /^---[[:space:]]*$/ {fm=1; next}
+      fm && /^(---|\.\.\.)[[:space:]]*$/ {fm=0; next}
+      fm {next}
+      !body && /^[[:space:]]*$/ {next}
+      !body && /^# / {body=1; next}
+      {body=1; print}
+    ' "$file"
+  } > "$dir/$slug.md"
+
+  # audio
+  local say_args=(-r "$rate" -o "$dir/$slug.m4a" -f "$dir/$slug.txt")
+  [[ -n "$voice" ]] && say_args=(-v "$voice" "${say_args[@]}")
+  say "${say_args[@]}"
+
+  local dur=0
+  if command -v ffprobe >/dev/null; then
+    dur="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$dir/$slug.m4a" 2>/dev/null || echo 0)"
+  fi
+
+  # standalone article page: rendered text with an audio player on top and a
+  # link back to the catalog. `pagetitle` sets <title> without pandoc also
+  # injecting its own <h1 class=title>.
+  if command -v pandoc >/dev/null; then
+    pandoc -f gfm -t html5 --standalone --metadata pagetitle="$title" \
+      -H <(printf '%s' '<style>body{max-width:44rem;margin:2rem auto;padding:0 1.25rem;font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1a1a1a}@media(prefers-color-scheme:dark){body{background:#16161a;color:#e8e8e8}a{color:#7fb0dd}}audio{width:100%;margin:0 0 1.5rem}.back{font-size:.85rem}</style>') \
+      -B <(printf '<p class="back"><a href="../index.html">&larr; Listen</a></p>\n<audio controls preload="none" src="%s"></audio>\n' "$slug.m4a") \
+      "$dir/$slug.md" -o "$dir/$slug.article.html" 2>/dev/null || true
+  fi
+
+  VDOTS_META_DIR="$dir" VDOTS_META="title=$title
+slug=$date-$slug
+date=$date
+iso=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+duration=$dur
+voice=${voice:-auto}
+rate=$rate
+words=$words
+audio=$slug.m4a
+doc=$slug.md
+article=$slug.article.html" \
+    python3 -c 'import os,json;d=dict(l.split("=",1) for l in os.environ["VDOTS_META"].splitlines());open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dumps(d,indent=2))'
+
+  rebuild
+  echo "vdots-listen: published — $dir  ($(human_dur "$dur"))"
+  (( do_open )) && open "$LISTEN_DIR/index.html"
+  return 0
+}
+
+case "${1:-}" in
+  publish) shift; cmd_publish "$@" ;;
+  rebuild) rebuild ;;
+  open)    open "$LISTEN_DIR/index.html" ;;
+  ls)
+    shopt -s nullglob
+    found=0
+    for d in "$LISTEN_DIR"/*/; do found=1; basename "$d"; done
+    (( found )) || echo "(no sessions yet)"
+    ;;
+  path)    echo "$LISTEN_DIR" ;;
+  -h|--help|"") sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//' ;;
+  *) die "unknown command: $1 (try: publish, rebuild, open, ls, path)" ;;
+esac

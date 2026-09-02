@@ -9,6 +9,7 @@
 #   ctl [check|update] runtime probe of the live Neovim config (:checkhealth)
 #   update [opts]     update plugins (vim.pack), prune, test
 #   read [opts] FILE  read a Markdown file aloud (macOS `say`)
+#   listen <cmd>      publish/browse the read-aloud listen library (Google Drive)
 #   sync              git pull --ff-only in ~/.config/nvim
 #   status            git status --short
 #   push [opts]       git push
@@ -25,15 +26,16 @@ case "$noun" in
   ctl)    exec "$HERE/vdots-ctl"    "$@" ;;
   update) exec "$HERE/vdots-update" "$@" ;;
   read)   exec "$HERE/vdots-read"   "$@" ;;
+  listen) exec "$HERE/vdots-listen" "$@" ;;
   sync)   exec git -C "$REPO" pull --ff-only "$@" ;;
   status) exec git -C "$REPO" status --short "$@" ;;
   push)   exec git -C "$REPO" push "$@" ;;
   -h|--help|help)
-    sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
     exit 0
     ;;
   *)
-    printf 'vdots: unknown noun "%s" (try: doctor ctl update read sync status push)\n' "$noun" >&2
+    printf 'vdots: unknown noun "%s" (try: doctor ctl update read listen sync status push)\n' "$noun" >&2
     printf "run: vdots --help\n" >&2
     exit 1
     ;;

@@ -56,6 +56,13 @@ if [[ "$FIX" == true && "$ra_swiftbar" == absent ]]; then
     ra_swiftbar=installed
 fi
 
+LISTEN_DIR="${VDOTS_LISTEN_DIR:-$HOME/ai/outbox/listen}"
+ra_listen="not-created"
+[[ -d "$LISTEN_DIR" ]] && ra_listen="ok ($LISTEN_DIR)"
+[[ "$FIX" == true && ! -d "$LISTEN_DIR" ]] && { mkdir -p "$LISTEN_DIR" && ra_listen="created ($LISTEN_DIR)"; }
+ra_drive="not-detected"
+[[ -d "$HOME/ai/.tmp.driveupload" || -d "$HOME/Library/CloudStorage" ]] && ra_drive="Google Drive desktop present"
+
 if [[ "$JSON_MODE" == true ]]; then
     cat <<EOF
 {
@@ -63,7 +70,8 @@ if [[ "$JSON_MODE" == true ]]; then
   "checks": { "warnings": $WARNINGS, "failures": $ERRORS },
   "readaloud": {
     "say": "$ra_say", "swiftc": "$ra_swiftc",
-    "media_key_helper": "$ra_helper", "swiftbar_shim": "$ra_swiftbar"
+    "media_key_helper": "$ra_helper", "swiftbar_shim": "$ra_swiftbar",
+    "listen_library": "$ra_listen", "drive_sync": "$ra_drive"
   },
   "runtime": $(echo "$RUNTIME_CHECK" | jq -c .)
 }
@@ -83,7 +91,9 @@ else
     printf '    %-18s %s\n' "swiftc"           "$ra_swiftc"
     printf '    %-18s %s\n' "media-key helper" "$ra_helper"
     printf '    %-18s %s\n' "SwiftBar shim"    "$ra_swiftbar"
-    [[ "$ra_swiftbar" == absent ]] && echo "    (run 'vdots doctor --fix' to install the SwiftBar remote)"
+    printf '    %-18s %s\n' "listen library"   "$ra_listen"
+    printf '    %-18s %s\n' "Drive sync"       "$ra_drive"
+    [[ "$ra_swiftbar" == absent ]] && echo "    (run 'vdots doctor --fix' to install the SwiftBar remote + listen library)"
     echo ""
     "$SCRIPT_DIR/vdots-ctl" check
 fi

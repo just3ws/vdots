@@ -23,6 +23,7 @@ M.toggle_pause = player.toggle_pause
 M.next = player.next
 M.prev = player.prev
 M.export = player.export
+M.publish = player.publish
 
 ---Convenience for the media-key helper / SwiftBar (no-arg, string-returning).
 function M.rpc(cmd)
@@ -54,6 +55,7 @@ local MAPS = {
     end,
     "Read aloud: export audio",
   },
+  { "<leader>rP", M.publish, "Read aloud: publish to listen library" },
 }
 
 ---Set the buffer-local `;r` keymaps. Called from after/ftplugin/markdown.lua

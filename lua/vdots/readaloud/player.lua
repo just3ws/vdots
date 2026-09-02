@@ -398,5 +398,52 @@ function M.export(range)
   )
 end
 
+---Publish the current buffer to the listen library (bin/vdots-listen): a clean
+---readable doc + a pre-recorded read-through, added to the Google-Drive-synced
+---catalog under ~/ai/outbox/listen.
+function M.publish()
+  if vim.fn.executable "say" == 0 then
+    return vim.notify("readaloud: `say` not found (macOS only)", vim.log.levels.ERROR)
+  end
+  local repo = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h:h:h:h")
+  local vdots_listen = repo .. "/bin/vdots-listen"
+  if vim.fn.executable(vdots_listen) == 0 then
+    return vim.notify("readaloud: bin/vdots-listen missing", vim.log.levels.ERROR)
+  end
+
+  local buf = vim.api.nvim_get_current_buf()
+  local src = vim.api.nvim_buf_get_name(buf)
+  if src == "" or vim.bo[buf].modified then
+    -- publish exactly what's on screen: stage it to a temp .md
+    local base = src ~= "" and vim.fn.fnamemodify(src, ":t:r") or "untitled"
+    src = vim.fn.tempname() .. "-" .. base .. ".md"
+    vim.fn.writefile(vim.api.nvim_buf_get_lines(buf, 0, -1, false), src)
+  end
+
+  local c = cfg.get()
+  local args = { vdots_listen, "publish", src, "--tone", c.tone, "--rate", tostring(c.rate) }
+  local voice = cfg.resolve_voice()
+  if voice then
+    vim.list_extend(args, { "--voice", voice })
+  end
+  if c.publish_open then
+    args[#args + 1] = "--open"
+  end
+  local env = c.listen_dir and { VDOTS_LISTEN_DIR = vim.fn.expand(c.listen_dir) } or nil
+
+  vim.notify("readaloud: publishing to the listen library…", vim.log.levels.INFO)
+  vim.system(
+    args,
+    { text = true, env = env },
+    vim.schedule_wrap(function(res)
+      local msg = vim.trim((res.stdout or "") .. (res.stderr or ""))
+      vim.notify(
+        "readaloud: " .. (msg ~= "" and msg or ("done (exit " .. res.code .. ")")),
+        res.code == 0 and vim.log.levels.INFO or vim.log.levels.ERROR
+      )
+    end)
+  )
+end
+
 M._state = st -- for tests / health
 return M

@@ -238,7 +238,8 @@ all available bindings. Multi-key prefixes are labelled by group:
 | `:VdotsRead` / `:VdotsReadFromHere` | Read Markdown aloud (top / from cursor) — opens the preview pane |
 | `:VdotsReadStop` / `:VdotsReadClose` | Stop the voice / close the preview pane |
 | `:VdotsReadRefresh` | Re-render the preview from the source |
-| `:VdotsReadExport` | Render read-aloud audio to a file and open it (accepts a range) |
+| `:VdotsReadExport` | Quick throwaway .m4a of the buffer/range + open it |
+| `:VdotsReadPublish` | Add the doc + read-through to the listen library (Google Drive) |
 | `:VdotsRecentMarkdown` | Pick from recently opened Markdown files |
 
 ## Read Markdown aloud
@@ -259,7 +260,8 @@ Keymaps — buffer-local to `markdown` and the preview pane, prefix `;r`:
 | `;r]` / `;r[` | Next / previous block (re-reads from its start) |
 | `;rs` / `;rq` | Stop / close the preview pane |
 | `;rf` | Refresh the preview now |
-| `;rx` | Export audio + open external player |
+| `;rx` | Quick export (throwaway .m4a) + open player |
+| `;rP` | Publish to the listen library (see below) |
 
 Hardware media keys (F7/F8/F9, Touch Bar, AirPods) work via a Swift Now-Playing
 helper — best-effort; the reliable remote is a SwiftBar menu-bar item
@@ -282,9 +284,18 @@ vim.g.vdots_readaloud = {
 
 Headless: `vdots read [--export|--dry-run] [--voice V] [--rate N] FILE.md`.
 
+### Listen library
+
+`;rP` / `:VdotsReadPublish` files the document into `~/ai/outbox/listen/` — a
+clean readable copy, a standalone article page, and a pre-recorded read-through
+(`.m4a`), added to a self-contained `index.html` catalog. `~/ai` is already
+synced by Google Drive desktop, so it shows up on every device: open
+`index.html`, pick an article, hit play. The `vdots-listen` CLI
+(`publish`/`rebuild`/`open`/`ls`) manages it directly.
+
 **Tips:** `;r[` re-hears a missed paragraph · pause → edit → `:w` → `;rr` resumes
 from that block · slow `rate` for dense docs · teach it project jargon once in
-`pronounce` · `:VdotsReadExport` a long doc and listen on a walk.
+`pronounce` · `;rP` a long doc and listen on a walk.
 
 ## The homepage (dashboard)
 

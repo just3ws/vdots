@@ -14,6 +14,8 @@ M.defaults = {
   pronounce = {}, -- per-term overrides merged over vdots.readaloud.pronounce.builtin
   player = nil, -- external player for :VdotsReadExport; nil = vim.ui.open
   tone = "warm", -- "warm" (natural, easy on the ears) | "clarity" (crisp, Alex-first)
+  listen_dir = nil, -- :VdotsReadPublish target; nil = vdots-listen default (~/ai/outbox/listen)
+  publish_open = false, -- open the catalog after :VdotsReadPublish
   -- Auto-voice preference per tone, best → acceptable; first one installed wins.
   -- The Premium / Enhanced neural voices are the warm, human ones but need a
   -- download: System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices
@@ -116,6 +118,8 @@ function M.diagnose()
   )
   chk(c.voice == nil or type(c.voice) == "string", "voice is a string or nil")
   chk(c.player == nil or type(c.player) == "string", "player is a string or nil")
+  chk(c.listen_dir == nil or type(c.listen_dir) == "string", "listen_dir is a string or nil")
+  chk(type(c.publish_open) == "boolean", "publish_open is a boolean")
   chk(type(c.pronounce) == "table", "pronounce is a table")
   chk(
     c.tone == "warm" or c.tone == "clarity",

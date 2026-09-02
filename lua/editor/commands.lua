@@ -48,6 +48,10 @@ cmd("VdotsReadExport", function(o)
   require("vdots.readaloud").export(range)
 end, { range = true, desc = "Render read-aloud audio to a file and open it" })
 
+cmd("VdotsReadPublish", function()
+  require("vdots.readaloud").publish()
+end, { desc = "Publish this document + read-through to the listen library (Google Drive)" })
+
 -- Recent files, Markdown only (dashboard `m` key + standalone)
 cmd("VdotsRecentMarkdown", function()
   Snacks.picker.recent {

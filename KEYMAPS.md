@@ -101,7 +101,8 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader>rs` | **Stop** | Halt the voice, keep the panes |
 | `<leader>rq` | **Close** | Close the preview pane and tear down |
 | `<leader>rf` | **Refresh** | Re-render the preview from the source |
-| `<leader>rx` | **Export audio** | Render `.m4a` and open the external player |
+| `<leader>rx` | **Quick export** | Throwaway `.m4a` of the buffer/range + open player |
+| `<leader>rP` | **Publish** | Add doc + read-through to `~/ai/outbox/listen` (Google Drive) |
 
 ### Editing & Clipboard
 *Copy-on-yank model: yanks auto-copy to the system clipboard; deletes never clobber it.*
