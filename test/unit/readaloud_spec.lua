@@ -1,58 +1,83 @@
-local ra = require "editor.readaloud"
+local P = require "vdots.readaloud.parse"
 
----@param md string
-local function parse(md)
-  return ra.parse(vim.split(md, "\n", { plain = true }))
+local function blocks(md)
+  return P.parse(vim.split(md, "\n", { plain = true }))
+end
+local function speak(bs)
+  return vim.tbl_map(function(b)
+    return b.speak
+  end, bs)
 end
 
----@param utts table
-local function texts(utts)
-  return vim.tbl_map(function(u)
-    return u.text
-  end, utts)
-end
-
-describe("editor.readaloud.parse", function()
+describe("vdots.readaloud.parse", function()
   it("skips YAML frontmatter but keeps the title", function()
-    local u = parse '---\ntitle: "Hello World"\ntags: [x]\n---\n\nBody text here.'
-    local t = texts(u)
-    assert.same({ "Title. Hello World", "Body text here." }, t)
+    local b = blocks '---\ntitle: "Hello World"\ntags: [x]\n---\n\nBody text here.'
+    assert.same({ "Title. Hello World", "Body text here." }, speak(b))
   end)
 
   it("announces a fenced code block instead of reading it", function()
-    local u = parse "Intro line.\n\n```lua\nlocal x = 1\nprint(x)\n```\n"
-    local t = texts(u)
-    assert.same({ "Intro line.", "Code block. lua. 2 lines." }, t)
+    local b = blocks "Intro line.\n\n```lua\nlocal x = 1\nprint(x)\n```\n"
+    assert.same({ "Intro line.", "Code block. lua. 2 lines." }, speak(b))
   end)
 
-  it("reads link text, not the URL", function()
-    local u = parse "See [the docs](https://example.com/deep/path) now."
-    assert.same({ "See the docs now." }, texts(u))
+  it("reads link text and drops URLs / autolinks / HTML", function()
+    local b = blocks "See [the docs](https://example.com/x) and <https://auto.link> in <b>bold</b>."
+    assert.same({ "See the docs and link in bold." }, speak(b))
   end)
 
-  it("announces heading level", function()
-    local u = parse "### Third Level"
-    assert.same({ "Heading level 3. Third Level." }, texts(u))
+  it("announces heading level for ATX and setext", function()
+    assert.same({ "Heading level 3. Third." }, speak(blocks "### Third"))
+    assert.same({ "Heading level 1. Big Title." }, speak(blocks "Big Title\n========"))
+    assert.same({ "Heading level 2. Sub Title." }, speak(blocks "Sub Title\n---------"))
   end)
 
-  it("splits a paragraph into sentences", function()
-    local u = parse "One thing. Two things! Three?"
-    assert.same({ "One thing.", "Two things!", "Three?" }, texts(u))
+  it("labels task-list checkboxes", function()
+    local b = blocks "- [ ] pending\n- [x] finished\n- plain"
+    assert.same({ "to do: pending", "done: finished", "plain" }, speak(b))
   end)
 
-  it("reads table rows as header: value pairs", function()
-    local u = parse "| Name | Role |\n|------|------|\n| Alice | Dev |\n"
-    assert.same({ "Name: Alice. Role: Dev." }, texts(u))
+  it("reads table rows as header: value", function()
+    local b = blocks "| Name | Role |\n|------|------|\n| Alice | Dev |\n"
+    assert.same({ "Name: Alice. Role: Dev." }, speak(b))
   end)
 
-  it("maps every utterance to a real line range", function()
-    local u = parse "# H\n\npara one\n"
-    for _, utt in ipairs(u) do
-      assert.is_true(utt.s >= 1 and utt.e >= utt.s)
+  it("resolves HTML entities and skips reference-link definitions", function()
+    local b = blocks "Tom &amp; Jerry.\n\n[ref]: https://example.com/ref"
+    assert.same({ "Tom and Jerry." }, speak(b))
+  end)
+
+  it("gives every block a real source line range", function()
+    for _, b in ipairs(blocks "# H\n\npara one\n\npara two\n") do
+      assert.is_true(b.s >= 1 and b.e >= b.s)
     end
   end)
 
   it("returns nothing for an empty buffer", function()
-    assert.same({}, parse "")
+    assert.same({}, blocks "")
+  end)
+end)
+
+describe("vdots.readaloud.pronounce", function()
+  local pron = require "vdots.readaloud.pronounce"
+
+  it("spells acronyms and phonetic-izes tool names", function()
+    assert.equals(
+      "Run cube cuttle against kubernetes over H T T P S.",
+      pron.apply "Run kubectl against k8s over HTTPS."
+    )
+  end)
+
+  it("keeps trailing punctuation", function()
+    assert.equals(
+      "Read the yammel, the jason, and the U R L.",
+      pron.apply "Read the YAML, the JSON, and the URL."
+    )
+  end)
+
+  it("honours overrides and false-disables a builtin", function()
+    assert.equals(
+      "wibble and nginx",
+      pron.apply("foo and nginx", { foo = "wibble", nginx = false })
+    )
   end)
 end)

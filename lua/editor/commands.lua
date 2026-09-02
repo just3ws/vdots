@@ -22,22 +22,30 @@ cmd("ZdotsStatus", function()
   require("zdots").show_status()
 end, { desc = "Show zdots platform status in a floating window" })
 
--- Markdown read-aloud (editor/readaloud.lua; macOS `say`)
+-- Markdown read-aloud (lua/vdots/readaloud/; macOS `say`). :help vdots-readaloud
 cmd("VdotsRead", function()
-  require("editor.readaloud").start { from_cursor = false }
-end, { desc = "Read the Markdown buffer aloud" })
+  require("vdots.readaloud").play { from_cursor = false }
+end, { desc = "Read the Markdown buffer aloud (rendered preview pane)" })
 
 cmd("VdotsReadFromHere", function()
-  require("editor.readaloud").start { from_cursor = true }
-end, { desc = "Read the Markdown buffer aloud from the cursor" })
+  require("vdots.readaloud").play { from_cursor = true }
+end, { desc = "Read aloud from the block under the cursor" })
 
 cmd("VdotsReadStop", function()
-  require("editor.readaloud").stop()
-end, { desc = "Stop read-aloud playback" })
+  require("vdots.readaloud").stop()
+end, { desc = "Stop read-aloud playback (keep the preview pane)" })
+
+cmd("VdotsReadClose", function()
+  require("vdots.readaloud").close()
+end, { desc = "Close the read-aloud preview pane" })
+
+cmd("VdotsReadRefresh", function()
+  require("vdots.readaloud").refresh()
+end, { desc = "Re-render the read-aloud preview from the source" })
 
 cmd("VdotsReadExport", function(o)
   local range = o.range == 2 and { o.line1, o.line2 } or nil
-  require("editor.readaloud").export(range)
+  require("vdots.readaloud").export(range)
 end, { range = true, desc = "Render read-aloud audio to a file and open it" })
 
 -- Recent files, Markdown only (dashboard `m` key + standalone)
