@@ -97,16 +97,17 @@ Buffer-local to `markdown` and to the preview pane. Prefix `;r`
 Set `vim.g.vdots_readaloud` (a table). Defaults: >
 
         vim.g.vdots_readaloud = {
-          voice        = nil,   -- nil = auto (best installed); or a `say -v ?` name
-          rate         = 220,   -- words per minute
-          skip_code    = true,  -- announce code fences instead of reading them
-          skip_tables  = false, -- false = read tables row by row
-          preview      = true,  -- open the rendered preview pane on start
-          sync_cursor  = true,  -- keep the cursor synced between panes
-          stop_on_edit = true,  -- halt playback when the source is modified
-          media_keys   = true,  -- run the macOS Now-Playing helper (hardware keys)
-          pronounce    = {},    -- per-term overrides (see below)
-          player       = nil,   -- external player for export; nil = vim.ui.open
+          voice        = nil,     -- nil = auto for `tone`; or a `say -v ?` name
+          tone         = "warm",  -- "warm" (human) | "clarity" (crisp, Alex-first)
+          rate         = 220,     -- words per minute
+          skip_code    = true,    -- announce code fences instead of reading them
+          skip_tables  = false,   -- false = read tables row by row
+          preview      = true,    -- open the rendered preview pane on start
+          sync_cursor  = true,    -- keep the cursor synced between panes
+          stop_on_edit = true,    -- halt playback when the source is modified
+          media_keys   = true,    -- run the macOS Now-Playing helper (hardware keys)
+          pronounce    = {},      -- per-term overrides (see below)
+          player       = nil,     -- external player for export; nil = vim.ui.open
         }
 <
 `require("vdots.readaloud").setup(opts)` merges `opts` into the global.
@@ -116,12 +117,22 @@ Set `vim.g.vdots_readaloud` (a table). Defaults: >
 
 Voice ~
 With `voice = nil` the best installed voice is chosen from a preference list
-(`config.lua` `voice_prefs`). The classic `Alex` wins when present — it is
-still unmatched for technical prose (crisp consonants, punctuation-aware
-pauses). The Enhanced / Premium neural voices sound better but need a
-download: System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices
-(get `Alex`, or an Enhanced voice like `Ava`, `Evan`, `Samantha`).
-`:checkhealth vdots.readaloud` reports which voice is in use.
+picked by `tone`:
+
+  `tone = "warm"`    (default) natural, human, easy to listen to for a while —
+                     Ava / Evan (Enhanced), then Samantha (Enhanced), then the
+                     newer compact voices Sandy / Flo, then Samantha.
+  `tone = "clarity"` crisp and precise for dense technical prose — `Alex`
+                     first (unmatched for tech, but robotic), then Enhanced,
+                     then Samantha.
+
+The warm, human-sounding voices (`Ava`, `Evan`, and the other Enhanced /
+Premium neural voices) are a free download: System Settings ▸ Accessibility ▸
+Spoken Content ▸ Manage Voices. Once installed they are picked up
+automatically. `Ava (Enhanced)` is the one to get.
+
+Pin a specific voice with `voice = "Ava (Enhanced)"` (or any `say -v ?` name).
+`:checkhealth vdots.readaloud` reports the resolved voice and tone.
 
 Pronunciation ~
 Spoken text passes through `vdots.readaloud.pronounce` — a word-boundary
@@ -211,8 +222,9 @@ The preview drifts from the source ~
         `render-markdown.nvim` adds a few virtual lines; the cursor still maps
         by real line. `;rf` forces a refresh.
 
-Wrong / robotic voice ~
-        Install `Alex` or an Enhanced voice (see |vdots-readaloud-voice|), or
-        pin one: `vim.g.vdots_readaloud.voice = "Samantha"`.
+Robotic / cold voice ~
+        `tone = "warm"` is the default; install `Ava (Enhanced)` for a real
+        human voice (see |vdots-readaloud-voice|), or pin one:
+        `vim.g.vdots_readaloud.voice = "Ava (Enhanced)"`.
 
  vim:tw=78:ts=8:et:ft=help:norl:

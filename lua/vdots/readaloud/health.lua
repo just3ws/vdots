@@ -14,16 +14,21 @@ function M.check()
 
   if vim.fn.executable "say" == 1 then
     h.ok "`say` found"
-    local v = require("vdots.readaloud.config").resolve_voice(true)
-    if v == "Alex" then
-      h.ok "voice: Alex (best installed for technical clarity)"
+    local cfg = require "vdots.readaloud.config"
+    local tone = cfg.get().tone
+    local v = cfg.resolve_voice(true)
+    if v and v:find "Enhanced" or v and v:find "Premium" then
+      h.ok(("voice: %s (%s) — warm neural voice"):format(v, tone))
     elseif v then
-      h.ok("voice: " .. v)
+      h.ok(("voice: %s (tone=%s)"):format(v, tone))
     else
-      h.warn(
-        "voice: system default — no preferred voice installed. For clearer tech "
-          .. "reading add `Alex` or an Enhanced voice via System Settings ▸ "
-          .. "Accessibility ▸ Spoken Content ▸ Manage Voices."
+      h.warn("voice: system default (tone=" .. tone .. ") — no preferred voice installed")
+    end
+    if not (v and (v:find "Enhanced" or v:find "Premium")) then
+      h.info(
+        "For a warmer, more human voice install an Enhanced one (Ava or Evan are "
+          .. "the standouts): System Settings ▸ Accessibility ▸ Spoken Content ▸ "
+          .. "Manage Voices. Then it is picked up automatically."
       )
     end
   else

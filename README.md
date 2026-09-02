@@ -266,12 +266,14 @@ helper — best-effort; the reliable remote is a SwiftBar menu-bar item
 (`vdots doctor --fix` installs it). Full docs: `:help vdots-readaloud`.
 `:checkhealth vdots.readaloud`.
 
-Config (all optional; `voice = nil` auto-picks the clearest installed voice —
-install `Alex` or an Enhanced voice for best technical clarity):
+Config (all optional). `voice = nil` auto-picks by `tone`: **`warm`** (default —
+natural, human) or `clarity` (crisp, `Alex`-first). The warm neural voices
+(`Ava`/`Evan` Enhanced) are a free download — System Settings ▸ Accessibility ▸
+Spoken Content ▸ Manage Voices — and are picked up automatically.
 
 ```lua
 vim.g.vdots_readaloud = {
-  voice = nil, rate = 220, skip_code = true, skip_tables = false,
+  voice = nil, tone = "warm", rate = 220, skip_code = true, skip_tables = false,
   preview = true, sync_cursor = true, stop_on_edit = true, media_keys = true,
   pronounce = { kubectl = "koob cuttle", myjargon = "my jargon" },
   player = nil, -- external player for :VdotsReadExport; nil = vim.ui.open

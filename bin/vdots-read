@@ -6,21 +6,28 @@
 # CLI path: the same Markdown parse + tech-pronunciation pass, piped to `say`.
 #
 # Usage:
-#   vdots-read [--voice V] [--rate N] FILE.md      speak it (auto-picks a clear voice)
-#   vdots-read --export [--voice V] [--rate N] FILE.md   render <FILE>.m4a and open it
+#   vdots-read [--voice V] [--tone warm|clarity] [--rate N] FILE.md   speak it
+#   vdots-read --export [...] FILE.md              render <FILE>.m4a and open it
 #   vdots-read --dry-run FILE.md                   print the spoken text, don't speak
+#
+# With no --voice, the best installed voice for the tone is auto-picked
+# (--tone warm is the default: natural/human; --clarity: crisp, Alex-first).
 set -euo pipefail
 
-# Best installed voice for technical clarity, first match wins (mirrors
-# lua/vdots/readaloud/config.lua voice_prefs).
+# Best installed voice, first match wins (mirrors lua/vdots/readaloud/config.lua
+# voice_prefs). $1 = tone: "warm" (default) | "clarity".
 auto_voice() {
   command -v say >/dev/null || return 0
   local have; have="$(say -v '?' 2>/dev/null)"
-  local v
-  for v in "Alex" "Ava (Premium)" "Ava (Enhanced)" "Zoe (Premium)" \
-           "Evan (Enhanced)" "Allison (Enhanced)" "Samantha (Enhanced)" \
-           "Tom (Enhanced)" "Daniel (Enhanced)" "Samantha" "Daniel"; do
-    if grep -qF "$v " <<<"$have"; then printf '%s' "$v"; return 0; fi
+  local list v
+  if [[ "${1:-warm}" == clarity ]]; then
+    list=("Alex" "Ava (Enhanced)" "Evan (Enhanced)" "Samantha (Enhanced)" "Samantha" "Daniel")
+  else
+    list=("Ava (Premium)" "Ava (Enhanced)" "Evan (Premium)" "Evan (Enhanced)" \
+          "Joelle (Enhanced)" "Samantha (Enhanced)" "Sandy" "Flo" "Samantha" "Karen" "Moira")
+  fi
+  for v in "${list[@]}"; do
+    grep -qF "$v " <<<"$have" && { printf '%s' "$v"; return 0; }
   done
 }
 
@@ -28,14 +35,16 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VDOTS_REPO="$(dirname "$HERE")"
 export VDOTS_REPO
 
-voice="" ; rate="220" ; mode="say" ; file=""
+voice="" ; rate="220" ; mode="say" ; tone="warm" ; file=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --voice) voice="$2"; shift 2 ;;
     --rate)  rate="$2";  shift 2 ;;
+    --tone)  tone="$2";  shift 2 ;;
+    --clarity) tone="clarity"; shift ;;
     --export) mode="export"; shift ;;
     --dry-run) mode="dry"; shift ;;
-    -h|--help) sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "vdots-read: unknown option: $1" >&2; exit 1 ;;
     *) file="$1"; shift ;;
   esac
@@ -48,7 +57,7 @@ command -v nvim >/dev/null || { echo "vdots-read: nvim not found" >&2; exit 1; }
 text="$(nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null)"
 [[ -n "$text" ]] || { echo "vdots-read: nothing to read in $file" >&2; exit 1; }
 
-[[ -n "$voice" ]] || voice="$(auto_voice)"
+[[ -n "$voice" ]] || voice="$(auto_voice "$tone")"
 say_args=(-r "$rate")
 [[ -n "$voice" ]] && say_args+=(-v "$voice")
 

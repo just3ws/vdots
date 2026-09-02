@@ -13,22 +13,38 @@ M.defaults = {
   media_keys = true, -- run the macOS Now-Playing helper for hardware media keys
   pronounce = {}, -- per-term overrides merged over vdots.readaloud.pronounce.builtin
   player = nil, -- external player for :VdotsReadExport; nil = vim.ui.open
-  -- Auto-voice preference, best → acceptable. First one installed wins; the
-  -- classic `Alex` is unmatched for technical clarity (crisp consonants,
-  -- punctuation-aware pauses); the Enhanced/Premium neural voices sound better
-  -- but need a download (System Settings ▸ Spoken Content ▸ Manage Voices).
+  tone = "warm", -- "warm" (natural, easy on the ears) | "clarity" (crisp, Alex-first)
+  -- Auto-voice preference per tone, best → acceptable; first one installed wins.
+  -- The Premium / Enhanced neural voices are the warm, human ones but need a
+  -- download: System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices
+  -- (Ava and Evan are the standouts). `Alex` is unmatched for pure technical
+  -- clarity but sounds robotic.
   voice_prefs = {
-    "Alex",
-    "Ava (Premium)",
-    "Ava (Enhanced)",
-    "Zoe (Premium)",
-    "Evan (Enhanced)",
-    "Allison (Enhanced)",
-    "Samantha (Enhanced)",
-    "Tom (Enhanced)",
-    "Daniel (Enhanced)",
-    "Samantha",
-    "Daniel",
+    warm = {
+      "Ava (Premium)",
+      "Ava (Enhanced)",
+      "Evan (Premium)",
+      "Evan (Enhanced)",
+      "Joelle (Enhanced)",
+      "Nathan (Enhanced)",
+      "Samantha (Enhanced)",
+      "Allison (Enhanced)",
+      "Zoe (Premium)",
+      "Sandy",
+      "Flo",
+      "Samantha",
+      "Karen",
+      "Moira",
+    },
+    clarity = {
+      "Alex",
+      "Ava (Enhanced)",
+      "Evan (Enhanced)",
+      "Samantha (Enhanced)",
+      "Daniel (Enhanced)",
+      "Samantha",
+      "Daniel",
+    },
   },
 }
 
@@ -39,25 +55,27 @@ end
 
 local _voice_cache = nil
 
----List installed `say` voice names (cached for the session).
+---Installed `say` voice names — both the full label and the bare name
+---("Ava (Enhanced)" and "Ava"), so preference lists can use either.
 ---@return table<string, boolean>
 local function installed_voices()
   local set = {}
-  local out = vim.fn.systemlist { "say", "-v", "?" }
-  for _, line in ipairs(out) do
-    -- "Alex                en_US    # ..."   or   "Ava (Premium)       en_US    # ..."
+  for _, line in ipairs(vim.fn.systemlist { "say", "-v", "?" }) do
+    -- "Alex   en_US  # ..."  /  "Ava (Premium)  en_US  # ..."  /  "Sandy (English (US))  en_US  # ..."
     local name = line:match "^(.-)%s%s+%a%a[_%-]"
       or line:match "^(.-)%s%s+#"
       or line:match "^(%S.-)%s%s"
     if name and name ~= "" then
-      set[vim.trim(name)] = true
+      name = vim.trim(name)
+      set[name] = true
+      set[(name:gsub("%s*%b()%s*$", ""))] = true
     end
   end
   return set
 end
 
----Resolve the voice to pass to `say`: explicit config wins, else the first
----installed entry from voice_prefs, else nil (system default).
+---Resolve the voice to pass to `say`: explicit `voice` wins, else the first
+---installed entry from voice_prefs[tone], else nil (system default).
 ---@param force? boolean recompute instead of using the cache
 ---@return string?
 function M.resolve_voice(force)
@@ -73,7 +91,8 @@ function M.resolve_voice(force)
     return nil
   end
   local have = installed_voices()
-  for _, name in ipairs(c.voice_prefs or {}) do
+  local prefs = (c.voice_prefs or {})[c.tone] or (c.voice_prefs or {}).warm or {}
+  for _, name in ipairs(prefs) do
     if have[name] then
       _voice_cache = name
       return name
@@ -98,6 +117,10 @@ function M.diagnose()
   chk(c.voice == nil or type(c.voice) == "string", "voice is a string or nil")
   chk(c.player == nil or type(c.player) == "string", "player is a string or nil")
   chk(type(c.pronounce) == "table", "pronounce is a table")
+  chk(
+    c.tone == "warm" or c.tone == "clarity",
+    'tone is "warm" or "clarity" (' .. tostring(c.tone) .. ")"
+  )
   for _, k in ipairs {
     "skip_code",
     "skip_tables",
