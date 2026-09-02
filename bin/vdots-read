@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
 # vdots-read — read a Markdown file aloud (macOS `say`), headless.
 #
-# The in-editor experience (follow-along highlight, pause/resume, stop-on-edit)
-# lives in lua/editor/readaloud.lua and the `;r` keymaps. This is the CLI path:
-# same Markdown parse, piped to `say`.
+# The in-editor experience (rendered preview pane, follow-along, pause/jump,
+# media keys) lives in lua/vdots/readaloud/ and the `;r` keymaps. This is the
+# CLI path: the same Markdown parse + tech-pronunciation pass, piped to `say`.
 #
 # Usage:
-#   vdots-read [--voice V] [--rate N] FILE.md      speak it
+#   vdots-read [--voice V] [--rate N] FILE.md      speak it (auto-picks a clear voice)
 #   vdots-read --export [--voice V] [--rate N] FILE.md   render <FILE>.m4a and open it
 #   vdots-read --dry-run FILE.md                   print the spoken text, don't speak
 set -euo pipefail
+
+# Best installed voice for technical clarity, first match wins (mirrors
+# lua/vdots/readaloud/config.lua voice_prefs).
+auto_voice() {
+  command -v say >/dev/null || return 0
+  local have; have="$(say -v '?' 2>/dev/null)"
+  local v
+  for v in "Alex" "Ava (Premium)" "Ava (Enhanced)" "Zoe (Premium)" \
+           "Evan (Enhanced)" "Allison (Enhanced)" "Samantha (Enhanced)" \
+           "Tom (Enhanced)" "Daniel (Enhanced)" "Samantha" "Daniel"; do
+    if grep -qF "$v " <<<"$have"; then printf '%s' "$v"; return 0; fi
+  done
+}
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VDOTS_REPO="$(dirname "$HERE")"
@@ -22,7 +35,7 @@ while [[ $# -gt 0 ]]; do
     --rate)  rate="$2";  shift 2 ;;
     --export) mode="export"; shift ;;
     --dry-run) mode="dry"; shift ;;
-    -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "vdots-read: unknown option: $1" >&2; exit 1 ;;
     *) file="$1"; shift ;;
   esac
@@ -35,6 +48,7 @@ command -v nvim >/dev/null || { echo "vdots-read: nvim not found" >&2; exit 1; }
 text="$(nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null)"
 [[ -n "$text" ]] || { echo "vdots-read: nothing to read in $file" >&2; exit 1; }
 
+[[ -n "$voice" ]] || voice="$(auto_voice)"
 say_args=(-r "$rate")
 [[ -n "$voice" ]] && say_args+=(-v "$voice")
 

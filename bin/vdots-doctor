@@ -3,19 +3,25 @@
 # bin/vdots-doctor — System health check ("brew doctor" for vdots).
 # Exits 0 when no failures are found; exits 1 on any [FAIL].
 #
-# Usage: vdots-doctor [--json]
+# Usage: vdots-doctor [--json] [--fix]
+#   --fix   build the read-aloud media-key helper and install the SwiftBar shim
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO="$(dirname "$SCRIPT_DIR")"
 
 JSON_MODE=false
-case "${1:-}" in
-    --json) JSON_MODE=true ;;
-    -h|--help)
-        sed -n '3,6p' "$0" | sed 's/^# \{0,1\}//'
-        exit 0
-        ;;
-esac
+FIX=false
+for arg in "$@"; do
+    case "$arg" in
+        --json) JSON_MODE=true ;;
+        --fix)  FIX=true ;;
+        -h|--help)
+            sed -n '3,7p' "$0" | sed 's/^# \{0,1\}//'
+            exit 0
+            ;;
+    esac
+done
 
 RUNTIME_CHECK="$("$SCRIPT_DIR/vdots-ctl" check --json)"
 STATUS="$(echo "$RUNTIME_CHECK" | jq -r .status)"
@@ -25,13 +31,39 @@ ERRORS="$(echo "$RUNTIME_CHECK" | jq .errors)"
 EXIT_CODE=0
 [[ "$STATUS" == "fail" ]] && EXIT_CODE=1
 
+# ── read-aloud subsystem ────────────────────────────────────────────────────
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/vdots"
+HELPER_SRC="$REPO/bin/vdots-mediakey-helper.swift"
+HELPER_BIN="$CACHE/vdots-mediakey-helper"
+SWIFTBAR_SHIM="$HOME/.swiftbar/vdots-readaloud.5s.sh"
+ra_say=missing ra_swiftc=missing ra_helper=missing ra_swiftbar=absent
+
+command -v say >/dev/null && ra_say=ok
+if command -v swiftc >/dev/null; then
+    ra_swiftc=ok
+    if [[ "$FIX" == true || ! -x "$HELPER_BIN" || "$HELPER_SRC" -nt "$HELPER_BIN" ]]; then
+        mkdir -p "$CACHE"
+        if swiftc -O -o "$HELPER_BIN" "$HELPER_SRC" 2>/dev/null; then ra_helper=built; else ra_helper=build-failed; fi
+    else
+        ra_helper=ok
+    fi
+fi
+[[ -r "$SWIFTBAR_SHIM" ]] && ra_swiftbar=installed
+if [[ "$FIX" == true && "$ra_swiftbar" == absent ]]; then
+    mkdir -p "$HOME/.swiftbar"
+    printf '#!/usr/bin/env bash\nexec "%s/bin/vdots-readaloud-swiftbar"\n' "$REPO" > "$SWIFTBAR_SHIM"
+    chmod +x "$SWIFTBAR_SHIM"
+    ra_swiftbar=installed
+fi
+
 if [[ "$JSON_MODE" == true ]]; then
     cat <<EOF
 {
   "status": "$STATUS",
-  "checks": {
-    "warnings": $WARNINGS,
-    "failures": $ERRORS
+  "checks": { "warnings": $WARNINGS, "failures": $ERRORS },
+  "readaloud": {
+    "say": "$ra_say", "swiftc": "$ra_swiftc",
+    "media_key_helper": "$ra_helper", "swiftbar_shim": "$ra_swiftbar"
   },
   "runtime": $(echo "$RUNTIME_CHECK" | jq -c .)
 }
@@ -45,6 +77,13 @@ else
     else
         echo "  [ok]   Neovim runtime diagnostics healthy."
     fi
+    echo ""
+    echo "  read-aloud:"
+    printf '    %-18s %s\n' "say"              "$ra_say"
+    printf '    %-18s %s\n' "swiftc"           "$ra_swiftc"
+    printf '    %-18s %s\n' "media-key helper" "$ra_helper"
+    printf '    %-18s %s\n' "SwiftBar shim"    "$ra_swiftbar"
+    [[ "$ra_swiftbar" == absent ]] && echo "    (run 'vdots doctor --fix' to install the SwiftBar remote)"
     echo ""
     "$SCRIPT_DIR/vdots-ctl" check
 fi

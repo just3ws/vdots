@@ -1,0 +1,75 @@
+-- :checkhealth vdots.readaloud
+
+local M = {}
+
+function M.check()
+  local h = vim.health
+  h.start "vdots.readaloud"
+
+  if vim.fn.has "mac" == 1 then
+    h.ok "platform: macOS"
+  else
+    h.error "vdots.readaloud is macOS only (engine is `say`)"
+  end
+
+  if vim.fn.executable "say" == 1 then
+    h.ok "`say` found"
+    local v = require("vdots.readaloud.config").resolve_voice(true)
+    if v == "Alex" then
+      h.ok "voice: Alex (best installed for technical clarity)"
+    elseif v then
+      h.ok("voice: " .. v)
+    else
+      h.warn(
+        "voice: system default — no preferred voice installed. For clearer tech "
+          .. "reading add `Alex` or an Enhanced voice via System Settings ▸ "
+          .. "Accessibility ▸ Spoken Content ▸ Manage Voices."
+      )
+    end
+  else
+    h.error "`say` not found — read-aloud will not work"
+  end
+
+  if vim.v.servername ~= "" then
+    h.ok("RPC server address: " .. vim.v.servername)
+  else
+    h.warn "v:servername is empty — media keys / SwiftBar cannot reach this instance"
+  end
+
+  local mk = require "vdots.readaloud.mediakeys"
+  if vim.fn.executable "swiftc" == 1 then
+    local ok, err = mk.build()
+    if ok then
+      h.ok("media-key helper built: " .. mk.bin)
+    else
+      h.warn("media-key helper did not build: " .. tostring(err))
+    end
+  else
+    h.warn "swiftc not found — hardware media keys disabled (Xcode CLT: xcode-select --install)"
+  end
+  h.info "media keys are best-effort: an active Music/Spotify/video session wins them"
+
+  local ok_rm = pcall(require, "render-markdown")
+  if ok_rm then
+    h.ok "render-markdown.nvim present (preview pane renders)"
+  else
+    h.warn "render-markdown.nvim not found — the preview pane shows raw Markdown"
+  end
+
+  local shim = (vim.env.HOME or "") .. "/.swiftbar/vdots-readaloud.5s.sh"
+  if vim.fn.filereadable(shim) == 1 then
+    h.ok("SwiftBar shim installed: " .. shim)
+  else
+    h.info "SwiftBar remote not installed (optional) — `vdots doctor --fix` installs it"
+  end
+
+  for _, d in ipairs(require("vdots.readaloud.config").diagnose()) do
+    if d.ok then
+      h.ok("config: " .. d.msg)
+    else
+      h.error("config: " .. d.msg)
+    end
+  end
+end
+
+return M
