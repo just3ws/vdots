@@ -1,36 +1,35 @@
 #!/usr/bin/env bash
 
-# bin/vdots-doctor — System health check ("brew doctor" for vdots)
+# bin/vdots-doctor — System health check ("brew doctor" for vdots).
 # Exits 0 when no failures are found; exits 1 on any [FAIL].
+#
+# Usage: vdots-doctor [--json]
+set -euo pipefail
 
-function usage() {
-    echo "Usage: vdots-doctor [--json]"
-    echo "  --json         Output results as JSON"
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 JSON_MODE=false
-if [[ "$1" == "--json" ]]; then
-    JSON_MODE=true
-fi
+case "${1:-}" in
+    --json) JSON_MODE=true ;;
+    -h|--help)
+        sed -n '3,6p' "$0" | sed 's/^# \{0,1\}//'
+        exit 0
+        ;;
+esac
 
-# Run runtime probes via vdots-ctl
-RUNTIME_CHECK=$(./bin/vdots-ctl check --json)
-STATUS=$(echo "$RUNTIME_CHECK" | jq -r .status)
-WARNINGS=$(echo "$RUNTIME_CHECK" | jq .warnings)
-ERRORS=$(echo "$RUNTIME_CHECK" | jq .errors)
+RUNTIME_CHECK="$("$SCRIPT_DIR/vdots-ctl" check --json)"
+STATUS="$(echo "$RUNTIME_CHECK" | jq -r .status)"
+WARNINGS="$(echo "$RUNTIME_CHECK" | jq .warnings)"
+ERRORS="$(echo "$RUNTIME_CHECK" | jq .errors)"
 
-# Exit code logic
 EXIT_CODE=0
-if [[ "$STATUS" == "fail" ]]; then
-    EXIT_CODE=1
-fi
+[[ "$STATUS" == "fail" ]] && EXIT_CODE=1
 
-if [ "$JSON_MODE" = true ]; then
+if [[ "$JSON_MODE" == true ]]; then
     cat <<EOF
 {
   "status": "$STATUS",
   "checks": {
-    "passed": 0,
     "warnings": $WARNINGS,
     "failures": $ERRORS
   },
@@ -40,12 +39,14 @@ EOF
 else
     echo "━━━ vdots Health ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     if [[ "$ERRORS" -gt 0 ]]; then
-        echo "  [FAIL] Neovim runtime diagnostics found $ERRORS errors."
+        echo "  [FAIL] Neovim runtime diagnostics found $ERRORS error(s)."
+    elif [[ "$WARNINGS" -gt 0 ]]; then
+        echo "  [warn] Neovim runtime diagnostics: $WARNINGS warning(s)."
     else
         echo "  [ok]   Neovim runtime diagnostics healthy."
     fi
     echo ""
-    ./bin/vdots-ctl check
+    "$SCRIPT_DIR/vdots-ctl" check
 fi
 
 exit $EXIT_CODE
