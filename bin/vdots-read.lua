@@ -1,0 +1,26 @@
+-- bin/vdots-read.lua — headless bridge for `vdots-read`.
+-- Runs the shared Markdown→speech transform (lua/editor/readaloud.lua) and
+-- prints the spoken text to stdout, one utterance per line. The `vdots-read`
+-- shell script pipes that into `say` (or `say -o`).
+--
+-- Invoked as:  nvim --headless -u NONE -l bin/vdots-read.lua <file.md>
+-- Repo root is passed via $VDOTS_REPO.
+
+local repo = vim.env.VDOTS_REPO or vim.fn.fnamemodify(vim.fn.expand("<sfile>:p"), ":h:h")
+local file = _G.arg and _G.arg[1] or nil
+if not file or file == "" then
+  io.stderr:write("vdots-read.lua: no input file\n")
+  vim.cmd("cquit 1")
+end
+
+local ok, ra = pcall(dofile, repo .. "/lua/editor/readaloud.lua")
+if not ok then
+  io.stderr:write("vdots-read.lua: cannot load readaloud module: " .. tostring(ra) .. "\n")
+  vim.cmd("cquit 1")
+end
+
+local lines = vim.fn.readfile(file)
+for _, u in ipairs(ra.parse(lines)) do
+  io.write(u.text, "\n")
+end
+vim.cmd("quit")

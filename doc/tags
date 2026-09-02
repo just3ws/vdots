@@ -1,5 +1,16 @@
+:VdotsRead	vdots-readaloud.txt	/*:VdotsRead*
+:VdotsReadExport	vdots-readaloud.txt	/*:VdotsReadExport*
+:VdotsReadFromHere	vdots-readaloud.txt	/*:VdotsReadFromHere*
+:VdotsReadStop	vdots-readaloud.txt	/*:VdotsReadStop*
+:VdotsRecentMarkdown	vdots-readaloud.txt	/*:VdotsRecentMarkdown*
 :ZdotsIngest	zdots.txt	/*:ZdotsIngest*
 :Zshenv	zdots.txt	/*:Zshenv*
+vdots-readaloud	vdots-readaloud.txt	/*vdots-readaloud*
+vdots-readaloud-cli	vdots-readaloud.txt	/*vdots-readaloud-cli*
+vdots-readaloud-commands	vdots-readaloud.txt	/*vdots-readaloud-commands*
+vdots-readaloud-config	vdots-readaloud.txt	/*vdots-readaloud-config*
+vdots-readaloud-keymaps	vdots-readaloud.txt	/*vdots-readaloud-keymaps*
+vdots-readaloud.txt	vdots-readaloud.txt	/*vdots-readaloud.txt*
 zdots	zdots.txt	/*zdots*
 zdots-ai	zdots.txt	/*zdots-ai*
 zdots-commands	zdots.txt	/*zdots-commands*

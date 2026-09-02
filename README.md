@@ -12,6 +12,22 @@ git clone https://github.com/just3ws/vdots.git ~/.config/nvim
 nvim   # plugins install on first launch
 ```
 
+## `vdots` — control plane
+
+`bin/vdots` is a thin dispatcher (same shape as `zdots <noun>` / `phx {…}` on the
+rest of the platform). Put `~/.config/nvim/bin` on `PATH` and:
+
+| Command | Does |
+|---|---|
+| `vdots doctor` | system health check ("brew doctor" for vdots) |
+| `vdots ctl check [--json]` | deep runtime probe of the live config (`:checkhealth`) |
+| `vdots update [--commit]` | update plugins (`vim.pack`), prune, test |
+| `vdots read [--export] FILE.md` | read a Markdown file aloud (macOS `say`) |
+| `vdots sync` \| `status` \| `push` | git fast-forward pull / short status / push |
+
+Every noun also works as a standalone script (`./bin/vdots-doctor`, …), so the
+repo is usable without the shim.
+
 ## Development
 
 ```shell
@@ -219,6 +235,53 @@ all available bindings. Multi-key prefixes are labelled by group:
 | `:Zshenv` / `:Szshenv` / `:Tzshenv` / `:Vzshenv` | Edit / split / tab / vsplit `.zshenv` |
 | `:ZdotsIngest` | Ingest buffer into zdots platform |
 | `:ZdotsStatus` | Show zdots platform status in float |
+| `:VdotsRead` / `:VdotsReadFromHere` | Read the Markdown buffer aloud (whole / from cursor) |
+| `:VdotsReadStop` | Stop read-aloud playback |
+| `:VdotsReadExport` | Render read-aloud audio to a file and open it (accepts a range) |
+| `:VdotsRecentMarkdown` | Pick from recently opened Markdown files |
+
+## Read Markdown aloud
+
+`lua/editor/readaloud.lua` reads a Markdown buffer aloud with the macOS `say`
+voice (offline; macOS only), highlighting and centering each block as it's
+spoken. Frontmatter is skipped, fenced code is announced not read, links are
+read as their text. Editing the buffer stops playback; resume from the cursor.
+
+Keymaps are buffer-local to `markdown` (prefix `;r`, "read aloud"):
+
+| Key | Action |
+| --- | --- |
+| `;rr` | Read from cursor |
+| `;ra` | Read whole document |
+| `;rs` | Stop |
+| `;r<space>` | Pause / resume |
+| `;r]` / `;r[` | Next / previous block |
+| `;rc` | Read the current block only |
+| `;rx` | Export audio + open external player |
+
+Config (all optional):
+
+```lua
+vim.g.vdots_readaloud = {
+  voice = nil,        -- `say -v ?` to list; nil = system default
+  rate = 220,         -- words per minute
+  skip_code = true,   -- announce fenced code instead of reading it
+  skip_tables = false,
+  stop_on_edit = true,
+  player = nil,       -- external player for :VdotsReadExport; nil = vim.ui.open
+}
+```
+
+Headless: `vdots read [--export] [--voice V] [--rate N] FILE.md`
+(`--dry-run` prints the spoken text).
+
+## The homepage (dashboard)
+
+The Snacks dashboard shows an inline **Recent Files** list and a longer
+**Recent Markdown** list (`;m` / `:VdotsRecentMarkdown` opens the picker for the
+latter). Depth comes from `shada` keeping 1000 `oldfiles` (see
+`lua/editor/options.lua`); "what counts as Markdown" is
+`lua/editor/mdfiles.lua`.
 
 ## Abbreviations
 

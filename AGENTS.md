@@ -1,13 +1,21 @@
 <!-- ═══════════════════════════════════════════════════════════════════════
-     CURRENT FOCUS  —  last updated 2026-08-31
+     CURRENT FOCUS  —  last updated 2026-09-02
      Cold-start resume state, canonical for every agent tool. Whoever closes
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
-       In flight: nothing tracked. vdots is stable; changes are ad-hoc
-       config tweaks. See TODO.md for the standing remediation list.
-       Deep handoff (only if a session was mid-task):
-         ~/.config/adots/handoffs/YYYY-MM-DD-vdots.md  (local-only, never commit)
+       In flight: branch `feat/vdots-shim-readaloud` (not merged, not pushed) —
+       adds the `vdots` control-plane shim (bin/vdots → vdots-<noun>, matching
+       zdots/phx), fixes bin/vdots-ctl (unset SCRIPT_DIR) + bin/vdots-doctor
+       (cwd-bound ./bin path), and ships a Markdown read-aloud feature
+       (lua/editor/readaloud.lua, `;r` keymaps, :VdotsRead*, bin/vdots-read,
+       macOS `say`). Dashboard gained inline Recent Files + Recent Markdown
+       sections (lua/editor/mdfiles.lua; shada '1000). Tests green (57 smoke +
+       9 unit).
+       Blocked on human: merge decision for the branch. PATH for
+       ~/.config/nvim/bin is interim-only via zdots ~/.config/zsh/.zshrc.local;
+       zdots request Z-337 tracks the native env.sh pickup.
+       Deep handoff: none (work is committed on the branch, not mid-task).
 
      Close ritual: rewrite this block + commit; write a deep handoff only if
      work is genuinely unfinished. Reference impl: wwworkremote/core's
@@ -22,12 +30,15 @@ This repository is a Lua-based Neovim configuration.
 
 - `init.lua`: bootstrap entrypoint (leader key, `vim.pack.add`, module loading, native LSP wiring).
 - `lua/`: main modules by concern:
-  - `lua/editor/` for options, keymaps, commands, autocmds, Telescope, Treesitter, search.
+  - `lua/editor/` for options, keymaps, commands, autocmds, Telescope, Treesitter, search,
+    `readaloud.lua` (Markdown text-to-speech), `mdfiles.lua` (Markdown-file predicate).
   - `lua/plugins.lua` for all plugin `setup()` calls and their keymaps.
   - `lua/ui/` for colors and diagnostics display.
   - `lua/zdots/` for the zdots shell-platform bridge.
-- `after/`: filetype and late-loading overrides.
-- `test/`: regression suite (`test/regression.lua`) and runner (`test/run.sh`).
+- `after/`: filetype and late-loading overrides (`after/ftplugin/markdown.lua` = `;r` read-aloud keys).
+- `bin/`: the `vdots` control-plane shim (`vdots <noun>` → `vdots-<noun>`) plus
+  `vdots-{ctl,doctor,update,read}`. Each is standalone; the shim just dispatches.
+- `test/`: regression suite (`test/regression.lua`), Busted specs (`test/unit/`), runner (`test/run.sh`).
 
 ## Build, Test, and Development Commands
 

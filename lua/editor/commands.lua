@@ -22,6 +22,35 @@ cmd("ZdotsStatus", function()
   require("zdots").show_status()
 end, { desc = "Show zdots platform status in a floating window" })
 
+-- Markdown read-aloud (editor/readaloud.lua; macOS `say`)
+cmd("VdotsRead", function()
+  require("editor.readaloud").start { from_cursor = false }
+end, { desc = "Read the Markdown buffer aloud" })
+
+cmd("VdotsReadFromHere", function()
+  require("editor.readaloud").start { from_cursor = true }
+end, { desc = "Read the Markdown buffer aloud from the cursor" })
+
+cmd("VdotsReadStop", function()
+  require("editor.readaloud").stop()
+end, { desc = "Stop read-aloud playback" })
+
+cmd("VdotsReadExport", function(o)
+  local range = o.range == 2 and { o.line1, o.line2 } or nil
+  require("editor.readaloud").export(range)
+end, { range = true, desc = "Render read-aloud audio to a file and open it" })
+
+-- Recent files, Markdown only (dashboard `m` key + standalone)
+cmd("VdotsRecentMarkdown", function()
+  Snacks.picker.recent {
+    filter = {
+      filter = function(item)
+        return require("editor.mdfiles").is_markdown(item.file)
+      end,
+    },
+  }
+end, { desc = "Pick from recently opened Markdown files" })
+
 -- Plugin package management commands (vim.pack)
 cmd("PackUpdate", function()
   vim.pack.update()

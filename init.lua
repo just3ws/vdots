@@ -95,6 +95,12 @@ require("snacks").setup {
             action = ":lua Snacks.picker.recent()",
           },
           {
+            icon = " ",
+            key = "m",
+            desc = "Recent Markdown",
+            action = ":VdotsRecentMarkdown",
+          },
+          {
             icon = " ",
             key = "c",
             desc = "Config",
@@ -103,6 +109,14 @@ require("snacks").setup {
           { icon = "󰒲 ", key = "L", desc = "PackSync", action = ":PackSync" },
           { icon = " ", key = "q", desc = "Quit", action = ":qa" },
         },
+      },
+      { section = "recent_files", title = "Recent Files", limit = 8, padding = 1 },
+      {
+        section = "recent_files",
+        title = "Recent Markdown",
+        limit = 15,
+        padding = 1,
+        filter = require("editor.mdfiles").is_markdown,
       },
       {
         footer = ("  Neovim %d.%d.%d"):format(

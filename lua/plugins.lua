@@ -341,6 +341,7 @@ function M.setup_all()
       { "<leader>t", group = "test" },
       { "<leader>d", group = "debug" },
       { "<leader>P", group = "plugins" },
+      { "<leader>r", group = "read aloud", icon = "󰔊 " },
       { "<leader>u", group = "ui/toggle" },
       { "<leader>w", group = "window" },
       { "<leader>q", group = "quit" },

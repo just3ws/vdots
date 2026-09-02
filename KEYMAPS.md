@@ -91,6 +91,18 @@ This document tracks the most important keybindings, focusing on new performance
 | `./bin/vdots-update` | **CLI Updater** | Headless update, prune unmanaged, run tests, show diff |
 | `./bin/vdots-update -c` | **Update & Commit** | Update, verify tests, and auto-commit `nvim-pack-lock.json` |
 
+### Read Markdown Aloud (`markdown` buffers only)
+*macOS `say`; follows along with the text. See `lua/editor/readaloud.lua`.*
+| Key | Action | Description |
+| :--- | :--- | :--- |
+| `<leader>rr` | **Read from cursor** | Speak from the block under the cursor |
+| `<leader>ra` | **Read document** | Speak the whole buffer |
+| `<leader>rs` | **Stop** | Halt playback and clear the highlight |
+| `<leader>r<space>` | **Pause / Resume** | Toggle the current utterance |
+| `<leader>r]` / `<leader>r[` | **Next / Prev** | Skip forward/back one block |
+| `<leader>rc` | **Read current block** | Speak only the block at the cursor |
+| `<leader>rx` | **Export audio** | Render `.m4a` and open the external player |
+
 ### Editing & Clipboard
 *Copy-on-yank model: yanks auto-copy to the system clipboard; deletes never clobber it.*
 | Key | Action | Description |

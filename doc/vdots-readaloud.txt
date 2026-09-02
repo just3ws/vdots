@@ -1,0 +1,78 @@
+*vdots-readaloud.txt*  Read a Markdown buffer aloud, following along with the text
+
+==============================================================================
+READ MARKDOWN ALOUD                                          *vdots-readaloud*
+
+`lua/editor/readaloud.lua` speaks the current Markdown buffer with the macOS
+`say` voice (offline; macOS only), highlighting and centering each block as it
+is read. YAML frontmatter is skipped, fenced code is announced instead of read,
+and links are read as their text (not the URL). Editing the buffer stops
+playback; you then resume from the cursor.
+
+1. Commands                          |vdots-readaloud-commands|
+2. Keymaps                           |vdots-readaloud-keymaps|
+3. Configuration                     |vdots-readaloud-config|
+4. Command line                      |vdots-readaloud-cli|
+
+==============================================================================
+COMMANDS                                            *vdots-readaloud-commands*
+
+:VdotsRead                                                        *:VdotsRead*
+        Read the whole buffer aloud from the top.
+
+:VdotsReadFromHere                                        *:VdotsReadFromHere*
+        Read aloud starting at the block under the cursor.
+
+:VdotsReadStop                                                *:VdotsReadStop*
+        Stop playback and clear the follow-along highlight.
+
+:[range]VdotsReadExport                                     *:VdotsReadExport*
+        Render the buffer (or the given range) to an .m4a file and open it in
+        the external player. No follow-along — fire and forget.
+
+:VdotsRecentMarkdown                                    *:VdotsRecentMarkdown*
+        Open the picker over recently opened Markdown files only. Also the
+        dashboard `m` key.
+
+==============================================================================
+KEYMAPS                                              *vdots-readaloud-keymaps*
+
+Buffer-local to `markdown`, prefix `;r` ("read aloud"): >
+
+        ;rr        read from cursor
+        ;ra        read whole document
+        ;rs        stop
+        ;r<space>  pause / resume
+        ;r]        next block
+        ;r[        previous block
+        ;rc        read the current block only
+        ;rx        export audio + open external player
+<
+==============================================================================
+CONFIGURATION                                        *vdots-readaloud-config*
+
+Set `vim.g.vdots_readaloud` before or after startup: >
+
+        vim.g.vdots_readaloud = {
+          voice = nil,        -- `say -v ?` to list; nil = system default
+          rate = 220,         -- words per minute
+          skip_code = true,   -- announce fenced code instead of reading it
+          skip_tables = false,
+          stop_on_edit = true,
+          player = nil,       -- external player for export; nil = vim.ui.open
+        }
+<
+==============================================================================
+COMMAND LINE                                            *vdots-readaloud-cli*
+
+`vdots read` (via bin/vdots) or `vdots-read` directly: >
+
+        vdots-read FILE.md                     speak it
+        vdots-read --export FILE.md            render FILE.m4a and open it
+        vdots-read --dry-run FILE.md           print the spoken text
+        vdots-read --voice Daniel --rate 260 FILE.md
+<
+The CLI shares the same Markdown parse as the editor (bin/vdots-read.lua calls
+`lua/editor/readaloud.lua`).
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
