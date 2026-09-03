@@ -1,21 +1,51 @@
--- vdots.readaloud.pace — well-paced delivery: a slower rate plus brief,
--- natural silences at paragraph and section boundaries so you can follow along
--- without it dragging.
+-- vdots.readaloud.pace — human read-aloud cadence. A measured rate, real
+-- silence between every word, a beat at every clause mark, a longer rest at
+-- sentence ends, and bigger gaps between paragraphs and before sections —
+-- the space a person leaves when reading aloud, not a rushed TTS dump.
 --
--- The silences use `say`'s inline `[[slnc N]]` command (N milliseconds).
+-- All silences use `say`'s inline `[[slnc N]]` command (N milliseconds).
+-- `word` / `clause` / `sentence` are within a block; `para` / `section` /
+-- `after_heading` are between blocks.
 
 local M = {}
 
--- preset -> { rate (say -r wpm), para (ms between paragraphs / list items),
---             section (ms before a heading), after_heading (ms after it) }
+-- preset -> { rate (say -r wpm),
+--             para (ms between paragraphs / list items),
+--             section (ms before a heading), after_heading (ms after it),
+--             word (ms of air between words),
+--             clause (ms beat at , ; : — ), sentence (ms beat at . ! ?) }
 M.presets = {
-  follow = { rate = 160, para = 400, section = 750, after_heading = 250 },
-  relaxed = { rate = 185, para = 300, section = 550, after_heading = 200 },
-  natural = { rate = 210, para = 170, section = 350, after_heading = 120 },
+  follow = {
+    rate = 155,
+    para = 480,
+    section = 820,
+    after_heading = 300,
+    word = 22,
+    clause = 115,
+    sentence = 360,
+  },
+  relaxed = {
+    rate = 175,
+    para = 360,
+    section = 600,
+    after_heading = 230,
+    word = 14,
+    clause = 90,
+    sentence = 280,
+  },
+  natural = {
+    rate = 200,
+    para = 200,
+    section = 380,
+    after_heading = 140,
+    word = 0,
+    clause = 55,
+    sentence = 190,
+  },
 }
 
 ---@param cfg table resolved vdots.readaloud config
----@return { rate: integer, para: integer, section: integer, after_heading: integer }
+---@return { rate: integer, para: integer, section: integer, after_heading: integer, word: integer, clause: integer, sentence: integer }
 function M.settings(cfg)
   local p = M.presets[cfg.pace] or M.presets.follow
   return {
@@ -23,7 +53,37 @@ function M.settings(cfg)
     para = p.para,
     section = p.section,
     after_heading = p.after_heading,
+    word = p.word,
+    clause = p.clause,
+    sentence = p.sentence,
   }
+end
+
+---Add breathing room WITHIN a block: a hair of air between words, a short beat
+---at clause punctuation, a longer one at sentence ends. Returns the marked-up
+---text and the total silence (seconds) it added, so cue timing stays honest.
+---@param text string
+---@param s table result of M.settings
+---@return string, number
+function M.breathe(text, s)
+  text = vim.trim((tostring(text):gsub("%s+", " ")))
+  if text == "" then
+    return text, 0
+  end
+  local wm = (s.word or 0) > 0 and M.marker(s.word) or ""
+  local parts, nwords, nclause, nsent = {}, 0, 0, 0
+  for w in text:gmatch "%S+" do
+    nwords = nwords + 1
+    local tail = ""
+    if w:match "[.!?][\"'%)%]]*$" then
+      tail, nsent = " " .. M.marker(s.sentence or 0), nsent + 1
+    elseif w:match "[,;:—–][\"'%)%]]*$" then
+      tail, nclause = " " .. M.marker(s.clause or 0), nclause + 1
+    end
+    parts[#parts + 1] = w .. tail
+  end
+  local added = (nwords - 1) * (s.word or 0) + nclause * (s.clause or 0) + nsent * (s.sentence or 0)
+  return table.concat(parts, " " .. wm), added / 1000
 end
 
 ---Silence (ms) to place BEFORE `kind`, given the previous block's kind.
@@ -63,7 +123,8 @@ function M.script(blocks, cfg)
   local out = {}
   local prev
   for _, b in ipairs(blocks) do
-    out[#out + 1] = M.marker(M.lead(prev, b.kind, s)) .. b.speak
+    local spoken = (M.breathe(b.speak, s))
+    out[#out + 1] = M.marker(M.lead(prev, b.kind, s)) .. spoken
     prev = b.kind
   end
   return table.concat(out, "\n")
@@ -122,8 +183,9 @@ function M.cues(blocks, cfg, total_dur, opts)
   local total_words, total_pause = 0, 0
   local prev
   for _, b in ipairs(blocks) do
+    local _, bp = M.breathe(b.speak, s)
     total_words = total_words + words(b.speak)
-    total_pause = total_pause + M.lead(prev, b.kind, s) / 1000
+    total_pause = total_pause + M.lead(prev, b.kind, s) / 1000 + bp
     prev = b.kind
   end
   local speech = math.max((tonumber(total_dur) or 0) - total_pause, 0.1)
@@ -132,8 +194,9 @@ function M.cues(blocks, cfg, total_dur, opts)
   local cues, t = {}, 0
   prev = nil
   for _, b in ipairs(blocks) do
+    local _, bp = M.breathe(b.speak, s)
     t = t + M.lead(prev, b.kind, s) / 1000
-    local block_dur = math.max(words(b.speak) * per_word, 0.4)
+    local block_dur = math.max(words(b.speak) * per_word + bp, 0.4)
     if opts.sentences and b.kind ~= "heading" then
       local sents = sentences(b.text)
       local bw = 0
@@ -162,8 +225,9 @@ function M.estimate(blocks, cfg)
   local s = M.settings(cfg)
   local w, pause, prev = 0, 0, nil
   for _, b in ipairs(blocks) do
+    local _, bp = M.breathe(b.speak, s)
     w = w + words(b.speak)
-    pause = pause + M.lead(prev, b.kind, s) / 1000
+    pause = pause + M.lead(prev, b.kind, s) / 1000 + bp
     prev = b.kind
   end
   return w / (s.rate / 60) + pause

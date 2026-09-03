@@ -134,7 +134,7 @@ local function speak(i)
   local pron = require "vdots.readaloud.pronounce"
   local spoken = (st.doc and st.doc.enhanced) and pron.lexicon(b.speak, st.doc.fm.pronunciation)
     or pron.apply(b.speak, c.pronounce)
-  args[#args + 1] = lead .. spoken
+  args[#args + 1] = lead .. (pace.breathe(spoken, s))
 
   st.gen = st.gen + 1
   local gen = st.gen
@@ -537,8 +537,8 @@ local function analyse()
   add("estimate", ("%d:%02d"):format(math.floor(est / 60), math.floor(est % 60)))
   if doc.enhanced and fm.spoken_minutes then
     local off = math.abs(est / 60 - fm.spoken_minutes) / fm.spoken_minutes
-    if off > 0.25 then
-      L[#L + 1] = ("  ! %d:%02d is >25%% off the expected %d min"):format(
+    if off > 0.4 then
+      L[#L + 1] = ("  ! %d:%02d is >40%% off the expected %d min"):format(
         math.floor(est / 60),
         math.floor(est % 60),
         fm.spoken_minutes

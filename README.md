@@ -271,7 +271,8 @@ helper — best-effort; the reliable remote is a SwiftBar menu-bar item
 `:checkhealth vdots.readaloud`.
 
 Config (all optional). `voice = nil` auto-picks by `tone` (**`warm`** default /
-`clarity`); `pace` (**`follow`** = slow with beats between sections / `relaxed` /
+`clarity`); `pace` (**`follow`** = most space — silence between words, beats at
+punctuation, rests between paragraphs / `relaxed` /
 `natural`) sets the words-per-minute and pause lengths. The Premium/Enhanced
 neural voices are what make it sound human — download **`Zoe (Premium)`** from
 System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices and it's

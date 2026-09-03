@@ -157,16 +157,19 @@ Audition without committing: `vdots-read --sample --voice "Zoe (Premium)"`.
 `:checkhealth vdots.readaloud` reports the resolved voice, tone and pace.
 
 Pacing ~
-`pace` controls how deliberate the reading is — a slower words-per-minute plus
-brief silences at the boundaries so you can follow along without it dragging:
+`pace` controls how deliberate the reading is. Every preset leaves real
+silence between words, a beat at each clause mark (`, ; : —`), a longer rest
+at sentence ends (`. ! ?`), and bigger gaps between paragraphs and before
+sections — the space a person leaves reading aloud, not a rushed TTS dump:
 
-  `pace = "follow"`  (default) ~160 wpm; ~0.4s between paragraphs, ~0.75s
-                     before a heading — a clear beat between sections.
-  `pace = "relaxed"` ~185 wpm; shorter beats.
-  `pace = "natural"` ~210 wpm; minimal beats.
+  `pace = "follow"`  (default) 155 wpm; ~22ms between words, ~115ms at a
+                     clause, ~360ms at a sentence, ~480ms between paragraphs,
+                     ~820ms before a heading.
+  `pace = "relaxed"` 175 wpm; the same shape, lighter beats.
+  `pace = "natural"` 200 wpm; minimal beats, no inter-word gap.
 
-`rate` overrides the preset's words-per-minute if you set it. List items use a
-shorter gap than paragraphs so lists don't drag.
+`rate` overrides the preset's words-per-minute if you set it (the beats are
+unchanged). List items use a shorter gap than paragraphs so lists don't drag.
 
 Pronunciation ~
 Spoken text passes through `vdots.readaloud.pronounce` — a word-boundary
@@ -368,7 +371,10 @@ Robotic / cold voice ~
         pin one: `vim.g.vdots_readaloud.voice = "Zoe (Premium)"`.
 
 Reading too fast / too slow ~
-        `pace = "follow"` (default, slow) / `"relaxed"` / `"natural"`. Or set
-        `rate` to an explicit words-per-minute.
+        `pace = "follow"` (default, most space) / `"relaxed"` / `"natural"`
+        (least). Or set `rate` to an explicit words-per-minute — that changes
+        enunciation speed only; the between-word / punctuation / paragraph
+        silences come from the preset. Tune those in `pace.lua` M.presets
+        (`word` / `clause` / `sentence` / `para` / `section`, all ms).
 
  vim:tw=78:ts=8:et:ft=help:norl:

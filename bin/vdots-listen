@@ -2,8 +2,8 @@
 # vdots-listen — publish read-aloud sessions to a listenable library.
 #
 # Each `publish` writes, under $VDOTS_LISTEN_DIR (default ~/ai/outbox/listen):
-#     <YYYY-MM-DD-title-slug>/        (the dir name carries the identity;
-#         audio.mp3                    files inside are named for their role)
+#     <YYYY-MM-DD-title-slug>/   (the dir name carries the identity; files
+#                                inside are named for their role)
 #         audio.mp3              read-through — plays from Google Drive on
 #                                Android; transcript embedded as lyrics
 #         audio.m4a              same audio, +faststart, +chapters (Apple/VLC)
@@ -203,10 +203,11 @@ cmd_publish() {
     ' "$file"
   } > "$p_doc"
 
-  # audio — rate from --rate, else the pace preset (mirrors pace.lua)
+  # audio — rate from --rate, else the pace preset
+  # (keep in sync with lua/vdots/readaloud/pace.lua M.presets[*].rate)
   if [[ -z "$rate" ]]; then
     case "$paceval" in
-      natural) rate=210 ;; relaxed) rate=185 ;; *) rate=160 ;;
+      natural) rate=200 ;; relaxed) rate=175 ;; *) rate=155 ;;
     esac
   fi
   # AAC keeps the file ~4x smaller than say's default LPCM (matters for Drive
@@ -231,9 +232,9 @@ cmd_publish() {
   # verbatim transcript (one line per sentence when enhanced), timed cues, VTT
   # captions, and a readability report
   step "transcript · cues · captions · readability"
-  "$HERE/vdots-read" --transcript "$file" > "$p_tr"
-  "$HERE/vdots-read" --cues "$dur" "$file" > "$p_cap"
-  "$HERE/vdots-read" --cues-json "$dur" "$file" > "$p_cues"
+  "$HERE/vdots-read" --pace "$paceval" --transcript "$file" > "$p_tr"
+  "$HERE/vdots-read" --pace "$paceval" --cues "$dur" "$file" > "$p_cap"
+  "$HERE/vdots-read" --pace "$paceval" --cues-json "$dur" "$file" > "$p_cues"
   if command -v python3 >/dev/null; then
     python3 "$HERE/vdots-readability" < "$p_tr" > "$p_read"
   fi
@@ -241,8 +242,8 @@ cmd_publish() {
   # chapters (enhanced docs): from the frontmatter sections
   local chapters_json="[]"
   if [[ "$enhanced" == "true" ]]; then
-    chapters_json="$("$HERE/vdots-read" --chapters "$dur" "$file" 2>/dev/null || echo '[]')"
-    "$HERE/vdots-read" --chapters-vtt "$dur" "$file" > "$p_chap" 2>/dev/null || true
+    chapters_json="$("$HERE/vdots-read" --pace "$paceval" --chapters "$dur" "$file" 2>/dev/null || echo '[]')"
+    "$HERE/vdots-read" --pace "$paceval" --chapters-vtt "$dur" "$file" > "$p_chap" 2>/dev/null || true
     step "chapters: $(jq -r 'length' <<<"$chapters_json") from sections"
   fi
 
@@ -297,11 +298,13 @@ cmd_publish() {
   local audio_primary="audio.m4a"
   [[ -s "$p_mp3" ]] && audio_primary="audio.mp3"
 
-  # spoken_minutes sanity — report, never pad or rush
+  # spoken_minutes sanity — report, never pad or rush. The window is wide (40%)
+  # because the deliberate human cadence runs longer than an author's plain-read
+  # estimate; this only catches an estimate that is grossly wrong.
   local dur_min; dur_min="$(awk -v d="$dur" 'BEGIN{printf "%.1f", d/60}')"
   if [[ -n "$spoken_min" ]] && awk -v a="$dur_min" -v e="$spoken_min" \
-       'BEGIN{exit !(e>0 && (a-e>e*0.25 || e-a>e*0.25))}'; then
-    echo "vdots-listen: note — spoken ${dur_min}m vs expected ${spoken_min}m (>25% off)" >&2
+       'BEGIN{exit !(e>0 && (a-e>e*0.4 || e-a>e*0.4))}'; then
+    echo "vdots-listen: note — spoken ${dur_min}m vs expected ${spoken_min}m (>40% off)" >&2
   fi
 
   VDOTS_META_DIR="$dir" VDOTS_CHAPTERS="$chapters_json" VDOTS_META="title=$title

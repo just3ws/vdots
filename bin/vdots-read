@@ -39,7 +39,8 @@ auto_voice() {
   done
 }
 
-pace_rate() { case "$1" in natural) echo 210 ;; relaxed) echo 185 ;; *) echo 160 ;; esac; }
+# keep in sync with lua/vdots/readaloud/pace.lua M.presets[*].rate
+pace_rate() { case "$1" in natural) echo 200 ;; relaxed) echo 175 ;; *) echo 155 ;; esac; }
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VDOTS_REPO="$(dirname "$HERE")"
@@ -94,8 +95,8 @@ fi
 
 if [[ "$mode" == sample ]]; then
   command -v say >/dev/null || { echo "vdots-read: \`say\` not found" >&2; exit 1; }
-  txt="This is a calm, well paced reading. [[slnc 400]] A brief pause between thoughts, [[slnc 250]] and a longer beat before a new section."
-  [[ -n "$file" && -r "$file" ]] && txt="$(nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null | head -c 600)"
+  txt="This [[slnc 22]] is [[slnc 22]] a [[slnc 22]] calm, [[slnc 115]] measured [[slnc 22]] reading. [[slnc 360]] Space [[slnc 22]] between [[slnc 22]] the [[slnc 22]] words, [[slnc 115]] a [[slnc 22]] beat [[slnc 22]] at [[slnc 22]] the [[slnc 22]] commas, [[slnc 115]] and [[slnc 22]] a [[slnc 22]] longer [[slnc 22]] rest [[slnc 22]] at [[slnc 22]] the [[slnc 22]] end. [[slnc 480]] Then [[slnc 22]] the [[slnc 22]] next [[slnc 22]] thought."
+  [[ -n "$file" && -r "$file" ]] && txt="$(nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null | head -c 800)"
   echo "vdots-read: sample — voice='${voice:-system default}' pace=$paceval rate=$rate"
   printf '%s\n' "$txt" | say -r "$rate" ${voice:+-v "$voice"}
   exit 0

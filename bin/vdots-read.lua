@@ -98,9 +98,9 @@ if mode == "info" then
   if
     enhanced
     and fm.spoken_minutes
-    and math.abs(est / 60 - fm.spoken_minutes) / fm.spoken_minutes > 0.25
+    and math.abs(est / 60 - fm.spoken_minutes) / fm.spoken_minutes > 0.4
   then
-    io.write(("  ! estimate is >25%% off the expected %d min\n"):format(fm.spoken_minutes))
+    io.write(("  ! estimate is >40%% off the expected %d min\n"):format(fm.spoken_minutes))
   end
   vim.cmd "quit"
 end

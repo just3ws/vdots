@@ -93,10 +93,26 @@ describe("vdots.readaloud.pace", function()
     assert.same({ "heading", "para", "heading", "para" }, kinds)
 
     local script = pace.script(bs, { pace = "follow" })
-    -- section lead (750) > paragraph lead (400) > after-heading lead (250)
-    assert.truthy(script:find "%[%[slnc 750%]%] Heading level 2")
-    assert.truthy(script:find "%[%[slnc 250%]%] para a")
+    -- section lead (820) > paragraph lead (480) > after-heading lead (300)
+    assert.truthy(script:find "%[%[slnc 820%]%] Heading") -- before "## Two"
+    assert.truthy(script:find "%[%[slnc 300%]%] para") -- "para a" follows a heading
     assert.is_nil(script:match "^%[%[slnc") -- no lead on the very first block
+  end)
+
+  it("breathes: air between words and a beat at punctuation", function()
+    local s = pace.settings { pace = "follow" }
+    local out, added = pace.breathe("One, two three.", s)
+    assert.truthy(out:find "One, %[%[slnc 115%]%]") -- clause beat after the comma
+    assert.truthy(out:find "three%. %[%[slnc 360%]%]") -- sentence rest at the end
+    assert.truthy(out:find "%[%[slnc 22%]%] two") -- word air between "One," and "two"
+    -- 2 inter-word gaps (22) + 1 clause (115) + 1 sentence (360) = 519ms
+    assert.is_true(math.abs(added - 0.519) < 0.001)
+  end)
+
+  it("breathe is a no-op-ish for natural (no inter-word air)", function()
+    local s = pace.settings { pace = "natural" }
+    local out = pace.breathe("one two three", s)
+    assert.is_nil(out:find "%[%[slnc") -- word=0 for natural, no punctuation here
   end)
 
   it("keeps list items moving (shorter gap than paragraphs)", function()
@@ -105,8 +121,8 @@ describe("vdots.readaloud.pace", function()
   end)
 
   it("rate follows the preset unless overridden", function()
-    assert.equals(160, pace.settings({ pace = "follow" }).rate)
-    assert.equals(210, pace.settings({ pace = "natural" }).rate)
+    assert.equals(155, pace.settings({ pace = "follow" }).rate)
+    assert.equals(200, pace.settings({ pace = "natural" }).rate)
     assert.equals(999, pace.settings({ pace = "follow", rate = 999 }).rate)
   end)
 
