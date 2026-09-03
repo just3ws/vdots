@@ -76,6 +76,9 @@ audio{width:100%;margin:0 0 1rem}
 #t blockquote{border-left:3px solid var(--line);color:var(--muted)}
 #t .active{background:var(--hl)}
 #t .code{font-family:ui-monospace,Menlo,monospace;color:var(--muted);font-size:.9rem}
+.toc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6rem 1rem;margin:0 0 1rem;font-size:.9rem}
+.toc ol{margin:.4rem 0 0;padding-left:1.3rem}
+.toc a{text-decoration:none}
 """
 
 
@@ -96,12 +99,13 @@ def build_catalog(items, machine):
     for s in items:
         d = esc(s["_dir"])
         r = s["_read"]
+        nch = len(s.get("chapters") or [])
         meta = " · ".join(x for x in (
             esc(s.get("date")), dur(s.get("duration")),
             esc(s.get("voice")) if s.get("voice") not in (None, "auto") else "",
             (f'grade {r["flesch_kincaid_grade"]}' if r.get("flesch_kincaid_grade") is not None else ""),
             (r.get("reading_ease_band") or ""),
-            (f'{r["words"]} words' if r.get("words") else ""),
+            (f"{nch} chapters" if nch else ""),
         ) if x)
         p += [
             "<article>",
@@ -117,7 +121,14 @@ def build_catalog(items, machine):
 ARTICLE_JS = """
 (function(){
   var a=document.getElementById('player'), t=document.getElementById('t');
-  if(!a||!t) return;
+  if(!a) return;
+  [].forEach.call(document.querySelectorAll('[data-seek]'), function(el){
+    el.addEventListener('click', function(ev){
+      ev.preventDefault();
+      a.currentTime=parseFloat(el.dataset.seek)||0; a.play();
+    });
+  });
+  if(!t) return;
   var nodes=[].slice.call(t.children), cur=-1;
   nodes.forEach(function(n,i){ n.addEventListener('click',function(){
     var s=parseFloat(n.dataset.start); if(!isNaN(s)){ a.currentTime=s; a.play(); }
@@ -170,6 +181,12 @@ def build_article(s, sdir):
 
     report = ""
     if r:
+        exp = s.get("spoken_minutes")
+        last = (
+            f"<span>expected ~{exp} min</span>"
+            if exp not in (None, "", "None")
+            else f'<span>{r.get("polysyllabic_words","?")} long words</span>'
+        )
         report = (
             '<div class="report">'
             f'<b>Readability</b> — grade {r.get("flesch_kincaid_grade","?")} · '
@@ -181,9 +198,21 @@ def build_article(s, sdir):
             f'<span>{r.get("avg_words_per_sentence","?")} words/sentence</span>'
             f'<span>~{r.get("listening_time_min","?")} min listen</span>'
             f'<span>~{r.get("reading_time_min","?")} min read</span>'
-            f'<span>{r.get("polysyllabic_words","?")} long words</span>'
+            f'{last}'
             "</div></div>"
         )
+
+    chapters = s.get("chapters") or []
+    toc = ""
+    if chapters:
+        links = "".join(
+            f'<li><a href="#" data-seek="{c.get("start",0):.2f}">{esc(c.get("title",""))}</a></li>'
+            for c in chapters
+        )
+        toc = f'<nav class="toc"><b>Chapters</b><ol>{links}</ol></nav>'
+
+    src = s.get("source_url")
+    src_link = f' · <a href="{esc(src)}">source</a>' if src not in (None, "", "None") else ""
 
     return "\n".join([
         "<!doctype html><html lang=en><head><meta charset=utf-8>",
@@ -193,8 +222,9 @@ def build_article(s, sdir):
         f"<h1>{title}</h1>",
         f'<p class="sub">{esc(s.get("date"))} · {dur(s.get("duration"))} · '
         f'{esc(s.get("voice"))} · <a href="{esc(s.get("doc"))}">document</a> · '
-        f'<a href="{esc(s.get("vtt"))}">captions</a></p>',
+        f'<a href="{esc(s.get("vtt"))}">captions</a>{src_link}</p>',
         f'<audio id="player" controls preload="none" src="{esc(s.get("audio"))}"></audio>',
+        toc,
         report,
         '<div id="t">', *body, "</div>",
         f"<script>{ARTICLE_JS}</script>",

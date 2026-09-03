@@ -205,6 +205,33 @@ Both remotes reach Neovim over its RPC address (`v:servername`), published in
 `$XDG_CACHE_HOME/vdots/readaloud.json` while reading. One reader at a time.
 
 ==============================================================================
+7b. ENHANCED READ-ALOUD DOCUMENTS                      *vdots-readaloud-enhanced*
+
+A Markdown file that opens with a YAML frontmatter block written *for speech*
+is an "enhanced" document — the pipeline detects it and honors the block
+(which is never spoken). Detected when the block has `format:` containing
+"read-aloud", or carries `pronunciation:` + `sections:` + `spoken_minutes:`
+together. Everything else is a plain document (best-effort TTS, current
+behavior).
+
+Frontmatter keys: >
+
+        title           published title of the track / captions / transcript
+        lang            voice + locale (e.g. en-US)
+        pronunciation   term -> spoken hint; a per-document lexicon applied to
+                        the AUDIO only — captions + transcript keep the spelling
+        sections        ordered list; each matches an #/## heading -> chapters
+                        in the m4a, chapter cues, transcript headings
+        spoken_minutes  expected length -> metadata + a sanity note (never pad)
+        source          provenance URL
+        generated_at    ISO-8601; a re-publish is skipped unless newer
+<
+Enhanced docs: headings are spoken plainly (they double as chapter titles),
+the built-in tech lexicon is off (the body is already speech-ready), and the
+captions + transcript are one cue / one line per sentence. Chapters are
+embedded in the `.m4a` (ffmpeg) and shipped as `<slug>.chapters.vtt`.
+
+==============================================================================
 8. THE LISTEN LIBRARY                                    *vdots-readaloud-listen*
 
 `:VdotsReadPublish` (`;rP`) files the current document into a listenable

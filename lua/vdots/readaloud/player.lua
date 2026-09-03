@@ -131,7 +131,10 @@ local function speak(i)
   end
   local prev = st.blocks[i - 1] and st.blocks[i - 1].kind or nil
   local lead = pace.marker(pace.lead(prev, b.kind, s))
-  args[#args + 1] = lead .. require("vdots.readaloud.pronounce").apply(b.speak, c.pronounce)
+  local pron = require "vdots.readaloud.pronounce"
+  local spoken = (st.doc and st.doc.enhanced) and pron.lexicon(b.speak, st.doc.fm.pronunciation)
+    or pron.apply(b.speak, c.pronounce)
+  args[#args + 1] = lead .. spoken
 
   st.gen = st.gen + 1
   local gen = st.gen
@@ -227,7 +230,9 @@ end
 --------------------------------------------------------------------------------
 
 local function reparse()
-  st.blocks = parse.parse(vim.api.nvim_buf_get_lines(st.src_buf, 0, -1, false), cfg.get())
+  local doc = parse.document(vim.api.nvim_buf_get_lines(st.src_buf, 0, -1, false), cfg.get())
+  st.blocks = doc.blocks
+  st.doc = doc
 end
 
 local function block_at(line)
@@ -366,14 +371,16 @@ function M.export(range)
   if range then
     lo, hi = range[1] - 1, range[2]
   end
-  local blocks = parse.parse(vim.api.nvim_buf_get_lines(buf, lo, hi, false), cfg.get())
+  local doc = parse.document(vim.api.nvim_buf_get_lines(buf, lo, hi, false), cfg.get())
+  local blocks = doc.blocks
   if #blocks == 0 then
     return vim.notify("readaloud: nothing to export", vim.log.levels.WARN)
   end
   local c = cfg.get()
   local pron = require "vdots.readaloud.pronounce"
   for _, b in ipairs(blocks) do
-    b.speak = pron.apply(b.speak, c.pronounce)
+    b.speak = doc.enhanced and pron.lexicon(b.speak, doc.fm.pronunciation)
+      or pron.apply(b.speak, c.pronounce)
   end
   local script = pace.script(blocks, c)
   local out = vim.fn.tempname() .. ".m4a"

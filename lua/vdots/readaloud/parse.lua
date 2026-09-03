@@ -104,12 +104,13 @@ local function cells(l)
 end
 
 ---@param lines string[] 1-based list of source lines
----@param opts table? { skip_code?, skip_tables? }
----@return { s: integer, e: integer, speak: string, kind: string }[]
+---@param opts table? { skip_code?, skip_tables?, enhanced?, skip_frontmatter?, title? }
+---@return { s: integer, e: integer, speak: string, kind: string, text: string }[]
 function M.parse(lines, opts)
   opts = opts or {}
   local skip_code = opts.skip_code ~= false
   local skip_tables = opts.skip_tables == true
+  local enhanced = opts.enhanced == true
 
   local blocks = {}
   local n = #lines
@@ -129,21 +130,37 @@ function M.parse(lines, opts)
     end
   end
 
-  -- Frontmatter: leading `---` ... `---` (keep only title:)
-  if lines[1] == "---" then
+  -- An explicit title (from a caller that already parsed the frontmatter).
+  -- Enhanced docs open with just the title; plain docs get a "Title." cue.
+  if opts.title and opts.title ~= "" then
+    local t = clean(opts.title)
+    emit(1, 1, enhanced and t or ("Title. " .. t), "title", t)
+  end
+
+  -- Frontmatter: leading `---` ... `---`. `skip_frontmatter` = the caller
+  -- already stripped it and passed body-only lines.
+  if not opts.skip_frontmatter and lines[1] == "---" then
     for j = 2, n do
       if lines[j] == "---" or lines[j] == "..." then
-        for k = 2, j - 1 do
-          local title = lines[k]:match "^title:%s*(.+)$"
-          if title then
-            title = title:gsub("^[\"']", ""):gsub("[\"']$", "")
-            emit(1, j, "Title. " .. clean(title), "title", clean(title))
+        if not opts.title then
+          for k = 2, j - 1 do
+            local title = lines[k]:match "^title:%s*(.+)$"
+            if title then
+              title = title:gsub("^[\"']", ""):gsub("[\"']$", "")
+              emit(1, j, "Title. " .. clean(title), "title", clean(title))
+            end
           end
         end
         i = j + 1
         break
       end
     end
+  end
+
+  -- Enhanced docs are already speech-ready: headings are spoken plainly (they
+  -- double as chapter titles), no "Heading level N" / "Quote." announcements.
+  local function hspeak(level, txt)
+    return enhanced and clean(txt) or ("Heading level %d. %s."):format(level, clean(txt))
   end
 
   while i <= n do
@@ -183,10 +200,10 @@ function M.parse(lines, opts)
       i = i + 1
     elseif atx_heading(line) then
       local level, text = atx_heading(line)
-      emit(i, i, ("Heading level %d. %s."):format(level, clean(text)), "heading", clean(text))
+      emit(i, i, hspeak(level, text), "heading", clean(text))
       i = i + 1
     elseif lines[i + 1] and lines[i + 1]:match "^%s*=+%s*$" and not is_blank(line) then
-      emit(i, i + 1, "Heading level 1. " .. clean(line) .. ".", "heading", clean(line))
+      emit(i, i + 1, hspeak(1, line), "heading", clean(line))
       i = i + 2
     elseif
       lines[i + 1]
@@ -194,7 +211,7 @@ function M.parse(lines, opts)
       and not is_blank(line)
       and not list_body(line)
     then
-      emit(i, i + 1, "Heading level 2. " .. clean(line) .. ".", "heading", clean(line))
+      emit(i, i + 1, hspeak(2, line), "heading", clean(line))
       i = i + 2
     elseif is_table_row(line) then
       local start = i
@@ -232,7 +249,7 @@ function M.parse(lines, opts)
         i = i + 1
       end
       local qt = clean(table.concat(buf, " "))
-      emit(start, i - 1, "Quote. " .. qt, "quote", qt)
+      emit(start, i - 1, (enhanced and "" or "Quote. ") .. qt, "quote", qt)
     elseif list_body(line) then
       emit(i, i, clean(list_body(line)), "list")
       i = i + 1
@@ -260,6 +277,27 @@ function M.parse(lines, opts)
   end
 
   return blocks
+end
+
+---Frontmatter-aware parse: detect an enhanced read-aloud block, strip it, and
+---parse the body with the right mode. The one entry point for every caller
+---(player, preview, the CLI bridge).
+---@param lines string[]
+---@param opts table? merged into parse opts (skip_code / skip_tables …)
+---@return { blocks: table, enhanced: boolean, present: boolean, fm: table }
+function M.document(lines, opts)
+  opts = opts or {}
+  local fmres = require("vdots.readaloud.frontmatter").parse(lines)
+  local body = fmres.present and vim.list_slice(lines, fmres.body_start, #lines) or lines
+  local blocks = M.parse(
+    body,
+    vim.tbl_extend("force", opts, {
+      enhanced = fmres.enhanced,
+      skip_frontmatter = fmres.present,
+      title = fmres.enhanced and fmres.fm.title or nil,
+    })
+  )
+  return { blocks = blocks, enhanced = fmres.enhanced, present = fmres.present, fm = fmres.fm }
 end
 
 return M

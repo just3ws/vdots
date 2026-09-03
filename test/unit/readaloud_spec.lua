@@ -132,4 +132,99 @@ describe("vdots.readaloud.pace", function()
     assert.truthy(vtt:match "^WEBVTT")
     assert.truthy(vtt:match "%d%d:%d%d:%d%d%.%d%d%d %-%-> %d%d:%d%d:%d%d%.%d%d%d")
   end)
+
+  it("splits blocks into per-sentence cues when opts.sentences", function()
+    local bs = P.parse(vim.split("# H\n\nOne thing. Two things. Three.\n", "\n", { plain = true }))
+    local block_cues = pace.cues(bs, { pace = "follow" }, 30)
+    local sent_cues = pace.cues(bs, { pace = "follow" }, 30, { sentences = true })
+    assert.equals(2, #block_cues) -- heading + paragraph
+    assert.equals(4, #sent_cues) -- heading + 3 sentences
+    assert.equals("One thing.", sent_cues[2].text)
+  end)
+
+  it("derives chapters from headings that match the sections list", function()
+    local bs = P.parse(
+      vim.split("# Intro\n\nx.\n\n# Skip Me\n\ny.\n\n# Wrap\n\nz.\n", "\n", { plain = true })
+    )
+    local ch = pace.chapters(bs, { pace = "follow" }, 60, { "Intro", "Wrap" })
+    assert.equals(2, #ch)
+    assert.equals("Intro", ch[1].title)
+    assert.equals("Wrap", ch[2].title)
+    assert.is_true(ch[2].start > ch[1].start)
+  end)
+end)
+
+describe("vdots.readaloud.frontmatter", function()
+  local F = require "vdots.readaloud.frontmatter"
+  local function fm(md)
+    return F.parse(vim.split(md, "\n", { plain = true }))
+  end
+
+  it("detects an enhanced doc via format: …read-aloud", function()
+    local r = fm "---\nformat: read-aloud\ntitle: Hi\n---\n\nBody.\n"
+    assert.is_true(r.enhanced)
+    assert.is_true(r.present)
+    assert.equals("Hi", r.fm.title)
+    assert.equals(5, r.body_start)
+  end)
+
+  it("detects via the pronunciation + sections + spoken_minutes triple", function()
+    local r = fm(table.concat({
+      "---",
+      "pronunciation:",
+      "  DSP: D S P",
+      "sections:",
+      "- One",
+      "spoken_minutes: 4",
+      "---",
+      "",
+      "Body.",
+    }, "\n"))
+    assert.is_true(r.enhanced)
+    assert.equals("D S P", r.fm.pronunciation.DSP)
+    assert.same({ "One" }, r.fm.sections)
+    assert.equals(4, r.fm.spoken_minutes)
+  end)
+
+  it("is not enhanced without the markers, and a plain file is not present", function()
+    assert.is_false(fm("---\ntitle: Just A Title\n---\n\nBody.\n").enhanced)
+    assert.is_false(fm("# Plain\n\nBody.\n").present)
+  end)
+end)
+
+describe("vdots.readaloud.parse enhanced mode", function()
+  it("speaks headings plainly and drops announcements", function()
+    local bs = P.parse(
+      vim.split("## The STAR Method\n\n> quoted bit.\n", "\n", { plain = true }),
+      { enhanced = true, skip_frontmatter = true }
+    )
+    assert.equals("The STAR Method", bs[1].speak)
+    assert.equals("heading", bs[1].kind)
+    assert.equals("quoted bit.", bs[2].speak) -- no "Quote." prefix
+  end)
+
+  it("keeps the plain 'Heading level N' announcement otherwise", function()
+    local bs = P.parse(vim.split("## X\n", "\n", { plain = true }))
+    assert.equals("Heading level 2. X.", bs[1].speak)
+  end)
+end)
+
+describe("vdots.readaloud.pronounce.lexicon", function()
+  local pron = require "vdots.readaloud.pronounce"
+
+  it("substitutes multi-word terms, case-insensitively, longest first", function()
+    local out = pron.lexicon("The IAB Tech Lab governs OpenRTB at basis.", {
+      ["IAB Tech Lab"] = "eye ay bee tech lab",
+      OpenRTB = "open R T B",
+      Basis = "BAY sis",
+    })
+    assert.equals("The eye ay bee tech lab governs open R T B at BAY sis.", out)
+  end)
+
+  it("skips exact-identity hints and leaves unknown text alone", function()
+    assert.equals(
+      "React and MongoDB now",
+      pron.lexicon("React and MongoDB now", { React = "React", MongoDB = "MongoDB" })
+    )
+  end)
 end)

@@ -85,11 +85,14 @@ M.builtin = {
 ---Apply the pronunciation map to spoken text.
 ---@param text string
 ---@param overrides table<string, string|false>? per-term overrides (false disables a built-in)
+---@param opts { base?: boolean }? base=false skips M.builtin (enhanced docs)
 ---@return string
-function M.apply(text, overrides)
+function M.apply(text, overrides, opts)
   local map = {}
-  for k, v in pairs(M.builtin) do
-    map[k:lower()] = v
+  if not (opts and opts.base == false) then
+    for k, v in pairs(M.builtin) do
+      map[k:lower()] = v
+    end
   end
   for k, v in pairs(overrides or {}) do
     map[k:lower()] = v
@@ -105,6 +108,39 @@ function M.apply(text, overrides)
       end
     end)
   )
+end
+
+---Apply a document's `pronunciation:` lexicon — phrase-level, case-insensitive,
+---longest term first (so "IAB Tech Lab" wins over "Lab"). The hint is spoken
+---verbatim. Used for enhanced docs; audio only, never the transcript.
+---@param text string
+---@param lexicon table<string, string>?
+---@return string
+function M.lexicon(text, lexicon)
+  if not lexicon or next(lexicon) == nil then
+    return text
+  end
+  local terms = {}
+  for term in pairs(lexicon) do
+    terms[#terms + 1] = term
+  end
+  table.sort(terms, function(a, b)
+    return #a > #b
+  end)
+  for _, term in ipairs(terms) do
+    local hint = lexicon[term]
+    if type(hint) == "string" and hint ~= "" and hint ~= term then
+      -- escape magic chars, make letters case-insensitive, spaces flexible
+      local pat = term:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
+      pat = pat:gsub("%a", function(c)
+        return "[" .. c:lower() .. c:upper() .. "]"
+      end)
+      pat = pat:gsub("%s+", "%%s+")
+      local rep = hint:gsub("%%", "%%%%")
+      text = text:gsub("%f[%w_]" .. pat .. "%f[^%w_]", rep)
+    end
+  end
+  return text
 end
 
 return M

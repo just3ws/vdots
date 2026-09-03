@@ -64,6 +64,17 @@ function M.check()
   end
   h.info "media keys are best-effort: an active Music/Spotify/video session wins them"
 
+  if vim.fn.executable "ffmpeg" == 1 then
+    h.ok "ffmpeg found — enhanced-doc chapters are embedded in the .m4a"
+  else
+    h.info "ffmpeg not found — enhanced-doc chapters live only in the .vtt + page TOC"
+  end
+  if vim.fn.executable "jq" == 1 then
+    h.ok "jq found"
+  else
+    h.warn "jq not found — :VdotsReadPublish cannot read frontmatter (plain-doc fallback)"
+  end
+
   local ok_rm = pcall(require, "render-markdown")
   if ok_rm then
     h.ok "render-markdown.nvim present (preview pane renders)"

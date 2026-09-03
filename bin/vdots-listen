@@ -35,7 +35,8 @@ slugify() {
   printf '%s' "$1" \
     | tr '[:upper:]' '[:lower:]' \
     | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' \
-    | cut -c1-60
+    | cut -c1-60 \
+    | sed -E 's/-+$//'
 }
 
 doc_title() {
@@ -75,40 +76,63 @@ cmd_publish() {
   [[ -n "$file" && -r "$file" ]] || die "cannot read file: ${file:-<none>}"
   command -v say >/dev/null || die "\`say\` not found (macOS only)"
 
+  # frontmatter (enhanced read-aloud docs carry a metadata block)
+  local fm enhanced fm_title lang spoken_min gen_at src_url
+  fm="$("$HERE/vdots-read" --meta "$file" 2>/dev/null || echo '{}')"
+  if command -v jq >/dev/null; then
+    enhanced="$(jq -r '.enhanced // false' <<<"$fm")"
+    fm_title="$(jq -r '.title // ""' <<<"$fm")"
+    lang="$(jq -r '.lang // "en-US"' <<<"$fm")"
+    spoken_min="$(jq -r '.spoken_minutes // ""' <<<"$fm")"
+    gen_at="$(jq -r '.generated_at // ""' <<<"$fm")"
+    src_url="$(jq -r '.source // ""' <<<"$fm")"
+  fi
+  enhanced="${enhanced:-false}"; lang="${lang:-en-US}"
+
   local title slug date dir
-  title="$(doc_title "$file")"
+  title="${fm_title:-$(doc_title "$file")}"
   date="$(date +%Y-%m-%d)"
   slug="$(slugify "$title")"; [[ -n "$slug" ]] || slug="document"
   dir="$LISTEN_DIR/$date-$slug"
 
   if [[ -d "$dir" && "$force" -ne 1 ]]; then
-    echo "vdots-listen: already published today — $dir" >&2
-    echo "             re-run with --force (or :VdotsReadPublish!) to re-record" >&2
-    return 3
+    local prev_gen=""
+    [[ -r "$dir/meta.json" ]] && command -v jq >/dev/null && \
+      prev_gen="$(jq -r '.generated_at // ""' "$dir/meta.json")"
+    if [[ -n "$gen_at" && -n "$prev_gen" && ! "$gen_at" > "$prev_gen" ]]; then
+      echo "vdots-listen: $slug already published from generated_at $prev_gen (>= $gen_at)" >&2
+      echo "             --force (or :VdotsReadPublish!) to re-record anyway" >&2
+      return 3
+    elif [[ -z "$gen_at" ]]; then
+      echo "vdots-listen: already published today — $dir" >&2
+      echo "             --force (or :VdotsReadPublish!) to re-record" >&2
+      return 3
+    fi
   fi
-  [[ "$force" -eq 1 ]] && rm -rf "$dir"
+  [[ "$force" -eq 1 || -d "$dir" ]] && rm -rf "$dir"
   mkdir -p "$dir"
 
-  # resolve the voice we will actually use (respects --voice / --tone)
-  [[ -n "$voice" ]] || voice="$("$HERE/vdots-read" --print-voice --tone "$tone" 2>/dev/null || true)"
+  # resolve the voice (respects --voice / --tone / frontmatter lang)
+  [[ -n "$voice" ]] || voice="$("$HERE/vdots-read" --print-voice --tone "$tone" --lang "$lang" 2>/dev/null || true)"
 
   # spoken text (shared Markdown parse + tech-pronunciation + paced silences)
   "$HERE/vdots-read" --dry-run --pace "$paceval" --tone "$tone" "$file" > "$dir/$slug.txt"
   [[ -s "$dir/$slug.txt" ]] || die "nothing to read in $file"
   local words; words="$(wc -w < "$dir/$slug.txt" | tr -d ' ')"
 
-  # clean readable doc: drop leading YAML frontmatter + a redundant leading H1,
-  # prepend our own header.
+  # clean readable doc: drop leading YAML frontmatter; for plain docs also drop
+  # a redundant leading H1 (enhanced docs' first heading is real content).
   {
     printf '# %s\n\n' "$title"
     printf '> Read-through · %s · %s · %s words\n' "$date" "${voice:-system voice}" "$words"
-    printf '> Source: `%s`\n\n---\n\n' "$file"
-    awk '
+    [[ -n "$src_url" ]] && printf '> Source: %s\n' "$src_url"
+    printf '> File: `%s`\n\n---\n\n' "$file"
+    awk -v enh="$enhanced" '
       NR==1 && /^---[[:space:]]*$/ {fm=1; next}
       fm && /^(---|\.\.\.)[[:space:]]*$/ {fm=0; next}
       fm {next}
       !body && /^[[:space:]]*$/ {next}
-      !body && /^# / {body=1; next}
+      !body && enh!="true" && /^# / {body=1; next}
       {body=1; print}
     ' "$file"
   } > "$dir/$slug.md"
@@ -119,17 +143,20 @@ cmd_publish() {
       natural) rate=210 ;; relaxed) rate=185 ;; *) rate=160 ;;
     esac
   fi
-  local say_args=(-r "$rate" -o "$dir/$slug.m4a" -f "$dir/$slug.txt")
-  [[ -n "$voice" ]] && say_args=(-v "$voice" "${say_args[@]}")
-  say "${say_args[@]}"
+  # AAC keeps the file ~4x smaller than say's default LPCM (matters for Drive
+  # sync) and lets ffmpeg add chapters with -c copy. Fall back if unsupported.
+  local say_common=(-r "$rate" -f "$dir/$slug.txt")
+  [[ -n "$voice" ]] && say_common=(-v "$voice" "${say_common[@]}")
+  say --file-format=m4af --data-format=aac -o "$dir/$slug.m4a" "${say_common[@]}" 2>/dev/null \
+    || say -o "$dir/$slug.m4a" "${say_common[@]}"
 
   local dur=0
   if command -v ffprobe >/dev/null; then
     dur="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$dir/$slug.m4a" 2>/dev/null || echo 0)"
   fi
 
-  # verbatim transcript, timed cues (JSON drives the page, WebVTT for other
-  # players), and a readability report
+  # verbatim transcript (one line per sentence when enhanced), timed cues, VTT
+  # captions, and a readability report
   "$HERE/vdots-read" --transcript "$file" > "$dir/$slug.transcript.txt"
   "$HERE/vdots-read" --cues "$dur" "$file" > "$dir/$slug.vtt"
   "$HERE/vdots-read" --cues-json "$dur" "$file" > "$dir/$slug.cues.json"
@@ -137,7 +164,36 @@ cmd_publish() {
     python3 "$HERE/vdots-readability" < "$dir/$slug.transcript.txt" > "$dir/$slug.readability.json"
   fi
 
-  VDOTS_META_DIR="$dir" VDOTS_META="title=$title
+  # chapters: from the frontmatter sections. Embed in the m4a (ffmpeg re-mux)
+  # and ship a chapters .vtt; the page reads meta.chapters directly.
+  local chapters_json="[]"
+  if [[ "$enhanced" == "true" ]]; then
+    chapters_json="$("$HERE/vdots-read" --chapters "$dur" "$file" 2>/dev/null || echo '[]')"
+    "$HERE/vdots-read" --chapters-vtt "$dur" "$file" > "$dir/$slug.chapters.vtt" 2>/dev/null || true
+    if command -v ffmpeg >/dev/null && [[ "$chapters_json" != "[]" ]]; then
+      local ffmeta="$dir/.ffmeta"
+      { echo ";FFMETADATA1"
+        jq -r --argjson total "$dur" '
+          to_entries[] as $e |
+          "[CHAPTER]\nTIMEBASE=1/1000\nSTART=\(($e.value.start*1000)|floor)\nEND=\(((.[$e.key+1].start // $total)*1000)|floor)\ntitle=\($e.value.title)"
+        ' <<<"$chapters_json"
+      } > "$ffmeta"
+      if ffmpeg -y -i "$dir/$slug.m4a" -i "$ffmeta" -map_metadata 1 -map_chapters 1 \
+           -c copy "$dir/.chaptered.m4a" >/dev/null 2>&1; then
+        mv "$dir/.chaptered.m4a" "$dir/$slug.m4a"
+      fi
+      rm -f "$ffmeta"
+    fi
+  fi
+
+  # spoken_minutes sanity — report, never pad or rush
+  local dur_min; dur_min="$(awk -v d="$dur" 'BEGIN{printf "%.1f", d/60}')"
+  if [[ -n "$spoken_min" ]] && awk -v a="$dur_min" -v e="$spoken_min" \
+       'BEGIN{exit !(e>0 && (a-e>e*0.25 || e-a>e*0.25))}'; then
+    echo "vdots-listen: note — spoken ${dur_min}m vs expected ${spoken_min}m (>25% off)" >&2
+  fi
+
+  VDOTS_META_DIR="$dir" VDOTS_CHAPTERS="$chapters_json" VDOTS_META="title=$title
 slug=$date-$slug
 date=$date
 iso=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -145,7 +201,13 @@ duration=$dur
 voice=${voice:-auto}
 rate=$rate
 pace=$paceval
+enhanced=$enhanced
+lang=$lang
+spoken_minutes=${spoken_min}
+spoken_minutes_actual=${dur_min}
+generated_at=${gen_at}
 source=$file
+source_url=${src_url:-}
 words=$words
 audio=$slug.m4a
 doc=$slug.md
@@ -154,7 +216,11 @@ cues=$slug.cues.json
 vtt=$slug.vtt
 readability=$slug.readability.json
 article=$slug.article.html" \
-    python3 -c 'import os,json;d=dict(l.split("=",1) for l in os.environ["VDOTS_META"].splitlines());open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dumps(d,indent=2))'
+    python3 -c 'import os,json
+d=dict(l.split("=",1) for l in os.environ["VDOTS_META"].splitlines())
+try: d["chapters"]=json.loads(os.environ.get("VDOTS_CHAPTERS","[]"))
+except Exception: d["chapters"]=[]
+open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dumps(d,indent=2))'
 
   rebuild
   echo "vdots-listen: published — $dir  ($(human_dur "$dur"))"

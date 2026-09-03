@@ -17,11 +17,17 @@
 # ("Siri Voice 4") are not auto-detected — pass --voice "Siri Voice 4".
 set -euo pipefail
 
-# Mirrors lua/vdots/readaloud/config.lua voice_prefs. $1 = tone.
+# Mirrors lua/vdots/readaloud/config.lua voice_prefs. $1 = tone, $2 = lang.
 auto_voice() {
   command -v say >/dev/null || return 0
   local have; have="$(say -v '?' 2>/dev/null)"
-  local list v
+  local list v loc="${2:-en-US}"
+  if [[ "$loc" != en-* && "$loc" != en_* ]]; then
+    # non-English: first voice whose locale matches (say lists e.g. "es_MX")
+    local tag="${loc//-/_}"
+    v="$(grep -E "  ${tag} " <<<"$have" | head -1 | sed -E 's/  +[a-z]{2}_.*//; s/ +$//')"
+    [[ -n "$v" ]] && { printf '%s' "$v"; return 0; }
+  fi
   if [[ "${1:-warm}" == clarity ]]; then
     list=("Alex" "Ava (Enhanced)" "Evan (Enhanced)" "Samantha (Enhanced)" "Samantha" "Daniel")
   else
@@ -39,7 +45,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VDOTS_REPO="$(dirname "$HERE")"
 export VDOTS_REPO
 
-voice="" ; rate="" ; mode="say" ; tone="warm" ; paceval="follow" ; file="" ; cues_dur=""
+voice="" ; rate="" ; mode="say" ; tone="warm" ; paceval="follow" ; file="" ; cues_dur="" ; lang="en-US"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --voice) voice="$2"; shift 2 ;;
@@ -54,6 +60,10 @@ while [[ $# -gt 0 ]]; do
     --transcript) mode="transcript"; shift ;;
     --cues) mode="cues"; cues_dur="$2"; shift 2 ;;
     --cues-json) mode="cues-json"; cues_dur="$2"; shift 2 ;;
+    --chapters) mode="chapters"; cues_dur="$2"; shift 2 ;;
+    --chapters-vtt) mode="chapters-vtt"; cues_dur="$2"; shift 2 ;;
+    --meta) mode="meta"; shift ;;
+    --lang) lang="$2"; shift 2 ;;
     --print-voice) mode="print-voice"; shift ;;
     -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "vdots-read: unknown option: $1" >&2; exit 1 ;;
@@ -62,11 +72,17 @@ while [[ $# -gt 0 ]]; do
 done
 
 export VDOTS_PACE="$paceval"
-[[ -n "$voice" ]] || voice="$(auto_voice "$tone")"
+[[ -n "$voice" ]] || voice="$(auto_voice "$tone" "$lang")"
 [[ -n "$rate" ]]  || rate="$(pace_rate "$paceval")"
 
 if [[ "$mode" == print-voice ]]; then
   printf '%s\n' "$voice"; exit 0
+fi
+
+if [[ "$mode" == meta ]]; then
+  [[ -n "$file" && -r "$file" ]] || { echo "{}"; exit 0; }
+  VDOTS_MODE=meta nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
+  exit 0
 fi
 
 if [[ "$mode" == sample ]]; then
@@ -98,6 +114,14 @@ if [[ "$mode" == cues ]]; then
 fi
 if [[ "$mode" == cues-json ]]; then
   VDOTS_MODE=cues-json VDOTS_DURATION="$cues_dur" nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
+  exit 0
+fi
+if [[ "$mode" == chapters ]]; then
+  VDOTS_MODE=chapters VDOTS_DURATION="$cues_dur" nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
+  exit 0
+fi
+if [[ "$mode" == chapters-vtt ]]; then
+  VDOTS_MODE=chapters-vtt VDOTS_DURATION="$cues_dur" nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
   exit 0
 fi
 

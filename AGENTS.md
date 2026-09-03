@@ -19,8 +19,14 @@
        (.vtt + .cues.json) into ~/ai/outbox/listen; self-contained article page
        plays audio while the transcript highlights + auto-scrolls; catalog
        auto-synced by Google Drive desktop; same-day re-publish refused unless
-       `!`/`--force`. (4) Dashboard Recent Files + Recent Markdown sections
-       (lua/editor/mdfiles.lua; shada '1000). Tests green (57 smoke + 21 unit).
+       `!`/`--force`. (4) Enhanced read-aloud docs — a YAML frontmatter contract
+       (lua/vdots/readaloud/frontmatter.lua): `format: …read-aloud` or the
+       pronunciation+sections+spoken_minutes triple → per-doc lexicon (audio
+       only), plain-spoken headings, one cue/line per sentence, m4a chapters
+       (ffmpeg re-mux, AAC), `generated_at` freshness skip. First real publish:
+       ~/ai/outbox/listen/2026-09-02-interview-prep-pack-senior-software-engineer-basis-platform.
+       (5) Dashboard Recent Files + Recent Markdown sections
+       (lua/editor/mdfiles.lua; shada '1000). Tests green (57 smoke + 30 unit).
        Blocked on human: merge decision for the branch. Operator picked
        `Zoe (Premium)` (downloaded, auto-resolves). PATH for ~/.config/nvim/bin
        is interim via zdots .zshrc.local; zdots request Z-337 tracks the
@@ -42,16 +48,18 @@ This repository is a Lua-based Neovim configuration.
 - `lua/`: main modules by concern:
   - `lua/editor/` for options, keymaps, commands, autocmds, Telescope, Treesitter, search,
     `mdfiles.lua` (Markdown-file predicate for the dashboard).
-  - `lua/vdots/readaloud/` — the read-aloud plugin: `parse` (Markdown→speech blocks, pure/tested),
-    `pace` (rate + `[[slnc]]` beats), `preview` (rendered vsplit + cursor sync),
-    `player` (say state machine + publish), `pronounce` (tech-term map),
-    `mediakeys` (Swift Now-Playing helper), `config`, `health`.
+  - `lua/vdots/readaloud/` — the read-aloud plugin: `parse` (Markdown→speech blocks +
+    `parse.document` frontmatter-aware entry), `frontmatter` (enhanced-doc YAML contract),
+    `pace` (rate + `[[slnc]]` beats + cues/chapters/VTT), `preview` (rendered vsplit +
+    cursor sync), `player` (say state machine + publish), `pronounce` (tech map + doc
+    lexicon), `mediakeys` (Swift Now-Playing helper), `config`, `health`.
   - `lua/plugins.lua` for all plugin `setup()` calls and their keymaps.
   - `lua/ui/` for colors and diagnostics display.
   - `lua/zdots/` for the zdots shell-platform bridge.
 - `after/`: filetype and late-loading overrides (`after/ftplugin/markdown.lua` = `;r` read-aloud keys).
 - `bin/`: the `vdots` control-plane shim (`vdots <noun>` → `vdots-<noun>`) plus
-  `vdots-{ctl,doctor,update,read,listen}`, `vdots-listen-catalog.py`,
+  `vdots-{ctl,doctor,update,read,listen}`, `vdots-read.lua` (headless bridge:
+  script/transcript/vtt/cues/chapters/meta), `vdots-listen-catalog.py`,
   `vdots-readability`, `vdots-mediakey-helper.swift`, `vdots-readaloud-swiftbar`.
   Each is standalone; the shim just dispatches.
 - `test/`: regression suite (`test/regression.lua`), Busted specs (`test/unit/`), runner (`test/run.sh`).
