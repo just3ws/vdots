@@ -263,8 +263,9 @@ Each publish writes a dated, slugged folder: >
           index.md          plain-text catalog
           2026-09-02-a-clean-api/
             a-clean-api.article.html   the page: player + readability + transcript
-            a-clean-api.m4a            the read-through — chaptered, tagged, with
-                                      the transcript embedded as lyrics
+            a-clean-api.mp3            the read-through — the format Google Drive
+                                      for Android plays inline; transcript as lyrics
+            a-clean-api.m4a            same audio, +faststart +chapters (Apple/VLC)
             a-clean-api.md             clean readable document
             a-clean-api.report.md      markdown report (Drive-previewable)
             a-clean-api.transcript.txt verbatim prose (plain text)
@@ -277,10 +278,11 @@ Each publish writes a dated, slugged folder: >
 <
 The transcript is verbatim document prose. `say` reports no timings, so each
 block's time is modelled from its share of the spoken words plus the exact
-inserted pauses. The `.m4a` is a self-sufficient audiobook — chapters, title /
-artist tags, and the transcript as an embedded lyrics track (Apple Music /
-VLC show it while playing) — so a phone plays it fully from Drive with no
-companion files.
+inserted pauses. Two audio files: the **`.mp3`** is the one to open from
+Google Drive on Android (Drive's app previews mp3 inline but balks at `.m4a`);
+the `.m4a` carries the same audio with `+faststart` and embedded chapters for
+Apple Music / VLC. Both tag title / artist and embed the transcript as a
+lyrics track, so either plays fully from a phone with no companion files.
 
 `<base>.md` (the reading doc) and `<base>.spoken.md` (the speech-ready one with
 the frontmatter block) are treated as a pair: publishing either operates on the

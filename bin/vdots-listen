@@ -5,7 +5,9 @@
 #     <YYYY-MM-DD-title-slug>/
 #         <slug>.article.html    page: player + readability + synced transcript
 #         <slug>.md              clean readable document (frontmatter -> header)
-#         <slug>.m4a             the pre-recorded read-through
+#         <slug>.mp3             the read-through — plays from Google Drive on
+#                                Android; transcript embedded as lyrics
+#         <slug>.m4a             same audio, +faststart, +chapters (Apple/VLC)
 #         <slug>.transcript.txt  verbatim prose (plain text)
 #         <slug>.vtt             WebVTT captions (VLC / other players)
 #         <slug>.cues.json       timed transcript (drives the page)
@@ -248,16 +250,17 @@ cmd_publish() {
     } > "$ffmeta"
     local ffq=(-loglevel error)
     [[ "$VERBOSE" == 1 ]] && ffq=(-loglevel warning -stats)
+    local lyr; lyr="$(cat "$dir/$slug.transcript.txt")"
     ffmpeg_enrich() {
       ffmpeg -y "${ffq[@]}" -i "$dir/$slug.m4a" -i "$ffmeta" \
-        -map 0:a -map_metadata 1 -map_chapters 1 -c:a copy \
+        -map 0:a -map_metadata 1 -map_chapters 1 -c:a copy -movflags +faststart \
         -metadata title="$title" \
         -metadata artist="vdots read-aloud" \
         -metadata album="vdots · listen" \
         -metadata album_artist="vdots read-aloud" \
         -metadata date="$date" \
         -metadata comment="${src_url:-$file}" \
-        -metadata lyrics="$(cat "$dir/$slug.transcript.txt")" \
+        -metadata lyrics="$lyr" \
         "$dir/.tagged.m4a"
     }
     if { [[ "$VERBOSE" == 1 ]] && ffmpeg_enrich; } || { [[ "$VERBOSE" != 1 ]] && ffmpeg_enrich 2>/dev/null; }; then
@@ -266,7 +269,22 @@ cmd_publish() {
       rm -f "$dir/.tagged.m4a"
     fi
     rm -f "$ffmeta"
+
+    # MP3 sibling — the reliable "play from Google Drive on Android" format
+    # (Drive's app previews mp3 inline; .m4a it often refuses). Mono VBR ~96k.
+    step "encoding the mp3 sibling (Drive/Android-friendly)"
+    ffmpeg -y "${ffq[@]}" -i "$dir/$slug.m4a" \
+      -c:a libmp3lame -q:a 5 -ac 1 -id3v2_version 3 \
+      -metadata title="$title" \
+      -metadata artist="vdots read-aloud" \
+      -metadata album="vdots · listen" \
+      -metadata date="$date" \
+      -metadata comment="${src_url:-$file}" \
+      -metadata lyrics="$lyr" \
+      "$dir/$slug.mp3" 2>/dev/null || rm -f "$dir/$slug.mp3"
   fi
+  local audio_primary="$slug.m4a"
+  [[ -s "$dir/$slug.mp3" ]] && audio_primary="$slug.mp3"
 
   # spoken_minutes sanity — report, never pad or rush
   local dur_min; dur_min="$(awk -v d="$dur" 'BEGIN{printf "%.1f", d/60}')"
@@ -291,7 +309,8 @@ generated_at=${gen_at}
 source=$file
 source_url=${src_url:-}
 words=$words
-audio=$slug.m4a
+audio=$audio_primary
+audio_rich=$slug.m4a
 doc=$slug.md
 transcript=$slug.transcript.txt
 cues=$slug.cues.json
@@ -352,6 +371,6 @@ case "${1:-}" in
     (( found )) || echo "(no sessions yet)"
     ;;
   path)    echo "$LISTEN_DIR" ;;
-  -h|--help|"") sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help|"") sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//' ;;
   *) die "unknown command: $1 (try: publish, rebuild, open, ls, path)" ;;
 esac

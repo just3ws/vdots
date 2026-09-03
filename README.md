@@ -292,9 +292,10 @@ Headless: `vdots read [--export|--dry-run] [--voice V] [--rate N] FILE.md`.
 ### Listen library
 
 `;rP` / `:VdotsReadPublish` — or `vdots publish FILE.md` from the shell — files
-the document into `~/ai/outbox/listen/`: the read-through (`.m4a` — chaptered,
-tagged, with the transcript embedded as a lyrics track so a phone plays it
-fully from Drive), a clean readable copy, a **readability report**
+the document into `~/ai/outbox/listen/`: the read-through as **`.mp3`** (the
+format Google Drive's Android app actually plays inline, transcript embedded
+as a lyrics track) plus a `.m4a` with chapters + faststart for Apple Music /
+VLC, a clean readable copy, a **readability report**
 (`.report.md`, Drive-previewable), and a **verbatim per-sentence transcript**
 with timed cues + `.vtt` captions. The self-contained article page plays the
 audio while the transcript highlights and auto-scrolls — click a paragraph to
