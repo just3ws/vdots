@@ -136,7 +136,12 @@ ARTICLE_JS = """
     });
   });
   if(!t) return;
-  var nodes=[].slice.call(t.children), cur=-1;
+  // flatten one level of ul/ol so list-item cues are tracked too
+  var nodes=[], cur=-1;
+  [].forEach.call(t.children, function(c){
+    if(c.tagName==='UL'||c.tagName==='OL'){ [].forEach.call(c.children, function(li){ nodes.push(li); }); }
+    else nodes.push(c);
+  });
   nodes.forEach(function(n,i){ n.addEventListener('click',function(){
     var s=parseFloat(n.dataset.start); if(!isNaN(s)){ a.currentTime=s; a.play(); }
   });});

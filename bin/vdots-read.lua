@@ -125,7 +125,7 @@ elseif mode == "transcript" then
     if enhanced and b.kind ~= "heading" then
       for chunk in b.text:gmatch "[^.!?]+[.!?]*" do
         chunk = vim.trim(chunk)
-        if chunk ~= "" then
+        if chunk:match "%w" then -- skip punctuation-only fragments
           parts[#parts + 1] = (chunk:gsub("%s+", " "))
         end
       end

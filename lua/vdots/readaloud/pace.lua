@@ -170,7 +170,7 @@ local function sentences(str)
   local out = {}
   for chunk in tostring(str):gmatch "[^.!?]+[.!?]*" do
     chunk = vim.trim(chunk)
-    if chunk ~= "" then
+    if chunk:match "%w" then -- skip stray punctuation-only fragments ( ")" etc. )
       out[#out + 1] = chunk
     end
   end
