@@ -4,12 +4,12 @@
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
-       In flight: branch `feat/vdots-shim-readaloud` (25 commits, NOT merged,
-       NOT pushed — **main == merge-base, fast-forward is clean**). The vdots
-       control-plane shim + read-aloud plugin + `vdots-listen` publish pipeline
-       + enhanced-doc frontmatter contract + dashboard Recent-Markdown are all
-       built, tested (`./test/run.sh` + `./test/lint.sh` green), and working
-       end to end. gitleaks clean; no hardcoded paths in bin/lua.
+       MERGED + PUSHED 2026-09-03 (`feat/vdots-shim-readaloud`, 27 commits, via
+       `--no-ff` merge). The vdots control-plane shim + read-aloud plugin +
+       `vdots-listen` publish pipeline + enhanced-doc frontmatter contract +
+       Mason + dashboard Recent-Markdown are all on `main`, tested
+       (`./test/run.sh` + `./test/lint.sh` green), documented (README, wiki,
+       man, `:help`, skill), and working end to end. Nothing in flight.
 
        Latest session (2026-09-03):
        - audio: `.mp3` is primary (Drive/Android plays it inline; transcript
@@ -33,8 +33,8 @@
          read-aloud.md, README + wiki + :help synced. .zshrc.local (zdots,
          gitignored) wires PATH + MANPATH + the completion.
 
-       Blocked on human: merge + push. Prep is done — `git merge --ff-only`
-       (or --no-ff to keep the branch shape) then push both repos.
+       Blocked on human: nothing. (zdots `main` also pushed: Z-338 fix + 2×
+       Brewfile + a `.claude/settings.json` permission tidy.)
 
        NEXT (recommended, deferred — its own focused pass): rewrite
        lua/vdots/readaloud/parse.lua from regex to vim.treesitter (markdown +
