@@ -1,0 +1,95 @@
+.Dd September 3, 2026
+.Dt VDOTS-PUBLISH 1
+.Os
+.Sh NAME
+.Nm vdots-publish
+.Nd turn a Markdown file into a listen-along session
+.Sh SYNOPSIS
+.Nm
+.Op Fl -voice Ar V
+.Op Fl -tone Ar T
+.Op Fl -pace Ar P
+.Op Fl -force
+.Op Fl -open
+.Op Fl v | Fl -verbose
+.Ar FILE.md
+.Nm
+.Fl -info Ar FILE.md
+.Sh DESCRIPTION
+.Nm
+is the friendly wrapper around
+.Xr vdots-listen 1 Ic publish :
+it prints a pre-flight parse report, then runs the full pipeline
+.Pf ( frontmatter No \(-> chaptered audio \(-> per-sentence transcript \(-> WebVTT
+captions \(-> readability report \(-> article page \(-> catalog )
+into
+.Ev $VDOTS_LISTEN_DIR
+.Pq default Pa ~/ai/outbox/listen ,
+which Google Drive desktop syncs to every device.
+It is the same thing
+.Ic :VdotsReadPublish
+does from Neovim.
+.Pp
+A
+.Pa <base>.spoken.md
+sibling (a speech-ready doc with a read-aloud frontmatter block) is published
+in place of
+.Pa <base>.md ;
+.Fl -raw
+opts out. Re-publishing the same source is an idempotent no-op unless
+.Fl -force
+(or a newer
+.Ic generated_at
+in the frontmatter).
+.Sh OPTIONS
+.Bl -tag -width "-v, --verbose"
+.It Fl -voice Ar V
+macOS voice name. Default: the best installed voice for the tone.
+.It Fl -tone Ar warm Ns | Ns Ar clarity
+Voice character when auto-picking. Default
+.Ar warm .
+.It Fl -pace Ar follow Ns | Ns Ar relaxed Ns | Ns Ar natural
+Delivery preset (rate + time-stretch + pause lengths). Default
+.Ar follow .
+.It Fl -force
+Re-record over a not-newer session
+.Pq Ic :VdotsReadPublish! .
+.It Fl -open
+Open the catalog
+.Pq Pa index.html
+when done.
+.It Fl -raw
+Publish the named file as-is, ignoring a
+.Pa .spoken.md
+sibling.
+.It Fl v , Fl -verbose
+Narrate every pipeline step to stderr and un-mute
+.Xr say 1
+and
+.Xr ffmpeg 1 .
+.It Fl -info , Fl -dry-run
+Pre-flight parse report only \(em no audio, no write.
+.El
+.Sh OUTPUT
+Under
+.Pa $VDOTS_LISTEN_DIR/<YYYY-MM-DD-title-slug>/ ,
+files named for their role:
+.Pa audio.mp3
+(Drive/Android plays it inline; transcript embedded as an id3 lyrics frame),
+.Pa audio.m4a
+(same audio, faststart + chapters, for Apple Music / VLC),
+.Pa document.md , report.md , transcript.txt , captions.vtt , article.html ,
+.Pa meta.json ,
+and
+.Pa assets/
+(cues.json, readability.json, chapters.vtt, spoken.txt).
+The catalog
+.Pa index.md
+is the phone surface; the
+.Pa article.html
+player only runs in a real browser (Drive's preview sandboxes it).
+.Sh SEE ALSO
+.Xr vdots 1 ,
+.Xr vdots-listen 1 ,
+.Xr vdots-read 1 ,
+.Xr vdots-readability 1

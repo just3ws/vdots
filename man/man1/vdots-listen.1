@@ -1,0 +1,111 @@
+.Dd September 3, 2026
+.Dt VDOTS-LISTEN 1
+.Os
+.Sh NAME
+.Nm vdots-listen
+.Nd publish read-aloud sessions to a listenable library
+.Sh SYNOPSIS
+.Nm
+.Ic publish
+.Ar FILE.md
+.Op Fl -voice Ar V
+.Op Fl -tone Ar T
+.Op Fl -pace Ar P
+.Op Fl -rate Ar N
+.Op Fl -force
+.Op Fl -open
+.Op Fl v
+.Nm
+.Ic info Ar FILE.md
+.Nm
+.Brq Ic rebuild | open | ls | path
+.Sh DESCRIPTION
+.Nm
+builds and maintains the listen library under
+.Ev $VDOTS_LISTEN_DIR
+.Pq default Pa ~/ai/outbox/listen ,
+which Google Drive desktop syncs everywhere. Prefer
+.Xr vdots-publish 1 ,
+which adds a pre-flight report.
+.Sh COMMANDS
+.Bl -tag -width "rebuild"
+.It Ic publish Ar FILE.md Op Ar opts
+Render one session and regenerate the catalog. A
+.Pa <base>.spoken.md
+sibling is used in place of
+.Pa <base>.md
+unless
+.Ev VDOTS_RAW Ns = Ns 1 .
+Re-publishing the same, not-newer source is an idempotent no-op;
+.Fl -force
+overrides.
+.It Ic info Ar FILE.md
+Pre-flight parse report \(em mode, title, chapters, estimate, frontmatter
+drift \(em no audio, no write.
+.It Ic rebuild
+Regenerate
+.Pa index.html , index.md ,
+and every
+.Pa article.html
+from the on-disk
+.Pa meta.json Ns s .
+.It Ic open
+Open
+.Pa $VDOTS_LISTEN_DIR/index.html .
+.It Ic ls
+List published session directories.
+.It Ic path
+Print
+.Ev $VDOTS_LISTEN_DIR .
+.El
+.Sh SESSION LAYOUT
+.Bd -literal -offset indent
+<YYYY-MM-DD-title-slug>/
+  audio.mp3        read-through; transcript embedded as an id3 lyrics frame
+  audio.m4a        same audio, +faststart +chapters (Apple Music / VLC)
+  document.md      clean readable copy of the source
+  report.md        readability + chapters + full transcript (Drive-previewable)
+  transcript.txt   verbatim prose
+  captions.vtt     WebVTT captions
+  article.html     browser page: player + synced, auto-scrolling transcript
+  meta.json        title, date, duration, voice, pace, chapters, metrics
+  assets/          cues.json, readability.json, chapters.vtt, spoken.txt
+.Ed
+.Pp
+The catalog
+.Pa index.md
+is the phone surface: Google Drive renders it and the links play
+.Pa audio.mp3 .
+The
+.Pa article.html
+player and its synced highlight only run in a real browser \(em Drive's HTML
+preview sandboxes JavaScript and media.
+.Sh AUDIO
+.Xr say 1
+renders at the preset's true rate, then the whole file is time-stretched
+.Pf ( Xr rubberband 1 No R3 engine, else Xr ffmpeg 1 Ic atempo )
+for a measured pace.
+.Xr ffmpeg 1
+embeds chapters (from the frontmatter
+.Ic sections )
+and the transcript-as-lyrics, and adds
+.Ic +faststart
+to the m4a. The mp3 is transcoded with clean ID3 tags only.
+.Sh ENVIRONMENT
+.Bl -tag -width VDOTS_LISTEN_DIR
+.It Ev VDOTS_LISTEN_DIR
+Library root. Default
+.Pa ~/ai/outbox/listen .
+.It Ev VDOTS_RAW
+.Ql 1
+publishes the named file, not a
+.Pa .spoken.md
+sibling.
+.El
+.Sh SEE ALSO
+.Xr vdots 1 ,
+.Xr vdots-publish 1 ,
+.Xr vdots-read 1 ,
+.Xr vdots-readability 1 ,
+.Xr ffmpeg 1 ,
+.Xr rubberband 1

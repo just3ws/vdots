@@ -1,0 +1,37 @@
+.Dd September 3, 2026
+.Dt VDOTS-CTL 1
+.Os
+.Sh NAME
+.Nm vdots-ctl
+.Nd runtime health check for the live Neovim config
+.Sh SYNOPSIS
+.Nm
+.Ic check
+.Op Fl -json
+.Nm
+.Ic update
+.Op Ar opts
+.Sh DESCRIPTION
+.Nm Ic check
+runs
+.Ic nvim --headless +checkhealth ,
+writes the full report to a temp file, and summarises the
+.Ic ERROR
+and
+.Ic WARNING
+counts.
+.Fl -json
+emits
+.Ic { status , warnings , errors , raw_file } .
+.Pp
+.Nm Ic update
+forwards to
+.Xr vdots-update 1 .
+.Pp
+Contrast
+.Xr vdots-doctor 1 ,
+the static check of the install and read-aloud helpers.
+.Sh SEE ALSO
+.Xr vdots 1 ,
+.Xr vdots-doctor 1 ,
+.Xr vdots-update 1

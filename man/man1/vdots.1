@@ -1,0 +1,101 @@
+.Dd September 3, 2026
+.Dt VDOTS 1
+.Os
+.Sh NAME
+.Nm vdots
+.Nd Neovim-config control plane (dispatcher)
+.Sh SYNOPSIS
+.Nm
+.Ar noun
+.Op Ar args ...
+.Sh DESCRIPTION
+.Nm
+is a thin dispatcher for the vdots Neovim configuration, mirroring the
+platform convention
+.Pf ( Ic "zdots <noun>" , Ic "phx {...}" , Ic "adots {sync|status|push}" ) .
+Every noun resolves to a
+.Pa bin/vdots-<noun>
+script or a git verb on
+.Pa ~/.config/nvim .
+With no noun,
+.Nm
+runs
+.Ic doctor .
+.Sh NOUNS
+.Bl -tag -width "publish [opts] FILE"
+.It Ic doctor Op Fl -json Op Fl -fix
+Static health check \(em the "brew doctor" for vdots: config validity, the
+read-aloud media-key helper, SwiftBar shim, listen library, Drive sync.
+See
+.Xr vdots-doctor 1 .
+.It Ic ctl Brq check Ns | Ns update Op Ar opts
+Runtime probe of the live Neovim config via
+.Ic :checkhealth .
+See
+.Xr vdots-ctl 1 .
+.It Ic update Op Ar opts
+Update plugins via
+.Ic vim.pack ,
+prune unmanaged packages, run the regression suite, show the diff.
+See
+.Xr vdots-update 1 .
+.It Ic read Op Ar opts Ar FILE
+Read a Markdown file aloud with the macOS
+.Xr say 1
+engine (headless; the in-editor experience is the
+.Ic ;r
+keymaps). See
+.Xr vdots-read 1 .
+.It Ic publish Op Ar opts Ar FILE
+Turn a Markdown file into a full listen-along session (chaptered audio,
+transcript, captions, readability report, article page) under
+.Ev $VDOTS_LISTEN_DIR ,
+which Google Drive desktop syncs to every device. See
+.Xr vdots-publish 1 .
+.It Ic listen Ar cmd
+Browse the listen library:
+.Ic open , rebuild , ls , path , info Ar FILE .
+See
+.Xr vdots-listen 1 .
+.It Ic sync
+.Ic git pull --ff-only
+in
+.Pa ~/.config/nvim .
+.It Ic status
+.Ic git status --short .
+.It Ic push Op Ar opts
+.Ic git push .
+.El
+.Sh ENVIRONMENT
+.Bl -tag -width VDOTS_LISTEN_DIR
+.It Ev VDOTS_LISTEN_DIR
+Listen-library root. Default
+.Pa ~/ai/outbox/listen .
+.It Ev VDOTS_RAW
+Set to
+.Ql 1
+to publish the file named as-is instead of resolving a
+.Pa <base>.spoken.md
+sibling.
+.El
+.Sh FILES
+.Bl -tag -width "~/.config/nvim/doc/vdots-readaloud.txt"
+.It Pa ~/.config/nvim/bin/
+The dispatched scripts. On
+.Ev PATH
+via the zdots shell (interim; zdots Z-337 tracks native pickup).
+.It Pa ~/.config/nvim/doc/vdots-readaloud.txt
+Full read-aloud plugin help.
+.Ic :help vdots-readaloud .
+.El
+.Sh SEE ALSO
+.Xr vdots-read 1 ,
+.Xr vdots-publish 1 ,
+.Xr vdots-listen 1 ,
+.Xr vdots-doctor 1 ,
+.Xr vdots-ctl 1 ,
+.Xr vdots-update 1 ,
+.Xr say 1
+.Pp
+.Ic :help vdots-readaloud
+inside Neovim.

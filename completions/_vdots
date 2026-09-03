@@ -1,0 +1,129 @@
+#compdef vdots vdots-read vdots-publish vdots-listen vdots-doctor vdots-ctl vdots-update
+
+# vdots — control-plane shim + read-aloud tooling completion.
+# Loaded via ~/.config/zsh/.zshrc.local (interim; zdots Z-337).
+
+_vdots_voices() {
+  local -a v
+  v=(${(f)"$(say -v '?' 2>/dev/null | sed -E 's/ +[a-z]{2}_[A-Z]{2}.*//' | sort -u)"})
+  _describe -t voices 'voice' v
+}
+
+_vdots_md_files() { _files -g '*.md' }
+
+_vdots-read() {
+  _arguments -s \
+    '--voice[macOS voice name]:voice:_vdots_voices' \
+    '(--clarity)--tone[voice character]:tone:(warm clarity)' \
+    '--clarity[shorthand for --tone clarity]' \
+    '--pace[delivery preset]:pace:(follow relaxed natural)' \
+    '--rate[words per minute override]:wpm:' \
+    '--lang[BCP-47 language tag]:lang:(en-US en-GB)' \
+    '(- *)--export[render <FILE>.m4a and open it]' \
+    '(- *)--publish[add to the listen library]' \
+    '(- *)--dry-run[print the spoken script, do not speak]' \
+    '(- *)--sample[speak a short sample]' \
+    '(- *)--print-voice[print the auto-picked voice]' \
+    '(- *)--print-pace[print the resolved pace preset]' \
+    '(- *)--info[pre-flight parse report]' \
+    '(- *)--transcript[emit the verbatim transcript]' \
+    '(-h --help)'{-h,--help}'[show help]' \
+    '*:markdown file:_vdots_md_files'
+}
+
+_vdots-publish() {
+  _arguments -s \
+    '--voice[macOS voice name]:voice:_vdots_voices' \
+    '--tone[voice character]:tone:(warm clarity)' \
+    '--pace[delivery preset]:pace:(follow relaxed natural)' \
+    '--force[re-record over a not-newer session]' \
+    '--open[open the catalog when done]' \
+    '--raw[publish the named file, ignore a .spoken.md sibling]' \
+    '(-v --verbose)'{-v,--verbose}'[narrate every pipeline step]' \
+    '(- *)--info[pre-flight report only]' \
+    '(- *)--dry-run[pre-flight report only]' \
+    '(-h --help)'{-h,--help}'[show help]' \
+    '*:markdown file:_vdots_md_files'
+}
+
+_vdots-listen() {
+  local -a cmds
+  cmds=(
+    'publish:render one session and rebuild the catalog'
+    'info:pre-flight parse report for a file'
+    'rebuild:regenerate index + every article page'
+    'open:open the catalog (index.html)'
+    'ls:list published sessions'
+    'path:print the library directory'
+  )
+  if (( CURRENT == 2 )); then
+    _describe -t commands 'vdots-listen command' cmds
+  else
+    case $words[2] in
+      publish) shift words; (( CURRENT-- )); _vdots-publish ;;
+      info)    _vdots_md_files ;;
+    esac
+  fi
+}
+
+_vdots-doctor() {
+  _arguments '--json[emit a JSON object]' '--fix[build helper + SwiftBar shim + listen dir]' \
+    '(-h --help)'{-h,--help}'[show help]'
+}
+
+_vdots-ctl() {
+  if (( CURRENT == 2 )); then
+    _describe -t commands 'vdots-ctl command' \
+      'check:run nvim --headless +checkhealth' 'update:forward to vdots-update'
+  elif [[ $words[2] == check ]]; then
+    _arguments '--json[machine-readable summary]'
+  fi
+}
+
+_vdots-update() {
+  _arguments \
+    '(-c --commit)'{-c,--commit}'[auto-commit lockfile on green tests]' \
+    '(-i --interactive)'{-i,--interactive}'[open a changelog-review buffer]' \
+    '--clean-only[only prune inactive plugins]' \
+    '--no-test[skip the regression suite]' \
+    '(-h --help)'{-h,--help}'[show help]'
+}
+
+_vdots() {
+  local -a nouns
+  nouns=(
+    'doctor:static health check (brew doctor for vdots)'
+    'ctl:runtime probe of the live Neovim config'
+    'update:update plugins (vim.pack), prune, test'
+    'read:read a Markdown file aloud (macOS say)'
+    'publish:full listen-along session -> the listen library'
+    'listen:browse the listen library'
+    'sync:git pull --ff-only'
+    'status:git status --short'
+    'push:git push'
+  )
+  if (( CURRENT == 2 )); then
+    _describe -t nouns 'vdots noun' nouns
+    return
+  fi
+  local noun=$words[2]
+  shift words; (( CURRENT-- ))
+  case $noun in
+    doctor)  _vdots-doctor ;;
+    ctl)     _vdots-ctl ;;
+    update)  _vdots-update ;;
+    read)    _vdots-read ;;
+    publish) _vdots-publish ;;
+    listen)  _vdots-listen ;;
+  esac
+}
+
+case $service in
+  vdots)         _vdots "$@" ;;
+  vdots-read)    _vdots-read "$@" ;;
+  vdots-publish) _vdots-publish "$@" ;;
+  vdots-listen)  _vdots-listen "$@" ;;
+  vdots-doctor)  _vdots-doctor "$@" ;;
+  vdots-ctl)     _vdots-ctl "$@" ;;
+  vdots-update)  _vdots-update "$@" ;;
+esac

@@ -36,7 +36,29 @@ def band(score):
     return "very confusing"
 
 
+HELP = """vdots-readability — readability report for prose on stdin, as JSON.
+
+Standard formulas (Flesch Reading Ease, Flesch-Kincaid grade) with a vowel-group
+syllable heuristic. Python stdlib only, no dependencies.
+
+Usage:
+  <cmd> | vdots-readability
+  vdots-readability < transcript.txt
+
+Output keys: words, sentences, syllables, polysyllabic_words,
+avg_words_per_sentence, avg_syllables_per_word, flesch_reading_ease,
+reading_ease_band, flesch_kincaid_grade, reading_time_min (@200 wpm silent),
+listening_time_min (@155 wpm follow pace), longest_sentences[].
+
+Used by `vdots-listen publish` to build the readability card on the article
+page and the Readability section of report.md.
+"""
+
+
 def main():
+    if any(a in ("-h", "--help") for a in sys.argv[1:]):
+        sys.stdout.write(HELP)
+        return
     text = sys.stdin.read()
     sentences = [s for s in re.split(r"(?<=[.!?])\s+|\n{2,}", text.strip()) if s.strip()]
     words = re.findall(r"[A-Za-z][A-Za-z'-]*", text)

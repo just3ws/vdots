@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 # bin/vdots-ctl — Runtime health check for vdots.
-# Deep probe of the live Neovim configuration via :checkhealth.
+# Deep probe of the LIVE Neovim configuration via :checkhealth (contrast
+# vdots-doctor, the static "brew doctor" for the install / read-aloud helpers).
 #
 # Usage:
-#   vdots-ctl check [--json]     Run the deep runtime healthcheck
-#   vdots-ctl update [options]   Forward to vdots-update
+#   vdots-ctl check [--json]     run `nvim --headless +checkhealth`, summarise
+#   vdots-ctl update [options]   forward to vdots-update
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -55,9 +56,11 @@ check() {
 case "${1:-}" in
     check)  check "${@:2}" ;;
     update) exec "$SCRIPT_DIR/vdots-update" "${@:2}" ;;
+    -h|--help|help|"")
+        sed -n '3,10p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+        ;;
     *)
-        echo "Usage: vdots-ctl {check|update} [options]"
-        echo "  check [--json]     Run deep runtime healthcheck"
-        echo "  update [options]   Update plugins, prune unmanaged, and test"
+        echo "vdots-ctl: unknown command: $1 (try: check, update)" >&2
+        exit 1
         ;;
 esac
