@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""vdots-readalong — build a scrolling read-along video from a cue list + audio.
+
+Renders one frame per cue (a scrolling window of the transcript with the active
+sentence highlighted), then stitches them to the narration audio as an MP4 that
+plays in Google Drive's native video player — web, iOS, Android — where the
+JavaScript-synced article.html cannot.
+
+Usage:
+  vdots-readalong --cues cues.json --audio audio.m4a --out readalong.mp4
+                  [--title T] [--chapters chapters.json] [--duration SECS]
+
+Tools: rsvg-convert (librsvg) + ffmpeg. Python standard library only.
+"""
+import argparse
+import html
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+
+W, H = 1280, 720
+BG = "#16161a"
+FG = "#e8e8e8"
+DIM = "#8a8f99"
+HL_BG = "#39331c"
+HL_EDGE = "#7a6a2f"
+ACCENT = "#7fb0dd"
+FONT = "'Helvetica Neue', Helvetica, Arial, sans-serif"
+FS = 34            # active line
+LH = 52           # display-line height
+TOP = 96          # header band
+BOT = 92          # footer band
+WRAP = 62         # chars per display line (Helvetica ~0.52em)
+
+
+def wrap(text, n=WRAP):
+    words, lines, cur = text.split(), [], ""
+    for w in words:
+        if len(cur) + len(w) + 1 <= n:
+            cur = (cur + " " + w).strip()
+        else:
+            if cur:
+                lines.append(cur)
+            cur = w
+    if cur:
+        lines.append(cur)
+    return lines or [""]
+
+
+def esc(s):
+    return html.escape(s, quote=False)
+
+
+def build_lines(cues):
+    """Flatten cues -> display lines. Returns (lines, sent_span) where
+    sent_span[i] = (first_line_idx, last_line_idx) for cue i."""
+    lines, spans = [], []
+    for c in cues:
+        start = len(lines)
+        head = c.get("kind") == "heading"
+        for wl in wrap(c.get("text", ""), 46 if head else WRAP):
+            lines.append({"t": wl, "head": head})
+        spans.append((start, len(lines) - 1))
+    return lines, spans
+
+
+def frame_svg(lines, spans, active, chapter, frac):
+    a0, a1 = spans[active]
+    center = (a0 + a1) / 2.0
+    view_center_y = TOP + (H - TOP - BOT) / 2.0
+    scroll = center * LH - view_center_y + LH / 2.0
+
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
+        f'font-family="{FONT}">',
+        f'<rect width="{W}" height="{H}" fill="{BG}"/>',
+    ]
+    # highlight band behind the active sentence
+    hy = TOP + (a0 * LH - scroll) - LH * 0.88
+    hh = (a1 - a0 + 1) * LH + LH * 0.5
+    parts.append(
+        f'<rect x="70" y="{hy:.1f}" width="{W-140}" height="{hh:.1f}" rx="10" '
+        f'fill="{HL_BG}" stroke="{HL_EDGE}" stroke-width="1.5"/>'
+    )
+    # transcript lines
+    for i, ln in enumerate(lines):
+        y = TOP + (i * LH - scroll) + LH * 0.35
+        if y < TOP - LH or y > H - BOT + LH:
+            continue
+        active_line = a0 <= i <= a1
+        if not active_line and (y - LH * 0.8) < (hy + hh) and (y + LH * 0.2) > hy:
+            continue  # would collide with the highlight band
+        d = abs(i - center)
+        if active_line:
+            fill, op, fs = FG, "1", FS
+        else:
+            fill, fs = (ACCENT if ln["head"] else DIM), (28 if ln["head"] else 30)
+            op = f"{max(0.18, 0.7 - 0.11 * d):.2f}"
+        weight = ' font-weight="600"' if ln["head"] else ""
+        parts.append(
+            f'<text x="{W/2:.0f}" y="{y:.1f}" font-size="{fs}" fill="{fill}" '
+            f'opacity="{op}" text-anchor="middle"{weight}>{esc(ln["t"])}</text>'
+        )
+    # top fade + header
+    parts.append(
+        f'<rect x="0" y="0" width="{W}" height="{TOP}" fill="{BG}"/>'
+        f'<rect x="0" y="{TOP}" width="{W}" height="40" fill="{BG}" opacity="0.85"/>'
+    )
+    if chapter:
+        parts.append(
+            f'<text x="{W/2:.0f}" y="56" font-size="24" fill="{ACCENT}" '
+            f'text-anchor="middle" font-weight="600" letter-spacing="1">'
+            f'{esc(chapter.upper())}</text>'
+        )
+    # bottom fade + progress
+    parts.append(
+        f'<rect x="0" y="{H-BOT}" width="{W}" height="{BOT}" fill="{BG}"/>'
+        f'<rect x="0" y="{H-BOT-40}" width="{W}" height="40" fill="{BG}" opacity="0.85"/>'
+        f'<rect x="70" y="{H-52}" width="{W-140}" height="4" rx="2" fill="#2b2b31"/>'
+        f'<rect x="70" y="{H-52}" width="{(W-140)*frac:.0f}" height="4" rx="2" fill="{ACCENT}"/>'
+    )
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def chapter_at(chapters, t):
+    name = None
+    for ch in chapters or []:
+        if t >= ch.get("start", 0):
+            name = ch.get("title")
+    return name
+
+
+def main():
+    ap = argparse.ArgumentParser(add_help=True)
+    ap.add_argument("--cues", required=True)
+    ap.add_argument("--audio", required=True)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--title", default="")
+    ap.add_argument("--chapters", default="")
+    ap.add_argument("--duration", type=float, default=0.0)
+    a = ap.parse_args()
+
+    for tool in ("rsvg-convert", "ffmpeg"):
+        if not shutil.which(tool):
+            print(f"vdots-readalong: {tool} not found", file=sys.stderr)
+            return 2
+
+    cues = json.load(open(a.cues))
+    cues = [c for c in cues if c.get("text", "").strip()]
+    if not cues:
+        print("vdots-readalong: no cues", file=sys.stderr)
+        return 1
+    chapters = json.load(open(a.chapters)) if a.chapters and os.path.exists(a.chapters) else []
+    audio_dur = a.duration
+    if not audio_dur:
+        try:
+            audio_dur = float(subprocess.run(
+                ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                 "-of", "csv=p=0", a.audio], capture_output=True, text=True).stdout.strip())
+        except Exception:
+            audio_dur = 0.0
+    total = audio_dur or (cues[-1].get("stop") or 0) or 1
+    lines, spans = build_lines(cues)
+
+    tmp = tempfile.mkdtemp(prefix="vdots-readalong.")
+    try:
+        listing = os.path.join(tmp, "frames.txt")
+        with open(listing, "w") as fl:
+            for i, c in enumerate(cues):
+                start = c.get("start", 0)
+                # hold each frame until the NEXT cue starts, so the gaps between
+                # cues are covered and the video stays aligned with the audio
+                nxt = cues[i + 1].get("start", start) if i + 1 < len(cues) else total + 1.0
+                dur = max(nxt - start, 0.2)
+                svg = frame_svg(lines, spans, i,
+                                chapter_at(chapters, start) or a.title,
+                                min(start / total, 1.0))
+                png = os.path.join(tmp, f"f{i:04d}.png")
+                subprocess.run(["rsvg-convert", "-w", str(W), "-h", str(H),
+                                "-o", png], input=svg.encode(), check=True)
+                fl.write(f"file '{png}'\nduration {dur:.3f}\n")
+            # repeat the final frame WITH a duration — the concat demuxer ignores
+            # the duration on a trailing file that has no successor
+            fl.write(f"file '{png}'\nduration 1.0\n")
+
+        cmd = [
+            "ffmpeg", "-y", "-loglevel", "error",
+            "-f", "concat", "-safe", "0", "-i", listing,
+            "-i", a.audio,
+            "-map", "0:v:0", "-map", "1:a:0", "-dn", "-map_chapters", "-1",
+            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "30",
+            "-tune", "stillimage", "-preset", "veryfast",
+            "-c:a", "aac", "-b:a", "96k",
+            "-movflags", "+faststart", "-shortest", a.out,
+        ]
+        subprocess.run(cmd, check=True)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+    return 0 if os.path.exists(a.out) and os.path.getsize(a.out) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

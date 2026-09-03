@@ -7,6 +7,9 @@
 #         audio.mp3              read-through — plays from Google Drive on
 #                                Android; transcript embedded as lyrics
 #         audio.m4a              same audio, +faststart, +chapters (Apple/VLC)
+#         readalong.mp4          the transcript scrolling with the narration,
+#                                burned in — plays in Drive's video player
+#         brief.md               self-contained analysis brief (open in Gemini)
 #         document.md            clean readable document (frontmatter -> header)
 #         report.md              readability + chapters + full transcript
 #         transcript.txt         verbatim prose (plain text)
@@ -14,12 +17,12 @@
 #         article.html           local page: player + synced transcript
 #         meta.json              title, date, duration, voice, pace, metrics
 #         assets/                machine files: cues.json, readability.json,
-#                                chapters.vtt, spoken.txt
+#                                chapters.{vtt,json}, spoken.txt
 # then rebuilds index.html + index.md + every article page.
 #
 # ~/ai is already synced to Google Drive (the desktop app). On a phone open
-# index.md — Drive renders it and plays the linked audio.mp3; the embedded
-# player in index.html / article.html only works in a real browser.
+# index.md — Drive renders it; tap the read-along video, or audio.mp3, or the
+# analysis brief. The JS player in index.html / article.html is browser-only.
 #
 # Usage:
 #   vdots-listen publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open] [-v]
@@ -123,7 +126,7 @@ cmd_publish() {
   command -v say >/dev/null || die "\`say\` not found (macOS only)"
 
   # frontmatter (enhanced read-aloud docs carry a metadata block)
-  local fm enhanced fm_title lang spoken_min gen_at src_url
+  local fm enhanced fm_title lang spoken_min gen_at src_url fm_format
   fm="$("$HERE/vdots-read" --meta "$file" 2>/dev/null || echo '{}')"
   if command -v jq >/dev/null; then
     enhanced="$(jq -r '.enhanced // false' <<<"$fm")"
@@ -132,6 +135,7 @@ cmd_publish() {
     spoken_min="$(jq -r '.spoken_minutes // ""' <<<"$fm")"
     gen_at="$(jq -r '.generated_at // ""' <<<"$fm")"
     src_url="$(jq -r '.source // ""' <<<"$fm")"
+    fm_format="$(jq -r '[.format, .kind] | map(select(. != null)) | join(" ")' <<<"$fm")"
   fi
   enhanced="${enhanced:-false}"; lang="${lang:-en-US}"
   step "frontmatter: enhanced=$enhanced lang=$lang expected=${spoken_min:-—}min generated_at=${gen_at:-—}"
@@ -330,6 +334,29 @@ cmd_publish() {
   local audio_primary="audio.m4a"
   [[ -s "$p_mp3" ]] && audio_primary="audio.mp3"
 
+  # read-along video — the transcript scrolls with the narration, burned into
+  # the frames. Plays in Google Drive's native video player (web / iOS /
+  # Android), where the JS-synced article.html cannot.
+  local p_video="$dir/readalong.mp4"
+  printf '%s' "$chapters_json" > "$dir/assets/chapters.json"
+  if command -v rsvg-convert >/dev/null && command -v ffmpeg >/dev/null && command -v python3 >/dev/null; then
+    step "rendering the read-along video (scrolling transcript + narration)"
+    local ra_ok=0
+    if [[ "$VERBOSE" == 1 ]]; then
+      "$HERE/vdots-readalong" --cues "$p_cues" --audio "$p_m4a" --out "$p_video" \
+        --title "$title" --chapters "$dir/assets/chapters.json" && ra_ok=1
+    else
+      "$HERE/vdots-readalong" --cues "$p_cues" --audio "$p_m4a" --out "$p_video" \
+        --title "$title" --chapters "$dir/assets/chapters.json" >/dev/null 2>&1 && ra_ok=1
+    fi
+    if [[ "$ra_ok" == 1 && -s "$p_video" ]]; then
+      step "read-along video: $(human_dur "$dur") → $p_video"
+    else
+      rm -f "$p_video"
+      step "read-along video skipped (renderer failed)"
+    fi
+  fi
+
   # spoken_minutes sanity — report, never pad or rush. The window is wide (40%)
   # because the deliberate human cadence runs longer than an author's plain-read
   # estimate; this only catches an estimate that is grossly wrong.
@@ -363,9 +390,12 @@ cues=assets/cues.json
 vtt=captions.vtt
 readability=assets/readability.json
 report=report.md
-article=article.html" \
+article=article.html
+video=$([[ -s "$p_video" ]] && echo readalong.mp4)
+brief=brief.md" \
     python3 -c 'import os,json
 d=dict(l.split("=",1) for l in os.environ["VDOTS_META"].splitlines())
+d={k:v for k,v in d.items() if v!=""}
 try: d["chapters"]=json.loads(os.environ.get("VDOTS_CHAPTERS","[]"))
 except Exception: d["chapters"]=[]
 open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dumps(d,indent=2))'
@@ -395,6 +425,44 @@ open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dump
   } > "$p_report"
   step "report → $p_report · meta.json"
 
+  # brief.md — a single self-contained file to open in Gemini straight from
+  # Drive: what this is, what's in the folder, how to help, then the full
+  # transcript inline so no other file is needed.
+  local grade band ask
+  grade="$(jq -r '.flesch_kincaid_grade // "?"' "$p_read" 2>/dev/null || echo '?')"
+  band="$(jq -r '.reading_ease_band // ""' "$p_read" 2>/dev/null || echo '')"
+  case "$fm_format" in
+    *interview*) ask=$'- research the company and the role from the source link — recent news, product, engineering culture, how this team fits\n- for each "Likely Question", draft a strong STAR answer in my voice and flag the ones I am weakest on\n- pressure-test the "red flags" / gaps: how real are they, how do I address each head-on\n- turn the "Questions to Ask Them" into 2–3 sharp, specific questions\n- give me a night-before checklist and a 20-minute warm-up' ;;
+    *) ask=$'- summarise the key claims section by section\n- identify gaps, weak arguments, unsupported assertions, or anything one-sided\n- pull out every factual claim I should independently verify, with why\n- research the source/topic for current context I am missing\n- draft follow-up questions and, if useful, turn this into flashcards or an action list' ;;
+  esac
+  {
+    printf '# Analysis brief — %s\n\n' "$title"
+    printf '_Generated %s by vdots-listen. Open this file in Gemini (or drop the\n' "$(date '+%Y-%m-%d')"
+    printf 'whole folder in) and it has everything it needs — the full transcript is\n'
+    printf 'inline below._\n\n'
+    printf '## What this is\n\n'
+    printf 'A read-aloud pack: **%s**. About %s words, ~%s min narration' "$title" "$words" "$dur_min"
+    [[ "$grade" != "?" ]] && printf ', reading level grade %s%s' "$grade" "$([[ -n "$band" ]] && printf ' (%s)' "$band")"
+    printf '.\n'
+    [[ -n "$src_url" ]] && printf '\nSource: %s\n' "$src_url"
+    printf '\n## Files in this folder\n\n'
+    printf -- '- `transcript.txt` — full verbatim text (the content to analyse)\n'
+    printf -- '- `document.md` — the same, formatted · `report.md` — metrics + chapters\n'
+    printf -- '- `audio.mp3` — narration · `readalong.mp4` — scrolling read-along video\n'
+    printf -- '- `captions.vtt` — timed captions · `meta.json` — machine metadata\n'
+    if [[ "$chapters_json" != "[]" && "$chapters_json" != "" ]]; then
+      printf '\n## Chapters\n\n'
+      jq -r '.[] | "- \(((.start/60)|floor)):\((.start%60|floor|tostring|if length<2 then "0"+. else . end))  \(.title)"' <<<"$chapters_json"
+    fi
+    printf '\n## How to help me\n\n'
+    printf 'I have just listened to / read this. Please:\n\n%s\n\n' "$ask"
+    printf 'Ask which of these I want first, or start with a section-by-section\n'
+    printf 'summary plus the top things to verify.\n\n'
+    printf -- '---\n\n## Transcript\n\n'
+    cat "$p_tr"
+  } > "$dir/brief.md"
+  step "brief → $dir/brief.md"
+
   step "rebuilding the catalog + article pages"
   rebuild
   if [[ "$VERBOSE" == 1 ]]; then
@@ -417,6 +485,6 @@ case "${1:-}" in
     (( found )) || echo "(no sessions yet)"
     ;;
   path)    echo "$LISTEN_DIR" ;;
-  -h|--help|"") sed -n '2,33p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help|"") sed -n '2,36p' "$0" | sed 's/^# \{0,1\}//' ;;
   *) die "unknown command: $1 (try: publish, rebuild, open, ls, path)" ;;
 esac

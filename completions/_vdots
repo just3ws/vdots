@@ -1,4 +1,4 @@
-#compdef vdots vdots-read vdots-publish vdots-listen vdots-doctor vdots-ctl vdots-update
+#compdef vdots vdots-read vdots-publish vdots-listen vdots-doctor vdots-ctl vdots-update vdots-readalong
 
 # vdots — control-plane shim + read-aloud tooling completion.
 # Loaded via ~/.config/zsh/.zshrc.local (interim; zdots Z-337).
@@ -71,6 +71,17 @@ _vdots-doctor() {
     '(-h --help)'{-h,--help}'[show help]'
 }
 
+_vdots-readalong() {
+  _arguments \
+    '--cues[timed cue list JSON]:file:_files -g "*.json"' \
+    '--audio[narration file]:file:_files' \
+    '--out[output MP4]:file:_files -g "*.mp4"' \
+    '--title[header text]:title:' \
+    '--chapters[chapter list JSON]:file:_files -g "*.json"' \
+    '--duration[audio length in seconds]:secs:' \
+    '(-h --help)'{-h,--help}'[show help]'
+}
+
 _vdots-ctl() {
   if (( CURRENT == 2 )); then
     _describe -t commands 'vdots-ctl command' \
@@ -126,4 +137,5 @@ case $service in
   vdots-doctor)  _vdots-doctor "$@" ;;
   vdots-ctl)     _vdots-ctl "$@" ;;
   vdots-update)  _vdots-update "$@" ;;
+  vdots-readalong) _vdots-readalong "$@" ;;
 esac

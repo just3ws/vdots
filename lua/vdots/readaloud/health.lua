@@ -74,6 +74,11 @@ function M.check()
   else
     h.info "rubberband not found — pace time-stretch falls back to ffmpeg atempo (`brew install rubberband`)"
   end
+  if vim.fn.executable "rsvg-convert" == 1 then
+    h.ok "rsvg-convert found — publish renders the scrolling read-along video"
+  else
+    h.info "rsvg-convert not found — no readalong.mp4 (`brew install librsvg`)"
+  end
   if vim.fn.executable "jq" == 1 then
     h.ok "jq found"
   else

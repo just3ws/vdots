@@ -351,17 +351,27 @@ sequenceDiagram
 
 `;rP` / `:VdotsReadPublish` — or `vdots publish FILE.md` from the shell — files
 the document into `~/ai/outbox/listen/<date-slug>/` as role-named files:
-`audio.mp3` (the read-through — Google Drive's Android app plays this inline,
-transcript embedded as lyrics), `audio.m4a` (same audio, chapters + faststart,
-for Apple Music / VLC), `document.md`, `report.md` (readability + chapters +
-transcript, Drive-previewable), `transcript.txt`, `captions.vtt`, and
-`article.html` (a browser page that plays the audio while the transcript
-highlights and auto-scrolls — click a paragraph to seek). Machine files go in
-`assets/`. `~/ai` is synced by Google Drive desktop; on a phone open the
-`index.md` catalog — Drive renders it and the links play the mp3. `vdots
-publish --info FILE.md` prints a pre-flight report without writing; `vdots
-publish -v FILE.md` narrates each pipeline step; `:VdotsReadPublish!`
-re-records after edits.
+
+- **`audio.mp3`** — the read-through (Drive's Android app plays it inline;
+  transcript embedded as an id3 lyrics track). `audio.m4a` = same audio,
+  chapters + faststart, for Apple Music / VLC.
+- **`readalong.mp4`** — the transcript scrolling with the narration, burned
+  into the frames. Plays in Google Drive's *video* player (web, iOS, Android)
+  — synced read-along that works where `article.html` can't.
+- **`brief.md`** — a self-contained analysis brief (what this is, the chapters,
+  what to help with, then the full transcript inline). Open it in Gemini
+  straight from Drive.
+- `document.md`, `report.md` (readability + chapters + transcript,
+  Drive-previewable), `transcript.txt`, `captions.vtt`.
+- `article.html` — a browser page that plays the audio while the transcript
+  highlights and auto-scrolls (click a paragraph to seek). Browser-only:
+  Drive's HTML preview runs no JS.
+- `assets/` — machine files (cues, readability, chapters, spoken script).
+
+`~/ai` is synced by Google Drive desktop; on a phone open the `index.md`
+catalog — Drive renders it and the links play the video / mp3 / open the
+brief. `vdots publish --info FILE.md` is a pre-flight report; `-v` narrates
+every step; `:VdotsReadPublish!` re-records after edits.
 
 **Tips:** `;r[` re-hears a missed paragraph · pause → edit → `:w` → `;rr` resumes
 from that block · slow `rate` for dense docs · teach it project jargon once in

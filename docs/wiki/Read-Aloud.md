@@ -4,7 +4,7 @@ An offline Markdown reader for Neovim (macOS `say`), plus a publish pipeline
 that turns a document into a synced listen-along session on Google Drive.
 
 - Plugin: `lua/vdots/readaloud/`
-- CLI: `bin/vdots-read`, `bin/vdots-publish`, `bin/vdots-listen`
+- CLI: `bin/vdots-read`, `bin/vdots-publish`, `bin/vdots-listen`, `bin/vdots-readalong`
 - Vim help: `:help vdots-readaloud` (`doc/vdots-readaloud.txt`)
 - Health: `:checkhealth vdots.readaloud` · `vdots doctor`
 
@@ -120,6 +120,7 @@ sequenceDiagram
   participant R as vdots-read.lua
   participant S as say
   participant F as ffmpeg/rubberband
+  participant V as vdots-readalong
   participant P as catalog.py
   U->>L: publish FILE.md [--force] [-v]
   L->>L: resolve .spoken.md, check generated_at
@@ -128,6 +129,8 @@ sequenceDiagram
   L->>F: time-stretch (rubberband R3 or atempo)
   L->>R: transcript, cues DUR, chapters DUR
   L->>F: enrich m4a (chapters, lyrics, faststart), transcode mp3
+  L->>V: cues + audio -> readalong.mp4 (rsvg frames + ffmpeg)
+  L->>L: brief.md (analysis brief + transcript inline)
   L->>P: rebuild
   P-->>U: index.md, index.html, slug/article.html
 ```
@@ -136,46 +139,59 @@ sequenceDiagram
 
 ```
 ~/ai/outbox/listen/
-  index.md          catalog for phones — Drive renders it, links play audio.mp3
+  index.md          catalog for phones — Drive renders it, links play the media
   index.html        catalog for a browser (player + links per article)
   2026-09-02-…-slug/
     audio.mp3        read-through; transcript embedded as an id3 lyrics frame
     audio.m4a        same audio, +faststart +chapters (Apple Music / VLC)
+    readalong.mp4    transcript scrolling with the narration, burned in — plays
+                     in Google Drive's video player (web / iOS / Android)
+    brief.md         self-contained analysis brief — open in Gemini from Drive
     document.md      clean readable copy of the source
     report.md        readability + chapters + full transcript (Drive-previewable)
     transcript.txt   verbatim prose
     captions.vtt     WebVTT captions
     article.html     browser page: player + synced, auto-scrolling transcript
     meta.json        title, date, duration, voice, pace, chapters, metrics
-    assets/          cues.json · readability.json · chapters.vtt · spoken.txt
+    assets/          cues.json · readability.json · chapters.{vtt,json} · spoken.txt
 ```
+
+`brief.md` adapts to the doc's `kind`/`format` — an interview-prep pack gets
+"draft STAR answers, pressure-test the gaps, research the company"; anything
+else gets "summarise per section, flag what to verify, research the source".
 
 ### What plays where
 
-| Surface | Plays audio | Synced transcript |
+| Surface | Plays | Synced transcript |
 |---|---|---|
-| `audio.mp3` opened in Google Drive (phone or web) | ✅ | id3 lyrics (some players) |
-| `index.md` in Drive | via link → `audio.mp3` | ❌ |
+| **`readalong.mp4` in Google Drive** (phone or web) | ✅ video | ✅ burned in — scrolls with the narration |
+| `audio.mp3` opened in Google Drive | ✅ audio | id3 lyrics (some players) |
+| `index.md` in Drive | via links | via the video link |
 | `report.md` / `transcript.txt` in Drive | ❌ | read it yourself |
+| `brief.md` in Gemini (from Drive) | ❌ | full transcript + analysis prompt inline |
 | `article.html` from a **real web server / local browser** | ✅ | ✅ highlight + auto-scroll + click-to-seek |
 | `article.html` in **Drive's preview** | ❌ | ❌ — Drive sandboxes JS + media |
 
-The `article.html` synced player is a browser feature. Google Drive's built-in
-HTML preview does not execute JavaScript, so the sync cannot run there — open
-the folder in a real browser (or `audio.mp3` directly) for the full experience.
+Drive's HTML preview runs no JavaScript, so `article.html`'s synced player
+cannot work there. **`readalong.mp4` is the Drive read-along** — the transcript
+is part of the video frames, so it needs nothing but a video player. Built by
+`vdots-readalong` (rsvg-convert frames + ffmpeg); skipped gracefully if
+`rsvg-convert` is absent.
 
 ## CLI reference
 
-`man vdots`, `man vdots-read`, `man vdots-publish`, `man vdots-listen`
-(shipped in `man/`, wired by the zdots shell). `vdots-read --help` etc.
+`man vdots`, `man vdots-read`, `man vdots-publish`, `man vdots-listen`,
+`man vdots-readalong` (shipped in `man/`, wired by the zdots shell).
+`vdots-read --help` etc.
 
 ## Dependencies
 
 | Tool | For | Fallback |
 |---|---|---|
 | `say` | speech (macOS only) | — (required) |
-| `ffmpeg` | chapters, faststart, mp3, atempo stretch | no chapters, no stretch |
+| `ffmpeg` | chapters, faststart, mp3, atempo stretch, video encode | no chapters, no stretch, no video |
 | `rubberband` | high-quality (R3) time-stretch | `ffmpeg atempo` |
+| `rsvg-convert` | renders the `readalong.mp4` frames | no video (`brew install librsvg`) |
 | `jq` | frontmatter read in `vdots-listen` | plain-doc fallback |
 | `python3` | readability + catalog generator | no report / catalog |
 

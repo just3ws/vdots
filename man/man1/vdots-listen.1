@@ -63,13 +63,16 @@ Print
 <YYYY-MM-DD-title-slug>/
   audio.mp3        read-through; transcript embedded as an id3 lyrics frame
   audio.m4a        same audio, +faststart +chapters (Apple Music / VLC)
+  readalong.mp4    the transcript scrolling with the narration, burned in;
+                   plays in Google Drive's video player (web / iOS / Android)
+  brief.md         self-contained analysis brief \(em open in Gemini from Drive
   document.md      clean readable copy of the source
   report.md        readability + chapters + full transcript (Drive-previewable)
   transcript.txt   verbatim prose
   captions.vtt     WebVTT captions
   article.html     browser page: player + synced, auto-scrolling transcript
   meta.json        title, date, duration, voice, pace, chapters, metrics
-  assets/          cues.json, readability.json, chapters.vtt, spoken.txt
+  assets/          cues.json, readability.json, chapters.{vtt,json}, spoken.txt
 .Ed
 .Pp
 The catalog
@@ -79,7 +82,11 @@ is the phone surface: Google Drive renders it and the links play
 The
 .Pa article.html
 player and its synced highlight only run in a real browser \(em Drive's HTML
-preview sandboxes JavaScript and media.
+preview sandboxes JavaScript and media. For synced read-along from Drive, use
+.Pa readalong.mp4
+(the transcript is burned into the video, so no JavaScript is involved) \(em
+built by
+.Xr vdots-readalong 1 .
 .Sh AUDIO
 .Xr say 1
 renders at the preset's true rate, then the whole file is time-stretched
@@ -108,4 +115,5 @@ sibling.
 .Xr vdots 1 ,
 .Xr vdots-publish 1 ,
 .Xr vdots-read 1 ,
-.Xr vdots-readability 1
+.Xr vdots-readability 1 ,
+.Xr vdots-readalong 1

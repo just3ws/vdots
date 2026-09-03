@@ -1,0 +1,70 @@
+.Dd September 3, 2026
+.Dt VDOTS-READALONG 1
+.Os
+.Sh NAME
+.Nm vdots-readalong
+.Nd build a scrolling read-along video from a cue list and audio
+.Sh SYNOPSIS
+.Nm
+.Fl -cues Ar cues.json
+.Fl -audio Ar audio.m4a
+.Fl -out Ar readalong.mp4
+.Op Fl -title Ar T
+.Op Fl -chapters Ar chapters.json
+.Op Fl -duration Ar SECS
+.Sh DESCRIPTION
+.Nm
+renders one frame per cue \(em a scrolling window of the transcript with the
+active sentence highlighted, the current section as a header, and a progress
+bar \(em then stitches the frames to the narration audio as an MP4.
+.Pp
+The point is Google Drive: its native video player runs everywhere (web, iOS,
+Android), whereas the JavaScript-synced
+.Pa article.html
+does not run in Drive's HTML preview at all. The read-along is burned into the
+frames, so it needs nothing but a video player.
+.Pp
+.Xr vdots-listen 1 Ic publish
+calls this automatically when
+.Xr rsvg-convert 1 ,
+.Xr ffmpeg 1 ,
+and
+.Xr python3 1
+are all present.
+.Sh OPTIONS
+.Bl -tag -width "--chapters F"
+.It Fl -cues Ar F
+Timed cue list as JSON:
+.Bq Brq start , stop , text , kind .
+Produced by
+.Ic vdots-read --cues-json .
+.It Fl -audio Ar F
+The narration file. Any format
+.Xr ffmpeg 1
+reads.
+.It Fl -out Ar F
+Output MP4 path.
+.It Fl -title Ar T
+Header text shown before the first chapter.
+.It Fl -chapters Ar F
+Chapter list as JSON
+.Bq Brq start , title ;
+each heading switches the on-screen section label.
+.It Fl -duration Ar SECS
+Audio length. Auto-probed with
+.Xr ffprobe 1
+when omitted.
+.El
+.Sh OUTPUT
+1280x720 H.264 + AAC, faststart, framerate 30. About 1 MB per spoken minute.
+.Sh REQUIRES
+.Xr rsvg-convert 1
+.Pq librsvg ,
+.Xr ffmpeg 1 ,
+Python standard library only.
+.Sh SEE ALSO
+.Xr ffmpeg 1 ,
+.Xr rsvg-convert 1 ,
+.Xr vdots 1 ,
+.Xr vdots-listen 1 ,
+.Xr vdots-publish 1

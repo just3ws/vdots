@@ -229,6 +229,8 @@ def build_article(s, sdir):
     rich = s.get("audio_rich")
     rich_link = (f' · <a href="{esc(rich)}">m4a&nbsp;(chapters)</a>'
                  if rich and rich != s.get("audio") else "")
+    vid_link = f' · <a href="{esc(s["video"])}">read-along&nbsp;video</a>' if s.get("video") else ""
+    brief_link = f' · <a href="{esc(s["brief"])}">analysis&nbsp;brief</a>' if s.get("brief") else ""
 
     return "\n".join([
         "<!doctype html><html lang=en><head><meta charset=utf-8>",
@@ -239,10 +241,12 @@ def build_article(s, sdir):
         f'<p class="sub">{esc(s.get("date"))} · {dur(s.get("duration"))} · '
         f'{esc(s.get("voice"))} · <a href="{esc(s.get("doc"))}">document</a> · '
         f'<a href="{esc(s.get("report", s.get("doc")))}">report</a> · '
-        f'<a href="{esc(s.get("vtt"))}">captions</a>{rich_link}{src_link}</p>',
+        f'<a href="{esc(s.get("vtt"))}">captions</a>{vid_link}{brief_link}{rich_link}{src_link}</p>',
         f'<audio id="player" controls preload="none" src="{esc(s.get("audio"))}"></audio>',
         f'<p class="sub"><a href="{esc(s.get("audio"))}">open the audio directly</a>'
-        ' if the player above is blank (Google Drive preview blocks it)</p>',
+        ' if the player above is blank'
+        + (f', or watch the <a href="{esc(s["video"])}">read-along video</a>' if s.get("video") else "")
+        + ' (Google Drive preview blocks the player above)</p>',
         toc,
         report,
         '<div id="t">', *body, "</div>",
@@ -269,8 +273,13 @@ def build_md(items):
         ) if x)
         rich = s.get("audio_rich")
         links = [f'▶ [Play]({d}/{s.get("audio","")})',
-                 f'[Report]({d}/{s.get("report", s.get("doc",""))})',
-                 f'[Transcript]({d}/{s.get("transcript","")})']
+                 ]
+        if s.get("video"):
+            links.append(f'🎬 [Read-along video]({d}/{s["video"]})')
+        links += [f'[Report]({d}/{s.get("report", s.get("doc",""))})',
+                  f'[Transcript]({d}/{s.get("transcript","")})']
+        if s.get("brief"):
+            links.append(f'[Analysis brief]({d}/{s["brief"]})')
         if rich and rich != s.get("audio"):
             links.append(f'[Chaptered m4a]({d}/{rich})')
         out += [f'## {s.get("title", d)}', "", meta, "", " · ".join(links), ""]

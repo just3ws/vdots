@@ -295,15 +295,24 @@ identity, so the files inside are named for their role: >
           2026-09-02-a-clean-api/
             audio.mp3         read-through — Drive/Android plays this inline
             audio.m4a         same audio, +faststart +chapters (Apple Music/VLC)
+            readalong.mp4     transcript scrolling with the narration, burned in
+                              — plays in Drive's video player (web / iOS / Android)
+            brief.md          self-contained analysis brief — open in Gemini
             document.md       clean readable document
             report.md         readability + chapters + full transcript
             transcript.txt    verbatim prose (plain text)
             captions.vtt      WebVTT captions (for VLC / other players)
             article.html      local page: player + synced transcript
             meta.json         title, date, duration, voice, pace, metrics
-            assets/           machine files — cues.json (drives article.html),
-                              readability.json, chapters.vtt, spoken.txt
+            assets/           machine files — cues.json, readability.json,
+                              chapters.{vtt,json}, spoken.txt
 <
+For synced read-along FROM Google Drive, `readalong.mp4` is the answer — the
+transcript is part of the video frames, so no JavaScript is involved (Drive's
+HTML preview runs none, which is why `article.html`'s player is browser-only).
+`brief.md` bundles the whole transcript plus an analysis prompt into one file
+to open in Gemini straight from Drive.
+
 The transcript is verbatim document prose. `say` reports no timings, so each
 block's time is modelled from its share of the spoken words plus the exact
 inserted pauses. Two audio files: the **`.mp3`** is the one to open from

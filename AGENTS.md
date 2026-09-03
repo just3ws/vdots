@@ -5,11 +5,22 @@
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
        MERGED + PUSHED 2026-09-03 (`feat/vdots-shim-readaloud`, 27 commits, via
-       `--no-ff` merge). The vdots control-plane shim + read-aloud plugin +
+       `--no-ff`). The vdots control-plane shim + read-aloud plugin +
        `vdots-listen` publish pipeline + enhanced-doc frontmatter contract +
-       Mason + dashboard Recent-Markdown are all on `main`, tested
-       (`./test/run.sh` + `./test/lint.sh` green), documented (README, wiki,
-       man, `:help`, skill), and working end to end. Nothing in flight.
+       Mason + dashboard Recent-Markdown are on `main`, tested + documented.
+
+       Post-merge on `main` (2026-09-03, still local — commit + push):
+       - `readalong.mp4` — `vdots-readalong` renders one SVG frame per cue
+         (scrolling transcript window, active sentence highlighted, chapter
+         header, progress bar) via rsvg-convert, stitches to the narration with
+         ffmpeg. **This is the Drive read-along** — Drive's HTML preview runs no
+         JS so article.html can't sync there; a video needs nothing but a
+         player. ~1 MB/spoken-min, 1280×720 h264+aac.
+       - `brief.md` — self-contained analysis brief (what this is, chapters,
+         "how to help me" tailored to the doc's kind/format, full transcript
+         inline). Open in Gemini straight from Drive.
+       - both linked from index.md + article.html; meta.json gains video/brief;
+         vdots-doctor / :checkhealth report rsvg-convert.
 
        Latest session (2026-09-03):
        - audio: `.mp3` is primary (Drive/Android plays it inline; transcript
@@ -77,7 +88,8 @@ This repository is a Lua-based Neovim configuration.
 - `bin/`: the `vdots` control-plane shim (`vdots <noun>` → `vdots-<noun>`) plus
   `vdots-{ctl,doctor,update,read,publish,listen}`, `vdots-read.lua` (headless
   bridge: script/transcript/vtt/cues/chapters/meta/info/pace), `vdots-listen-catalog.py`,
-  `vdots-readability`, `vdots-mediakey-helper.swift`, `vdots-readaloud-swiftbar`.
+  `vdots-readalong` (scrolling read-along video: SVG frames → rsvg-convert →
+  ffmpeg), `vdots-readability`, `vdots-mediakey-helper.swift`, `vdots-readaloud-swiftbar`.
   Each is standalone; the shim just dispatches. `vdots-publish` = pre-flight
   report + `vdots-listen publish`.
 - `man/man1/*.1`: mandoc for every `vdots*` command. `completions/_vdots`: zsh
