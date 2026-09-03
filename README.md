@@ -357,10 +357,17 @@ the document into `~/ai/outbox/listen/<date-slug>/` as role-named files:
   chapters + faststart, for Apple Music / VLC.
 - **`readalong.mp4`** — the transcript scrolling with the narration, burned
   into the frames. Plays in Google Drive's *video* player (web, iOS, Android)
-  — synced read-along that works where `article.html` can't.
+  — synced read-along that works where `article.html` can't. Carries MP4
+  metadata + an embedded caption track, and a same-name `readalong.vtt`
+  sidecar (Drive's player uses it for CC).
 - **`brief.md`** — a self-contained analysis brief (what this is, the chapters,
   what to help with, then the full transcript inline). Open it in Gemini
   straight from Drive.
+- **`manifest.md`** *(interview-prep packs)* — a research kit for any AI chat:
+  a map of every relevant file (this package + the wwworkremote source pack +
+  your public résumé/portfolio) with web links, so ChatGPT / Gemini / Claude
+  can do independent research on the role. `$VDOTS_RESUME_URL` /
+  `$VDOTS_PORTFOLIO_URL` override the candidate links.
 - `document.md`, `report.md` (readability + chapters + transcript,
   Drive-previewable), `transcript.txt`, `captions.vtt`.
 - `article.html` — a browser page that plays the audio while the transcript

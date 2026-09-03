@@ -298,6 +298,8 @@ identity, so the files inside are named for their role: >
             readalong.mp4     transcript scrolling with the narration, burned in
                               — plays in Drive's video player (web / iOS / Android)
             brief.md          self-contained analysis brief — open in Gemini
+            manifest.md       interview-prep packs: a research kit (file map +
+                              web links) for any AI chat to research the job
             document.md       clean readable document
             report.md         readability + chapters + full transcript
             transcript.txt    verbatim prose (plain text)
@@ -311,7 +313,11 @@ For synced read-along FROM Google Drive, `readalong.mp4` is the answer — the
 transcript is part of the video frames, so no JavaScript is involved (Drive's
 HTML preview runs none, which is why `article.html`'s player is browser-only).
 `brief.md` bundles the whole transcript plus an analysis prompt into one file
-to open in Gemini straight from Drive.
+to open in Gemini straight from Drive. For `kind: interview-prep` packs,
+`manifest.md` is a research kit — a map of every relevant file (this package,
+the wwworkremote source pack, the candidate's public résumé/portfolio) with
+web links, so any AI chat can research the job independently and cross-check
+the prep. `$VDOTS_RESUME_URL` / `$VDOTS_PORTFOLIO_URL` set the candidate links.
 
 The transcript is verbatim document prose. `say` reports no timings, so each
 block's time is modelled from its share of the spoken words plus the exact

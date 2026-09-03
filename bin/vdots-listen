@@ -10,6 +10,8 @@
 #         readalong.mp4          the transcript scrolling with the narration,
 #                                burned in — plays in Drive's video player
 #         brief.md               self-contained analysis brief (open in Gemini)
+#         manifest.md            (interview-prep packs) a research kit — file map
+#                                + web links for an AI chat to research the job
 #         document.md            clean readable document (frontmatter -> header)
 #         report.md              readability + chapters + full transcript
 #         transcript.txt         verbatim prose (plain text)
@@ -169,6 +171,14 @@ cmd_publish() {
   fi
   [[ "$dir" == "$LISTEN_DIR"/*/ || "$dir" == "$LISTEN_DIR"/* ]] || die "refusing to touch $dir"
   [[ "$force" -eq 1 || -d "$dir" ]] && rm -rf "$dir"
+  # drop a same-slug session under a different date — it's a superseded copy of
+  # this same source doc (the slug is derived from the title).
+  local stale
+  for stale in "$LISTEN_DIR"/[0-9]*-"$slug"; do
+    [[ -d "$stale" && "$stale" != "$dir" ]] || continue
+    step "removing superseded session $(basename "$stale")"
+    rm -rf "$stale"
+  done
   mkdir -p "$dir/assets"
 
   # Role-based names: the session dir already carries the identity, so files
@@ -342,12 +352,13 @@ cmd_publish() {
   if command -v rsvg-convert >/dev/null && command -v ffmpeg >/dev/null && command -v python3 >/dev/null; then
     step "rendering the read-along video (scrolling transcript + narration)"
     local ra_ok=0
+    local ra_args=(--cues "$p_cues" --audio "$p_m4a" --out "$p_video"
+      --title "$title" --chapters "$dir/assets/chapters.json"
+      --comment "${src_url:-$file}" --date "$date")
     if [[ "$VERBOSE" == 1 ]]; then
-      "$HERE/vdots-readalong" --cues "$p_cues" --audio "$p_m4a" --out "$p_video" \
-        --title "$title" --chapters "$dir/assets/chapters.json" && ra_ok=1
+      "$HERE/vdots-readalong" "${ra_args[@]}" && ra_ok=1
     else
-      "$HERE/vdots-readalong" --cues "$p_cues" --audio "$p_m4a" --out "$p_video" \
-        --title "$title" --chapters "$dir/assets/chapters.json" >/dev/null 2>&1 && ra_ok=1
+      "$HERE/vdots-readalong" "${ra_args[@]}" >/dev/null 2>&1 && ra_ok=1
     fi
     if [[ "$ra_ok" == 1 && -s "$p_video" ]]; then
       step "read-along video: $(human_dur "$dur") → $p_video"
@@ -392,7 +403,8 @@ readability=assets/readability.json
 report=report.md
 article=article.html
 video=$([[ -s "$p_video" ]] && echo readalong.mp4)
-brief=brief.md" \
+brief=brief.md
+manifest=$(case "$fm_format" in *interview*) echo manifest.md ;; esac)" \
     python3 -c 'import os,json
 d=dict(l.split("=",1) for l in os.environ["VDOTS_META"].splitlines())
 d={k:v for k,v in d.items() if v!=""}
@@ -463,6 +475,63 @@ open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dump
   } > "$dir/brief.md"
   step "brief → $dir/brief.md"
 
+  # manifest.md — for interview-prep packs: a map of every relevant file
+  # (this package + the wwworkremote source + the candidate's public materials)
+  # and web links, so an AI chat can do independent job research. `brief.md` is
+  # self-contained analysis; this is the research kit.
+  case "$fm_format" in
+    *interview*)
+      local resume_url="${VDOTS_RESUME_URL:-https://just3ws.github.io/resume.json}"
+      local portfolio_url="${VDOTS_PORTFOLIO_URL:-https://www.just3ws.com}"
+      local src_dir; src_dir="$(dirname "$file")"
+      {
+        printf '# Research manifest — %s\n\n' "$title"
+        printf '_Interview-prep package for a live job application (wwworkremote\n'
+        printf 'job-search pipeline). Paste this into ChatGPT / Gemini / Claude,\n'
+        printf 'let it fetch the web links, and attach the local files it asks for._\n\n'
+        printf '## The job\n\n'
+        [[ -n "$src_url" ]] && printf -- '- **Posting:** %s\n' "$src_url"
+        printf -- '- **Title:** %s\n' "$title"
+        printf -- '- **Prep generated:** %s\n\n' "${gen_at:-$(date '+%Y-%m-%d')}"
+        printf '## Fetch these now (public URLs)\n\n'
+        [[ -n "$src_url" ]] && printf -- '- %s — the job description. Read it first.\n' "$src_url"
+        printf -- '- %s — the candidate résumé (JSON Resume format).\n' "$resume_url"
+        printf -- '- %s — the candidate portfolio / site.\n' "$portfolio_url"
+        printf -- '- The company site and recent news — you find these from the posting.\n\n'
+        printf '## Local files (ask me to attach)\n\n'
+        printf '### This package — `%s`\n\n' "$dir"
+        printf '| file | what it is | attach to… |\n|---|---|---|\n'
+        printf '| `brief.md` | prep-pack transcript + an analysis prompt | analyse the prep itself |\n'
+        printf '| `transcript.txt` | verbatim prep-pack text | same, plainest form |\n'
+        printf '| `document.md` | the prep pack, formatted | read its structure |\n'
+        printf '| `report.md` | readability + chapter map | see how it is organised |\n'
+        printf '| `readalong.mp4` / `audio.mp3` | narrated read-along | (media — for me, not chat) |\n\n'
+        printf '### Source materials — `%s`\n\n' "$src_dir"
+        printf '| file | what it is |\n|---|---|\n'
+        printf '| `pack.md` | the interview-prep pack as authored by the pipeline |\n'
+        printf '| `pack.spoken.md` | speech-ready version + the read-aloud frontmatter |\n\n'
+        printf '### Candidate materials (if I attach them)\n\n'
+        printf '`~/github.com/just3ws/just3ws.github.io/exports/` — `resume.md` (full),\n'
+        printf '`portfolio.md`, `career_datalake.json`, and role-tailored résumé PDFs.\n\n'
+        printf '## What I want — independent research\n\n'
+        printf '1. Research the company from the posting + the web: product, business\n'
+        printf '   model, funding/size, recent news, engineering culture, tech stack,\n'
+        printf '   who leads the relevant team.\n'
+        printf '2. Cross-check the prep pack against what you find — flag anything\n'
+        printf '   stale, wrong, or missing about the company or the role.\n'
+        printf '3. Map the role requirements to my résumé: strong matches, real gaps,\n'
+        printf '   and how to frame each gap honestly.\n'
+        printf '4. Draft: STAR answers for the likely questions, 3 sharp questions to\n'
+        printf '   ask them, and a specific "why this company" angle grounded in your\n'
+        printf '   research.\n'
+        printf '5. Anything important the prep pack did not cover.\n\n'
+        printf 'Start by telling me what you found about the company and what you\n'
+        printf 'still need from me.\n'
+      } > "$dir/manifest.md"
+      step "manifest → $dir/manifest.md"
+      ;;
+  esac
+
   step "rebuilding the catalog + article pages"
   rebuild
   if [[ "$VERBOSE" == 1 ]]; then
@@ -485,6 +554,6 @@ case "${1:-}" in
     (( found )) || echo "(no sessions yet)"
     ;;
   path)    echo "$LISTEN_DIR" ;;
-  -h|--help|"") sed -n '2,36p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help|"") sed -n '2,38p' "$0" | sed 's/^# \{0,1\}//' ;;
   *) die "unknown command: $1 (try: publish, rebuild, open, ls, path)" ;;
 esac

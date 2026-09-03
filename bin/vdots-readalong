@@ -134,6 +134,20 @@ def chapter_at(chapters, t):
     return name
 
 
+def vtt_ts(s):
+    h, s = divmod(max(s, 0), 3600)
+    m, s = divmod(s, 60)
+    return f"{int(h):02d}:{int(m):02d}:{s:06.3f}"
+
+
+def write_vtt(cues, path):
+    with open(path, "w") as f:
+        f.write("WEBVTT\n\n")
+        for i, c in enumerate(cues, 1):
+            f.write(f"{i}\n{vtt_ts(c['start'])} --> {vtt_ts(c['stop'])}\n"
+                    f"{' '.join(c['text'].split())}\n\n")
+
+
 def main():
     ap = argparse.ArgumentParser(add_help=True)
     ap.add_argument("--cues", required=True)
@@ -141,6 +155,8 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--title", default="")
     ap.add_argument("--chapters", default="")
+    ap.add_argument("--comment", default="")
+    ap.add_argument("--date", default="")
     ap.add_argument("--duration", type=float, default=0.0)
     a = ap.parse_args()
 
@@ -187,16 +203,35 @@ def main():
             # the duration on a trailing file that has no successor
             fl.write(f"file '{png}'\nduration 1.0\n")
 
+        # a same-basename .vtt sidecar (Google Drive's video player picks these
+        # up) and an embedded mov_text subtitle track (VLC / QuickTime / Plex)
+        sidecar = os.path.splitext(a.out)[0] + ".vtt"
+        write_vtt(cues, sidecar)
+
         cmd = [
             "ffmpeg", "-y", "-loglevel", "error",
             "-f", "concat", "-safe", "0", "-i", listing,
             "-i", a.audio,
-            "-map", "0:v:0", "-map", "1:a:0", "-dn", "-map_chapters", "-1",
+            "-i", sidecar,
+            "-map", "0:v:0", "-map", "1:a:0", "-map", "2:0",
+            "-dn", "-map_chapters", "-1",
             "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "30",
             "-tune", "stillimage", "-preset", "veryfast",
             "-c:a", "aac", "-b:a", "96k",
-            "-movflags", "+faststart", "-shortest", a.out,
+            "-c:s", "mov_text",
+            "-metadata:s:v:0", "language=eng",
+            "-metadata:s:a:0", "language=eng",
+            "-metadata:s:s:0", "language=eng",
+            "-metadata:s:s:0", "handler_name=Captions",
+            "-metadata", f"title={a.title or 'read-along'}",
+            "-metadata", "artist=vdots read-aloud",
+            "-metadata", "album=vdots · listen",
         ]
+        if a.comment:
+            cmd += ["-metadata", f"comment={a.comment}"]
+        if a.date:
+            cmd += ["-metadata", f"date={a.date}"]
+        cmd += ["-movflags", "+faststart", "-shortest", a.out]
         subprocess.run(cmd, check=True)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

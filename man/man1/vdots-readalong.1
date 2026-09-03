@@ -50,6 +50,8 @@ Header text shown before the first chapter.
 Chapter list as JSON
 .Bq Brq start , title ;
 each heading switches the on-screen section label.
+.It Fl -comment Ar URL , Fl -date Ar YYYY-MM-DD
+Written into the MP4 metadata.
 .It Fl -duration Ar SECS
 Audio length. Auto-probed with
 .Xr ffprobe 1
@@ -57,6 +59,12 @@ when omitted.
 .El
 .Sh OUTPUT
 1280x720 H.264 + AAC, faststart, framerate 30. About 1 MB per spoken minute.
+Carries MP4 metadata (title, artist, comment, date) and an embedded
+.Ic mov_text
+caption track. A same-basename
+.Pa .vtt
+sidecar is written alongside \(em Google Drive's video player reads those
+automatically.
 .Sh REQUIRES
 .Xr rsvg-convert 1
 .Pq librsvg ,

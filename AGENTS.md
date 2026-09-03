@@ -19,8 +19,18 @@
        - `brief.md` — self-contained analysis brief (what this is, chapters,
          "how to help me" tailored to the doc's kind/format, full transcript
          inline). Open in Gemini straight from Drive.
-       - both linked from index.md + article.html; meta.json gains video/brief;
-         vdots-doctor / :checkhealth report rsvg-convert.
+       - `manifest.md` (kind: interview-prep only) — a research kit: a MAP of
+         every relevant file (this package + the wwworkremote source pack +
+         `$VDOTS_RESUME_URL`/`$VDOTS_PORTFOLIO_URL` public links) + a research
+         brief, for any AI chat to research the job independently.
+       - all linked from index.md + article.html; meta.json gains
+         video/brief/manifest; vdots-doctor / :checkhealth report rsvg-convert.
+       - publish now removes a superseded same-slug session under an old date.
+       - pace.lua M.cues scales modelled pauses by 1/stretch (the [[slnc]]
+         pauses get stretched too) — cuts the read-along drift. The deeper fix
+         (measure per-sentence say durations, or AVSpeech willSpeakRange
+         callbacks — both deterministic; whisper was rejected as non-det) is
+         NOT built yet.
 
        Latest session (2026-09-03):
        - audio: `.mp3` is primary (Drive/Android plays it inline; transcript

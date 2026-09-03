@@ -145,8 +145,12 @@ sequenceDiagram
     audio.mp3        read-through; transcript embedded as an id3 lyrics frame
     audio.m4a        same audio, +faststart +chapters (Apple Music / VLC)
     readalong.mp4    transcript scrolling with the narration, burned in — plays
-                     in Google Drive's video player (web / iOS / Android)
+                     in Google Drive's video player (web / iOS / Android).
+                     MP4 metadata + embedded mov_text captions.
+    readalong.vtt    same-basename caption sidecar (Drive's player reads it)
     brief.md         self-contained analysis brief — open in Gemini from Drive
+    manifest.md      interview-prep packs: a research kit (file map + web links)
+                     for any AI chat to research the job independently
     document.md      clean readable copy of the source
     report.md        readability + chapters + full transcript (Drive-previewable)
     transcript.txt   verbatim prose
@@ -159,6 +163,14 @@ sequenceDiagram
 `brief.md` adapts to the doc's `kind`/`format` — an interview-prep pack gets
 "draft STAR answers, pressure-test the gaps, research the company"; anything
 else gets "summarise per section, flag what to verify, research the source".
+
+`manifest.md` is emitted only for `kind: interview-prep`. It is a *map*, not a
+copy: the job posting URL, the résumé JSON URL (`$VDOTS_RESUME_URL`, default
+`just3ws.github.io/resume.json`), the portfolio URL, the wwworkremote source
+pack path, the candidate-exports path, and a research brief. Paste it into any
+AI chat with web access; it fetches the URLs and asks you to attach the local
+files. This keeps job research separate from — and cross-checkable against —
+the prep pack itself.
 
 ### What plays where
 

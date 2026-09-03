@@ -231,6 +231,7 @@ def build_article(s, sdir):
                  if rich and rich != s.get("audio") else "")
     vid_link = f' · <a href="{esc(s["video"])}">read-along&nbsp;video</a>' if s.get("video") else ""
     brief_link = f' · <a href="{esc(s["brief"])}">analysis&nbsp;brief</a>' if s.get("brief") else ""
+    mani_link = f' · <a href="{esc(s["manifest"])}">research&nbsp;manifest</a>' if s.get("manifest") else ""
 
     return "\n".join([
         "<!doctype html><html lang=en><head><meta charset=utf-8>",
@@ -241,7 +242,7 @@ def build_article(s, sdir):
         f'<p class="sub">{esc(s.get("date"))} · {dur(s.get("duration"))} · '
         f'{esc(s.get("voice"))} · <a href="{esc(s.get("doc"))}">document</a> · '
         f'<a href="{esc(s.get("report", s.get("doc")))}">report</a> · '
-        f'<a href="{esc(s.get("vtt"))}">captions</a>{vid_link}{brief_link}{rich_link}{src_link}</p>',
+        f'<a href="{esc(s.get("vtt"))}">captions</a>{vid_link}{brief_link}{mani_link}{rich_link}{src_link}</p>',
         f'<audio id="player" controls preload="none" src="{esc(s.get("audio"))}"></audio>',
         f'<p class="sub"><a href="{esc(s.get("audio"))}">open the audio directly</a>'
         ' if the player above is blank'
@@ -280,6 +281,8 @@ def build_md(items):
                   f'[Transcript]({d}/{s.get("transcript","")})']
         if s.get("brief"):
             links.append(f'[Analysis brief]({d}/{s["brief"]})')
+        if s.get("manifest"):
+            links.append(f'[Research manifest]({d}/{s["manifest"]})')
         if rich and rich != s.get("audio"):
             links.append(f'[Chaptered m4a]({d}/{rich})')
         out += [f'## {s.get("title", d)}', "", meta, "", " · ".join(links), ""]
