@@ -24,6 +24,7 @@ M.next = player.next
 M.prev = player.prev
 M.export = player.export
 M.publish = player.publish
+M.info = player.info
 
 ---Convenience for the media-key helper / SwiftBar (no-arg, string-returning).
 function M.rpc(cmd)
@@ -48,6 +49,7 @@ local MAPS = {
   { "<leader>rs", M.stop, "Read aloud: stop" },
   { "<leader>rq", M.close, "Read aloud: close preview" },
   { "<leader>rf", M.refresh, "Read aloud: refresh preview" },
+  { "<leader>ri", M.info, "Read aloud: info (parse / frontmatter)" },
   {
     "<leader>rx",
     function()

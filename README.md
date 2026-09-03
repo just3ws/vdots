@@ -238,6 +238,7 @@ all available bindings. Multi-key prefixes are labelled by group:
 | `:VdotsRead` / `:VdotsReadFromHere` | Read Markdown aloud (top / from cursor) — opens the preview pane |
 | `:VdotsReadStop` / `:VdotsReadClose` | Stop the voice / close the preview pane |
 | `:VdotsReadRefresh` | Re-render the preview from the source |
+| `:VdotsReadInfo` | Parse / frontmatter interpretation + frontmatter↔body drift |
 | `:VdotsReadExport` | Quick throwaway .m4a of the buffer/range + open it |
 | `:VdotsReadPublish` | Add the doc + read-through to the listen library (Google Drive) |
 | `:VdotsRecentMarkdown` | Pick from recently opened Markdown files |
@@ -260,6 +261,7 @@ Keymaps — buffer-local to `markdown` and the preview pane, prefix `;r`:
 | `;r]` / `;r[` | Next / previous block (re-reads from its start) |
 | `;rs` / `;rq` | Stop / close the preview pane |
 | `;rf` | Refresh the preview now |
+| `;ri` | Info: parse / frontmatter interpretation + drift check |
 | `;rx` | Quick export (throwaway .m4a) + open player |
 | `;rP` | Publish to the listen library (`:VdotsReadPublish!` to re-record) |
 

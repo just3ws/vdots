@@ -68,6 +68,13 @@ pure, unit-tested function shared with the `vdots-read` CLI.
 :VdotsReadRefresh                                          *:VdotsReadRefresh*
         Re-copy the source into the preview and re-parse (also happens on `:w`).
 
+:VdotsReadInfo                                                *:VdotsReadInfo*
+        A read-only float: the parse / frontmatter interpretation, block +
+        sentence + heading counts, the chapters that will be produced, the
+        estimated duration vs `spoken_minutes`, and any frontmatter↔body drift
+        (a `sections:` entry with no matching heading). Authoring aid — no
+        playback, no publish. `:VdotsReadPublish` prints a one-line version.
+
 :[range]VdotsReadExport                                     *:VdotsReadExport*
         Render the buffer (or range) to a temp .m4a and open it in the external
         player. Quick one-off — nothing is kept.
@@ -96,6 +103,7 @@ Buffer-local to `markdown` and to the preview pane. Prefix `;r`
         ;rs        stop (keep the panes)
         ;rq        quit — close the preview pane
         ;rf        refresh the preview now
+        ;ri        info: parse / frontmatter interpretation + drift check
         ;rx        export audio + open the player (quick one-off)
         ;rP        publish to the listen library (|vdots-readaloud-listen|)
 <
@@ -230,6 +238,13 @@ Enhanced docs: headings are spoken plainly (they double as chapter titles),
 the built-in tech lexicon is off (the body is already speech-ready), and the
 captions + transcript are one cue / one line per sentence. Chapters are
 embedded in the `.m4a` (ffmpeg) and shipped as `<slug>.chapters.vtt`.
+
+Workflow: `;rr` auditions it (frontmatter-aware live playback); fix the
+`pronunciation:` map, `:w`, `;rr` again. `;ri` (|:VdotsReadInfo|) shows the
+full interpretation and flags a `sections:` entry that no longer matches a
+heading. `;rP` (|:VdotsReadPublish|) hands it in; it records `generated_at`
+and refuses a re-publish unless the source is newer or you use
+`:VdotsReadPublish!`.
 
 ==============================================================================
 8. THE LISTEN LIBRARY                                    *vdots-readaloud-listen*

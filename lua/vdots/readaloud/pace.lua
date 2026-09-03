@@ -154,6 +154,21 @@ function M.cues(blocks, cfg, total_dur, opts)
   return cues
 end
 
+---Rough spoken duration (seconds) before rendering: words ÷ wpm + the beats.
+---@param blocks table
+---@param cfg table
+---@return number
+function M.estimate(blocks, cfg)
+  local s = M.settings(cfg)
+  local w, pause, prev = 0, 0, nil
+  for _, b in ipairs(blocks) do
+    w = w + words(b.speak)
+    pause = pause + M.lead(prev, b.kind, s) / 1000
+    prev = b.kind
+  end
+  return w / (s.rate / 60) + pause
+end
+
 ---Chapter markers from the heading blocks. `sections` (if given) supplies the
 ---canonical titles/order — only headings whose text matches a section become
 ---chapters.

@@ -43,6 +43,10 @@ cmd("VdotsReadRefresh", function()
   require("vdots.readaloud").refresh()
 end, { desc = "Re-render the read-aloud preview from the source" })
 
+cmd("VdotsReadInfo", function()
+  require("vdots.readaloud").info()
+end, { desc = "Show the read-aloud parse / frontmatter interpretation" })
+
 cmd("VdotsReadExport", function(o)
   local range = o.range == 2 and { o.line1, o.line2 } or nil
   require("vdots.readaloud").export(range)

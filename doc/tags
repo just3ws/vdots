@@ -2,6 +2,7 @@
 :VdotsReadClose	vdots-readaloud.txt	/*:VdotsReadClose*
 :VdotsReadExport	vdots-readaloud.txt	/*:VdotsReadExport*
 :VdotsReadFromHere	vdots-readaloud.txt	/*:VdotsReadFromHere*
+:VdotsReadInfo	vdots-readaloud.txt	/*:VdotsReadInfo*
 :VdotsReadPublish	vdots-readaloud.txt	/*:VdotsReadPublish*
 :VdotsReadRefresh	vdots-readaloud.txt	/*:VdotsReadRefresh*
 :VdotsReadStop	vdots-readaloud.txt	/*:VdotsReadStop*

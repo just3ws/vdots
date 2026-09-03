@@ -419,6 +419,7 @@ function M.publish(opts)
   if vim.fn.executable "say" == 0 then
     return vim.notify("readaloud: `say` not found (macOS only)", vim.log.levels.ERROR)
   end
+  pcall(M.preflight)
   local repo = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h:h:h:h")
   local vdots_listen = repo .. "/bin/vdots-listen"
   if vim.fn.executable(vdots_listen) == 0 then
@@ -463,6 +464,144 @@ function M.publish(opts)
       )
     end)
   )
+end
+
+--------------------------------------------------------------------------------
+-- summary / info
+--------------------------------------------------------------------------------
+
+---Analyse the current buffer without playing or publishing.
+---@return string[] lines, table meta
+local function analyse()
+  local buf = vim.api.nvim_get_current_buf()
+  local c = cfg.get()
+  local doc = parse.document(vim.api.nvim_buf_get_lines(buf, 0, -1, false), c)
+  local fm = doc.fm
+  local est = pace.estimate(doc.blocks, c)
+  local heads, sentences = {}, 0
+  for _, b in ipairs(doc.blocks) do
+    if b.kind == "heading" then
+      heads[#heads + 1] = b.text
+    end
+    for _ in b.text:gmatch "[^.!?]+[.!?]*" do
+      sentences = sentences + 1
+    end
+  end
+  local chapters = pace.chapters(doc.blocks, c, est, fm.sections)
+  local voice = cfg.resolve_voice() or "system default"
+
+  -- frontmatter ↔ body drift: a section with no matching heading won't chapter
+  local drift = {}
+  if doc.enhanced and #fm.sections > 0 then
+    local hset = {}
+    for _, h in ipairs(heads) do
+      hset[vim.trim(h):lower()] = true
+    end
+    for _, s in ipairs(fm.sections) do
+      if not hset[vim.trim(s):lower()] then
+        drift[#drift + 1] = 'section "' .. s .. '" has no matching heading'
+      end
+    end
+  end
+
+  local L = {}
+  local function add(k, v)
+    L[#L + 1] = ("%-14s %s"):format(k, v)
+  end
+  add(
+    "mode",
+    doc.enhanced and "enhanced read-aloud" or (doc.present and "plain (+ frontmatter)" or "plain")
+  )
+  add("title", fm.title or "(from first heading / filename)")
+  if doc.enhanced then
+    add("lang", fm.lang)
+    add("source", fm.source or "—")
+    add("generated_at", fm.generated_at or "—")
+    add("expected", fm.spoken_minutes and (fm.spoken_minutes .. " min") or "—")
+    add(
+      "lexicon",
+      ("%d term%s"):format(
+        vim.tbl_count(fm.pronunciation),
+        vim.tbl_count(fm.pronunciation) == 1 and "" or "s"
+      )
+    )
+  end
+  add("voice", ("%s (%s pace)"):format(voice, c.pace))
+  add("blocks", ("%d  ·  %d sentences  ·  %d headings"):format(#doc.blocks, sentences, #heads))
+  add("chapters", #chapters > 0 and table.concat(
+    vim.tbl_map(function(x)
+      return x.title
+    end, chapters),
+    " · "
+  ) or "none")
+  add("estimate", ("%d:%02d"):format(math.floor(est / 60), math.floor(est % 60)))
+  if doc.enhanced and fm.spoken_minutes then
+    local off = math.abs(est / 60 - fm.spoken_minutes) / fm.spoken_minutes
+    if off > 0.25 then
+      L[#L + 1] = ("  ! %d:%02d is >25%% off the expected %d min"):format(
+        math.floor(est / 60),
+        math.floor(est % 60),
+        fm.spoken_minutes
+      )
+    end
+  end
+  for _, d in ipairs(drift) do
+    L[#L + 1] = "  ! " .. d
+  end
+  return L,
+    {
+      enhanced = doc.enhanced,
+      title = fm.title,
+      chapters = #chapters,
+      voice = voice,
+      est = est,
+      drift = #drift,
+    }
+end
+
+---One-line pre-flight for :VdotsReadPublish.
+function M.preflight()
+  local _, m = analyse()
+  vim.notify(
+    ("readaloud: %s · %s · %s · %d:%02d%s%s"):format(
+      m.enhanced and "enhanced" or "plain",
+      m.title or "(auto title)",
+      m.voice,
+      math.floor(m.est / 60),
+      math.floor(m.est % 60),
+      m.chapters > 0 and (" · " .. m.chapters .. " chapters") or "",
+      m.drift > 0 and (" · ! " .. m.drift .. " frontmatter/body mismatch — :VdotsReadInfo") or ""
+    ),
+    m.drift > 0 and vim.log.levels.WARN or vim.log.levels.INFO
+  )
+end
+
+---:VdotsReadInfo — a read-only float with the parse interpretation.
+function M.info()
+  local lines = analyse()
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].filetype = "vdots-readaloud-info"
+  local width = 0
+  for _, l in ipairs(lines) do
+    width = math.max(width, #l)
+  end
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    width = math.min(width + 2, vim.o.columns - 4),
+    height = #lines,
+    row = math.max(0, math.floor((vim.o.lines - #lines) / 2) - 2),
+    col = math.floor((vim.o.columns - width) / 2),
+    style = "minimal",
+    border = "rounded",
+    title = " read-aloud ",
+  })
+  for _, k in ipairs { "q", "<esc>" } do
+    vim.keymap.set("n", k, function()
+      pcall(vim.api.nvim_win_close, win, true)
+    end, { buffer = buf, nowait = true })
+  end
 end
 
 M._state = st -- for tests / health

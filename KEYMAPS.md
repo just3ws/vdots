@@ -101,6 +101,7 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader>rs` | **Stop** | Halt the voice, keep the panes |
 | `<leader>rq` | **Close** | Close the preview pane and tear down |
 | `<leader>rf` | **Refresh** | Re-render the preview from the source |
+| `<leader>ri` | **Info** | Parse / frontmatter interpretation, chapters, estimate vs `spoken_minutes`, drift |
 | `<leader>rx` | **Quick export** | Throwaway `.m4a` of the buffer/range + open player |
 | `<leader>rP` | **Publish** | Add doc + read-through to `~/ai/outbox/listen` (`:VdotsReadPublish!` re-records) |
 

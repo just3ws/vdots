@@ -35,6 +35,18 @@ function M.refresh_lines()
     return
   end
   local lines = vim.api.nvim_buf_get_lines(state.src_buf, 0, -1, false)
+  -- Blank out a leading YAML frontmatter block so the preview reads as prose,
+  -- while keeping line count 1:1 with the source (cursor sync stays exact).
+  if lines[1] == "---" then
+    for j = 2, #lines do
+      if lines[j] == "---" or lines[j] == "..." then
+        for k = 1, j do
+          lines[k] = ""
+        end
+        break
+      end
+    end
+  end
   vim.bo[state.buf].modifiable = true
   vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, lines)
   vim.bo[state.buf].modifiable = false
