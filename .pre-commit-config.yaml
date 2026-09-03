@@ -61,6 +61,13 @@ repos:
         files: \.lua$
         pass_filenames: false
 
+      - id: selene
+        name: Selene lint
+        entry: selene .
+        language: system
+        files: \.lua$
+        pass_filenames: false
+
       - id: smoke-tests
         name: Smoke + unit tests
         entry: ./test/run.sh

@@ -70,11 +70,19 @@ This repository is a Lua-based Neovim configuration.
 Use these from repo root:
 
 - `./test/run.sh`: run the full headless regression suite (required before/after changes).
+- `./test/lint.sh`: luacheck + `stylua --check` + selene (what CI runs).
 - `./bin/vdots-update`: update plugins via `vim.pack`, prune inactive packages, run tests, show diff.
 - `luacheck . --config .luacheckrc`: static lint for Lua.
-- `stylua --check .`: formatting check (CI matches this).
-- `stylua .`: apply formatting.
+- `stylua --check .` / `stylua .`: formatting check / apply.
+- `selene .`: strict Lua lint (`selene.toml` + `vim.yml` std lib).
 - `nvim --headless -u init.lua -c 'quit'`: quick startup sanity check.
+
+**Tool sources — one per tool.** Mason (`lua/editor/mason.lua`) owns tools used
+*only* inside Neovim: the LSP servers. Everything the shell or CI also runs —
+stylua, selene, luacheck, shellcheck, shfmt, prettier(d), rubocop, standardrb —
+comes from the zdots Brewfile. Don't add a lint/format tool to Mason, and don't
+add an LSP server to the Brewfile. Mason is skipped entirely under `$CI` / when
+headless.
 
 ## Coding Style & Naming Conventions
 
