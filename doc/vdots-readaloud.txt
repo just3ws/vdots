@@ -295,13 +295,18 @@ Re-publishing the same source is an **idempotent no-op** (exit 0) unless
 
 CLI: >
 
-        vdots publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open]
+        vdots publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open] [-v]
         vdots publish --info FILE.md      pre-flight report only, no write
         vdots listen info FILE.md         same report
         vdots listen open | rebuild | ls | path
 <
 `vdots-publish` / `vdots-read --publish` / `vdots-listen publish` are the same
 pipeline; `vdots publish` is the friendly entry point.
+
+`-v` / `--verbose` narrates every pipeline step to stderr (source resolution,
+frontmatter, voice, word count, the slow `say` render, chapters, ffmpeg
+enrich, output file list) and un-mutes `say` and `ffmpeg`. Off by default —
+publish only prints the final `published — <dir>` line.
 
 `:VdotsReadExport` (`;rx`) is the unrelated quick path — a throwaway temp .m4a,
 nothing kept.

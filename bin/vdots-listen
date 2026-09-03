@@ -18,8 +18,9 @@
 # shows up on every device automatically.
 #
 # Usage:
-#   vdots-listen publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open]
+#   vdots-listen publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open] [-v]
 #     Re-publishing is refused unless generated_at is newer (or --force).
+#     -v / --verbose narrates every pipeline step (and un-mutes say/ffmpeg).
 #     (`vdots-publish` is a friendlier wrapper with a pre-flight report.)
 #   vdots-listen info FILE.md    pre-flight parse report — no audio, no write
 #   vdots-listen rebuild         regenerate the catalog + article pages
@@ -29,6 +30,9 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+: "${VERBOSE:=0}"
+step() { [[ "$VERBOSE" == 1 ]] && printf '  → %s\n' "$*" >&2 || true; }
 LISTEN_DIR="${VDOTS_LISTEN_DIR:-$HOME/ai/outbox/listen}"
 
 die() { echo "vdots-listen: $*" >&2; exit 1; }
@@ -103,12 +107,15 @@ cmd_publish() {
       --open)  do_open=1;  shift ;;
       --force) force=1;    shift ;;
       --raw)   export VDOTS_RAW=1; shift ;;
+      -v|--verbose) VERBOSE=1; shift ;;
       -*) die "unknown option: $1" ;;
       *) file="$1"; shift ;;
     esac
   done
   [[ -n "$file" && -r "$file" ]] || die "cannot read file: ${file:-<none>}"
+  step "input: $file"
   file="$(resolve_source "$file")"
+  step "source: $file"
   command -v say >/dev/null || die "\`say\` not found (macOS only)"
 
   # frontmatter (enhanced read-aloud docs carry a metadata block)
@@ -123,12 +130,14 @@ cmd_publish() {
     src_url="$(jq -r '.source // ""' <<<"$fm")"
   fi
   enhanced="${enhanced:-false}"; lang="${lang:-en-US}"
+  step "frontmatter: enhanced=$enhanced lang=$lang expected=${spoken_min:-—}min generated_at=${gen_at:-—}"
 
   local title slug date dir
   title="${fm_title:-$(doc_title "$file")}"
   date="$(date +%Y-%m-%d)"
   slug="$(slugify "$title")"; [[ -n "$slug" ]] || slug="document"
   dir="$LISTEN_DIR/$date-$slug"
+  step "session: $dir"
 
   if [[ -d "$dir" && "$force" -ne 1 ]]; then
     local prev_gen="" prev_src=""
@@ -155,11 +164,14 @@ cmd_publish() {
 
   # resolve the voice (respects --voice / --tone / frontmatter lang)
   [[ -n "$voice" ]] || voice="$("$HERE/vdots-read" --print-voice --tone "$tone" --lang "$lang" 2>/dev/null || true)"
+  step "voice: ${voice:-system default} · pace=$paceval"
 
   # spoken text (shared Markdown parse + tech-pronunciation + paced silences)
+  step "building the spoken script"
   "$HERE/vdots-read" --dry-run --pace "$paceval" --tone "$tone" "$file" > "$dir/$slug.txt"
   [[ -s "$dir/$slug.txt" ]] || die "nothing to read in $file"
   local words; words="$(wc -w < "$dir/$slug.txt" | tr -d ' ')"
+  step "spoken script: $words words → $dir/$slug.txt"
 
   # clean readable doc: drop leading YAML frontmatter; for plain docs also drop
   # a redundant leading H1 (enhanced docs' first heading is real content).
@@ -186,18 +198,26 @@ cmd_publish() {
   fi
   # AAC keeps the file ~4x smaller than say's default LPCM (matters for Drive
   # sync) and lets ffmpeg add chapters with -c copy. Fall back if unsupported.
+  step "rendering audio with \`say\` at $rate wpm (this is the slow step)…"
   local say_common=(-r "$rate" -f "$dir/$slug.txt")
   [[ -n "$voice" ]] && say_common=(-v "$voice" "${say_common[@]}")
-  say --file-format=m4af --data-format=aac -o "$dir/$slug.m4a" "${say_common[@]}" 2>/dev/null \
-    || say -o "$dir/$slug.m4a" "${say_common[@]}"
+  if [[ "$VERBOSE" == 1 ]]; then
+    say --file-format=m4af --data-format=aac -o "$dir/$slug.m4a" "${say_common[@]}" \
+      || say -o "$dir/$slug.m4a" "${say_common[@]}"
+  else
+    say --file-format=m4af --data-format=aac -o "$dir/$slug.m4a" "${say_common[@]}" 2>/dev/null \
+      || say -o "$dir/$slug.m4a" "${say_common[@]}"
+  fi
 
   local dur=0
   if command -v ffprobe >/dev/null; then
     dur="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$dir/$slug.m4a" 2>/dev/null || echo 0)"
   fi
+  step "audio: $(human_dur "$dur") → $dir/$slug.m4a"
 
   # verbatim transcript (one line per sentence when enhanced), timed cues, VTT
   # captions, and a readability report
+  step "transcript · cues · captions · readability"
   "$HERE/vdots-read" --transcript "$file" > "$dir/$slug.transcript.txt"
   "$HERE/vdots-read" --cues "$dur" "$file" > "$dir/$slug.vtt"
   "$HERE/vdots-read" --cues-json "$dur" "$file" > "$dir/$slug.cues.json"
@@ -210,6 +230,7 @@ cmd_publish() {
   if [[ "$enhanced" == "true" ]]; then
     chapters_json="$("$HERE/vdots-read" --chapters "$dur" "$file" 2>/dev/null || echo '[]')"
     "$HERE/vdots-read" --chapters-vtt "$dur" "$file" > "$dir/$slug.chapters.vtt" 2>/dev/null || true
+    step "chapters: $(jq -r 'length' <<<"$chapters_json") from sections"
   fi
 
   # enrich the m4a in one pass: audiobook tags, embedded lyrics (the verbatim
@@ -217,6 +238,7 @@ cmd_publish() {
   # have them. So it plays like a proper chaptered audiobook with the words
   # right there, straight from a phone / Drive, no companion files needed.
   if command -v ffmpeg >/dev/null; then
+    step "enriching the m4a (tags · embedded lyrics · chapters) with ffmpeg"
     local ffmeta="$dir/.ffmeta"
     { echo ";FFMETADATA1"
       [[ "$chapters_json" != "[]" ]] && jq -r --argjson total "$dur" '
@@ -224,16 +246,21 @@ cmd_publish() {
         "[CHAPTER]\nTIMEBASE=1/1000\nSTART=\(($e.value.start*1000)|floor)\nEND=\(((.[$e.key+1].start // $total)*1000)|floor)\ntitle=\($e.value.title)"
       ' <<<"$chapters_json"
     } > "$ffmeta"
-    if ffmpeg -y -i "$dir/$slug.m4a" -i "$ffmeta" \
-         -map 0:a -map_metadata 1 -map_chapters 1 -c:a copy \
-         -metadata title="$title" \
-         -metadata artist="vdots read-aloud" \
-         -metadata album="vdots · listen" \
-         -metadata album_artist="vdots read-aloud" \
-         -metadata date="$date" \
-         -metadata comment="${src_url:-$file}" \
-         -metadata lyrics="$(cat "$dir/$slug.transcript.txt")" \
-         "$dir/.tagged.m4a" >/dev/null 2>&1; then
+    local ffq=(-loglevel error)
+    [[ "$VERBOSE" == 1 ]] && ffq=(-loglevel warning -stats)
+    ffmpeg_enrich() {
+      ffmpeg -y "${ffq[@]}" -i "$dir/$slug.m4a" -i "$ffmeta" \
+        -map 0:a -map_metadata 1 -map_chapters 1 -c:a copy \
+        -metadata title="$title" \
+        -metadata artist="vdots read-aloud" \
+        -metadata album="vdots · listen" \
+        -metadata album_artist="vdots read-aloud" \
+        -metadata date="$date" \
+        -metadata comment="${src_url:-$file}" \
+        -metadata lyrics="$(cat "$dir/$slug.transcript.txt")" \
+        "$dir/.tagged.m4a"
+    }
+    if { [[ "$VERBOSE" == 1 ]] && ffmpeg_enrich; } || { [[ "$VERBOSE" != 1 ]] && ffmpeg_enrich 2>/dev/null; }; then
       mv "$dir/.tagged.m4a" "$dir/$slug.m4a"
     else
       rm -f "$dir/.tagged.m4a"
@@ -301,8 +328,13 @@ open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dump
     printf '## The read-through\n\n'
     sed 's/^/> /' "$dir/$slug.transcript.txt"
   } > "$dir/$slug.report.md"
+  step "report → $dir/$slug.report.md · meta.json"
 
+  step "rebuilding the catalog + article pages"
   rebuild
+  if [[ "$VERBOSE" == 1 ]]; then
+    step "files:"; (cd "$dir" && printf '    %s\n' *) >&2
+  fi
   echo "vdots-listen: published — $dir  ($(human_dur "$dur"))"
   (( do_open )) && open "$LISTEN_DIR/index.html"
   return 0
@@ -320,6 +352,6 @@ case "${1:-}" in
     (( found )) || echo "(no sessions yet)"
     ;;
   path)    echo "$LISTEN_DIR" ;;
-  -h|--help|"") sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help|"") sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//' ;;
   *) die "unknown command: $1 (try: publish, rebuild, open, ls, path)" ;;
 esac

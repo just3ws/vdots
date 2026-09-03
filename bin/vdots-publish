@@ -8,8 +8,9 @@
 # does from Neovim.
 #
 # Usage:
-#   vdots-publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open]
+#   vdots-publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open] [-v]
 #   vdots-publish --info FILE.md      pre-flight report only — no audio, no write
+#   -v / --verbose  narrate every pipeline step (and un-mute say/ffmpeg)
 #
 # A `<base>.spoken.md` sibling is published in place of `<base>.md` (--raw opts
 # out). --force (or :VdotsReadPublish!) re-records over a not-newer session;
@@ -26,7 +27,7 @@ while [[ $# -gt 0 ]]; do
     --info|--dry-run) mode=info; shift ;;
     -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     --voice|--tone|--pace) pass+=("$1" "$2"); shift 2 ;;
-    --force|--open|--raw) pass+=("$1"); shift ;;
+    --force|--open|--raw|-v|--verbose) pass+=("$1"); shift ;;
     -*) echo "vdots-publish: unknown option: $1" >&2; exit 1 ;;
     *) file="$1"; shift ;;
   esac

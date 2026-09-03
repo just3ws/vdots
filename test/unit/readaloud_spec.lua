@@ -100,7 +100,6 @@ describe("vdots.readaloud.pace", function()
   end)
 
   it("keeps list items moving (shorter gap than paragraphs)", function()
-    local bs = P.parse(vim.split("- one\n- two\n", "\n", { plain = true }))
     local s = pace.settings { pace = "follow" }
     assert.is_true(pace.lead("list", "list", s) < pace.lead("para", "para", s))
   end)

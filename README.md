@@ -300,7 +300,8 @@ with timed cues + `.vtt` captions. The self-contained article page plays the
 audio while the transcript highlights and auto-scrolls — click a paragraph to
 seek. `~/ai` is synced by Google Drive desktop, so the catalog shows up on
 every device. `vdots publish --info FILE.md` prints a pre-flight report without
-writing; `:VdotsReadPublish!` re-records after edits.
+writing; `vdots publish -v FILE.md` narrates each pipeline step;
+`:VdotsReadPublish!` re-records after edits.
 
 **Tips:** `;r[` re-hears a missed paragraph · pause → edit → `:w` → `;rr` resumes
 from that block · slow `rate` for dense docs · teach it project jargon once in
