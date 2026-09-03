@@ -313,9 +313,12 @@ cmd_publish() {
 
     # MP3 sibling — the reliable "play from Google Drive on Android" format
     # (Drive's app previews mp3 inline; .m4a it often refuses). Mono VBR ~96k.
+    # -map_metadata -1 drops the MP4 container atoms (major_brand, ...) ffmpeg
+    # would otherwise smuggle into bogus ID3 TXXX frames — a bloated/odd ID3
+    # tag makes some players (incl. Chrome's file:// decoder) refuse the file.
     step "encoding the mp3 sibling (Drive/Android-friendly)"
-    ffmpeg -y "${ffq[@]}" -i "$p_m4a" \
-      -c:a libmp3lame -q:a 5 -ac 1 -id3v2_version 3 \
+    ffmpeg -y "${ffq[@]}" -i "$p_m4a" -map 0:a -map_metadata -1 \
+      -c:a libmp3lame -q:a 5 -ac 1 -id3v2_version 3 -write_xing 1 \
       -metadata title="$title" \
       -metadata artist="vdots read-aloud" \
       -metadata album="vdots · listen" \
