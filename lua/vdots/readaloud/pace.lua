@@ -194,12 +194,17 @@ end
 function M.cues(blocks, cfg, total_dur, opts)
   opts = opts or {}
   local s = M.settings(cfg)
+  -- `say` renders the [[slnc]] pauses, then the whole file is time-stretched,
+  -- so every pause in the real audio is 1/stretch longer than the marker value.
+  -- Scale the modelled pauses to match, or the timeline drifts (speech absorbs
+  -- the missing pause time and text creeps ahead of the voice).
+  local pf = 1 / (s.stretch or 1)
   local total_words, total_pause = 0, 0
   local prev
   for _, b in ipairs(blocks) do
     local _, bp = M.breathe(b.speak, s)
     total_words = total_words + words(b.speak)
-    total_pause = total_pause + M.lead(prev, b.kind, s) / 1000 + bp
+    total_pause = total_pause + (M.lead(prev, b.kind, s) / 1000 + bp) * pf
     prev = b.kind
   end
   local speech = math.max((tonumber(total_dur) or 0) - total_pause, 0.1)
@@ -209,8 +214,8 @@ function M.cues(blocks, cfg, total_dur, opts)
   prev = nil
   for _, b in ipairs(blocks) do
     local _, bp = M.breathe(b.speak, s)
-    t = t + M.lead(prev, b.kind, s) / 1000
-    local block_dur = math.max(words(b.speak) * per_word + bp, 0.4)
+    t = t + M.lead(prev, b.kind, s) / 1000 * pf
+    local block_dur = math.max(words(b.speak) * per_word + bp * pf, 0.4)
     if opts.sentences and b.kind ~= "heading" then
       local sents = sentences(b.text)
       local bw = 0
