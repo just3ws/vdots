@@ -4,30 +4,37 @@
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
-       In flight: branch `feat/vdots-shim-readaloud` (NOT merged, NOT pushed —
-       ~15 commits). The vdots control-plane shim + read-aloud plugin +
-       `vdots-listen` publish pipeline + enhanced-doc frontmatter contract +
-       dashboard Recent-Markdown are all built, tested, and working end to end.
+       In flight: branch `feat/vdots-shim-readaloud` (25 commits, NOT merged,
+       NOT pushed — **main == merge-base, fast-forward is clean**). The vdots
+       control-plane shim + read-aloud plugin + `vdots-listen` publish pipeline
+       + enhanced-doc frontmatter contract + dashboard Recent-Markdown are all
+       built, tested (`./test/run.sh` + `./test/lint.sh` green), and working
+       end to end. gitleaks clean; no hardcoded paths in bin/lua.
 
-       Latest session (2026-09-03) hardened the publish → Google Drive path:
+       Latest session (2026-09-03):
        - audio: `.mp3` is primary (Drive/Android plays it inline; transcript
-         embedded as an id3 lyrics frame); `.m4a` kept for chapters + faststart
-         (Apple Music/VLC). rubberband (R3) time-stretch for a measured spoken
-         pace, ffmpeg atempo fallback. Per-word `[[slnc]]` was removed — it
-         sounded like flash cards; pace.lua now = punctuation/paragraph beats
-         + whole-file stretch (follow: 168wpm × 0.90 ≈ 10:57 for the basis pack).
-       - session dir uses role-named files (audio.mp3, document.md, report.md,
-         transcript.txt, captions.vtt, article.html, meta.json + assets/); the
-         `index.md` catalog is the phone surface (Drive renders it; the HTML
-         player only works in a real browser). article.html read-along verified
-         in-browser: transcript highlights + auto-scrolls, list items tracked.
-       - `-v`/`--verbose` on vdots-publish/vdots-listen.
-       - selene wired (vim.yml std lib, CI + pre-commit); Mason owns editor-only
-         LSP servers (lua/editor/mason.lua), brew owns shell/CI tools —
-         documented under "Tool sources" below. Brewfile.common (zdots main):
-         + rubberband, + selene, − lua-language-server.
+         embedded as a clean-ID3 lyrics frame); `.m4a` kept for chapters +
+         faststart. rubberband (R3) time-stretch for a measured pace, ffmpeg
+         atempo fallback. Per-word `[[slnc]]` removed (flash-card effect);
+         pace.lua = punctuation/paragraph beats + whole-file stretch (follow:
+         168wpm × 0.90 ≈ 10:57 for the basis pack).
+       - role-named session files + `index.md` catalog as the phone surface.
+         article.html read-along wiring verified (highlights, auto-scroll, list
+         items). **KNOWN: the article.html <audio> player does not work in
+         Google Drive's preview — Drive sandboxes JS + media. `index.md` +
+         opening `audio.mp3` directly is the Drive path.** Could not verify
+         real playback (automation Chrome can't load <audio> at all).
+       - selene wired (vim.yml std lib; CI installs it + mandoc + zsh;
+         pre-commit runs it). Mason owns editor-only LSP servers
+         (lua/editor/mason.lua); brew owns shell/CI tools. Brewfile.common
+         (zdots main): + rubberband, + selene, − lua-language-server.
+       - Full doc pass: 8 man pages (man/man1/), completions/_vdots,
+         docs/wiki/Read-Aloud.md + 5 mermaid diagrams, .claude/skills/
+         read-aloud.md, README + wiki + :help synced. .zshrc.local (zdots,
+         gitignored) wires PATH + MANPATH + the completion.
 
-       Blocked on human: merge/push decision for the branch.
+       Blocked on human: merge + push. Prep is done — `git merge --ff-only`
+       (or --no-ff to keep the branch shape) then push both repos.
 
        NEXT (recommended, deferred — its own focused pass): rewrite
        lua/vdots/readaloud/parse.lua from regex to vim.treesitter (markdown +

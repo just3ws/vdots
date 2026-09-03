@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y luarocks ripgrep
+          sudo apt-get install -y luarocks ripgrep mandoc zsh
           sudo luarocks install luacheck
           curl -sSLo stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip
           sudo unzip -o stylua.zip -d /usr/local/bin
