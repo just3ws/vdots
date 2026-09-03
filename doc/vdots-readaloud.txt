@@ -282,8 +282,16 @@ artist tags, and the transcript as an embedded lyrics track (Apple Music /
 VLC show it while playing) — so a phone plays it fully from Drive with no
 companion files.
 
-Re-publishing the same document is refused unless `generated_at` is newer (or
-same-day for a plain doc); pass `--force` (or `:VdotsReadPublish!`).
+`<base>.md` (the reading doc) and `<base>.spoken.md` (the speech-ready one with
+the frontmatter block) are treated as a pair: publishing either operates on the
+`.spoken.md`, so `vdots publish <base>.md` and `vdots publish <base>.spoken.md`
+produce the same session. A broken pair warns (a `.md` with frontmatter but no
+`.spoken.md`; a `.spoken.md` with no `.md` source; a non-read-aloud sibling).
+`--raw` publishes the file you named, as-is.
+
+Re-publishing the same source is an **idempotent no-op** (exit 0) unless
+`generated_at` is newer, the file changed the same day, or you pass `--force`
+(`:VdotsReadPublish!`).
 
 CLI: >
 

@@ -11,7 +11,9 @@
 #   vdots-publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open]
 #   vdots-publish --info FILE.md      pre-flight report only — no audio, no write
 #
-# --force (or :VdotsReadPublish!) re-records over a same-day / not-newer session.
+# A `<base>.spoken.md` sibling is published in place of `<base>.md` (--raw opts
+# out). --force (or :VdotsReadPublish!) re-records over a not-newer session;
+# otherwise a re-publish of the same source is an idempotent no-op.
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -22,9 +24,9 @@ pass=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --info|--dry-run) mode=info; shift ;;
-    -h|--help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     --voice|--tone|--pace) pass+=("$1" "$2"); shift 2 ;;
-    --force|--open) pass+=("$1"); shift ;;
+    --force|--open|--raw) pass+=("$1"); shift ;;
     -*) echo "vdots-publish: unknown option: $1" >&2; exit 1 ;;
     *) file="$1"; shift ;;
   esac
@@ -32,12 +34,15 @@ done
 
 [[ -n "$file" && -r "$file" ]] || { echo "vdots-publish: cannot read file: ${file:-<none>}" >&2; exit 1; }
 
+[[ " ${pass[*]-} " == *" --raw "* ]] && export VDOTS_RAW=1
+
 if [[ "$mode" == info ]]; then
-  exec "$HERE/vdots-read" --info "$file"
+  exec "$HERE/vdots-listen" info "$file"
 fi
 
-# pre-flight — a stale frontmatter block fails here, not after a 10-minute render
-"$HERE/vdots-read" --info "$file"
+# pre-flight — resolves the .spoken.md sibling + fails a stale block here,
+# not after a 10-minute render
+"$HERE/vdots-listen" info "$file" || true
 echo
 
 exec "$HERE/vdots-listen" publish "$file" ${pass[@]+"${pass[@]}"}

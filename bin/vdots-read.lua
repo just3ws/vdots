@@ -61,7 +61,14 @@ if mode == "info" then
     "mode",
     enhanced and "enhanced read-aloud" or (doc.present and "plain (+ frontmatter)" or "plain")
   )
-  row("title", fm.title or "(from first heading / filename)")
+  local first_head
+  for _, b in ipairs(blocks) do
+    if b.kind == "heading" then
+      first_head = b.text
+      break
+    end
+  end
+  row("title", fm.title or first_head or vim.fn.fnamemodify(file, ":t:r"))
   if enhanced then
     row("lang", fm.lang)
     row("source", fm.source or "—")

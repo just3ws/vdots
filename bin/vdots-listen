@@ -61,6 +61,37 @@ rebuild() {
   echo "vdots-listen: catalog rebuilt — $LISTEN_DIR/index.html"
 }
 
+# `<base>.md` (the reading doc) and `<base>.spoken.md` (the speech-ready doc,
+# frontmatter block on top) are a pair; publishing operates on the `.spoken.md`.
+# Resolves the pair and warns on a broken one. $VDOTS_RAW=1 / --raw opts out.
+_has_fm() { [[ "$(head -1 "$1" 2>/dev/null)" == "---" ]]; }
+
+resolve_source() {
+  local f="$1"
+  if [[ "$f" == *.spoken.md ]]; then
+    [[ -r "${f%.spoken.md}.md" ]] || \
+      echo "vdots-listen: warning — reading source ${f%.spoken.md}.md not found (publishing $(basename "$f") alone)" >&2
+    printf '%s' "$f"; return
+  fi
+  local sib="${f%.md}.spoken.md"
+  if [[ "${VDOTS_RAW:-0}" == 1 ]]; then
+    [[ -r "$sib" ]] && echo "vdots-listen: --raw — publishing $(basename "$f"), not the $(basename "$sib") sibling" >&2
+    printf '%s' "$f"; return
+  fi
+  if [[ -r "$sib" ]] && _has_fm "$sib"; then
+    echo "vdots-listen: using $(basename "$sib") (speech-ready sibling; --raw for $(basename "$f"))" >&2
+    printf '%s' "$sib"; return
+  fi
+  if [[ -r "$sib" ]]; then
+    echo "vdots-listen: warning — $(basename "$sib") exists but has no read-aloud frontmatter; publishing $(basename "$f")" >&2
+  elif _has_fm "$f"; then
+    echo "vdots-listen: warning — $(basename "$f") has frontmatter but no $(basename "$sib") companion; publishing it as-is" >&2
+  else
+    echo "vdots-listen: no $(basename "$sib") sibling — publishing $(basename "$f") plain (no chapters/lexicon)" >&2
+  fi
+  printf '%s' "$f"
+}
+
 cmd_publish() {
   local file="" voice="" rate="" tone="warm" paceval="follow" do_open=0 force=0
   while [[ $# -gt 0 ]]; do
@@ -71,11 +102,13 @@ cmd_publish() {
       --pace)  paceval="$2"; shift 2 ;;
       --open)  do_open=1;  shift ;;
       --force) force=1;    shift ;;
+      --raw)   export VDOTS_RAW=1; shift ;;
       -*) die "unknown option: $1" ;;
       *) file="$1"; shift ;;
     esac
   done
   [[ -n "$file" && -r "$file" ]] || die "cannot read file: ${file:-<none>}"
+  file="$(resolve_source "$file")"
   command -v say >/dev/null || die "\`say\` not found (macOS only)"
 
   # frontmatter (enhanced read-aloud docs carry a metadata block)
@@ -98,16 +131,22 @@ cmd_publish() {
   dir="$LISTEN_DIR/$date-$slug"
 
   if [[ -d "$dir" && "$force" -ne 1 ]]; then
-    local prev_gen=""
-    [[ -r "$dir/meta.json" ]] && command -v jq >/dev/null && \
+    local prev_gen="" prev_src=""
+    if [[ -r "$dir/meta.json" ]] && command -v jq >/dev/null; then
       prev_gen="$(jq -r '.generated_at // ""' "$dir/meta.json")"
+      prev_src="$(jq -r '.source // ""' "$dir/meta.json")"
+    fi
     if [[ -n "$gen_at" && -n "$prev_gen" && ! "$gen_at" > "$prev_gen" ]]; then
-      echo "vdots-listen: $slug already published from generated_at $prev_gen (>= $gen_at)" >&2
-      echo "             --force (or :VdotsReadPublish!) to re-record anyway" >&2
-      return 3
+      # same source, not newer — the library is already up to date. No-op.
+      echo "vdots-listen: up to date — $slug (generated_at $prev_gen). --force to re-record." >&2
+      return 0
+    elif [[ -z "$gen_at" && "$file" == "$prev_src" ]]; then
+      # no freshness stamp, but literally the same file published today
+      echo "vdots-listen: already published today from this file — $dir. --force to re-record." >&2
+      return 0
     elif [[ -z "$gen_at" ]]; then
-      echo "vdots-listen: already published today — $dir" >&2
-      echo "             --force (or :VdotsReadPublish!) to re-record" >&2
+      echo "vdots-listen: a different source already produced $slug today — $dir" >&2
+      echo "             --force (or :VdotsReadPublish!) to overwrite it" >&2
       return 3
     fi
   fi
@@ -271,7 +310,7 @@ open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dump
 
 case "${1:-}" in
   publish) shift; cmd_publish "$@" ;;
-  info)    shift; [[ -n "${1:-}" && -r "$1" ]] || die "usage: vdots-listen info FILE.md"; exec "$HERE/vdots-read" --info "$1" ;;
+  info)    shift; [[ -n "${1:-}" && -r "$1" ]] || die "usage: vdots-listen info FILE.md"; exec "$HERE/vdots-read" --info "$(resolve_source "$1")" ;;
   rebuild) rebuild ;;
   open)    open "$LISTEN_DIR/index.html" ;;
   ls)
