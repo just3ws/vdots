@@ -157,19 +157,26 @@ Audition without committing: `vdots-read --sample --voice "Zoe (Premium)"`.
 `:checkhealth vdots.readaloud` reports the resolved voice, tone and pace.
 
 Pacing ~
-`pace` controls how deliberate the reading is. Every preset leaves real
-silence between words, a beat at each clause mark (`, ; : —`), a longer rest
-at sentence ends (`. ! ?`), and bigger gaps between paragraphs and before
-sections — the space a person leaves reading aloud, not a rushed TTS dump:
+`pace` controls how deliberate the reading is. Two levers, kept apart:
 
-  `pace = "follow"`  (default) 155 wpm; ~22ms between words, ~115ms at a
-                     clause, ~360ms at a sentence, ~480ms between paragraphs,
-                     ~820ms before a heading.
-  `pace = "relaxed"` 175 wpm; the same shape, lighter beats.
-  `pace = "natural"` 200 wpm; minimal beats, no inter-word gap.
+  1. A beat at each clause mark (`, ; :`), a longer rest at sentence ends
+     (`. ! ?`), and bigger gaps between paragraphs / before headings — pauses
+     only where a speaker actually pauses, so the voice keeps its phrase
+     melody. (Inserting silence between every word made it sound like flash
+     cards; that was removed.)
+  2. `stretch` — the finished audio is time-stretched (pitch preserved) so
+     the gaps `say` already leaves between words get longer. `rubberband` (R3
+     engine) does this if installed; otherwise `ffmpeg atempo`. This is what
+     makes it sound unhurried. Live `;rr` playback and `;rx` export can't
+     post-process, so there the stretch is folded into the `say` rate instead.
 
-`rate` overrides the preset's words-per-minute if you set it (the beats are
-unchanged). List items use a shorter gap than paragraphs so lists don't drag.
+  `pace = "follow"`  (default) 168 wpm × 0.90 stretch ≈ 150 effective;
+                     clause 75ms, sentence 300ms, paragraph 360ms, heading 680ms.
+  `pace = "relaxed"` 182 wpm × 0.95; the same shape, lighter.
+  `pace = "natural"` 200 wpm, no stretch; minimal beats.
+
+`rate` overrides the preset's words-per-minute (stretch and beats unchanged).
+List items use a shorter gap than paragraphs so lists don't drag.
 
 Pronunciation ~
 Spoken text passes through `vdots.readaloud.pronounce` — a word-boundary
@@ -372,9 +379,9 @@ Robotic / cold voice ~
 
 Reading too fast / too slow ~
         `pace = "follow"` (default, most space) / `"relaxed"` / `"natural"`
-        (least). Or set `rate` to an explicit words-per-minute — that changes
-        enunciation speed only; the between-word / punctuation / paragraph
-        silences come from the preset. Tune those in `pace.lua` M.presets
-        (`word` / `clause` / `sentence` / `para` / `section`, all ms).
+        (least). Or set `rate` to an explicit words-per-minute. To tune, edit
+        `pace.lua` M.presets: `stretch` (lower = slower, more air everywhere),
+        `clause` / `sentence` (punctuation beats), `para` / `section` (gaps
+        between blocks), all ms except `stretch`.
 
  vim:tw=78:ts=8:et:ft=help:norl:

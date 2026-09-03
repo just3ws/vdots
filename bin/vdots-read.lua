@@ -7,21 +7,31 @@
 --   chapters <secs> chapter markers as JSON  [{start,title}]
 --   meta            the frontmatter block as JSON (never spoken)
 --   info            a human-readable pre-flight report (parse + drift)
+--   pace            the resolved pace preset as key=value (no file needed)
 --
 -- Invoked as:  nvim --headless -u NONE -l bin/vdots-read.lua <file.md>
 -- Env: $VDOTS_REPO, $VDOTS_PACE, $VDOTS_MODE, $VDOTS_DURATION.
 
 local repo = vim.env.VDOTS_REPO or vim.fn.fnamemodify(vim.fn.expand "<sfile>:p", ":h:h")
-local file = _G.arg and _G.arg[1] or nil
-if not file or file == "" then
-  io.stderr:write "vdots-read.lua: no input file\n"
-  vim.cmd "cquit 1"
-end
 vim.opt.runtimepath:append(repo)
 
 local parse = require "vdots.readaloud.parse"
 local pron = require "vdots.readaloud.pronounce"
 local pace = require "vdots.readaloud.pace"
+
+if vim.env.VDOTS_MODE == "pace" then
+  local s = pace.settings { pace = vim.env.VDOTS_PACE or "follow" }
+  io.write(
+    ("rate=%d\nstretch=%s\nsay_rate=%d\n"):format(s.rate, tostring(s.stretch), pace.say_rate(s))
+  )
+  vim.cmd "quit"
+end
+
+local file = _G.arg and _G.arg[1] or nil
+if not file or file == "" then
+  io.stderr:write "vdots-read.lua: no input file\n"
+  vim.cmd "cquit 1"
+end
 
 local lines = vim.fn.readfile(file)
 local mode = vim.env.VDOTS_MODE or "script"

@@ -93,26 +93,27 @@ describe("vdots.readaloud.pace", function()
     assert.same({ "heading", "para", "heading", "para" }, kinds)
 
     local script = pace.script(bs, { pace = "follow" })
-    -- section lead (820) > paragraph lead (480) > after-heading lead (300)
-    assert.truthy(script:find "%[%[slnc 820%]%] Heading") -- before "## Two"
-    assert.truthy(script:find "%[%[slnc 300%]%] para") -- "para a" follows a heading
+    -- section lead (680) > paragraph lead (360) > after-heading lead (260)
+    assert.truthy(script:find "%[%[slnc 680%]%] Heading") -- before "## Two"
+    assert.truthy(script:find "%[%[slnc 260%]%] para") -- "para a" follows a heading
     assert.is_nil(script:match "^%[%[slnc") -- no lead on the very first block
   end)
 
-  it("breathes: air between words and a beat at punctuation", function()
+  it("breathes: a beat at clause marks and a longer rest at sentence ends", function()
     local s = pace.settings { pace = "follow" }
-    local out, added = pace.breathe("One, two three.", s)
-    assert.truthy(out:find "One, %[%[slnc 115%]%]") -- clause beat after the comma
-    assert.truthy(out:find "three%. %[%[slnc 360%]%]") -- sentence rest at the end
-    assert.truthy(out:find "%[%[slnc 22%]%] two") -- word air between "One," and "two"
-    -- 2 inter-word gaps (22) + 1 clause (115) + 1 sentence (360) = 519ms
-    assert.is_true(math.abs(added - 0.519) < 0.001)
+    local out, added = pace.breathe("One, two. Three four.", s)
+    assert.truthy(out:find "One, %[%[slnc 75%]%]") -- clause beat after the comma
+    assert.truthy(out:find "two%. %[%[slnc 300%]%]") -- sentence rest mid-string
+    assert.is_nil(out:find "four%. %[%[slnc") -- trailing punctuation: block lead covers it
+    -- 1 clause (75) + 1 sentence (300) = 375ms
+    assert.is_true(math.abs(added - 0.375) < 0.001)
   end)
 
-  it("breathe is a no-op-ish for natural (no inter-word air)", function()
-    local s = pace.settings { pace = "natural" }
-    local out = pace.breathe("one two three", s)
-    assert.is_nil(out:find "%[%[slnc") -- word=0 for natural, no punctuation here
+  it("breathe never inserts silence between plain words", function()
+    for _, p in ipairs { "follow", "relaxed", "natural" } do
+      local out = pace.breathe("one two three four five", pace.settings { pace = p })
+      assert.is_nil(out:find("[[slnc", 1, true))
+    end
   end)
 
   it("keeps list items moving (shorter gap than paragraphs)", function()
@@ -120,10 +121,13 @@ describe("vdots.readaloud.pace", function()
     assert.is_true(pace.lead("list", "list", s) < pace.lead("para", "para", s))
   end)
 
-  it("rate follows the preset unless overridden", function()
-    assert.equals(155, pace.settings({ pace = "follow" }).rate)
+  it("rate follows the preset; say_rate folds in the time-stretch", function()
+    assert.equals(168, pace.settings({ pace = "follow" }).rate)
     assert.equals(200, pace.settings({ pace = "natural" }).rate)
     assert.equals(999, pace.settings({ pace = "follow", rate = 999 }).rate)
+    -- follow: 168 wpm * 0.90 stretch -> 151 for the live/export path
+    assert.equals(151, pace.say_rate(pace.settings { pace = "follow" }))
+    assert.equals(200, pace.say_rate(pace.settings { pace = "natural" })) -- stretch 1.0
   end)
 
   it("builds timed cues that fit the audio duration and carry verbatim text", function()

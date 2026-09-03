@@ -39,8 +39,6 @@ auto_voice() {
   done
 }
 
-# keep in sync with lua/vdots/readaloud/pace.lua M.presets[*].rate
-pace_rate() { case "$1" in natural) echo 200 ;; relaxed) echo 175 ;; *) echo 155 ;; esac; }
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VDOTS_REPO="$(dirname "$HERE")"
@@ -55,6 +53,7 @@ while [[ $# -gt 0 ]]; do
     --pace)  paceval="$2"; shift 2 ;;
     --clarity) tone="clarity"; shift ;;
     --publish) mode="publish"; shift ;;
+    --print-pace) mode="print-pace"; shift ;;
     --export) mode="export"; shift ;;
     --dry-run) mode="dry"; shift ;;
     --sample) mode="sample"; shift ;;
@@ -74,8 +73,20 @@ while [[ $# -gt 0 ]]; do
 done
 
 export VDOTS_PACE="$paceval"
+
+if [[ "$mode" == print-pace ]]; then
+  VDOTS_MODE=pace nvim --headless -u NONE -l "$HERE/vdots-read.lua" 2>/dev/null
+  exit 0
+fi
+
+# the pace preset (rate + stretch), resolved once from pace.lua
+rate_explicit=""; [[ -n "$rate" ]] && rate_explicit=1
+eval "$(VDOTS_MODE=pace nvim --headless -u NONE -l "$HERE/vdots-read.lua" 2>/dev/null \
+        | sed 's/^/pp_/')"   # -> $pp_rate $pp_stretch $pp_say_rate
 [[ -n "$voice" ]] || voice="$(auto_voice "$tone" "$lang")"
-[[ -n "$rate" ]]  || rate="$(pace_rate "$paceval")"
+# local `say` (no post-processing) folds the stretch into the rate; publish
+# renders at the true rate and time-stretches the audio instead.
+[[ -n "$rate" ]] || rate="${pp_say_rate:-155}"
 
 if [[ "$mode" == print-voice ]]; then
   printf '%s\n' "$voice"; exit 0
@@ -95,9 +106,9 @@ fi
 
 if [[ "$mode" == sample ]]; then
   command -v say >/dev/null || { echo "vdots-read: \`say\` not found" >&2; exit 1; }
-  txt="This [[slnc 22]] is [[slnc 22]] a [[slnc 22]] calm, [[slnc 115]] measured [[slnc 22]] reading. [[slnc 360]] Space [[slnc 22]] between [[slnc 22]] the [[slnc 22]] words, [[slnc 115]] a [[slnc 22]] beat [[slnc 22]] at [[slnc 22]] the [[slnc 22]] commas, [[slnc 115]] and [[slnc 22]] a [[slnc 22]] longer [[slnc 22]] rest [[slnc 22]] at [[slnc 22]] the [[slnc 22]] end. [[slnc 480]] Then [[slnc 22]] the [[slnc 22]] next [[slnc 22]] thought."
+  txt="This is a calm, [[slnc 75]] measured reading. [[slnc 300]] A beat at the commas, [[slnc 75]] a longer rest at the end of a sentence, [[slnc 300]] and then the next thought. [[slnc 360]] The whole thing is time-stretched afterward, [[slnc 75]] which is what leaves room to breathe between the words."
   [[ -n "$file" && -r "$file" ]] && txt="$(nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null | head -c 800)"
-  echo "vdots-read: sample — voice='${voice:-system default}' pace=$paceval rate=$rate"
+  echo "vdots-read: sample — voice='${voice:-system default}' pace=$paceval rate=$rate (stretch ${pp_stretch:-?})"
   printf '%s\n' "$txt" | say -r "$rate" ${voice:+-v "$voice"}
   exit 0
 fi
@@ -105,8 +116,10 @@ fi
 [[ -n "$file" ]] || { echo "vdots-read: no input file" >&2; exit 1; }
 
 if [[ "$mode" == publish ]]; then
+  # only forward --rate when the user set it; otherwise let vdots-listen apply
+  # the pace preset (true rate + audio time-stretch) itself.
   exec "$HERE/vdots-listen" publish "$file" --tone "$tone" --pace "$paceval" \
-    ${rate:+--rate "$rate"} ${voice:+--voice "$voice"}
+    ${rate_explicit:+--rate "$rate"} ${voice:+--voice "$voice"}
 fi
 
 [[ -r "$file" ]] || { echo "vdots-read: cannot read: $file" >&2; exit 1; }

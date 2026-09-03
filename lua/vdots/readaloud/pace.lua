@@ -1,67 +1,84 @@
--- vdots.readaloud.pace — human read-aloud cadence. A measured rate, real
--- silence between every word, a beat at every clause mark, a longer rest at
--- sentence ends, and bigger gaps between paragraphs and before sections —
--- the space a person leaves when reading aloud, not a rushed TTS dump.
+-- vdots.readaloud.pace — human read-aloud cadence.
 --
--- All silences use `say`'s inline `[[slnc N]]` command (N milliseconds).
--- `word` / `clause` / `sentence` are within a block; `para` / `section` /
--- `after_heading` are between blocks.
+-- Two levers, deliberately kept apart:
+--   1. Silence at real prosodic boundaries only — a beat at each clause mark
+--      (, ; :), a longer rest at sentence ends (. ! ?), bigger gaps between
+--      paragraphs and before sections. These land where a speaker would
+--      actually pause, so the synth's own phrase prosody is untouched.
+--   2. `stretch` — a whole-file, pitch-preserving time-stretch applied AFTER
+--      `say` renders (rubberband R3 if installed, else ffmpeg atempo). This is
+--      what adds unhurried air between words: it lengthens the gaps the synth
+--      already produced instead of chopping new ones in. Inserting `[[slnc]]`
+--      between words was a mistake — every word became its own utterance and
+--      the flow died. Live playback / quick export can't post-process, so
+--      there M.say_rate folds the stretch into the `say` rate instead.
+--
+-- Boundary silences use `say`'s inline `[[slnc N]]` (N ms). `clause` /
+-- `sentence` are within a block; `para` / `section` / `after_heading` between.
 
 local M = {}
 
--- preset -> { rate (say -r wpm),
+-- preset -> { rate (say -r wpm), stretch (atempo factor, <1 = slower),
 --             para (ms between paragraphs / list items),
 --             section (ms before a heading), after_heading (ms after it),
---             word (ms of air between words),
---             clause (ms beat at , ; : — ), sentence (ms beat at . ! ?) }
+--             clause (ms beat at , ; :), sentence (ms beat at . ! ?) }
 M.presets = {
   follow = {
-    rate = 155,
-    para = 480,
-    section = 820,
-    after_heading = 300,
-    word = 22,
-    clause = 115,
-    sentence = 360,
+    rate = 168,
+    stretch = 0.90,
+    para = 360,
+    section = 680,
+    after_heading = 260,
+    clause = 75,
+    sentence = 300,
   },
   relaxed = {
-    rate = 175,
-    para = 360,
-    section = 600,
-    after_heading = 230,
-    word = 14,
-    clause = 90,
-    sentence = 280,
+    rate = 182,
+    stretch = 0.95,
+    para = 300,
+    section = 540,
+    after_heading = 210,
+    clause = 60,
+    sentence = 240,
   },
   natural = {
     rate = 200,
-    para = 200,
-    section = 380,
+    stretch = 1.0,
+    para = 190,
+    section = 360,
     after_heading = 140,
-    word = 0,
-    clause = 55,
-    sentence = 190,
+    clause = 45,
+    sentence = 180,
   },
 }
 
 ---@param cfg table resolved vdots.readaloud config
----@return { rate: integer, para: integer, section: integer, after_heading: integer, word: integer, clause: integer, sentence: integer }
+---@return { rate: integer, stretch: number, para: integer, section: integer, after_heading: integer, clause: integer, sentence: integer }
 function M.settings(cfg)
   local p = M.presets[cfg.pace] or M.presets.follow
   return {
     rate = tonumber(cfg.rate) or p.rate,
+    stretch = tonumber(cfg.stretch) or p.stretch,
     para = p.para,
     section = p.section,
     after_heading = p.after_heading,
-    word = p.word,
     clause = p.clause,
     sentence = p.sentence,
   }
 end
 
----Add breathing room WITHIN a block: a hair of air between words, a short beat
----at clause punctuation, a longer one at sentence ends. Returns the marked-up
----text and the total silence (seconds) it added, so cue timing stays honest.
+---`say -r` value for paths that can't post-process (live playback, quick
+---export): fold the stretch into the rate so it still slows down. `publish`
+---renders at the true rate and applies the real time-stretch instead.
+---@param s table result of M.settings
+---@return integer
+function M.say_rate(s)
+  return math.max(60, math.floor(s.rate * (s.stretch or 1) + 0.5))
+end
+
+---Insert a beat at clause marks and a longer rest at sentence ends — at real
+---prosodic boundaries only, so the synth keeps its phrase melody. Returns the
+---marked-up text and the silence (seconds) it added, so cue timing stays honest.
 ---@param text string
 ---@param s table result of M.settings
 ---@return string, number
@@ -70,20 +87,17 @@ function M.breathe(text, s)
   if text == "" then
     return text, 0
   end
-  local wm = (s.word or 0) > 0 and M.marker(s.word) or ""
-  local parts, nwords, nclause, nsent = {}, 0, 0, 0
-  for w in text:gmatch "%S+" do
-    nwords = nwords + 1
-    local tail = ""
-    if w:match "[.!?][\"'%)%]]*$" then
-      tail, nsent = " " .. M.marker(s.sentence or 0), nsent + 1
-    elseif w:match "[,;:—–][\"'%)%]]*$" then
-      tail, nclause = " " .. M.marker(s.clause or 0), nclause + 1
-    end
-    parts[#parts + 1] = w .. tail
-  end
-  local added = (nwords - 1) * (s.word or 0) + nclause * (s.clause or 0) + nsent * (s.sentence or 0)
-  return table.concat(parts, " " .. wm), added / 1000
+  local nclause, nsent = 0, 0
+  local out = text:gsub("([,;:])%s", function(p)
+    nclause = nclause + 1
+    return p .. " " .. M.marker(s.clause or 0)
+  end)
+  out = out:gsub("([.!?][\"'%)%]]*)%s", function(p)
+    nsent = nsent + 1
+    return p .. " " .. M.marker(s.sentence or 0)
+  end)
+  local added = nclause * (s.clause or 0) + nsent * (s.sentence or 0)
+  return out, added / 1000
 end
 
 ---Silence (ms) to place BEFORE `kind`, given the previous block's kind.
@@ -217,7 +231,8 @@ function M.cues(blocks, cfg, total_dur, opts)
   return cues
 end
 
----Rough spoken duration (seconds) before rendering: words ÷ wpm + the beats.
+---Rough spoken duration (seconds): (words ÷ wpm + the beats) ÷ stretch, since
+---the whole render — speech and inserted silence alike — is time-stretched.
 ---@param blocks table
 ---@param cfg table
 ---@return number
@@ -230,7 +245,7 @@ function M.estimate(blocks, cfg)
     pause = pause + M.lead(prev, b.kind, s) / 1000 + bp
     prev = b.kind
   end
-  return w / (s.rate / 60) + pause
+  return (w / (s.rate / 60) + pause) / (s.stretch or 1)
 end
 
 ---Chapter markers from the heading blocks. `sections` (if given) supplies the

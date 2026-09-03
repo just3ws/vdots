@@ -65,9 +65,14 @@ function M.check()
   h.info "media keys are best-effort: an active Music/Spotify/video session wins them"
 
   if vim.fn.executable "ffmpeg" == 1 then
-    h.ok "ffmpeg found — enhanced-doc chapters are embedded in the .m4a"
+    h.ok "ffmpeg found — chapters embedded in the .m4a, audio time-stretched for pace"
   else
-    h.info "ffmpeg not found — enhanced-doc chapters live only in the .vtt + page TOC"
+    h.info "ffmpeg not found — no chapters in the .m4a, no pace time-stretch"
+  end
+  if vim.fn.executable "rubberband" == 1 then
+    h.ok "rubberband found — high-quality (R3) time-stretch for the spoken pace"
+  else
+    h.info "rubberband not found — pace time-stretch falls back to ffmpeg atempo (`brew install rubberband`)"
   end
   if vim.fn.executable "jq" == 1 then
     h.ok "jq found"

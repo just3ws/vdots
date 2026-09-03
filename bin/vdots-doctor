@@ -39,6 +39,9 @@ SWIFTBAR_SHIM="$HOME/.swiftbar/vdots-readaloud.5s.sh"
 ra_say=missing ra_swiftc=missing ra_helper=missing ra_swiftbar=absent
 
 command -v say >/dev/null && ra_say=ok
+ra_stretch=atempo
+command -v rubberband >/dev/null && ra_stretch=rubberband
+command -v ffmpeg >/dev/null || ra_stretch=none
 if command -v swiftc >/dev/null; then
     ra_swiftc=ok
     if [[ "$FIX" == true || ! -x "$HELPER_BIN" || "$HELPER_SRC" -nt "$HELPER_BIN" ]]; then
@@ -71,7 +74,8 @@ if [[ "$JSON_MODE" == true ]]; then
   "readaloud": {
     "say": "$ra_say", "swiftc": "$ra_swiftc",
     "media_key_helper": "$ra_helper", "swiftbar_shim": "$ra_swiftbar",
-    "listen_library": "$ra_listen", "drive_sync": "$ra_drive"
+    "listen_library": "$ra_listen", "drive_sync": "$ra_drive",
+    "pace_stretch": "$ra_stretch"
   },
   "runtime": $(echo "$RUNTIME_CHECK" | jq -c .)
 }
@@ -88,6 +92,7 @@ else
     echo ""
     echo "  read-aloud:"
     printf '    %-18s %s\n' "say"              "$ra_say"
+    printf '    %-18s %s\n' "pace stretch"     "$ra_stretch"
     printf '    %-18s %s\n' "swiftc"           "$ra_swiftc"
     printf '    %-18s %s\n' "media-key helper" "$ra_helper"
     printf '    %-18s %s\n' "SwiftBar shim"    "$ra_swiftbar"

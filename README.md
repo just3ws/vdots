@@ -271,9 +271,10 @@ helper — best-effort; the reliable remote is a SwiftBar menu-bar item
 `:checkhealth vdots.readaloud`.
 
 Config (all optional). `voice = nil` auto-picks by `tone` (**`warm`** default /
-`clarity`); `pace` (**`follow`** = most space — silence between words, beats at
-punctuation, rests between paragraphs / `relaxed` /
-`natural`) sets the words-per-minute and pause lengths. The Premium/Enhanced
+`clarity`); `pace` (**`follow`** = most space — the finished audio is
+time-stretched (`rubberband`, or `ffmpeg atempo`) for an unhurried feel, plus
+beats at punctuation and between paragraphs / `relaxed` / `natural`) sets the
+words-per-minute, stretch, and pause lengths. The Premium/Enhanced
 neural voices are what make it sound human — download **`Zoe (Premium)`** from
 System Settings ▸ Accessibility ▸ Spoken Content ▸ Manage Voices and it's
 auto-picked. Audition: `vdots-read --sample --voice "Zoe (Premium)"`.

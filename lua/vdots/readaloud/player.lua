@@ -124,7 +124,7 @@ local function speak(i)
 
   local c = cfg.get()
   local s = pace.settings(c)
-  local args = { "say", "-r", tostring(s.rate) }
+  local args = { "say", "-r", tostring(pace.say_rate(s)) }
   local voice = cfg.resolve_voice()
   if voice then
     vim.list_extend(args, { "-v", voice })
@@ -384,7 +384,7 @@ function M.export(range)
   end
   local script = pace.script(blocks, c)
   local out = vim.fn.tempname() .. ".m4a"
-  local args = { "say", "-r", tostring(pace.settings(c).rate) }
+  local args = { "say", "-r", tostring(pace.say_rate(pace.settings(c))) }
   local voice = cfg.resolve_voice()
   if voice then
     vim.list_extend(args, { "-v", voice })
