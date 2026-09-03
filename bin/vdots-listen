@@ -2,22 +2,24 @@
 # vdots-listen — publish read-aloud sessions to a listenable library.
 #
 # Each `publish` writes, under $VDOTS_LISTEN_DIR (default ~/ai/outbox/listen):
-#     <YYYY-MM-DD-title-slug>/
-#         <slug>.article.html    page: player + readability + synced transcript
-#         <slug>.md              clean readable document (frontmatter -> header)
-#         <slug>.mp3             the read-through — plays from Google Drive on
+#     <YYYY-MM-DD-title-slug>/        (the dir name carries the identity;
+#         audio.mp3                    files inside are named for their role)
+#         audio.mp3              read-through — plays from Google Drive on
 #                                Android; transcript embedded as lyrics
-#         <slug>.m4a             same audio, +faststart, +chapters (Apple/VLC)
-#         <slug>.transcript.txt  verbatim prose (plain text)
-#         <slug>.vtt             WebVTT captions (VLC / other players)
-#         <slug>.cues.json       timed transcript (drives the page)
-#         <slug>.readability.json Flesch / grade / times / long sentences
-#         <slug>.txt             exactly what `say` was given
+#         audio.m4a              same audio, +faststart, +chapters (Apple/VLC)
+#         document.md            clean readable document (frontmatter -> header)
+#         report.md              readability + chapters + full transcript
+#         transcript.txt         verbatim prose (plain text)
+#         captions.vtt           WebVTT captions (VLC / other players)
+#         article.html           local page: player + synced transcript
 #         meta.json              title, date, duration, voice, pace, metrics
-# then rebuilds index.html / index.md + every article page.
+#         assets/                machine files: cues.json, readability.json,
+#                                chapters.vtt, spoken.txt
+# then rebuilds index.html + index.md + every article page.
 #
-# ~/ai is already synced to Google Drive (the desktop app), so the library
-# shows up on every device automatically.
+# ~/ai is already synced to Google Drive (the desktop app). On a phone open
+# index.md — Drive renders it and plays the linked audio.mp3; the embedded
+# player in index.html / article.html only works in a real browser.
 #
 # Usage:
 #   vdots-listen publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open] [-v]
@@ -161,8 +163,17 @@ cmd_publish() {
       return 3
     fi
   fi
+  [[ "$dir" == "$LISTEN_DIR"/*/ || "$dir" == "$LISTEN_DIR"/* ]] || die "refusing to touch $dir"
   [[ "$force" -eq 1 || -d "$dir" ]] && rm -rf "$dir"
-  mkdir -p "$dir"
+  mkdir -p "$dir/assets"
+
+  # Role-based names: the session dir already carries the identity, so files
+  # inside are named for what they are. Machine-only files live in assets/ so
+  # the top level shows just what a human opens from Google Drive.
+  local p_spoken="$dir/assets/spoken.txt"      p_cues="$dir/assets/cues.json"
+  local p_read="$dir/assets/readability.json"  p_chap="$dir/assets/chapters.vtt"
+  local p_doc="$dir/document.md"    p_m4a="$dir/audio.m4a"   p_mp3="$dir/audio.mp3"
+  local p_tr="$dir/transcript.txt"  p_cap="$dir/captions.vtt" p_report="$dir/report.md"
 
   # resolve the voice (respects --voice / --tone / frontmatter lang)
   [[ -n "$voice" ]] || voice="$("$HERE/vdots-read" --print-voice --tone "$tone" --lang "$lang" 2>/dev/null || true)"
@@ -170,10 +181,10 @@ cmd_publish() {
 
   # spoken text (shared Markdown parse + tech-pronunciation + paced silences)
   step "building the spoken script"
-  "$HERE/vdots-read" --dry-run --pace "$paceval" --tone "$tone" "$file" > "$dir/$slug.txt"
-  [[ -s "$dir/$slug.txt" ]] || die "nothing to read in $file"
-  local words; words="$(wc -w < "$dir/$slug.txt" | tr -d ' ')"
-  step "spoken script: $words words → $dir/$slug.txt"
+  "$HERE/vdots-read" --dry-run --pace "$paceval" --tone "$tone" "$file" > "$p_spoken"
+  [[ -s "$p_spoken" ]] || die "nothing to read in $file"
+  local words; words="$(wc -w < "$p_spoken" | tr -d ' ')"
+  step "spoken script: $words words → $p_spoken"
 
   # clean readable doc: drop leading YAML frontmatter; for plain docs also drop
   # a redundant leading H1 (enhanced docs' first heading is real content).
@@ -190,7 +201,7 @@ cmd_publish() {
       !body && enh!="true" && /^# / {body=1; next}
       {body=1; print}
     ' "$file"
-  } > "$dir/$slug.md"
+  } > "$p_doc"
 
   # audio — rate from --rate, else the pace preset (mirrors pace.lua)
   if [[ -z "$rate" ]]; then
@@ -201,37 +212,37 @@ cmd_publish() {
   # AAC keeps the file ~4x smaller than say's default LPCM (matters for Drive
   # sync) and lets ffmpeg add chapters with -c copy. Fall back if unsupported.
   step "rendering audio with \`say\` at $rate wpm (this is the slow step)…"
-  local say_common=(-r "$rate" -f "$dir/$slug.txt")
+  local say_common=(-r "$rate" -f "$p_spoken")
   [[ -n "$voice" ]] && say_common=(-v "$voice" "${say_common[@]}")
   if [[ "$VERBOSE" == 1 ]]; then
-    say --file-format=m4af --data-format=aac -o "$dir/$slug.m4a" "${say_common[@]}" \
-      || say -o "$dir/$slug.m4a" "${say_common[@]}"
+    say --file-format=m4af --data-format=aac -o "$p_m4a" "${say_common[@]}" \
+      || say -o "$p_m4a" "${say_common[@]}"
   else
-    say --file-format=m4af --data-format=aac -o "$dir/$slug.m4a" "${say_common[@]}" 2>/dev/null \
-      || say -o "$dir/$slug.m4a" "${say_common[@]}"
+    say --file-format=m4af --data-format=aac -o "$p_m4a" "${say_common[@]}" 2>/dev/null \
+      || say -o "$p_m4a" "${say_common[@]}"
   fi
 
   local dur=0
   if command -v ffprobe >/dev/null; then
-    dur="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$dir/$slug.m4a" 2>/dev/null || echo 0)"
+    dur="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$p_m4a" 2>/dev/null || echo 0)"
   fi
-  step "audio: $(human_dur "$dur") → $dir/$slug.m4a"
+  step "audio: $(human_dur "$dur") → $p_m4a"
 
   # verbatim transcript (one line per sentence when enhanced), timed cues, VTT
   # captions, and a readability report
   step "transcript · cues · captions · readability"
-  "$HERE/vdots-read" --transcript "$file" > "$dir/$slug.transcript.txt"
-  "$HERE/vdots-read" --cues "$dur" "$file" > "$dir/$slug.vtt"
-  "$HERE/vdots-read" --cues-json "$dur" "$file" > "$dir/$slug.cues.json"
+  "$HERE/vdots-read" --transcript "$file" > "$p_tr"
+  "$HERE/vdots-read" --cues "$dur" "$file" > "$p_cap"
+  "$HERE/vdots-read" --cues-json "$dur" "$file" > "$p_cues"
   if command -v python3 >/dev/null; then
-    python3 "$HERE/vdots-readability" < "$dir/$slug.transcript.txt" > "$dir/$slug.readability.json"
+    python3 "$HERE/vdots-readability" < "$p_tr" > "$p_read"
   fi
 
   # chapters (enhanced docs): from the frontmatter sections
   local chapters_json="[]"
   if [[ "$enhanced" == "true" ]]; then
     chapters_json="$("$HERE/vdots-read" --chapters "$dur" "$file" 2>/dev/null || echo '[]')"
-    "$HERE/vdots-read" --chapters-vtt "$dur" "$file" > "$dir/$slug.chapters.vtt" 2>/dev/null || true
+    "$HERE/vdots-read" --chapters-vtt "$dur" "$file" > "$p_chap" 2>/dev/null || true
     step "chapters: $(jq -r 'length' <<<"$chapters_json") from sections"
   fi
 
@@ -250,9 +261,9 @@ cmd_publish() {
     } > "$ffmeta"
     local ffq=(-loglevel error)
     [[ "$VERBOSE" == 1 ]] && ffq=(-loglevel warning -stats)
-    local lyr; lyr="$(cat "$dir/$slug.transcript.txt")"
+    local lyr; lyr="$(cat "$p_tr")"
     ffmpeg_enrich() {
-      ffmpeg -y "${ffq[@]}" -i "$dir/$slug.m4a" -i "$ffmeta" \
+      ffmpeg -y "${ffq[@]}" -i "$p_m4a" -i "$ffmeta" \
         -map 0:a -map_metadata 1 -map_chapters 1 -c:a copy -movflags +faststart \
         -metadata title="$title" \
         -metadata artist="vdots read-aloud" \
@@ -264,7 +275,7 @@ cmd_publish() {
         "$dir/.tagged.m4a"
     }
     if { [[ "$VERBOSE" == 1 ]] && ffmpeg_enrich; } || { [[ "$VERBOSE" != 1 ]] && ffmpeg_enrich 2>/dev/null; }; then
-      mv "$dir/.tagged.m4a" "$dir/$slug.m4a"
+      mv "$dir/.tagged.m4a" "$p_m4a"
     else
       rm -f "$dir/.tagged.m4a"
     fi
@@ -273,7 +284,7 @@ cmd_publish() {
     # MP3 sibling — the reliable "play from Google Drive on Android" format
     # (Drive's app previews mp3 inline; .m4a it often refuses). Mono VBR ~96k.
     step "encoding the mp3 sibling (Drive/Android-friendly)"
-    ffmpeg -y "${ffq[@]}" -i "$dir/$slug.m4a" \
+    ffmpeg -y "${ffq[@]}" -i "$p_m4a" \
       -c:a libmp3lame -q:a 5 -ac 1 -id3v2_version 3 \
       -metadata title="$title" \
       -metadata artist="vdots read-aloud" \
@@ -281,10 +292,10 @@ cmd_publish() {
       -metadata date="$date" \
       -metadata comment="${src_url:-$file}" \
       -metadata lyrics="$lyr" \
-      "$dir/$slug.mp3" 2>/dev/null || rm -f "$dir/$slug.mp3"
+      "$p_mp3" 2>/dev/null || rm -f "$p_mp3"
   fi
-  local audio_primary="$slug.m4a"
-  [[ -s "$dir/$slug.mp3" ]] && audio_primary="$slug.mp3"
+  local audio_primary="audio.m4a"
+  [[ -s "$p_mp3" ]] && audio_primary="audio.mp3"
 
   # spoken_minutes sanity — report, never pad or rush
   local dur_min; dur_min="$(awk -v d="$dur" 'BEGIN{printf "%.1f", d/60}')"
@@ -310,14 +321,14 @@ source=$file
 source_url=${src_url:-}
 words=$words
 audio=$audio_primary
-audio_rich=$slug.m4a
-doc=$slug.md
-transcript=$slug.transcript.txt
-cues=$slug.cues.json
-vtt=$slug.vtt
-readability=$slug.readability.json
-report=$slug.report.md
-article=$slug.article.html" \
+audio_rich=audio.m4a
+doc=document.md
+transcript=transcript.txt
+cues=assets/cues.json
+vtt=captions.vtt
+readability=assets/readability.json
+report=report.md
+article=article.html" \
     python3 -c 'import os,json
 d=dict(l.split("=",1) for l in os.environ["VDOTS_META"].splitlines())
 try: d["chapters"]=json.loads(os.environ.get("VDOTS_CHAPTERS","[]"))
@@ -336,18 +347,18 @@ open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dump
       jq -r '.[] | "- \(((.start/60)|floor)):\((.start%60|floor|tostring|if length<2 then "0"+. else . end))  \(.title)"' <<<"$chapters_json"
       printf '\n'
     fi
-    if [[ -r "$dir/$slug.readability.json" ]]; then
+    if [[ -r "$p_read" ]]; then
       printf '## Readability\n\n'
       jq -r '"- Flesch–Kincaid grade \(.flesch_kincaid_grade) (\(.reading_ease_band))",
              "- \(.words) words, \(.sentences) sentences, \(.avg_words_per_sentence) per sentence",
              "- ~\(.listening_time_min) min listen · ~\(.reading_time_min) min read"' \
-        "$dir/$slug.readability.json"
+        "$p_read"
       printf '\n'
     fi
     printf '## The read-through\n\n'
-    sed 's/^/> /' "$dir/$slug.transcript.txt"
-  } > "$dir/$slug.report.md"
-  step "report → $dir/$slug.report.md · meta.json"
+    sed 's/^/> /' "$p_tr"
+  } > "$p_report"
+  step "report → $p_report · meta.json"
 
   step "rebuilding the catalog + article pages"
   rebuild
@@ -371,6 +382,6 @@ case "${1:-}" in
     (( found )) || echo "(no sessions yet)"
     ;;
   path)    echo "$LISTEN_DIR" ;;
-  -h|--help|"") sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help|"") sed -n '2,33p' "$0" | sed 's/^# \{0,1\}//' ;;
   *) die "unknown command: $1 (try: publish, rebuild, open, ls, path)" ;;
 esac

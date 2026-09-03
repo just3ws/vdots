@@ -292,17 +292,18 @@ Headless: `vdots read [--export|--dry-run] [--voice V] [--rate N] FILE.md`.
 ### Listen library
 
 `;rP` / `:VdotsReadPublish` — or `vdots publish FILE.md` from the shell — files
-the document into `~/ai/outbox/listen/`: the read-through as **`.mp3`** (the
-format Google Drive's Android app actually plays inline, transcript embedded
-as a lyrics track) plus a `.m4a` with chapters + faststart for Apple Music /
-VLC, a clean readable copy, a **readability report**
-(`.report.md`, Drive-previewable), and a **verbatim per-sentence transcript**
-with timed cues + `.vtt` captions. The self-contained article page plays the
-audio while the transcript highlights and auto-scrolls — click a paragraph to
-seek. `~/ai` is synced by Google Drive desktop, so the catalog shows up on
-every device. `vdots publish --info FILE.md` prints a pre-flight report without
-writing; `vdots publish -v FILE.md` narrates each pipeline step;
-`:VdotsReadPublish!` re-records after edits.
+the document into `~/ai/outbox/listen/<date-slug>/` as role-named files:
+`audio.mp3` (the read-through — Google Drive's Android app plays this inline,
+transcript embedded as lyrics), `audio.m4a` (same audio, chapters + faststart,
+for Apple Music / VLC), `document.md`, `report.md` (readability + chapters +
+transcript, Drive-previewable), `transcript.txt`, `captions.vtt`, and
+`article.html` (a browser page that plays the audio while the transcript
+highlights and auto-scrolls — click a paragraph to seek). Machine files go in
+`assets/`. `~/ai` is synced by Google Drive desktop; on a phone open the
+`index.md` catalog — Drive renders it and the links play the mp3. `vdots
+publish --info FILE.md` prints a pre-flight report without writing; `vdots
+publish -v FILE.md` narrates each pipeline step; `:VdotsReadPublish!`
+re-records after edits.
 
 **Tips:** `;r[` re-hears a missed paragraph · pause → edit → `:w` → `;rr` resumes
 from that block · slow `rate` for dense docs · teach it project jargon once in

@@ -252,29 +252,30 @@ and refuses a re-publish unless the source is newer or you use
 `:VdotsReadPublish` (`;rP`) files the current document into a listenable
 library under `~/ai/outbox/listen` (override with `listen_dir`). Because `~/ai`
 is already synced by the Google Drive desktop app, the library appears on
-every device automatically — open `index.html`, pick an article, and the
-article page plays the audio while the verbatim transcript highlights and
-scrolls along; click any paragraph to seek there.
+every device automatically. On a phone, open `index.md` — Google Drive
+renders it and the links play `audio.mp3` / open the report. On a computer,
+open `index.html`: the article page plays the audio while the verbatim
+transcript highlights and scrolls along; click any paragraph to seek there.
+(Drive's HTML preview sandboxes media, so the embedded players only work in a
+real browser — hence `index.md`.)
 
-Each publish writes a dated, slugged folder: >
+Each publish writes a dated, slugged folder. The folder name carries the
+identity, so the files inside are named for their role: >
 
         ~/ai/outbox/listen/
-          index.html        the catalog — articles with grade + a player each
-          index.md          plain-text catalog
+          index.md          the catalog for phones (Drive renders it)
+          index.html        the catalog for a browser (player per article)
           2026-09-02-a-clean-api/
-            a-clean-api.article.html   the page: player + readability + transcript
-            a-clean-api.mp3            the read-through — the format Google Drive
-                                      for Android plays inline; transcript as lyrics
-            a-clean-api.m4a            same audio, +faststart +chapters (Apple/VLC)
-            a-clean-api.md             clean readable document
-            a-clean-api.report.md      markdown report (Drive-previewable)
-            a-clean-api.transcript.txt verbatim prose (plain text)
-            a-clean-api.vtt            WebVTT captions (for VLC / other players)
-            a-clean-api.chapters.vtt   chapter markers (enhanced docs)
-            a-clean-api.cues.json      timed transcript that drives the page
-            a-clean-api.readability.json  Flesch / grade / times / long sentences
-            a-clean-api.txt            exactly what `say` was given
-            meta.json                  title, date, duration, voice, pace, metrics
+            audio.mp3         read-through — Drive/Android plays this inline
+            audio.m4a         same audio, +faststart +chapters (Apple Music/VLC)
+            document.md       clean readable document
+            report.md         readability + chapters + full transcript
+            transcript.txt    verbatim prose (plain text)
+            captions.vtt      WebVTT captions (for VLC / other players)
+            article.html      local page: player + synced transcript
+            meta.json         title, date, duration, voice, pace, metrics
+            assets/           machine files — cues.json (drives article.html),
+                              readability.json, chapters.vtt, spoken.txt
 <
 The transcript is verbatim document prose. `say` reports no timings, so each
 block's time is modelled from its share of the spoken words plus the exact
