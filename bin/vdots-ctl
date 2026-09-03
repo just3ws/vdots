@@ -1,50 +1,66 @@
 #!/usr/bin/env bash
 
-# bin/vdots-ctl — Runtime health check for vdots
-# Deep probe of Neovim configuration health using :checkhealth.
+# bin/vdots-ctl — Runtime health check for vdots.
+# Deep probe of the LIVE Neovim configuration via :checkhealth (contrast
+# vdots-doctor, the static "brew doctor" for the install / read-aloud helpers).
+#
+# Usage:
+#   vdots-ctl check [--json]     run `nvim --headless +checkhealth`, summarise
+#   vdots-ctl update [options]   forward to vdots-update
+set -euo pipefail
 
-function run_healthcheck() {
-    # Generate healthcheck report
-    local health_file="/tmp/vdots-health-raw.txt"
-    nvim --headless "+checkhealth" "+w! $health_file" "+qall" >/dev/null 2>&1
-    
-    # Simple parser to extract warnings/errors
-    # In a real implementation, this would be a more robust Lua/Python script
-    local warnings=$(grep -c "WARNING" "$health_file")
-    local errors=$(grep -c "ERROR" "$health_file")
-    
-    local status="pass"
-    if [ "$errors" -gt 0 ]; then status="fail";
-    elif [ "$warnings" -gt 0 ]; then status="warn"; fi
-    
-    # Return JSON
-    printf '{"status": "%s", "warnings": %d, "errors": %d, "raw_file": "%s"}' \
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+run_healthcheck() {
+    local health_file
+    health_file="$(mktemp -t vdots-health.XXXXXX)"
+
+    if ! nvim --headless "+checkhealth" "+w! $health_file" "+qall" >/dev/null 2>&1 \
+        || [[ ! -s "$health_file" ]]; then
+        printf '{"status": "fail", "warnings": 0, "errors": 1, "raw_file": "%s", "note": "nvim --headless +checkhealth produced no report"}\n' \
+            "$health_file"
+        return 0
+    fi
+
+    local warnings errors status
+    warnings="$(grep -c "WARNING" "$health_file" || true)"
+    errors="$(grep -c "ERROR" "$health_file" || true)"
+
+    status="pass"
+    if [[ "$errors" -gt 0 ]]; then status="fail";
+    elif [[ "$warnings" -gt 0 ]]; then status="warn"; fi
+
+    printf '{"status": "%s", "warnings": %d, "errors": %d, "raw_file": "%s"}\n' \
         "$status" "$warnings" "$errors" "$health_file"
 }
 
-function check() {
-    if [[ "$1" == "--json" ]]; then
+check() {
+    if [[ "${1:-}" == "--json" ]]; then
         run_healthcheck
-    else
-        echo "Running deep healthcheck..."
-        local result=$(run_healthcheck)
-        local warnings=$(echo "$result" | jq .warnings)
-        local errors=$(echo "$result" | jq .errors)
-        local file=$(echo "$result" | jq -r .raw_file)
-        
-        echo "Healthcheck results:"
-        echo "  Errors: $errors"
-        echo "  Warnings: $warnings"
-        echo "See full report: $file"
+        return
     fi
+
+    echo "Running deep healthcheck..."
+    local result warnings errors file
+    result="$(run_healthcheck)"
+    warnings="$(echo "$result" | jq .warnings)"
+    errors="$(echo "$result" | jq .errors)"
+    file="$(echo "$result" | jq -r .raw_file)"
+
+    echo "Healthcheck results:"
+    echo "  Errors:   $errors"
+    echo "  Warnings: $warnings"
+    echo "See full report: $file"
 }
 
-if [[ "$1" == "check" ]]; then
-    check "${@:2}"
-elif [[ "$1" == "update" ]]; then
-    exec "$SCRIPT_DIR/vdots-update" "${@:2}"
-else
-    echo "Usage: vdots-ctl {check|update} [options]"
-    echo "  check [--json]     Run deep runtime healthcheck"
-    echo "  update [options]   Update plugins, prune unmanaged, and test"
-fi
+case "${1:-}" in
+    check)  check "${@:2}" ;;
+    update) exec "$SCRIPT_DIR/vdots-update" "${@:2}" ;;
+    -h|--help|help|"")
+        sed -n '3,10p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+        ;;
+    *)
+        echo "vdots-ctl: unknown command: $1 (try: check, update)" >&2
+        exit 1
+        ;;
+esac

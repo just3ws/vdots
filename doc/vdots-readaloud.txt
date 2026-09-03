@@ -1,0 +1,404 @@
+*vdots-readaloud.txt*   Read Markdown aloud with a rendered preview pane
+
+==============================================================================
+CONTENTS                                              *vdots-readaloud-contents*
+
+  1. Overview .................... |vdots-readaloud-overview|
+  2. The two-pane workflow ....... |vdots-readaloud-workflow|
+  3. Commands .................... |vdots-readaloud-commands|
+  4. Keymaps .................... |vdots-readaloud-keymaps|
+  5. Configuration .............. |vdots-readaloud-config|
+  6. Voice, pacing & pronunciation |vdots-readaloud-voice|
+  7. Media keys & SwiftBar ...... |vdots-readaloud-remote|
+  8. The listen library ......... |vdots-readaloud-listen|
+  9. Command line ............... |vdots-readaloud-cli|
+ 10. Tips ....................... |vdots-readaloud-tips|
+ 11. Troubleshooting ........... |vdots-readaloud-trouble|
+
+==============================================================================
+1. OVERVIEW                                           *vdots-readaloud-overview*
+                                                              *vdots-readaloud*
+
+Reads the current Markdown buffer aloud with the macOS `say` voice (offline),
+in two panes: you edit on the left, a read-only rendered copy on the right
+follows along block by block. The spoken text is markup-stripped and run
+through a technical-pronunciation pass, so you hear "engine ex" not
+"asterisk asterisk n g i n x asterisk asterisk".
+
+macOS only (engine is `say`). Health: `:checkhealth vdots.readaloud`.
+Lives in `lua/vdots/readaloud/`; `parse.lua` (Markdown → speech blocks) is a
+pure, unit-tested function shared with the `vdots-read` CLI.
+
+Pipeline (editor playback and `vdots publish` share the front half): >
+
+  buffer ─► parse.document ─► blocks {s,e,speak,kind,text}
+                                │            │
+                       pronounce (lexicon)   pace (clause/sentence/para beats)
+                                └──────┬─────┘
+                                       ▼
+                              say -r  ─►  audio
+                                       │
+             publish only:  time-stretch (rubberband R3 / ffmpeg atempo)
+                            ─► chapters + lyrics + faststart, transcode mp3
+                            ─► transcript · captions · readability · article
+                            ─► catalog (index.md / index.html)   → Google Drive
+<
+Full picture with diagrams: `docs/wiki/Read-Aloud.md`. Man pages:
+`man vdots-read`, `man vdots-publish`, `man vdots-listen`.
+
+==============================================================================
+2. THE TWO-PANE WORKFLOW                              *vdots-readaloud-workflow*
+
+`;rr` (or `:VdotsRead`) opens a vertical split:
+
+  ┌───────────────────┬───────────────────┐
+  │ your Markdown      │ [reading] file.md │
+  │ (editable)         │ (rendered, r/o)   │
+  │                    │  ▓▓▓ ← spoken     │
+  └───────────────────┴───────────────────┘
+
+- The active block is highlighted and centered in BOTH panes.
+- Moving the cursor in either pane moves it in the other (line ↔ line).
+- Playback is anchored to source lines. Pause with `;rp`, move the cursor to
+  any block, `;rp` again (or `;rr`) — it re-reads that block from its start,
+  then advances.
+- `;r]` / `;r[` jump to the next / previous block and re-read from the start.
+- Typing in the source pane halts playback. `:w` re-renders the preview.
+  `;rr` resumes from the cursor.
+- `;rq` closes the preview pane and stops everything.
+
+==============================================================================
+3. COMMANDS                                           *vdots-readaloud-commands*
+
+:VdotsRead                                                        *:VdotsRead*
+        Open the preview pane and read from the top.
+
+:VdotsReadFromHere                                        *:VdotsReadFromHere*
+        Read from the block under the cursor.
+
+:VdotsReadStop                                                *:VdotsReadStop*
+        Stop the voice; keep the preview pane and position.
+
+:VdotsReadClose                                              *:VdotsReadClose*
+        Close the preview pane and tear everything down.
+
+:VdotsReadRefresh                                          *:VdotsReadRefresh*
+        Re-copy the source into the preview and re-parse (also happens on `:w`).
+
+:VdotsReadInfo                                                *:VdotsReadInfo*
+        A read-only float: the parse / frontmatter interpretation, block +
+        sentence + heading counts, the chapters that will be produced, the
+        estimated duration vs `spoken_minutes`, and any frontmatter↔body drift
+        (a `sections:` entry with no matching heading). Authoring aid — no
+        playback, no publish. `:VdotsReadPublish` prints a one-line version.
+
+:[range]VdotsReadExport                                     *:VdotsReadExport*
+        Render the buffer (or range) to a temp .m4a and open it in the external
+        player. Quick one-off — nothing is kept.
+
+:VdotsReadPublish[!]                                           *:VdotsReadPublish*
+        Add this document to the listen library — a clean readable copy plus a
+        pre-recorded read-through, filed under ~/ai/outbox/listen and synced to
+        Google Drive. Refused if the same document was already published today;
+        `:VdotsReadPublish!` re-records over it. See |vdots-readaloud-listen|.
+
+:VdotsRecentMarkdown                                    *:VdotsRecentMarkdown*
+        Picker over recently opened Markdown files (also the dashboard `m` key).
+
+:checkhealth vdots.readaloud
+
+==============================================================================
+4. KEYMAPS                                             *vdots-readaloud-keymaps*
+
+Buffer-local to `markdown` and to the preview pane. Prefix `;r`
+("read aloud"). >
+
+        ;rr        start / play from cursor (opens the preview)
+        ;rp        pause / resume
+        ;r]        next block (re-reads from its start)
+        ;r[        previous block
+        ;rs        stop (keep the panes)
+        ;rq        quit — close the preview pane
+        ;rf        refresh the preview now
+        ;ri        info: parse / frontmatter interpretation + drift check
+        ;rx        export audio + open the player (quick one-off)
+        ;rP        publish to the listen library (|vdots-readaloud-listen|)
+<
+==============================================================================
+5. CONFIGURATION                                        *vdots-readaloud-config*
+
+Set `vim.g.vdots_readaloud` (a table). Defaults: >
+
+        vim.g.vdots_readaloud = {
+          voice        = nil,      -- nil = auto for `tone`; or a `say -v ?` name
+          tone         = "warm",   -- "warm" (human) | "clarity" (crisp, Alex-first)
+          pace         = "follow", -- "follow" (slow) | "relaxed" | "natural"
+          rate         = nil,      -- words/min; nil = the pace preset's rate
+          skip_code    = true,     -- announce code fences instead of reading them
+          skip_tables  = false,    -- false = read tables row by row
+          preview      = true,     -- open the rendered preview pane on start
+          sync_cursor  = true,     -- keep the cursor synced between panes
+          stop_on_edit = true,     -- halt playback when the source is modified
+          media_keys   = true,     -- run the macOS Now-Playing helper (hardware keys)
+          pronounce    = {},       -- per-term overrides (see below)
+          player       = nil,      -- external player for export; nil = vim.ui.open
+          listen_dir   = nil,      -- :VdotsReadPublish target; nil = ~/ai/outbox/listen
+          publish_open = false,    -- open the catalog after :VdotsReadPublish
+        }
+<
+`require("vdots.readaloud").setup(opts)` merges `opts` into the global.
+
+==============================================================================
+6. VOICE, PACING & PRONUNCIATION                         *vdots-readaloud-voice*
+
+Voice ~
+With `voice = nil` the best installed voice is chosen from a preference list
+picked by `tone`:
+
+  `tone = "warm"`    (default) natural, human — the Premium / Enhanced neural
+                     voices first (Zoe, Ava, Evan …), then the Eloquence
+                     voices (Sandy, Flo), then Samantha.
+  `tone = "clarity"` crisp and precise — `Alex` first (unmatched for tech,
+                     but robotic), then Enhanced, then Samantha.
+
+The Premium / Enhanced neural voices are what make it sound human, and they
+are a free download: System Settings ▸ Accessibility ▸ Spoken Content ▸
+Manage Voices ▸ English. **`Zoe (Premium)`** and `Ava (Premium)` are the
+standouts. Once installed they are auto-picked — nothing to configure.
+
+Siri voices ("Siri Voice 1"–"8") are not in `say -v ?` and cannot
+auto-resolve — set one explicitly: `voice = "Siri Voice 4"`.
+
+Pin any voice with `voice = "Zoe (Premium)"` (exact `say -v ?` name).
+Audition without committing: `vdots-read --sample --voice "Zoe (Premium)"`.
+`:checkhealth vdots.readaloud` reports the resolved voice, tone and pace.
+
+Pacing ~
+`pace` controls how deliberate the reading is. Two levers, kept apart:
+
+  1. A beat at each clause mark (`, ; :`), a longer rest at sentence ends
+     (`. ! ?`), and bigger gaps between paragraphs / before headings — pauses
+     only where a speaker actually pauses, so the voice keeps its phrase
+     melody. (Inserting silence between every word made it sound like flash
+     cards; that was removed.)
+  2. `stretch` — the finished audio is time-stretched (pitch preserved) so
+     the gaps `say` already leaves between words get longer. `rubberband` (R3
+     engine) does this if installed; otherwise `ffmpeg atempo`. This is what
+     makes it sound unhurried. Live `;rr` playback and `;rx` export can't
+     post-process, so there the stretch is folded into the `say` rate instead.
+
+  `pace = "follow"`  (default) 168 wpm × 0.90 stretch ≈ 150 effective;
+                     clause 75ms, sentence 300ms, paragraph 360ms, heading 680ms.
+  `pace = "relaxed"` 182 wpm × 0.95; the same shape, lighter.
+  `pace = "natural"` 200 wpm, no stretch; minimal beats.
+
+`rate` overrides the preset's words-per-minute (stretch and beats unchanged).
+List items use a shorter gap than paragraphs so lists don't drag.
+
+Pronunciation ~
+Spoken text passes through `vdots.readaloud.pronounce` — a word-boundary
+substitution map that spells acronyms (`API` → "A P I") and phonetic-izes
+tool names (`kubectl` → "cube cuttle", `nginx` → "engine ex", `PostgreSQL`
+→ "postgres Q L"). It only touches what is spoken, never your buffer.
+
+Add or override terms; set one to `false` to disable a built-in: >
+
+        vim.g.vdots_readaloud = {
+          pronounce = {
+            kubectl   = "koob cuttle",
+            mycompany = "my company",
+            homelab   = "home lab",
+            regex     = false,       -- read it literally
+          },
+        }
+<
+Multi-word replacements are fine ("A P I" spells it out). Terms with `/` or
+`.` match as one token (`ci/cd`, `node.js`).
+
+==============================================================================
+7. MEDIA KEYS & SWIFTBAR                                *vdots-readaloud-remote*
+
+Hardware media keys ~
+With `media_keys = true` a small Swift helper
+(`bin/vdots-mediakey-helper.swift`, compiled on demand to
+`$XDG_CACHE_HOME/vdots/`) registers as the macOS "Now Playing" app while you
+read, so F7/F8/F9, the Touch Bar, AirPods and Control Center control
+playback. `swiftc` (Xcode CLT) is required; `vdots doctor` builds it.
+
+Best-effort: macOS gives the media keys to whichever media app played most
+recently. If Music / Spotify / a browser video is active it can win the keys —
+use the SwiftBar remote or the `;r` maps instead.
+
+SwiftBar remote ~
+`bin/vdots-readaloud-swiftbar` shows a menu-bar item (`⏸ 3/12`) with
+Pause / Resume / Next / Prev / Stop while reading, and nothing when idle. It
+never contends for the keys. Install: >
+
+        vdots doctor --fix     # writes ~/.swiftbar/vdots-readaloud.5s.sh
+<
+Both remotes reach Neovim over its RPC address (`v:servername`), published in
+`$XDG_CACHE_HOME/vdots/readaloud.json` while reading. One reader at a time.
+
+==============================================================================
+7b. ENHANCED READ-ALOUD DOCUMENTS                      *vdots-readaloud-enhanced*
+
+A Markdown file that opens with a YAML frontmatter block written *for speech*
+is an "enhanced" document — the pipeline detects it and honors the block
+(which is never spoken). Detected when the block has `format:` containing
+"read-aloud", or carries `pronunciation:` + `sections:` + `spoken_minutes:`
+together. Everything else is a plain document (best-effort TTS, current
+behavior).
+
+Frontmatter keys: >
+
+        title           published title of the track / captions / transcript
+        lang            voice + locale (e.g. en-US)
+        pronunciation   term -> spoken hint; a per-document lexicon applied to
+                        the AUDIO only — captions + transcript keep the spelling
+        sections        ordered list; each matches an #/## heading -> chapters
+                        in the m4a, chapter cues, transcript headings
+        spoken_minutes  expected length -> metadata + a sanity note (never pad)
+        source          provenance URL
+        generated_at    ISO-8601; a re-publish is skipped unless newer
+<
+Enhanced docs: headings are spoken plainly (they double as chapter titles),
+the built-in tech lexicon is off (the body is already speech-ready), and the
+captions + transcript are one cue / one line per sentence. Chapters are
+embedded in the `.m4a` (ffmpeg) and shipped as `<slug>.chapters.vtt`.
+
+Workflow: `;rr` auditions it (frontmatter-aware live playback); fix the
+`pronunciation:` map, `:w`, `;rr` again. `;ri` (|:VdotsReadInfo|) shows the
+full interpretation and flags a `sections:` entry that no longer matches a
+heading. `;rP` (|:VdotsReadPublish|) hands it in; it records `generated_at`
+and refuses a re-publish unless the source is newer or you use
+`:VdotsReadPublish!`.
+
+==============================================================================
+8. THE LISTEN LIBRARY                                    *vdots-readaloud-listen*
+
+`:VdotsReadPublish` (`;rP`) files the current document into a listenable
+library under `~/ai/outbox/listen` (override with `listen_dir`). Because `~/ai`
+is already synced by the Google Drive desktop app, the library appears on
+every device automatically. On a phone, open `index.md` — Google Drive
+renders it and the links play `audio.mp3` / open the report. On a computer,
+open `index.html`: the article page plays the audio while the verbatim
+transcript highlights and scrolls along; click any paragraph to seek there.
+(Drive's HTML preview sandboxes media, so the embedded players only work in a
+real browser — hence `index.md`.)
+
+Each publish writes a dated, slugged folder. The folder name carries the
+identity, so the files inside are named for their role: >
+
+        ~/ai/outbox/listen/
+          index.md          the catalog for phones (Drive renders it)
+          index.html        the catalog for a browser (player per article)
+          2026-09-02-a-clean-api/
+            audio.mp3         read-through — Drive/Android plays this inline
+            audio.m4a         same audio, +faststart +chapters (Apple Music/VLC)
+            document.md       clean readable document
+            report.md         readability + chapters + full transcript
+            transcript.txt    verbatim prose (plain text)
+            captions.vtt      WebVTT captions (for VLC / other players)
+            article.html      local page: player + synced transcript
+            meta.json         title, date, duration, voice, pace, metrics
+            assets/           machine files — cues.json (drives article.html),
+                              readability.json, chapters.vtt, spoken.txt
+<
+The transcript is verbatim document prose. `say` reports no timings, so each
+block's time is modelled from its share of the spoken words plus the exact
+inserted pauses. Two audio files: the **`.mp3`** is the one to open from
+Google Drive on Android (Drive's app previews mp3 inline but balks at `.m4a`);
+the `.m4a` carries the same audio with `+faststart` and embedded chapters for
+Apple Music / VLC. Both tag title / artist and embed the transcript as a
+lyrics track, so either plays fully from a phone with no companion files.
+
+`<base>.md` (the reading doc) and `<base>.spoken.md` (the speech-ready one with
+the frontmatter block) are treated as a pair: publishing either operates on the
+`.spoken.md`, so `vdots publish <base>.md` and `vdots publish <base>.spoken.md`
+produce the same session. A broken pair warns (a `.md` with frontmatter but no
+`.spoken.md`; a `.spoken.md` with no `.md` source; a non-read-aloud sibling).
+`--raw` publishes the file you named, as-is.
+
+Re-publishing the same source is an **idempotent no-op** (exit 0) unless
+`generated_at` is newer, the file changed the same day, or you pass `--force`
+(`:VdotsReadPublish!`).
+
+CLI: >
+
+        vdots publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open] [-v]
+        vdots publish --info FILE.md      pre-flight report only, no write
+        vdots listen info FILE.md         same report
+        vdots listen open | rebuild | ls | path
+<
+`vdots-publish` / `vdots-read --publish` / `vdots-listen publish` are the same
+pipeline; `vdots publish` is the friendly entry point.
+
+`-v` / `--verbose` narrates every pipeline step to stderr (source resolution,
+frontmatter, voice, word count, the slow `say` render, chapters, ffmpeg
+enrich, output file list) and un-mutes `say` and `ffmpeg`. Off by default —
+publish only prints the final `published — <dir>` line.
+
+`:VdotsReadExport` (`;rx`) is the unrelated quick path — a throwaway temp .m4a,
+nothing kept.
+
+==============================================================================
+9. COMMAND LINE                                           *vdots-readaloud-cli*
+
+`vdots read` (via `bin/vdots`) or `vdots-read` directly — same Markdown parse
+and pronunciation pass, no editor: >
+
+        vdots-read FILE.md                  speak it (auto voice, "follow" pace)
+        vdots-read --export FILE.md         render FILE.m4a and open it
+        vdots-read --publish FILE.md        add it to the listen library
+        vdots-read --dry-run FILE.md        print the spoken script (with pauses)
+        vdots-read --sample --voice "Zoe (Premium)" [FILE]   audition a voice
+        vdots-read --pace natural --tone clarity FILE.md
+<
+==============================================================================
+10. TIPS                                                  *vdots-readaloud-tips*
+
+- `;r[` re-hears the paragraph you just missed; `;r]` skips ahead.
+- Pause (`;rp`), fix a typo, `:w`, put the cursor back, `;rr` — it resumes
+  from that block.
+- The preview pane is read-only on purpose. Edit on the left; it re-renders
+  on `:w`.
+- Download `Zoe (Premium)` (Manage Voices) — it's a night-and-day upgrade and
+  gets auto-picked. Audition: `vdots-read --sample --voice "Zoe (Premium)"`.
+- `pace = "natural"` if "follow" feels too slow once you know a doc.
+- Teach it your project's jargon once in `pronounce` (see |vdots-readaloud-voice|).
+- `;rP` a long doc to the listen library and hear it on a walk;
+  `:VdotsReadPublish!` re-records after you edit it.
+- Run `:checkhealth vdots.readaloud` if anything seems off.
+
+==============================================================================
+11. TROUBLESHOOTING                                    *vdots-readaloud-trouble*
+
+Nothing is spoken ~
+        `say` missing (not macOS), or another process holds the audio device.
+        `:checkhealth vdots.readaloud`.
+
+It reads markup / weird tokens ~
+        File a case — `parse.clean_inline` should strip it. As a stopgap add a
+        `pronounce` entry.
+
+Media keys do nothing ~
+        Expected if Music/Spotify/a video is the active Now-Playing app. Use
+        the SwiftBar remote (`vdots doctor --fix`) or `;rp`.
+
+The preview drifts from the source ~
+        `render-markdown.nvim` adds a few virtual lines; the cursor still maps
+        by real line. `;rf` forces a refresh.
+
+Robotic / cold voice ~
+        No Premium/Enhanced voice is installed. Download `Zoe (Premium)` from
+        Manage Voices (|vdots-readaloud-voice|) — auto-picked once present — or
+        pin one: `vim.g.vdots_readaloud.voice = "Zoe (Premium)"`.
+
+Reading too fast / too slow ~
+        `pace = "follow"` (default, most space) / `"relaxed"` / `"natural"`
+        (least). Or set `rate` to an explicit words-per-minute. To tune, edit
+        `pace.lua` M.presets: `stretch` (lower = slower, more air everywhere),
+        `clause` / `sentence` (punctuation beats), `para` / `section` (gaps
+        between blocks), all ms except `stretch`.
+
+ vim:tw=78:ts=8:et:ft=help:norl:

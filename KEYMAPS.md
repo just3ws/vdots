@@ -91,6 +91,20 @@ This document tracks the most important keybindings, focusing on new performance
 | `./bin/vdots-update` | **CLI Updater** | Headless update, prune unmanaged, run tests, show diff |
 | `./bin/vdots-update -c` | **Update & Commit** | Update, verify tests, and auto-commit `nvim-pack-lock.json` |
 
+### Read Markdown Aloud (`markdown` + preview pane)
+*Two-pane reader, macOS `say`. `:help vdots-readaloud`, `:checkhealth vdots.readaloud`.*
+| Key | Action | Description |
+| :--- | :--- | :--- |
+| `<leader>rr` | **Play from cursor** | Opens the rendered preview vsplit; reads from the block at the cursor |
+| `<leader>rp` | **Pause / Resume** | Toggle; resumes by re-reading the block at the cursor |
+| `<leader>r]` / `<leader>r[` | **Next / Prev block** | Jump a block and re-read it from the start |
+| `<leader>rs` | **Stop** | Halt the voice, keep the panes |
+| `<leader>rq` | **Close** | Close the preview pane and tear down |
+| `<leader>rf` | **Refresh** | Re-render the preview from the source |
+| `<leader>ri` | **Info** | Parse / frontmatter interpretation, chapters, estimate vs `spoken_minutes`, drift |
+| `<leader>rx` | **Quick export** | Throwaway `.m4a` of the buffer/range + open player |
+| `<leader>rP` | **Publish** | Add doc + read-through to `~/ai/outbox/listen` (`:VdotsReadPublish!` re-records) |
+
 ### Editing & Clipboard
 *Copy-on-yank model: yanks auto-copy to the system clipboard; deletes never clobber it.*
 | Key | Action | Description |

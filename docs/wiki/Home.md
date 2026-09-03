@@ -36,5 +36,6 @@ stylua .
 
 - [Architecture](Architecture.md) — entrypoint, module layout, plugin manager, load order
 - [Plugins](Plugins.md) — every plugin and its role
-- [LSP-and-Tooling](LSP-and-Tooling.md) — language servers, formatters, linters
+- [LSP-and-Tooling](LSP-and-Tooling.md) — language servers (Mason), formatters, linters, tool-source split
 - [Keymaps](Keymaps.md) — leader key, all notable bindings
+- [Read-Aloud](Read-Aloud.md) — the Markdown reader + `vdots publish` listen-along pipeline

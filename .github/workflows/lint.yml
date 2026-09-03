@@ -17,10 +17,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y luarocks ripgrep
+          sudo apt-get install -y luarocks ripgrep mandoc zsh
           sudo luarocks install luacheck
           curl -sSLo stylua.zip https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip
           sudo unzip -o stylua.zip -d /usr/local/bin
+          SELENE_TAG=$(curl -sSL https://api.github.com/repos/Kampfkarren/selene/releases/latest | grep -oE '"tag_name": "[^"]+"' | cut -d'"' -f4)
+          curl -sSL "https://github.com/Kampfkarren/selene/releases/download/${SELENE_TAG}/selene-light-${SELENE_TAG}-linux.zip" -o selene.zip
+          sudo unzip -o selene.zip -d /usr/local/bin && sudo chmod +x /usr/local/bin/selene
 
       # apt neovim is 0.9.x — no vim.pack. Pin the 0.12 release the config targets.
       - name: Install Neovim 0.12

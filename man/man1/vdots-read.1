@@ -1,0 +1,100 @@
+.Dd September 3, 2026
+.Dt VDOTS-READ 1
+.Os
+.Sh NAME
+.Nm vdots-read
+.Nd read a Markdown file aloud (macOS say), headless
+.Sh SYNOPSIS
+.Nm
+.Op Fl -voice Ar V
+.Op Fl -tone Ar warm Ns | Ns Ar clarity
+.Op Fl -pace Ar follow Ns | Ns Ar relaxed Ns | Ns Ar natural
+.Op Fl -rate Ar N
+.Ar FILE.md
+.Nm
+.Brq Fl -export | Fl -publish | Fl -dry-run | Fl -sample | Fl -print-voice | Fl -print-pace
+.Op ...
+.Op Ar FILE.md
+.Sh DESCRIPTION
+.Nm
+is the command-line path of the vdots read-aloud plugin: the same
+Markdown parse, tech-pronunciation pass, and paced delivery as the in-editor
+.Ic ;r
+keymaps, driven by
+.Xr nvim 1
+in headless mode.
+The rich in-editor experience \(em rendered preview pane, follow-along
+highlight, pause / jump / resume-from-block, hardware media keys \(em lives in
+.Pa lua/vdots/readaloud/ .
+.Sh MODES
+.Bl -tag -width "--print-voice"
+.It Pq default
+Speak
+.Ar FILE
+through
+.Xr say 1 .
+.It Fl -export
+Render
+.Pa <FILE>.m4a
+and open it.
+.It Fl -publish
+Add to the listen library \(em forwards to
+.Xr vdots-listen 1 Ic publish .
+.It Fl -dry-run
+Print the spoken script (with
+.Ic [[slnc]]
+pause markers), do not speak.
+.It Fl -sample Op Ar FILE
+Speak a short sample to audition a voice / pace.
+.It Fl -print-voice Op Fl -tone Ar T
+Print the voice that would be auto-picked.
+.It Fl -print-pace Op Fl -pace Ar P
+Print the resolved pace preset
+.Pf ( Ic rate , Ic stretch , Ic say_rate ) .
+.It Fl -transcript , Fl -cues Ar SECS , Fl -cues-json Ar SECS , Fl -chapters Ar SECS , Fl -meta , Fl -info
+Bridge modes used by
+.Xr vdots-listen 1 .
+.El
+.Sh OPTIONS
+.Bl -tag -width "--tone T"
+.It Fl -voice Ar V
+macOS voice name. Siri voices
+.Pq e.g. Qq Siri Voice 4
+are not auto-detected \(em pass them explicitly.
+.It Fl -tone Ar warm Ns | Ns Ar clarity
+Character used when auto-picking a voice. Default
+.Ar warm .
+.It Fl -clarity
+Alias for
+.Fl -tone Ar clarity .
+.It Fl -pace Ar follow Ns | Ns Ar relaxed Ns | Ns Ar natural
+Delivery preset. Default
+.Ar follow .
+.It Fl -rate Ar N
+Override the preset's words-per-minute (pause lengths and time-stretch
+unchanged).
+.It Fl -lang Ar L
+BCP-47 language tag for locale voice matching. Default
+.Ar en-US .
+.El
+.Sh PACING
+Every preset leaves a beat at clause marks, a longer rest at sentence ends,
+and larger gaps between paragraphs / before headings. The unhurried feel
+comes from a whole-file, pitch-preserving time-stretch applied after
+.Xr say 1
+renders
+.Pf ( Xr rubberband 1 No if installed, else Xr ffmpeg 1 Ic atempo ) ;
+inserting silence between every word was tried and removed \(em it sounded
+like flash cards.
+Tune in
+.Pa lua/vdots/readaloud/pace.lua
+.Pf ( Ic M.presets ) .
+.Sh SEE ALSO
+.Xr rubberband 1 ,
+.Xr say 1 ,
+.Xr vdots 1 ,
+.Xr vdots-listen 1 ,
+.Xr vdots-publish 1
+.Pp
+.Ic :help vdots-readaloud
+inside Neovim.

@@ -1,0 +1,40 @@
+.Dd September 3, 2026
+.Dt VDOTS-UPDATE 1
+.Os
+.Sh NAME
+.Nm vdots-update
+.Nd update Neovim plugins, prune, test
+.Sh SYNOPSIS
+.Nm
+.Op Fl -commit | Fl c
+.Op Fl -interactive | Fl i
+.Op Fl -clean-only
+.Op Fl -no-test
+.Sh DESCRIPTION
+.Nm
+updates plugins via
+.Ic vim.pack ,
+prunes packages that are on disk but no longer in the
+.Ic vim.pack.add
+manifest, runs the headless regression suite, and shows the
+.Pa nvim-pack-lock.json
+diff. Editor-only LSP servers are managed separately by Mason
+.Pf ( Pa lua/editor/mason.lua ) ;
+CLI / CI tools come from the zdots Brewfile.
+.Sh OPTIONS
+.Bl -tag -width "--interactive, -i"
+.It Fl -commit , Fl c
+Auto-commit the lockfile change when the post-update test run passes.
+.It Fl -interactive , Fl i
+Open an interactive changelog-review buffer in
+.Xr nvim 1
+before committing.
+.It Fl -clean-only
+Only prune unmanaged / inactive plugins from disk; do not update.
+.It Fl -no-test
+Skip the regression suite after updating.
+.El
+.Sh SEE ALSO
+.Xr vdots 1 ,
+.Xr vdots-ctl 1 ,
+.Xr vdots-doctor 1

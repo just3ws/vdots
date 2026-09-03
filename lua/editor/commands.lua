@@ -22,6 +22,51 @@ cmd("ZdotsStatus", function()
   require("zdots").show_status()
 end, { desc = "Show zdots platform status in a floating window" })
 
+-- Markdown read-aloud (lua/vdots/readaloud/; macOS `say`). :help vdots-readaloud
+cmd("VdotsRead", function()
+  require("vdots.readaloud").play { from_cursor = false }
+end, { desc = "Read the Markdown buffer aloud (rendered preview pane)" })
+
+cmd("VdotsReadFromHere", function()
+  require("vdots.readaloud").play { from_cursor = true }
+end, { desc = "Read aloud from the block under the cursor" })
+
+cmd("VdotsReadStop", function()
+  require("vdots.readaloud").stop()
+end, { desc = "Stop read-aloud playback (keep the preview pane)" })
+
+cmd("VdotsReadClose", function()
+  require("vdots.readaloud").close()
+end, { desc = "Close the read-aloud preview pane" })
+
+cmd("VdotsReadRefresh", function()
+  require("vdots.readaloud").refresh()
+end, { desc = "Re-render the read-aloud preview from the source" })
+
+cmd("VdotsReadInfo", function()
+  require("vdots.readaloud").info()
+end, { desc = "Show the read-aloud parse / frontmatter interpretation" })
+
+cmd("VdotsReadExport", function(o)
+  local range = o.range == 2 and { o.line1, o.line2 } or nil
+  require("vdots.readaloud").export(range)
+end, { range = true, desc = "Render read-aloud audio to a file and open it" })
+
+cmd("VdotsReadPublish", function(o)
+  require("vdots.readaloud").publish { force = o.bang }
+end, { bang = true, desc = "Publish doc + read-through to the listen library (! = re-record)" })
+
+-- Recent files, Markdown only (dashboard `m` key + standalone)
+cmd("VdotsRecentMarkdown", function()
+  Snacks.picker.recent {
+    filter = {
+      filter = function(item)
+        return require("editor.mdfiles").is_markdown(item.file)
+      end,
+    },
+  }
+end, { desc = "Pick from recently opened Markdown files" })
+
 -- Plugin package management commands (vim.pack)
 cmd("PackUpdate", function()
   vim.pack.update()

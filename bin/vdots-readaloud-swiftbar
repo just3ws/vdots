@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# vdots-readaloud-swiftbar — SwiftBar menu-bar remote for vdots read-aloud.
+#
+# Reliable transport control (unlike hardware media keys, which macOS hands to
+# whichever media app played last). Emits nothing when nothing is being read.
+#
+# Install: a thin shim in ~/.swiftbar execs this script (SwiftBar wants
+# name.refreshtime.ext there; logic stays in the repo). `vdots doctor --fix`
+# writes ~/.swiftbar/vdots-readaloud.5s.sh for you.
+#
+# <xbar.title>vdots read-aloud</xbar.title>
+# <swiftbar.hideAbout>true</swiftbar.hideAbout>
+# <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
+set -uo pipefail
+
+case "${1:-}" in
+  -h|--help) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+esac
+
+STATE="${XDG_CACHE_HOME:-$HOME/.cache}/vdots/readaloud.json"
+[[ -r "$STATE" ]] || exit 0
+
+command -v jq >/dev/null || { echo "🔊"; echo "---"; echo "jq not installed"; exit 0; }
+
+active=$(jq -r '.active // false' "$STATE")
+[[ "$active" == "true" ]] || exit 0
+
+paused=$(jq -r '.paused // false' "$STATE")
+file=$(jq -r '.file // ""' "$STATE")
+block=$(jq -r '.block // 0' "$STATE")
+total=$(jq -r '.blocks // 0' "$STATE")
+addr=$(jq -r '.addr // ""' "$STATE")
+
+nvim_bin="$(command -v nvim || echo nvim)"
+glyph="▶"; [[ "$paused" == "true" ]] && glyph="⏸"
+
+# menu bar
+echo "$glyph $block/$total"
+echo "---"
+echo "Reading: ${file:-buffer} | size=12"
+echo "---"
+
+act() { # label  rpc-cmd
+  echo "$1 | bash=\"$nvim_bin\" param0=--server param1=\"$addr\" param2=--remote-expr param3=\"v:lua.require('vdots.readaloud').rpc('$2')\" terminal=false refresh=true"
+}
+
+if [[ "$paused" == "true" ]]; then
+  act "Resume" resume
+else
+  act "Pause" pause
+fi
+act "Next block" next
+act "Previous block" prev
+act "Stop" stop
+act "Close preview" close

@@ -1,0 +1,33 @@
+.Dd September 3, 2026
+.Dt VDOTS-READABILITY 1
+.Os
+.Sh NAME
+.Nm vdots-readability
+.Nd readability report for prose on stdin, as JSON
+.Sh SYNOPSIS
+.Nm
+.Aq Ar transcript.txt
+.Sh DESCRIPTION
+.Nm
+reads prose on standard input and emits a JSON readability report using
+standard formulas \(em Flesch Reading Ease and Flesch\(enKincaid grade \(em with
+a vowel-group syllable heuristic. Python standard library only, no
+dependencies.
+.Pp
+.Xr vdots-listen 1 Ic publish
+pipes the session transcript through it to build the readability card on the
+article page and the Readability section of
+.Pa report.md .
+.Sh OUTPUT
+JSON object with keys:
+.Ic words , sentences , syllables , polysyllabic_words ,
+.Ic avg_words_per_sentence , avg_syllables_per_word , flesch_reading_ease ,
+.Ic reading_ease_band , flesch_kincaid_grade ,
+.Ic reading_time_min Pq at 200 wpm silent ,
+.Ic listening_time_min Pq at 155 wpm follow pace ,
+and
+.Ic longest_sentences Bq .
+.Sh SEE ALSO
+.Xr vdots 1 ,
+.Xr vdots-listen 1 ,
+.Xr vdots-publish 1

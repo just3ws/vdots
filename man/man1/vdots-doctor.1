@@ -1,0 +1,45 @@
+.Dd September 3, 2026
+.Dt VDOTS-DOCTOR 1
+.Os
+.Sh NAME
+.Nm vdots-doctor
+.Nd static health check for the vdots install
+.Sh SYNOPSIS
+.Nm
+.Op Fl -json
+.Op Fl -fix
+.Sh DESCRIPTION
+.Nm
+is the "brew doctor" for vdots: it checks the Neovim runtime diagnostics
+.Pf ( via Xr vdots-ctl 1 Ic check )
+plus the read-aloud support surface \(em the
+.Xr say 1
+engine, the compiled Swift media-key helper, the SwiftBar remote shim, the
+listen library directory, Google Drive sync, and which audio time-stretch
+engine is available
+.Pf ( Xr rubberband 1 , Xr ffmpeg 1 Ic atempo , No or none ) .
+It exits
+.Ic 0
+when no failures are found and
+.Ic 1
+on any
+.Ic [FAIL] .
+.Sh OPTIONS
+.Bl -tag -width "--json"
+.It Fl -json
+Emit a single JSON object
+.Pf ( Ic status , checks , readaloud , runtime ) .
+.It Fl -fix
+Build the media-key helper from
+.Pa bin/vdots-mediakey-helper.swift ,
+install the SwiftBar shim to
+.Pa ~/.swiftbar/vdots-readaloud.5s.sh ,
+and create the listen library directory.
+.El
+.Sh SEE ALSO
+.Xr rubberband 1 ,
+.Xr vdots 1 ,
+.Xr vdots-ctl 1
+.Pp
+.Ic :checkhealth vdots.readaloud
+inside Neovim.

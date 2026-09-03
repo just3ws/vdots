@@ -60,6 +60,11 @@ opt.undodir = data .. "/undo//"
 opt.undofile = true
 opt.viewdir = data .. "/view//"
 
+-- Recent-files history depth. The dashboard "Recent Files" / "Recent Markdown"
+-- sections and :VdotsRecentMarkdown read vim.v.oldfiles; the default '100 is
+-- shallow once you filter to one filetype, so keep 1000.
+opt.shada = { "!", "'1000", "<50", "s10", "h" }
+
 -- Shell behavior
 g.is_posix = 1
 g.EditorConfig_exclude_patterns = { "fugitive://.*", "scp://.*" }

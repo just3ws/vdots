@@ -31,6 +31,8 @@ vim.pack.add {
   { src = "https://github.com/nvim-telescope/telescope.nvim" },
   { src = "https://github.com/stevearc/aerial.nvim" },
   { src = "https://github.com/neovim/nvim-lspconfig" },
+  { src = "https://github.com/mason-org/mason.nvim" },
+  { src = "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim" },
   { src = "https://github.com/folke/lazydev.nvim" },
   { src = "https://github.com/jmbuhr/otter.nvim" },
   { src = "https://github.com/stevearc/conform.nvim" },
@@ -95,6 +97,12 @@ require("snacks").setup {
             action = ":lua Snacks.picker.recent()",
           },
           {
+            icon = " ",
+            key = "m",
+            desc = "Recent Markdown",
+            action = ":VdotsRecentMarkdown",
+          },
+          {
             icon = " ",
             key = "c",
             desc = "Config",
@@ -103,6 +111,14 @@ require("snacks").setup {
           { icon = "󰒲 ", key = "L", desc = "PackSync", action = ":PackSync" },
           { icon = " ", key = "q", desc = "Quit", action = ":qa" },
         },
+      },
+      { section = "recent_files", title = "Recent Files", limit = 8, padding = 1 },
+      {
+        section = "recent_files",
+        title = "Recent Markdown",
+        limit = 15,
+        padding = 1,
+        filter = require("editor.mdfiles").is_markdown,
       },
       {
         footer = ("  Neovim %d.%d.%d"):format(
@@ -151,6 +167,7 @@ require("ui.kanagawa_wave").setup() -- highlight overrides on top (self-containe
 require "ui.lualine"
 require("ui.diagnostics").setup() -- Diagnostic signs / virtual-text styling
 require("editor.treesitter").setup() -- Native TS highlighting + textobjects
+require("editor.mason").setup() -- editor-only LSP servers (skipped headless/CI)
 
 -- Plugin setup + their keymaps (everything vim.pack installs above)
 require("plugins").setup_all()
