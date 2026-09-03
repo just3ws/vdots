@@ -23,6 +23,8 @@ Full reference: `docs/wiki/Read-Aloud.md`, `:help vdots-readaloud`
 | `say` state machine + publish | `lua/vdots/readaloud/player.lua` |
 | CLI bridge (headless nvim) | `bin/vdots-read` + `bin/vdots-read.lua` |
 | Publish pipeline | `bin/vdots-listen` (+ `bin/vdots-listen-catalog.py`) |
+| Scrolling read-along video | `bin/vdots-readalong` (rsvg frames + ffmpeg) |
+| OCR-friendly guide PDF | `bin/vdots-guide-image` (`document.md` → `guide.pdf`, rsvg pages) |
 | Readability JSON | `bin/vdots-readability` |
 | Health | `lua/vdots/readaloud/health.lua` → `:checkhealth vdots.readaloud` |
 

@@ -1,4 +1,4 @@
-#compdef vdots vdots-read vdots-publish vdots-listen vdots-doctor vdots-ctl vdots-update vdots-readalong
+#compdef vdots vdots-read vdots-publish vdots-listen vdots-doctor vdots-ctl vdots-update vdots-readalong vdots-guide-image
 
 # vdots — control-plane shim + read-aloud tooling completion.
 # Loaded via ~/.config/zsh/.zshrc.local (interim; zdots Z-337).
@@ -82,6 +82,14 @@ _vdots-readalong() {
     '(-h --help)'{-h,--help}'[show help]'
 }
 
+_vdots-guide-image() {
+  _arguments \
+    '--in[Markdown input]:file:_files -g "*.md"' \
+    '--out[output PDF]:file:_files -g "*.pdf"' \
+    '--title[page-footer label]:title:' \
+    '(-h --help)'{-h,--help}'[show help]'
+}
+
 _vdots-ctl() {
   if (( CURRENT == 2 )); then
     _describe -t commands 'vdots-ctl command' \
@@ -138,4 +146,5 @@ case $service in
   vdots-ctl)     _vdots-ctl "$@" ;;
   vdots-update)  _vdots-update "$@" ;;
   vdots-readalong) _vdots-readalong "$@" ;;
+  vdots-guide-image) _vdots-guide-image "$@" ;;
 esac

@@ -4,7 +4,7 @@ An offline Markdown reader for Neovim (macOS `say`), plus a publish pipeline
 that turns a document into a synced listen-along session on Google Drive.
 
 - Plugin: `lua/vdots/readaloud/`
-- CLI: `bin/vdots-read`, `bin/vdots-publish`, `bin/vdots-listen`, `bin/vdots-readalong`
+- CLI: `bin/vdots-read`, `bin/vdots-publish`, `bin/vdots-listen`, `bin/vdots-readalong`, `bin/vdots-guide-image`
 - Vim help: `:help vdots-readaloud` (`doc/vdots-readaloud.txt`)
 - Health: `:checkhealth vdots.readaloud` · `vdots doctor`
 
@@ -130,6 +130,7 @@ sequenceDiagram
   L->>R: transcript, cues DUR, chapters DUR
   L->>F: enrich m4a (chapters, lyrics, faststart), transcode mp3
   L->>V: cues + audio -> readalong.mp4 (rsvg frames + ffmpeg)
+  L->>V: document.md -> guide.pdf (paginated text-image PDF via rsvg)
   L->>L: brief.md (analysis brief + transcript inline)
   L->>P: rebuild
   P-->>U: index.md, index.html, slug/article.html
@@ -148,6 +149,8 @@ sequenceDiagram
                      in Google Drive's video player (web / iOS / Android).
                      MP4 metadata + embedded mov_text captions.
     readalong.vtt    same-basename caption sidecar (Drive's player reads it)
+    guide.pdf        document.md as a paginated, OCR-friendly text-image PDF —
+                     one attachment to drop into an AI chat (Gemini/ChatGPT/Claude)
     brief.md         self-contained analysis brief — open in Gemini from Drive
     manifest.md      interview-prep packs: a research kit (file map + web links)
                      for any AI chat to research the job independently
@@ -172,6 +175,14 @@ AI chat with web access; it fetches the URLs and asks you to attach the local
 files. This keeps job research separate from — and cross-checkable against —
 the prep pack itself.
 
+`guide.pdf` is `document.md` rendered by `vdots-guide-image` as a paginated
+PDF — one text column per page, large type, wide margins. It exists for AI
+chats that only take uploads or where attaching a dozen loose files is
+awkward: drop the one PDF and the model reads the pages. It is not a
+token-efficiency trick (an image of text costs at least as many tokens as the
+text) — it is a packaging convenience. Built whenever `rsvg-convert` is
+present; skipped gracefully otherwise.
+
 ### What plays where
 
 | Surface | Plays | Synced transcript |
@@ -193,7 +204,8 @@ is part of the video frames, so it needs nothing but a video player. Built by
 ## CLI reference
 
 `man vdots`, `man vdots-read`, `man vdots-publish`, `man vdots-listen`,
-`man vdots-readalong` (shipped in `man/`, wired by the zdots shell).
+`man vdots-readalong`, `man vdots-guide-image` (shipped in `man/`, wired by the
+zdots shell).
 `vdots-read --help` etc.
 
 ## Dependencies
@@ -203,7 +215,7 @@ is part of the video frames, so it needs nothing but a video player. Built by
 | `say` | speech (macOS only) | — (required) |
 | `ffmpeg` | chapters, faststart, mp3, atempo stretch, video encode | no chapters, no stretch, no video |
 | `rubberband` | high-quality (R3) time-stretch | `ffmpeg atempo` |
-| `rsvg-convert` | renders the `readalong.mp4` frames | no video (`brew install librsvg`) |
+| `rsvg-convert` | renders the `readalong.mp4` frames and `guide.pdf` pages | no video / no guide PDF (`brew install librsvg`) |
 | `jq` | frontmatter read in `vdots-listen` | plain-doc fallback |
 | `python3` | readability + catalog generator | no report / catalog |
 

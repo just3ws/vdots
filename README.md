@@ -344,6 +344,7 @@ sequenceDiagram
   L->>F: time-stretch (rubberband R3 or atempo)
   L->>R: transcript, cues, chapters
   L->>F: embed chapters+lyrics, faststart, transcode mp3
+  L->>L: readalong.mp4 + guide.pdf (rsvg-convert) + brief.md
   L->>P: rebuild
   P-->>U: index.md, index.html, article.html
   Note over U: ~/ai syncs to Google Drive on every device
@@ -360,6 +361,10 @@ the document into `~/ai/outbox/listen/<date-slug>/` as role-named files:
   — synced read-along that works where `article.html` can't. Carries MP4
   metadata + an embedded caption track, and a same-name `readalong.vtt`
   sidecar (Drive's player uses it for CC).
+- **`guide.pdf`** — `document.md` rendered as a paginated, OCR-friendly
+  text-image PDF (one text column per page, large type). One attachment to drop
+  into an AI chat instead of juggling loose files — packaging convenience, not
+  a token saving. Built by `vdots-guide-image` when `rsvg-convert` is present.
 - **`brief.md`** — a self-contained analysis brief (what this is, the chapters,
   what to help with, then the full transcript inline). Open it in Gemini
   straight from Drive.

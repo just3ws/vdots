@@ -1,0 +1,229 @@
+#!/usr/bin/env python3
+"""vdots-guide-image — render a Markdown doc to a paginated, OCR-friendly PDF.
+
+Each page is essentially a clean text-image: near-black text on white, large
+type, generous margins, one column. Built for dropping into an AI chat
+(Gemini / ChatGPT / Claude) as a single attachment when handing over many
+loose files is awkward — the model OCRs / reads the pages directly.
+
+Note: an image of text is not cheaper in tokens than the text itself; the win
+is packaging — one file instead of several, and it survives copy/paste into
+tools that only take uploads.
+
+Usage:
+  vdots-guide-image --in document.md --out guide.pdf [--title T]
+
+Tool: rsvg-convert (librsvg) — emits a multi-page PDF from one SVG per page.
+Python standard library only.
+"""
+import argparse
+import html
+import os
+import re
+import shutil
+import subprocess
+import sys
+
+# US-Letter-ish canvas; rsvg maps px->pt for the PDF, vision tools rasterize
+# per page regardless, so what matters is the ratio and the type size.
+W, H = 1275, 1650
+ML, MR, MT, MB = 120, 120, 130, 120
+FONT = "'Helvetica Neue', Helvetica, Arial, sans-serif"
+MONO = "'SF Mono', Menlo, Consolas, monospace"
+FG = "#111111"
+DIM = "#6b6b6b"
+RULE = "#c8c8c8"
+BAR = "#b0b0b0"
+
+BODY_FS, BODY_LH = 32, 46
+H1_FS, H2_FS, H3_FS = 52, 42, 36
+CODE_FS, CODE_LH = 26, 38
+WRAP_BODY = 62          # chars/line at BODY_FS in this width
+WRAP_CODE = 78
+CONTENT_H = H - MT - MB
+
+
+def esc(s):
+    return html.escape(s, quote=False)
+
+
+def inline(s):
+    s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1 (\2)", s)   # links -> text (url)
+    s = s.replace("**", "").replace("__", "")
+    s = re.sub(r"(?<!\*)\*(?!\*)", "", s)                    # lone * emphasis
+    s = s.replace("`", "")
+    return s
+
+
+def wrap(text, n):
+    out, cur = [], ""
+    for w in text.split():
+        if len(cur) + len(w) + 1 <= n or not cur:
+            cur = (cur + " " + w).strip()
+        else:
+            out.append(cur)
+            cur = w
+    if cur:
+        out.append(cur)
+    return out or [""]
+
+
+def blocks(md_lines):
+    """Markdown -> a flat list of render items:
+       (kind, text, height) where kind in
+       heading1/2/3, para, quote, li, code, hr, gap."""
+    items, in_code = [], False
+    for raw in md_lines:
+        line = raw.rstrip("\n")
+        if line.strip().startswith("```"):
+            in_code = not in_code
+            items.append(("gap", "", BODY_LH // 2))
+            continue
+        if in_code:
+            for wl in wrap(line, WRAP_CODE) if line else [""]:
+                items.append(("code", wl, CODE_LH))
+            continue
+        if not line.strip():
+            items.append(("gap", "", BODY_LH // 2))
+            continue
+        if re.match(r"^\s*---+\s*$", line) or re.match(r"^\s*___+\s*$", line):
+            items.append(("hr", "", BODY_LH))
+            continue
+        m = re.match(r"^(#{1,6})\s+(.*)$", line)
+        if m:
+            lvl = min(len(m.group(1)), 3)
+            fs = {1: H1_FS, 2: H2_FS, 3: H3_FS}[lvl]
+            items.append(("gap", "", BODY_LH))
+            for wl in wrap(inline(m.group(2)), int(WRAP_BODY * BODY_FS / fs)):
+                items.append((f"heading{lvl}", wl, int(fs * 1.35)))
+            items.append(("gap", "", BODY_LH // 3))
+            continue
+        m = re.match(r"^\s*>\s?(.*)$", line)
+        if m:
+            for wl in wrap(inline(m.group(1)), WRAP_BODY - 4):
+                items.append(("quote", wl, BODY_LH))
+            continue
+        m = re.match(r"^(\s*)([-*+]|\d+[.)])\s+(.*)$", line)
+        if m:
+            marker = "•" if m.group(2) in "-*+" else m.group(2)
+            wls = wrap(inline(m.group(3)), WRAP_BODY - 4)
+            items.append(("li", f"{marker}\t{wls[0]}", BODY_LH))
+            for wl in wls[1:]:
+                items.append(("li", f"\t{wl}", BODY_LH))
+            continue
+        for wl in wrap(inline(line), WRAP_BODY):
+            items.append(("para", wl, BODY_LH))
+    return items
+
+
+def paginate(items):
+    pages, cur, used = [], [], 0
+    for it in items:
+        h = it[2]
+        if it[0] == "gap" and not cur:
+            continue                      # no leading blank on a page
+        if used + h > CONTENT_H and cur:
+            pages.append(cur)
+            cur, used = [], 0
+            if it[0] == "gap":
+                continue
+        cur.append(it)
+        used += h
+    if cur:
+        pages.append(cur)
+    return pages
+
+
+def page_svg(items, title, n, total):
+    p = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
+        f'font-family="{FONT}">',
+        f'<rect width="{W}" height="{H}" fill="#ffffff"/>',
+    ]
+    y = MT
+    for kind, text, h in items:
+        y += h
+        if kind == "gap":
+            continue
+        if kind == "hr":
+            p.append(f'<line x1="{ML}" y1="{y - h/2:.0f}" x2="{W-MR}" '
+                     f'y2="{y - h/2:.0f}" stroke="{RULE}" stroke-width="1.5"/>')
+            continue
+        if kind.startswith("heading"):
+            fs = {"heading1": H1_FS, "heading2": H2_FS, "heading3": H3_FS}[kind]
+            p.append(f'<text x="{ML}" y="{y:.0f}" font-size="{fs}" '
+                     f'fill="{FG}" font-weight="700">{esc(text)}</text>')
+            continue
+        if kind == "quote":
+            p.append(f'<rect x="{ML}" y="{y - h*0.8:.0f}" width="4" '
+                     f'height="{h:.0f}" fill="{BAR}"/>')
+            p.append(f'<text x="{ML + 26}" y="{y:.0f}" font-size="{BODY_FS}" '
+                     f'fill="{DIM}">{esc(text)}</text>')
+            continue
+        if kind == "code":
+            p.append(f'<text x="{ML}" y="{y:.0f}" font-size="{CODE_FS}" '
+                     f'fill="{FG}" font-family="{MONO}" '
+                     f'xml:space="preserve">{esc(text)}</text>')
+            continue
+        if kind == "li":
+            if "\t" in text:
+                mk, body = text.split("\t", 1)
+                x = ML + (34 if not mk else 0)
+                if mk:
+                    p.append(f'<text x="{ML}" y="{y:.0f}" font-size="{BODY_FS}" '
+                             f'fill="{FG}">{esc(mk)}</text>')
+                p.append(f'<text x="{ML + 34}" y="{y:.0f}" font-size="{BODY_FS}" '
+                         f'fill="{FG}">{esc(body)}</text>')
+            continue
+        p.append(f'<text x="{ML}" y="{y:.0f}" font-size="{BODY_FS}" '
+                 f'fill="{FG}">{esc(text)}</text>')
+    foot = f"{title}  ·  page {n} / {total}"
+    p.append(f'<text x="{ML}" y="{H - MB + 60:.0f}" font-size="20" '
+             f'fill="{DIM}">{esc(foot)}</text>')
+    p.append("</svg>")
+    return "\n".join(p)
+
+
+def main():
+    ap = argparse.ArgumentParser(add_help=True)
+    ap.add_argument("--in", dest="inp", required=True)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--title", default="")
+    a = ap.parse_args()
+
+    if not shutil.which("rsvg-convert"):
+        print("vdots-guide-image: rsvg-convert not found", file=sys.stderr)
+        return 2
+
+    with open(a.inp) as f:
+        md = f.readlines()
+    title = a.title or next(
+        (l.lstrip("# ").strip() for l in md if l.startswith("# ")), "document")
+
+    pages = paginate(blocks(md))
+    if not pages:
+        print("vdots-guide-image: nothing to render", file=sys.stderr)
+        return 1
+
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix="vdots-guide.")
+    try:
+        svgs = []
+        for i, pg in enumerate(pages):
+            sp = os.path.join(tmp, f"p{i:03d}.svg")
+            with open(sp, "w") as f:
+                f.write(page_svg(pg, title, i + 1, len(pages)))
+            svgs.append(sp)
+        subprocess.run(["rsvg-convert", "-f", "pdf", "-o", a.out, *svgs],
+                       check=True)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+    ok = os.path.exists(a.out) and os.path.getsize(a.out) > 0
+    if ok:
+        print(f"vdots-guide-image: {len(pages)} pages → {a.out}", file=sys.stderr)
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

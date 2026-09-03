@@ -21,7 +21,7 @@ SH_BIN=(bin/vdots bin/vdots-ctl bin/vdots-doctor bin/vdots-listen bin/vdots-publ
 for f in "${SH_BIN[@]}"; do bash -n "$f"; done
 command -v shellcheck >/dev/null 2>&1 && shellcheck -x -S error "${SH_BIN[@]}"
 command -v zsh >/dev/null 2>&1 && zsh -n completions/_vdots
-python3 -c "import ast,sys; [ast.parse(open(f).read(),f) for f in ['bin/vdots-readalong','bin/vdots-readability','bin/vdots-listen-catalog.py']]"
+python3 -c "import ast,sys; [ast.parse(open(f).read(),f) for f in ['bin/vdots-readalong','bin/vdots-readability','bin/vdots-guide-image','bin/vdots-listen-catalog.py']]"
 
 # man pages: fail on ERROR/FATAL, tolerate mandoc's style nits
 if command -v mandoc >/dev/null 2>&1; then

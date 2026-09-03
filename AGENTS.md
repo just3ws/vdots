@@ -25,6 +25,11 @@
          brief, for any AI chat to research the job independently.
        - all linked from index.md + article.html; meta.json gains
          video/brief/manifest; vdots-doctor / :checkhealth report rsvg-convert.
+       - `guide.pdf` — document.md rendered by `vdots-guide-image` as a
+         paginated, OCR-friendly text-image PDF (rsvg-convert, one SVG page →
+         one PDF page). One attachment to drop into an AI chat; packaging
+         convenience, not token savings. Linked from index.md + article.html +
+         brief/manifest; meta.json gains `guide`; vdots-doctor reports it.
        - publish now removes a superseded same-slug session under an old date.
        - pace.lua M.cues scales modelled pauses by 1/stretch (the [[slnc]]
          pauses get stretched too) — cuts the read-along drift. The deeper fix
@@ -49,7 +54,7 @@
          pre-commit runs it). Mason owns editor-only LSP servers
          (lua/editor/mason.lua); brew owns shell/CI tools. Brewfile.common
          (zdots main): + rubberband, + selene, − lua-language-server.
-       - Full doc pass: 8 man pages (man/man1/), completions/_vdots,
+       - Full doc pass: 9 man pages (man/man1/), completions/_vdots,
          docs/wiki/Read-Aloud.md + 5 mermaid diagrams, .claude/skills/
          read-aloud.md, README + wiki + :help synced. .zshrc.local (zdots,
          gitignored) wires PATH + MANPATH + the completion.
@@ -99,7 +104,9 @@ This repository is a Lua-based Neovim configuration.
   `vdots-{ctl,doctor,update,read,publish,listen}`, `vdots-read.lua` (headless
   bridge: script/transcript/vtt/cues/chapters/meta/info/pace), `vdots-listen-catalog.py`,
   `vdots-readalong` (scrolling read-along video: SVG frames → rsvg-convert →
-  ffmpeg), `vdots-readability`, `vdots-mediakey-helper.swift`, `vdots-readaloud-swiftbar`.
+  ffmpeg), `vdots-guide-image` (document.md → paginated OCR-friendly guide.pdf
+  via rsvg-convert), `vdots-readability`, `vdots-mediakey-helper.swift`,
+  `vdots-readaloud-swiftbar`.
   Each is standalone; the shim just dispatches. `vdots-publish` = pre-flight
   report + `vdots-listen publish`.
 - `man/man1/*.1`: mandoc for every `vdots*` command. `completions/_vdots`: zsh

@@ -1,0 +1,56 @@
+.Dd September 3, 2026
+.Dt VDOTS-GUIDE-IMAGE 1
+.Os
+.Sh NAME
+.Nm vdots-guide-image
+.Nd render a Markdown document to a paginated, OCR-friendly PDF
+.Sh SYNOPSIS
+.Nm
+.Fl -in Ar document.md
+.Fl -out Ar guide.pdf
+.Op Fl -title Ar T
+.Sh DESCRIPTION
+.Nm
+lays a Markdown document out as one text column per page \(em near-black text
+on white, large type, wide margins \(em and writes the pages as a single PDF.
+Each page is effectively a clean image of text.
+.Pp
+The use is handing a document to an AI chat
+.Pq Gemini , ChatGPT , Claude
+as one attachment instead of several loose files: the model reads or OCRs the
+pages directly. An image of text is not cheaper in tokens than the text \(em
+the win is packaging and surviving upload-only interfaces.
+.Pp
+.Xr vdots-listen 1 Ic publish
+calls this on
+.Pa document.md
+automatically when
+.Xr rsvg-convert 1
+and
+.Xr python3 1
+are present, producing
+.Pa guide.pdf
+in the session directory.
+.Sh OPTIONS
+.Bl -tag -width "--title T"
+.It Fl -in Ar F
+Markdown input. Frontmatter, headings, block quotes, lists, and fenced code
+are rendered; inline emphasis and link markup are flattened to plain text.
+.It Fl -out Ar F
+Output PDF path.
+.It Fl -title Ar T
+Page-footer label. Defaults to the first level-one heading.
+.El
+.Sh OUTPUT
+US-Letter proportions, one SVG-rendered page each, concatenated by
+.Xr rsvg-convert 1
+into a multi-page PDF. About 5 KB per page.
+.Sh REQUIRES
+.Xr rsvg-convert 1
+.Pq librsvg ,
+Python standard library only.
+.Sh SEE ALSO
+.Xr rsvg-convert 1 ,
+.Xr vdots 1 ,
+.Xr vdots-listen 1 ,
+.Xr vdots-publish 1

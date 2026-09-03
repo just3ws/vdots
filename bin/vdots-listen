@@ -188,6 +188,7 @@ cmd_publish() {
   local p_read="$dir/assets/readability.json"  p_chap="$dir/assets/chapters.vtt"
   local p_doc="$dir/document.md"    p_m4a="$dir/audio.m4a"   p_mp3="$dir/audio.mp3"
   local p_tr="$dir/transcript.txt"  p_cap="$dir/captions.vtt" p_report="$dir/report.md"
+  local p_guide="$dir/guide.pdf"
 
   # resolve the voice (respects --voice / --tone / frontmatter lang)
   [[ -n "$voice" ]] || voice="$("$HERE/vdots-read" --print-voice --tone "$tone" --lang "$lang" 2>/dev/null || true)"
@@ -368,6 +369,24 @@ cmd_publish() {
     fi
   fi
 
+  # guide.pdf — the readable doc as a paginated, OCR-friendly text-image PDF.
+  # One attachment to drop into an AI chat (Gemini / ChatGPT / Claude) instead
+  # of juggling loose files; the model reads the pages directly.
+  if command -v rsvg-convert >/dev/null && command -v python3 >/dev/null; then
+    local gi_ok=0
+    if [[ "$VERBOSE" == 1 ]]; then
+      "$HERE/vdots-guide-image" --in "$p_doc" --out "$p_guide" --title "$title" && gi_ok=1
+    else
+      "$HERE/vdots-guide-image" --in "$p_doc" --out "$p_guide" --title "$title" >/dev/null 2>&1 && gi_ok=1
+    fi
+    if [[ "$gi_ok" == 1 && -s "$p_guide" ]]; then
+      step "guide PDF → $p_guide"
+    else
+      rm -f "$p_guide"
+      step "guide PDF skipped (renderer failed)"
+    fi
+  fi
+
   # spoken_minutes sanity — report, never pad or rush. The window is wide (40%)
   # because the deliberate human cadence runs longer than an author's plain-read
   # estimate; this only catches an estimate that is grossly wrong.
@@ -403,6 +422,7 @@ readability=assets/readability.json
 report=report.md
 article=article.html
 video=$([[ -s "$p_video" ]] && echo readalong.mp4)
+guide=$([[ -s "$p_guide" ]] && echo guide.pdf)
 brief=brief.md
 manifest=$(case "$fm_format" in *interview*) echo manifest.md ;; esac)" \
     python3 -c 'import os,json
@@ -460,6 +480,7 @@ open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dump
     printf '\n## Files in this folder\n\n'
     printf -- '- `transcript.txt` — full verbatim text (the content to analyse)\n'
     printf -- '- `document.md` — the same, formatted · `report.md` — metrics + chapters\n'
+    [[ -s "$p_guide" ]] && printf -- '- `guide.pdf` — the doc as a paginated text-image PDF (one attachment to drop into a chat)\n'
     printf -- '- `audio.mp3` — narration · `readalong.mp4` — scrolling read-along video\n'
     printf -- '- `captions.vtt` — timed captions · `meta.json` — machine metadata\n'
     if [[ "$chapters_json" != "[]" && "$chapters_json" != "" ]]; then
@@ -504,6 +525,7 @@ open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dump
         printf '| `brief.md` | prep-pack transcript + an analysis prompt | analyse the prep itself |\n'
         printf '| `transcript.txt` | verbatim prep-pack text | same, plainest form |\n'
         printf '| `document.md` | the prep pack, formatted | read its structure |\n'
+        [[ -s "$p_guide" ]] && printf '| `guide.pdf` | the prep pack as a paginated text-image PDF | drop straight into a chat (one file, OCR-friendly) |\n'
         printf '| `report.md` | readability + chapter map | see how it is organised |\n'
         printf '| `readalong.mp4` / `audio.mp3` | narrated read-along | (media — for me, not chat) |\n\n'
         printf '### Source materials — `%s`\n\n' "$src_dir"
