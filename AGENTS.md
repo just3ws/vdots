@@ -1,21 +1,32 @@
 <!-- ═══════════════════════════════════════════════════════════════════════
-     CURRENT FOCUS  —  last updated 2026-09-03
+     CURRENT FOCUS  —  last updated 2026-09-03 (guide.pdf session)
      Cold-start resume state, canonical for every agent tool. Whoever closes
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
-       MERGED + PUSHED 2026-09-03 (`feat/vdots-shim-readaloud`, 27 commits, via
-       `--no-ff`). The vdots control-plane shim + read-aloud plugin +
+       ALL PUSHED to `origin/main`, CI ("Lua Lint, Format, and Tests") green.
+       HEAD = `6852d01`. The vdots control-plane shim + read-aloud plugin +
        `vdots-listen` publish pipeline + enhanced-doc frontmatter contract +
-       Mason + dashboard Recent-Markdown are on `main`, tested + documented.
+       Mason + dashboard Recent-Markdown merged 2026-09-03 via `--no-ff`
+       (`feat/vdots-shim-readaloud`, 27 commits); the post-merge work below is
+       on `main` too. Commit chain: `47c5799` (video + brief.md) → `7458e8e`
+       (pace drift fix) → `7b9093a` (manifest + video CC) → `6852d01` (guide.pdf).
 
-       Post-merge on `main` (2026-09-03, still local — commit + push):
+       Publish outputs now, per session dir:
        - `readalong.mp4` — `vdots-readalong` renders one SVG frame per cue
          (scrolling transcript window, active sentence highlighted, chapter
          header, progress bar) via rsvg-convert, stitches to the narration with
          ffmpeg. **This is the Drive read-along** — Drive's HTML preview runs no
          JS so article.html can't sync there; a video needs nothing but a
-         player. ~1 MB/spoken-min, 1280×720 h264+aac.
+         player. ~1 MB/spoken-min, 1280×720 h264+aac. MP4 metadata + mov_text
+         caption track + same-basename `readalong.vtt` sidecar.
+       - `guide.pdf` — document.md rendered by `vdots-guide-image` as a
+         paginated, OCR-friendly text-image PDF (rsvg-convert, one SVG page →
+         one PDF page). One attachment to drop into an AI chat. **Packaging
+         convenience, NOT a token saving** — an image of text costs ≥ the text
+         in vision tokens plus OCR error (said so in the docs; the operator had
+         assumed otherwise). Linked from index.md + article.html + brief/manifest;
+         meta.json gains `guide`; vdots-doctor reports `guide_pdf`.
        - `brief.md` — self-contained analysis brief (what this is, chapters,
          "how to help me" tailored to the doc's kind/format, full transcript
          inline). Open in Gemini straight from Drive.
@@ -23,19 +34,15 @@
          every relevant file (this package + the wwworkremote source pack +
          `$VDOTS_RESUME_URL`/`$VDOTS_PORTFOLIO_URL` public links) + a research
          brief, for any AI chat to research the job independently.
-       - all linked from index.md + article.html; meta.json gains
-         video/brief/manifest; vdots-doctor / :checkhealth report rsvg-convert.
-       - `guide.pdf` — document.md rendered by `vdots-guide-image` as a
-         paginated, OCR-friendly text-image PDF (rsvg-convert, one SVG page →
-         one PDF page). One attachment to drop into an AI chat; packaging
-         convenience, not token savings. Linked from index.md + article.html +
-         brief/manifest; meta.json gains `guide`; vdots-doctor reports it.
-       - publish now removes a superseded same-slug session under an old date.
+       - all linked from index.md + article.html; meta.json lists
+         video/guide/brief/manifest; vdots-doctor / :checkhealth report rsvg-convert.
+       - publish removes a superseded same-slug session under an old date.
        - pace.lua M.cues scales modelled pauses by 1/stretch (the [[slnc]]
-         pauses get stretched too) — cuts the read-along drift. The deeper fix
-         (measure per-sentence say durations, or AVSpeech willSpeakRange
-         callbacks — both deterministic; whisper was rejected as non-det) is
-         NOT built yet.
+         pauses get stretched too) — cuts the read-along drift. **WAITING ON
+         OPERATOR**: confirm whether that is enough before building the exact
+         fix (measure per-sentence `say -o` durations, OR AVSpeech
+         willSpeakRange callbacks — both deterministic; whisper rejected as
+         non-det). Contained to the publish path; leave `say` elsewhere alone.
 
        Latest session (2026-09-03):
        - audio: `.mp3` is primary (Drive/Android plays it inline; transcript
@@ -54,13 +61,15 @@
          pre-commit runs it). Mason owns editor-only LSP servers
          (lua/editor/mason.lua); brew owns shell/CI tools. Brewfile.common
          (zdots main): + rubberband, + selene, − lua-language-server.
-       - Full doc pass: 9 man pages (man/man1/), completions/_vdots,
-         docs/wiki/Read-Aloud.md + 5 mermaid diagrams, .claude/skills/
-         read-aloud.md, README + wiki + :help synced. .zshrc.local (zdots,
-         gitignored) wires PATH + MANPATH + the completion.
+       - Full doc pass: 9 man pages (man/man1/, incl. vdots-guide-image.1),
+         completions/_vdots, docs/wiki/Read-Aloud.md + 5 mermaid diagrams,
+         .claude/skills/read-aloud.md, README + wiki + :help synced. .zshrc.local
+         (zdots, gitignored) wires PATH + MANPATH + the completion.
 
-       Blocked on human: nothing. (zdots `main` also pushed: Z-338 fix + 2×
-       Brewfile + a `.claude/settings.json` permission tidy.)
+       Blocked on human: confirm the read-along drift is acceptable (see
+       pace.lua note above) — that gates the exact-timing fix. Otherwise
+       nothing. (zdots `main` also pushed: Z-338 fix + 2× Brewfile + a
+       `.claude/settings.json` permission tidy.)
 
        NEXT (recommended, deferred — its own focused pass): rewrite
        lua/vdots/readaloud/parse.lua from regex to vim.treesitter (markdown +
