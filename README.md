@@ -19,14 +19,30 @@ rest of the platform). Put `~/.config/nvim/bin` on `PATH` and:
 
 | Command | Does |
 |---|---|
-| `vdots doctor` | system health check ("brew doctor" for vdots) |
+| `vdots doctor [--json] [--fix]` | static health check ("brew doctor" for vdots) |
 | `vdots ctl check [--json]` | deep runtime probe of the live config (`:checkhealth`) |
 | `vdots update [--commit]` | update plugins (`vim.pack`), prune, test |
-| `vdots read [--export] FILE.md` | read a Markdown file aloud (macOS `say`) |
+| `vdots read [opts] FILE.md` | read a Markdown file aloud (macOS `say`) |
+| `vdots publish [opts] FILE.md` | full listen-along session → the listen library |
+| `vdots listen {open,rebuild,ls,path,info}` | browse the listen library |
 | `vdots sync` \| `status` \| `push` | git fast-forward pull / short status / push |
 
 Every noun also works as a standalone script (`./bin/vdots-doctor`, …), so the
-repo is usable without the shim.
+repo is usable without the shim. Man pages ship in `man/` (`man vdots`,
+`man vdots-publish`, …) and a zsh completion in `completions/_vdots`; the zdots
+shell wires both — see [wiki: LSP & Tooling](docs/wiki/LSP-and-Tooling.md).
+
+```mermaid
+flowchart LR
+  U([you]) --> V["vdots (noun)"]
+  V -->|doctor| D[vdots-doctor]
+  V -->|ctl| C["vdots-ctl / checkhealth"]
+  V -->|update| P["vdots-update / vim.pack"]
+  V -->|read| R["vdots-read / say"]
+  V -->|publish| PUB["vdots-publish / vdots-listen"]
+  V -->|listen| L[vdots-listen catalog]
+  V -->|sync, status, push| G[git]
+```
 
 ## Development
 
@@ -252,6 +268,26 @@ block in both panes with the cursor synced. Spoken text is markup-stripped and
 run through a tech-pronunciation pass (`API` → "A P I", `nginx` → "engine ex").
 Editing halts playback; `:w` re-renders; `;rr` resumes from the cursor.
 
+```mermaid
+flowchart TD
+  MD[Markdown buffer] --> PD["parse.document (frontmatter-aware, fence-unwrap)"]
+  PD --> BLK["blocks: s,e,speak,kind,text"]
+  BLK --> PR["pronounce (tech map / doc lexicon)"]
+  BLK --> PC["pace (clause, sentence, paragraph beats)"]
+  PR --> SAY["say -r RATE"]
+  PC --> SAY
+  SAY --> SPK[speakers]
+  BLK --> PV["preview.lua (rendered vsplit)"]
+  PV <-.cursor sync.-> MD
+  SAY -.block done.-> NEXT[speak next block]
+  EDIT[buffer edit] -.halts.-> SAY
+```
+
+The player is a small state machine in `player.lua`: `speak(i)` shells one
+`say` per block; `;rp` pauses, `;r]`/`;r[` jump, `;rr` resumes from the block
+under the cursor. `pace.say_rate()` folds the pace preset's time-stretch into
+the live `say` rate (interactive playback can't post-process).
+
 Keymaps — buffer-local to `markdown` and the preview pane, prefix `;r`:
 
 | Key | Action |
@@ -292,6 +328,26 @@ vim.g.vdots_readaloud = {
 Headless: `vdots read [--export|--dry-run] [--voice V] [--rate N] FILE.md`.
 
 ### Listen library
+
+```mermaid
+sequenceDiagram
+  participant U as caller
+  participant L as vdots-listen
+  participant R as vdots-read.lua
+  participant S as say
+  participant F as ffmpeg/rubberband
+  participant P as catalog.py
+  U->>L: publish FILE.md
+  L->>L: resolve .spoken.md, check generated_at
+  L->>R: dry-run spoken script
+  L->>S: say -r RATE to audio.m4a
+  L->>F: time-stretch (rubberband R3 or atempo)
+  L->>R: transcript, cues, chapters
+  L->>F: embed chapters+lyrics, faststart, transcode mp3
+  L->>P: rebuild
+  P-->>U: index.md, index.html, article.html
+  Note over U: ~/ai syncs to Google Drive on every device
+```
 
 `;rP` / `:VdotsReadPublish` — or `vdots publish FILE.md` from the shell — files
 the document into `~/ai/outbox/listen/<date-slug>/` as role-named files:

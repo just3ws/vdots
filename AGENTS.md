@@ -69,11 +69,20 @@ This repository is a Lua-based Neovim configuration.
 - `after/`: filetype and late-loading overrides (`after/ftplugin/markdown.lua` = `;r` read-aloud keys).
 - `bin/`: the `vdots` control-plane shim (`vdots <noun>` → `vdots-<noun>`) plus
   `vdots-{ctl,doctor,update,read,publish,listen}`, `vdots-read.lua` (headless
-  bridge: script/transcript/vtt/cues/chapters/meta/info), `vdots-listen-catalog.py`,
+  bridge: script/transcript/vtt/cues/chapters/meta/info/pace), `vdots-listen-catalog.py`,
   `vdots-readability`, `vdots-mediakey-helper.swift`, `vdots-readaloud-swiftbar`.
   Each is standalone; the shim just dispatches. `vdots-publish` = pre-flight
   report + `vdots-listen publish`.
+- `man/man1/*.1`: mandoc for every `vdots*` command. `completions/_vdots`: zsh
+  completion. Both wired by the zdots shell (`~/.config/zsh/.zshrc.local`,
+  interim — Z-337). `test/lint.sh` lints them (`mandoc -W error`, `zsh -n`).
 - `test/`: regression suite (`test/regression.lua`), Busted specs (`test/unit/`), runner (`test/run.sh`).
+
+**Doc surfaces (keep in sync on any command / vocabulary / contract change):**
+`README.md`, `AGENTS.md` (this file + the CURRENT FOCUS block), `doc/vdots-readaloud.txt`
+(`:help`), `docs/wiki/` (`Read-Aloud.md`, `LSP-and-Tooling.md`, `Architecture.md`),
+`man/man1/*.1`, `completions/_vdots`, `.claude/skills/read-aloud.md`, per-command
+`--help`.
 
 ## Build, Test, and Development Commands
 

@@ -29,6 +29,23 @@ macOS only (engine is `say`). Health: `:checkhealth vdots.readaloud`.
 Lives in `lua/vdots/readaloud/`; `parse.lua` (Markdown → speech blocks) is a
 pure, unit-tested function shared with the `vdots-read` CLI.
 
+Pipeline (editor playback and `vdots publish` share the front half): >
+
+  buffer ─► parse.document ─► blocks {s,e,speak,kind,text}
+                                │            │
+                       pronounce (lexicon)   pace (clause/sentence/para beats)
+                                └──────┬─────┘
+                                       ▼
+                              say -r  ─►  audio
+                                       │
+             publish only:  time-stretch (rubberband R3 / ffmpeg atempo)
+                            ─► chapters + lyrics + faststart, transcode mp3
+                            ─► transcript · captions · readability · article
+                            ─► catalog (index.md / index.html)   → Google Drive
+<
+Full picture with diagrams: `docs/wiki/Read-Aloud.md`. Man pages:
+`man vdots-read`, `man vdots-publish`, `man vdots-listen`.
+
 ==============================================================================
 2. THE TWO-PANE WORKFLOW                              *vdots-readaloud-workflow*
 

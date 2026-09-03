@@ -1,10 +1,25 @@
 # LSP and Tooling
 
-Language servers are configured with `vim.lsp.config()` and enabled with `vim.lsp.enable()` (Neovim 0.12 native API). Completion is provided by blink.cmp. Formatting runs on save via conform.nvim; linting triggers on `BufEnter`, `BufWritePost`, and `InsertLeave` via nvim-lint. No Mason — all server binaries resolve from PATH (mise shims / Homebrew); Ruby servers are global gems managed by mise.
+Language servers are configured with `vim.lsp.config()` and enabled with `vim.lsp.enable()` (Neovim 0.12 native API). Completion is provided by blink.cmp. Formatting runs on save via conform.nvim; linting triggers on `BufEnter`, `BufWritePost`, and `InsertLeave` via nvim-lint.
+
+## Tool sources — one per tool
+
+| Source | Owns | Why |
+|---|---|---|
+| **Mason** (`lua/editor/mason.lua`) | LSP servers only: `lua-language-server`, `gopls`, `basedpyright`, `yaml-language-server`, `terraform-ls`, `marksman` | used *only* inside Neovim |
+| **zdots Brewfile** (`Brewfile.common`) | `stylua`, `selene`, `luacheck`, `shellcheck`, `shfmt`, `prettier(d)`, `rubocop`, `standardrb`, `ffmpeg`, `rubberband` | the shell and CI run these too |
+| **mise / bundler** | `ruby-lsp`, `standardrb` (per-project gems), runtime hosts | project-scoped versions |
+
+Don't add a lint/format tool to Mason, and don't add an LSP server to the
+Brewfile. `require("editor.mason").setup()` runs before `vim.lsp.enable()` and
+prepends `mason/bin` to PATH; it is **skipped entirely under `$CI` / headless**
+so it never triggers downloads on a throwaway runner. First install on a new
+machine needs one Neovim restart for the servers to attach.
 
 ## Language Servers
 
-All enabled via `vim.lsp.enable()` in init.lua; binaries come from PATH.
+All enabled via `vim.lsp.enable()` in init.lua. Mason keeps the binaries
+installed; `ruby_lsp` / `standardrb` come from the project bundle.
 
 | Server | Language | Notes |
 |--------|----------|-------|
@@ -64,7 +79,11 @@ Format manually: `<leader>f` (any mode).
 
 ## CLI Tooling
 
-Formatters, linters, and DAP adapters (`stylua`, `selene`, `goimports`, `golangci-lint`, `debugpy`, …) are installed via mise/Homebrew and resolved from PATH — nothing inside Neovim manages them.
+Formatters, linters, and DAP adapters (`stylua`, `selene`, `goimports`, `golangci-lint`, `debugpy`, …) come from the zdots Brewfile / mise and resolve from PATH — Neovim (nvim-lint, conform) invokes them but does not manage them. `test/lint.sh` runs `luacheck` + `stylua --check` + `selene` (config: `selene.toml` + `vim.yml` std lib) and is what CI (`.github/workflows/lint.yml`) and `.pre-commit-config.yaml` enforce.
+
+## vdots CLI tooling
+
+The `bin/vdots-*` scripts (shim, read-aloud, doctor, update) are on PATH via the zdots shell (`~/.config/zsh/.zshrc.local`, interim — zdots Z-337 tracks native pickup). That file also wires `man/` onto `MANPATH` and registers `completions/_vdots`. See [Read-Aloud](Read-Aloud.md) for the read-aloud toolchain.
 
 ## Runtime Providers
 
