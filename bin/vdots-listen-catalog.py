@@ -222,6 +222,7 @@ def build_article(s, sdir):
         f"<h1>{title}</h1>",
         f'<p class="sub">{esc(s.get("date"))} · {dur(s.get("duration"))} · '
         f'{esc(s.get("voice"))} · <a href="{esc(s.get("doc"))}">document</a> · '
+        f'<a href="{esc(s.get("report", s.get("doc")))}">report</a> · '
         f'<a href="{esc(s.get("vtt"))}">captions</a>{src_link}</p>',
         f'<audio id="player" controls preload="none" src="{esc(s.get("audio"))}"></audio>',
         toc,

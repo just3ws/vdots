@@ -263,10 +263,13 @@ Each publish writes a dated, slugged folder: >
           index.md          plain-text catalog
           2026-09-02-a-clean-api/
             a-clean-api.article.html   the page: player + readability + transcript
+            a-clean-api.m4a            the read-through — chaptered, tagged, with
+                                      the transcript embedded as lyrics
             a-clean-api.md             clean readable document
-            a-clean-api.m4a            the read-through
+            a-clean-api.report.md      markdown report (Drive-previewable)
             a-clean-api.transcript.txt verbatim prose (plain text)
             a-clean-api.vtt            WebVTT captions (for VLC / other players)
+            a-clean-api.chapters.vtt   chapter markers (enhanced docs)
             a-clean-api.cues.json      timed transcript that drives the page
             a-clean-api.readability.json  Flesch / grade / times / long sentences
             a-clean-api.txt            exactly what `say` was given
@@ -274,20 +277,23 @@ Each publish writes a dated, slugged folder: >
 <
 The transcript is verbatim document prose. `say` reports no timings, so each
 block's time is modelled from its share of the spoken words plus the exact
-inserted pauses — block-level, enough to follow along.
+inserted pauses. The `.m4a` is a self-sufficient audiobook — chapters, title /
+artist tags, and the transcript as an embedded lyrics track (Apple Music /
+VLC show it while playing) — so a phone plays it fully from Drive with no
+companion files.
 
-Re-publishing the same document on the same day is refused; pass `--force`
-(or use `:VdotsReadPublish!`) to re-record over it.
+Re-publishing the same document is refused unless `generated_at` is newer (or
+same-day for a plain doc); pass `--force` (or `:VdotsReadPublish!`).
 
-The `vdots-listen` CLI manages it directly: >
+CLI: >
 
-        vdots-listen publish FILE.md [--voice V] [--tone T] [--pace P] [--force]
-        vdots-listen rebuild      regenerate the catalog from existing folders
-        vdots-listen open         open index.html
-        vdots-listen ls           list sessions
-        vdots-listen path         print the library directory
+        vdots publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open]
+        vdots publish --info FILE.md      pre-flight report only, no write
+        vdots listen info FILE.md         same report
+        vdots listen open | rebuild | ls | path
 <
-`vdots-read --publish FILE.md` is the same as `vdots-listen publish`.
+`vdots-publish` / `vdots-read --publish` / `vdots-listen publish` are the same
+pipeline; `vdots publish` is the friendly entry point.
 
 `:VdotsReadExport` (`;rx`) is the unrelated quick path — a throwaway temp .m4a,
 nothing kept.

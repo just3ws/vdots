@@ -58,10 +58,11 @@ This repository is a Lua-based Neovim configuration.
   - `lua/zdots/` for the zdots shell-platform bridge.
 - `after/`: filetype and late-loading overrides (`after/ftplugin/markdown.lua` = `;r` read-aloud keys).
 - `bin/`: the `vdots` control-plane shim (`vdots <noun>` → `vdots-<noun>`) plus
-  `vdots-{ctl,doctor,update,read,listen}`, `vdots-read.lua` (headless bridge:
-  script/transcript/vtt/cues/chapters/meta), `vdots-listen-catalog.py`,
+  `vdots-{ctl,doctor,update,read,publish,listen}`, `vdots-read.lua` (headless
+  bridge: script/transcript/vtt/cues/chapters/meta/info), `vdots-listen-catalog.py`,
   `vdots-readability`, `vdots-mediakey-helper.swift`, `vdots-readaloud-swiftbar`.
-  Each is standalone; the shim just dispatches.
+  Each is standalone; the shim just dispatches. `vdots-publish` = pre-flight
+  report + `vdots-listen publish`.
 - `test/`: regression suite (`test/regression.lua`), Busted specs (`test/unit/`), runner (`test/run.sh`).
 
 ## Build, Test, and Development Commands

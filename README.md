@@ -291,14 +291,16 @@ Headless: `vdots read [--export|--dry-run] [--voice V] [--rate N] FILE.md`.
 
 ### Listen library
 
-`;rP` / `:VdotsReadPublish` files the document into `~/ai/outbox/listen/`: the
-read-through (`.m4a`), a clean readable copy, a **readability report** (Flesch /
-grade / listen time / longest sentences), and a **verbatim transcript** with
-timed cues. The self-contained article page plays the audio while the
-transcript highlights and auto-scrolls — click a paragraph to seek. A standard
-`.vtt` is written too, for VLC and other players. `~/ai` is synced by Google
-Drive desktop, so the catalog shows up on every device. `:VdotsReadPublish!`
-re-records after edits; `vdots-listen` (`publish`/`rebuild`/`open`/`ls`) is the CLI.
+`;rP` / `:VdotsReadPublish` — or `vdots publish FILE.md` from the shell — files
+the document into `~/ai/outbox/listen/`: the read-through (`.m4a` — chaptered,
+tagged, with the transcript embedded as a lyrics track so a phone plays it
+fully from Drive), a clean readable copy, a **readability report**
+(`.report.md`, Drive-previewable), and a **verbatim per-sentence transcript**
+with timed cues + `.vtt` captions. The self-contained article page plays the
+audio while the transcript highlights and auto-scrolls — click a paragraph to
+seek. `~/ai` is synced by Google Drive desktop, so the catalog shows up on
+every device. `vdots publish --info FILE.md` prints a pre-flight report without
+writing; `:VdotsReadPublish!` re-records after edits.
 
 **Tips:** `;r[` re-hears a missed paragraph · pause → edit → `:w` → `;rr` resumes
 from that block · slow `rate` for dense docs · teach it project jargon once in

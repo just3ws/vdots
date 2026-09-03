@@ -18,12 +18,14 @@
 # shows up on every device automatically.
 #
 # Usage:
-#   vdots-listen publish FILE.md [--voice V] [--tone T] [--pace P] [--rate N] [--force] [--open]
-#     Re-publishing the same doc on the same day is refused unless --force.
-#   vdots-listen rebuild        regenerate the catalog from existing sessions
-#   vdots-listen open           open the catalog (index.html)
-#   vdots-listen ls             list published sessions
-#   vdots-listen path           print the library directory
+#   vdots-listen publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open]
+#     Re-publishing is refused unless generated_at is newer (or --force).
+#     (`vdots-publish` is a friendlier wrapper with a pre-flight report.)
+#   vdots-listen info FILE.md    pre-flight parse report — no audio, no write
+#   vdots-listen rebuild         regenerate the catalog + article pages
+#   vdots-listen open            open the catalog (index.html)
+#   vdots-listen ls              list published sessions
+#   vdots-listen path            print the library directory
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -164,26 +166,40 @@ cmd_publish() {
     python3 "$HERE/vdots-readability" < "$dir/$slug.transcript.txt" > "$dir/$slug.readability.json"
   fi
 
-  # chapters: from the frontmatter sections. Embed in the m4a (ffmpeg re-mux)
-  # and ship a chapters .vtt; the page reads meta.chapters directly.
+  # chapters (enhanced docs): from the frontmatter sections
   local chapters_json="[]"
   if [[ "$enhanced" == "true" ]]; then
     chapters_json="$("$HERE/vdots-read" --chapters "$dur" "$file" 2>/dev/null || echo '[]')"
     "$HERE/vdots-read" --chapters-vtt "$dur" "$file" > "$dir/$slug.chapters.vtt" 2>/dev/null || true
-    if command -v ffmpeg >/dev/null && [[ "$chapters_json" != "[]" ]]; then
-      local ffmeta="$dir/.ffmeta"
-      { echo ";FFMETADATA1"
-        jq -r --argjson total "$dur" '
-          to_entries[] as $e |
-          "[CHAPTER]\nTIMEBASE=1/1000\nSTART=\(($e.value.start*1000)|floor)\nEND=\(((.[$e.key+1].start // $total)*1000)|floor)\ntitle=\($e.value.title)"
-        ' <<<"$chapters_json"
-      } > "$ffmeta"
-      if ffmpeg -y -i "$dir/$slug.m4a" -i "$ffmeta" -map_metadata 1 -map_chapters 1 \
-           -c copy "$dir/.chaptered.m4a" >/dev/null 2>&1; then
-        mv "$dir/.chaptered.m4a" "$dir/$slug.m4a"
-      fi
-      rm -f "$ffmeta"
+  fi
+
+  # enrich the m4a in one pass: audiobook tags, embedded lyrics (the verbatim
+  # transcript — Apple Music / VLC show it while playing), and chapters when we
+  # have them. So it plays like a proper chaptered audiobook with the words
+  # right there, straight from a phone / Drive, no companion files needed.
+  if command -v ffmpeg >/dev/null; then
+    local ffmeta="$dir/.ffmeta"
+    { echo ";FFMETADATA1"
+      [[ "$chapters_json" != "[]" ]] && jq -r --argjson total "$dur" '
+        to_entries[] as $e |
+        "[CHAPTER]\nTIMEBASE=1/1000\nSTART=\(($e.value.start*1000)|floor)\nEND=\(((.[$e.key+1].start // $total)*1000)|floor)\ntitle=\($e.value.title)"
+      ' <<<"$chapters_json"
+    } > "$ffmeta"
+    if ffmpeg -y -i "$dir/$slug.m4a" -i "$ffmeta" \
+         -map 0:a -map_metadata 1 -map_chapters 1 -c:a copy \
+         -metadata title="$title" \
+         -metadata artist="vdots read-aloud" \
+         -metadata album="vdots · listen" \
+         -metadata album_artist="vdots read-aloud" \
+         -metadata date="$date" \
+         -metadata comment="${src_url:-$file}" \
+         -metadata lyrics="$(cat "$dir/$slug.transcript.txt")" \
+         "$dir/.tagged.m4a" >/dev/null 2>&1; then
+      mv "$dir/.tagged.m4a" "$dir/$slug.m4a"
+    else
+      rm -f "$dir/.tagged.m4a"
     fi
+    rm -f "$ffmeta"
   fi
 
   # spoken_minutes sanity — report, never pad or rush
@@ -215,12 +231,37 @@ transcript=$slug.transcript.txt
 cues=$slug.cues.json
 vtt=$slug.vtt
 readability=$slug.readability.json
+report=$slug.report.md
 article=$slug.article.html" \
     python3 -c 'import os,json
 d=dict(l.split("=",1) for l in os.environ["VDOTS_META"].splitlines())
 try: d["chapters"]=json.loads(os.environ.get("VDOTS_CHAPTERS","[]"))
 except Exception: d["chapters"]=[]
 open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dumps(d,indent=2))'
+
+  # a plain-markdown report — Google Drive previews this fine on a phone
+  {
+    printf '# %s\n\n' "$title"
+    printf -- '- **%s** · %s · %s%s\n' "$(human_dur "$dur")" "${voice:-system voice}" "${lang}" \
+      "$([[ -n "$spoken_min" ]] && printf ' · expected ~%s min' "$spoken_min")"
+    [[ -n "$src_url" ]] && printf -- '- Source: %s\n' "$src_url"
+    printf -- '- Generated: %s\n\n' "$(date '+%Y-%m-%d %H:%M')"
+    if [[ "$chapters_json" != "[]" ]]; then
+      printf '## Chapters\n\n'
+      jq -r '.[] | "- \(((.start/60)|floor)):\((.start%60|floor|tostring|if length<2 then "0"+. else . end))  \(.title)"' <<<"$chapters_json"
+      printf '\n'
+    fi
+    if [[ -r "$dir/$slug.readability.json" ]]; then
+      printf '## Readability\n\n'
+      jq -r '"- Flesch–Kincaid grade \(.flesch_kincaid_grade) (\(.reading_ease_band))",
+             "- \(.words) words, \(.sentences) sentences, \(.avg_words_per_sentence) per sentence",
+             "- ~\(.listening_time_min) min listen · ~\(.reading_time_min) min read"' \
+        "$dir/$slug.readability.json"
+      printf '\n'
+    fi
+    printf '## The read-through\n\n'
+    sed 's/^/> /' "$dir/$slug.transcript.txt"
+  } > "$dir/$slug.report.md"
 
   rebuild
   echo "vdots-listen: published — $dir  ($(human_dur "$dur"))"
@@ -230,6 +271,7 @@ open(os.path.join(os.environ["VDOTS_META_DIR"],"meta.json"),"w").write(json.dump
 
 case "${1:-}" in
   publish) shift; cmd_publish "$@" ;;
+  info)    shift; [[ -n "${1:-}" && -r "$1" ]] || die "usage: vdots-listen info FILE.md"; exec "$HERE/vdots-read" --info "$1" ;;
   rebuild) rebuild ;;
   open)    open "$LISTEN_DIR/index.html" ;;
   ls)
@@ -239,6 +281,6 @@ case "${1:-}" in
     (( found )) || echo "(no sessions yet)"
     ;;
   path)    echo "$LISTEN_DIR" ;;
-  -h|--help|"") sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help|"") sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//' ;;
   *) die "unknown command: $1 (try: publish, rebuild, open, ls, path)" ;;
 esac

@@ -6,6 +6,7 @@
 --   cues-json <s>   timed cues as JSON
 --   chapters <secs> chapter markers as JSON  [{start,title}]
 --   meta            the frontmatter block as JSON (never spoken)
+--   info            a human-readable pre-flight report (parse + drift)
 --
 -- Invoked as:  nvim --headless -u NONE -l bin/vdots-read.lua <file.md>
 -- Env: $VDOTS_REPO, $VDOTS_PACE, $VDOTS_MODE, $VDOTS_DURATION.
@@ -39,6 +40,63 @@ end
 local doc = parse.document(lines, {})
 local blocks, enhanced, fm = doc.blocks, doc.enhanced, doc.fm
 local sent = { sentences = enhanced }
+
+if mode == "info" then
+  local est = pace.estimate(blocks, cfg)
+  local heads, sentences = {}, 0
+  for _, b in ipairs(blocks) do
+    if b.kind == "heading" then
+      heads[#heads + 1] = b.text
+    end
+    for _ in b.text:gmatch "[^.!?]+[.!?]*" do
+      sentences = sentences + 1
+    end
+  end
+  local chapters = pace.chapters(blocks, cfg, est, fm.sections)
+  local function row(k, v)
+    io.write(("  %-14s %s\n"):format(k, v))
+  end
+  io.write("read-aloud — " .. file .. "\n\n")
+  row(
+    "mode",
+    enhanced and "enhanced read-aloud" or (doc.present and "plain (+ frontmatter)" or "plain")
+  )
+  row("title", fm.title or "(from first heading / filename)")
+  if enhanced then
+    row("lang", fm.lang)
+    row("source", fm.source or "—")
+    row("generated_at", fm.generated_at or "—")
+    row("expected", fm.spoken_minutes and (fm.spoken_minutes .. " min") or "—")
+    row("lexicon", vim.tbl_count(fm.pronunciation) .. " terms")
+  end
+  row("blocks", ("%d · %d sentences · %d headings"):format(#blocks, sentences, #heads))
+  row("chapters", #chapters > 0 and table.concat(
+    vim.tbl_map(function(c)
+      return c.title
+    end, chapters),
+    " · "
+  ) or "none")
+  row("estimate", ("%d:%02d"):format(math.floor(est / 60), math.floor(est % 60)))
+  if enhanced and #fm.sections > 0 then
+    local hset = {}
+    for _, h in ipairs(heads) do
+      hset[vim.trim(h):lower()] = true
+    end
+    for _, s in ipairs(fm.sections) do
+      if not hset[vim.trim(s):lower()] then
+        io.write(('  ! section "%s" has no matching heading\n'):format(s))
+      end
+    end
+  end
+  if
+    enhanced
+    and fm.spoken_minutes
+    and math.abs(est / 60 - fm.spoken_minutes) / fm.spoken_minutes > 0.25
+  then
+    io.write(("  ! estimate is >25%% off the expected %d min\n"):format(fm.spoken_minutes))
+  end
+  vim.cmd "quit"
+end
 
 if mode == "chapters" then
   io.write(vim.json.encode(pace.chapters(blocks, cfg, dur, fm.sections)), "\n")

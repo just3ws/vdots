@@ -63,6 +63,7 @@ while [[ $# -gt 0 ]]; do
     --chapters) mode="chapters"; cues_dur="$2"; shift 2 ;;
     --chapters-vtt) mode="chapters-vtt"; cues_dur="$2"; shift 2 ;;
     --meta) mode="meta"; shift ;;
+    --info) mode="info"; shift ;;
     --lang) lang="$2"; shift 2 ;;
     --print-voice) mode="print-voice"; shift ;;
     -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -82,6 +83,12 @@ fi
 if [[ "$mode" == meta ]]; then
   [[ -n "$file" && -r "$file" ]] || { echo "{}"; exit 0; }
   VDOTS_MODE=meta nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
+  exit 0
+fi
+
+if [[ "$mode" == info ]]; then
+  [[ -n "$file" && -r "$file" ]] || { echo "vdots-read: cannot read: ${file:-<none>}" >&2; exit 1; }
+  VDOTS_MODE=info VDOTS_PACE="$paceval" nvim --headless -u NONE -l "$HERE/vdots-read.lua" "$file" 2>/dev/null
   exit 0
 fi
 

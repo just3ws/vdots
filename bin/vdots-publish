@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# vdots-publish — turn a Markdown file into a listen-along session.
+#
+# Runs the whole pipeline (frontmatter → chaptered audio → verbatim per-sentence
+# transcript → WebVTT captions → readability report → self-contained article
+# page → catalog) into $VDOTS_LISTEN_DIR (default ~/ai/outbox/listen), which
+# Google Drive desktop syncs to every device. The same thing :VdotsReadPublish
+# does from Neovim.
+#
+# Usage:
+#   vdots-publish FILE.md [--voice V] [--tone T] [--pace P] [--force] [--open]
+#   vdots-publish --info FILE.md      pre-flight report only — no audio, no write
+#
+# --force (or :VdotsReadPublish!) re-records over a same-day / not-newer session.
+set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+mode=publish
+file=""
+pass=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --info|--dry-run) mode=info; shift ;;
+    -h|--help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --voice|--tone|--pace) pass+=("$1" "$2"); shift 2 ;;
+    --force|--open) pass+=("$1"); shift ;;
+    -*) echo "vdots-publish: unknown option: $1" >&2; exit 1 ;;
+    *) file="$1"; shift ;;
+  esac
+done
+
+[[ -n "$file" && -r "$file" ]] || { echo "vdots-publish: cannot read file: ${file:-<none>}" >&2; exit 1; }
+
+if [[ "$mode" == info ]]; then
+  exec "$HERE/vdots-read" --info "$file"
+fi
+
+# pre-flight — a stale frontmatter block fails here, not after a 10-minute render
+"$HERE/vdots-read" --info "$file"
+echo
+
+exec "$HERE/vdots-listen" publish "$file" ${pass[@]+"${pass[@]}"}
