@@ -1,4 +1,5 @@
-std = "neovim"
+std = "vim"
 
 [rules]
 mixed_table = "allow"
+global_usage = "allow"  # _G.arg in the headless CLI bridge (bin/vdots-read.lua)

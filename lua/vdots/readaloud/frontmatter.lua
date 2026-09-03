@@ -46,21 +46,19 @@ function M.parse(lines)
   local section = nil -- "pronunciation" | "sections" while inside a nested block
   for j = 2, close - 1 do
     local line = lines[j]
-    if line:match "^%s*#" or line:match "^%s*$" then -- comment / blank
-      goto continue
-    end
-    if line:match "^%s+%-%s+" or line:match "^%-%s+" then
+    local skip = line:match "^%s*#" or line:match "^%s*$" -- comment / blank
+    if not skip and (line:match "^%s+%-%s+" or line:match "^%-%s+") then
       -- list item (indented or flush, YAML allows both under a key)
       if section == "sections" then
         fm.sections[#fm.sections + 1] = unquote(line:match "%-%s+(.+)$" or "")
       end
-    elseif line:match "^%s+%S" and section == "pronunciation" then
+    elseif not skip and line:match "^%s+%S" and section == "pronunciation" then
       -- nested map entry:  <term>: <hint>
       local term, hint = line:match "^%s+(.-):%s*(.*)$"
       if term and term ~= "" then
         fm.pronunciation[vim.trim(term)] = unquote(hint)
       end
-    else
+    elseif not skip then
       local key, val = line:match "^([%w_%-]+):%s*(.*)$"
       if key then
         key = key:lower()
@@ -87,7 +85,6 @@ function M.parse(lines)
         end
       end
     end
-    ::continue::
   end
 
   local enhanced = (fm.format and fm.format:lower():find "read%-aloud") ~= nil
