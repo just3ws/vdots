@@ -1,37 +1,47 @@
 <!-- ═══════════════════════════════════════════════════════════════════════
-     CURRENT FOCUS  —  last updated 2026-09-02
+     CURRENT FOCUS  —  last updated 2026-09-03
      Cold-start resume state, canonical for every agent tool. Whoever closes
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
-       In flight: branch `feat/vdots-shim-readaloud` (not merged, not pushed).
-       (1) `vdots` control-plane shim (bin/vdots → vdots-<noun>, matching
-       zdots/phx) + bin/vdots-ctl/-doctor bug fixes. (2) Read-aloud plugin
-       `lua/vdots/readaloud/`: two-pane rendered preview + synced cursor,
-       line-anchored playback (pause / jump / resume-from-block), macOS `say`
-       with warm|clarity voice tone, `pace` presets (follow/relaxed/natural)
-       that insert `[[slnc]]` beats between paragraphs + sections, tech-
-       pronunciation map, hardware media keys via a compiled Swift Now-Playing
-       helper (best-effort) and a SwiftBar remote, `:checkhealth
-       vdots.readaloud`, `:help vdots-readaloud`. (3) `:VdotsReadPublish[!]` /
-       `vdots-listen` — clean doc + recorded read-through + readability report
-       (bin/vdots-readability, Flesch/grade) + verbatim timed transcript
-       (.vtt + .cues.json) into ~/ai/outbox/listen; self-contained article page
-       plays audio while the transcript highlights + auto-scrolls; catalog
-       auto-synced by Google Drive desktop; same-day re-publish refused unless
-       `!`/`--force`. (4) Enhanced read-aloud docs — a YAML frontmatter contract
-       (lua/vdots/readaloud/frontmatter.lua): `format: …read-aloud` or the
-       pronunciation+sections+spoken_minutes triple → per-doc lexicon (audio
-       only), plain-spoken headings, one cue/line per sentence, m4a chapters
-       (ffmpeg re-mux, AAC), `generated_at` freshness skip. First real publish:
-       ~/ai/outbox/listen/2026-09-02-interview-prep-pack-senior-software-engineer-basis-platform.
-       (5) Dashboard Recent Files + Recent Markdown sections
-       (lua/editor/mdfiles.lua; shada '1000). Tests green (57 smoke + 30 unit).
-       Blocked on human: merge decision for the branch. Operator picked
-       `Zoe (Premium)` (downloaded, auto-resolves). PATH for ~/.config/nvim/bin
-       is interim via zdots .zshrc.local; zdots request Z-337 tracks the
-       native env.sh pickup.
-       Deep handoff: none (committed on the branch, not mid-task).
+       In flight: branch `feat/vdots-shim-readaloud` (NOT merged, NOT pushed —
+       ~15 commits). The vdots control-plane shim + read-aloud plugin +
+       `vdots-listen` publish pipeline + enhanced-doc frontmatter contract +
+       dashboard Recent-Markdown are all built, tested, and working end to end.
+
+       Latest session (2026-09-03) hardened the publish → Google Drive path:
+       - audio: `.mp3` is primary (Drive/Android plays it inline; transcript
+         embedded as an id3 lyrics frame); `.m4a` kept for chapters + faststart
+         (Apple Music/VLC). rubberband (R3) time-stretch for a measured spoken
+         pace, ffmpeg atempo fallback. Per-word `[[slnc]]` was removed — it
+         sounded like flash cards; pace.lua now = punctuation/paragraph beats
+         + whole-file stretch (follow: 168wpm × 0.90 ≈ 10:57 for the basis pack).
+       - session dir uses role-named files (audio.mp3, document.md, report.md,
+         transcript.txt, captions.vtt, article.html, meta.json + assets/); the
+         `index.md` catalog is the phone surface (Drive renders it; the HTML
+         player only works in a real browser). article.html read-along verified
+         in-browser: transcript highlights + auto-scrolls, list items tracked.
+       - `-v`/`--verbose` on vdots-publish/vdots-listen.
+       - selene wired (vim.yml std lib, CI + pre-commit); Mason owns editor-only
+         LSP servers (lua/editor/mason.lua), brew owns shell/CI tools —
+         documented under "Tool sources" below. Brewfile.common (zdots main):
+         + rubberband, + selene, − lua-language-server.
+
+       Blocked on human: merge/push decision for the branch.
+
+       NEXT (recommended, deferred — its own focused pass): rewrite
+       lua/vdots/readaloud/parse.lua from regex to vim.treesitter (markdown +
+       markdown_inline). 331 lines, 43 tests to keep green, must still work in
+       the headless `nvim -l` CLI path. Plan: walk atx_heading / paragraph /
+       list_item / fenced_code_block / block_quote / pipe_table, map node
+       ranges → block s/e, keep parse.document as entry, add parser-availability
+       to readaloud/health.lua.
+
+       Zoe (Premium) is the picked voice (auto-resolves). PATH for
+       ~/.config/nvim/bin: interim via zdots .zshrc.local; zdots Z-337 tracks
+       the native env.sh pickup, Z-338 (FIXED this session) was the chpwd hook
+       evicting it.
+       Deep handoff: ~/.config/adots/handoffs/2026-09-03-2.md
 
      Close ritual: rewrite this block + commit; write a deep handoff only if
      work is genuinely unfinished. Reference impl: wwworkremote/core's
