@@ -192,6 +192,39 @@ describe("vdots.readaloud.frontmatter", function()
   end)
 end)
 
+describe("vdots.readaloud.parse.document", function()
+  it("unwraps a whole document pasted inside a ``` fence", function()
+    local md = "```markdown\n# Real Heading\n\nActual prose here.\n```\n"
+    local d = P.document(vim.split(md, "\n", { plain = true }))
+    assert.equals("Heading level 1. Real Heading.", d.blocks[1].speak)
+    assert.equals(2, d.blocks[1].s) -- source line of the heading (fence was line 1)
+    for _, b in ipairs(d.blocks) do
+      assert.is_nil(b.speak:match "^Code block")
+    end
+  end)
+
+  it("keeps a real code block inside a normal doc as an announcement", function()
+    local md = "Intro.\n\n```lua\nlocal x = 1\n```\n\nOutro.\n"
+    local d = P.document(vim.split(md, "\n", { plain = true }))
+    assert.equals("Code block. lua. 1 line.", d.blocks[2].speak)
+  end)
+
+  it("maps block line numbers back through a stripped frontmatter block", function()
+    local md = "---\nformat: read-aloud\ntitle: T\n---\n\n# First\n\nBody.\n"
+    local d = P.document(vim.split(md, "\n", { plain = true }))
+    assert.is_true(d.enhanced)
+    -- the "# First" heading is source line 6
+    local heading
+    for _, b in ipairs(d.blocks) do
+      if b.kind == "heading" then
+        heading = b
+        break
+      end
+    end
+    assert.equals(6, heading.s)
+  end)
+end)
+
 describe("vdots.readaloud.parse enhanced mode", function()
   it("speaks headings plainly and drops announcements", function()
     local bs = P.parse(

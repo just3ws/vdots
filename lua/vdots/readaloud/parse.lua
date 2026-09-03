@@ -104,13 +104,14 @@ local function cells(l)
 end
 
 ---@param lines string[] 1-based list of source lines
----@param opts table? { skip_code?, skip_tables?, enhanced?, skip_frontmatter?, title? }
+---@param opts table? { skip_code?, skip_tables?, enhanced?, skip_frontmatter?, title?, line_offset? }
 ---@return { s: integer, e: integer, speak: string, kind: string, text: string }[]
 function M.parse(lines, opts)
   opts = opts or {}
   local skip_code = opts.skip_code ~= false
   local skip_tables = opts.skip_tables == true
   local enhanced = opts.enhanced == true
+  local off = opts.line_offset or 0
 
   local blocks = {}
   local n = #lines
@@ -121,8 +122,8 @@ function M.parse(lines, opts)
     speak = vim.trim(speak or "")
     if speak ~= "" then
       blocks[#blocks + 1] = {
-        s = s,
-        e = e,
+        s = s + off,
+        e = e + off,
         speak = speak,
         kind = kind or "para",
         text = vim.trim(text or speak),
@@ -279,22 +280,49 @@ function M.parse(lines, opts)
   return blocks
 end
 
----Frontmatter-aware parse: detect an enhanced read-aloud block, strip it, and
----parse the body with the right mode. The one entry point for every caller
----(player, preview, the CLI bridge).
+---A whole document pasted inside a single ``` fence (common with generated
+---docs) is not a code block — unwrap it. Returns the inner lines + the number
+---of leading lines removed, so callers can keep `s`/`e` source-accurate.
+---@param lines string[]
+---@return string[], integer
+local function unwrap_fence(lines)
+  if not (lines[1] and lines[1]:match "^%s*```") then
+    return lines, 0
+  end
+  local last = #lines
+  while last > 1 and lines[last]:match "^%s*$" do
+    last = last - 1
+  end
+  if last <= 2 or not lines[last]:match "^%s*```%s*$" then
+    return lines, 0
+  end
+  -- a fence that closes only at (or one line past) EOF wraps the whole doc
+  local inner = {}
+  for k = 2, last - 1 do
+    inner[#inner + 1] = lines[k]
+  end
+  return inner, 1
+end
+
+---Frontmatter-aware parse: unwrap a whole-doc fence, detect an enhanced
+---read-aloud block, strip it, and parse the body with the right mode. The one
+---entry point for every caller (player, preview, the CLI bridge).
 ---@param lines string[]
 ---@param opts table? merged into parse opts (skip_code / skip_tables …)
 ---@return { blocks: table, enhanced: boolean, present: boolean, fm: table }
 function M.document(lines, opts)
   opts = opts or {}
-  local fmres = require("vdots.readaloud.frontmatter").parse(lines)
-  local body = fmres.present and vim.list_slice(lines, fmres.body_start, #lines) or lines
+  local unwrapped, wrap_off = unwrap_fence(lines)
+  local fmres = require("vdots.readaloud.frontmatter").parse(unwrapped)
+  local body = fmres.present and vim.list_slice(unwrapped, fmres.body_start, #unwrapped)
+    or unwrapped
   local blocks = M.parse(
     body,
     vim.tbl_extend("force", opts, {
       enhanced = fmres.enhanced,
       skip_frontmatter = fmres.present,
       title = fmres.enhanced and fmres.fm.title or nil,
+      line_offset = wrap_off + (fmres.present and (fmres.body_start - 1) or 0),
     })
   )
   return { blocks = blocks, enhanced = fmres.enhanced, present = fmres.present, fm = fmres.fm }
