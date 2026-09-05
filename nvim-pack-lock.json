@@ -4,6 +4,10 @@
       "rev": "1900f89dc17c603eec29960f57c00bd9ae696495",
       "src": "https://github.com/antoinemadec/FixCursorHold.nvim"
     },
+    "ack.vim": {
+      "rev": "36e40f9ec91bdbf6f1adf408522a73a6925c3042",
+      "src": "https://github.com/mileszs/ack.vim"
+    },
     "aerial.nvim": {
       "rev": "28fe6e822ae344544c379d60fcb13c9519a1f08a",
       "src": "https://github.com/stevearc/aerial.nvim"

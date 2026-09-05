@@ -127,6 +127,18 @@ test("Core plugins loaded: telescope", function()
   assert_exists "telescope"
 end)
 
+test("Core plugins loaded: ack.vim", function()
+  local packages = vim.pack.get()
+  local found = false
+  for _, p in ipairs(packages) do
+    if p.spec.name == "ack.vim" and p.active then
+      found = true
+      break
+    end
+  end
+  assert_true(found, "ack.vim should be registered and active in vim.pack")
+end)
+
 test("Core plugins loaded: nvim-tree", function()
   assert_exists "nvim-tree"
   local tree_view = require "nvim-tree.view"
@@ -254,6 +266,16 @@ test("Keymap: <leader>ff mapped (grep to quickfix)", function()
   assert_true(exists, "<leader>ff should be mapped")
 end)
 
+test("Keymap: <leader>a mapped (Ack search)", function()
+  local exists, _ = keymap_exists("n", ";a")
+  assert_true(exists, "<leader>a should be mapped")
+end)
+
+test("Keymap: <leader>at mapped (Ack to Trouble)", function()
+  local exists, _ = keymap_exists("n", ";at")
+  assert_true(exists, "<leader>at should be mapped")
+end)
+
 test("Keymap: <leader>, mapped (Telescope buffers)", function()
   local exists, _ = keymap_exists("n", ";,")
   assert_true(exists, "<leader>, should be mapped")
@@ -343,6 +365,10 @@ end)
 
 test("Command: :Ack (native grep alias)", function()
   assert_true(command_exists "Ack", ":Ack should exist")
+end)
+
+test("Command: :AckTrouble (ack into Trouble view)", function()
+  assert_true(command_exists "AckTrouble", ":AckTrouble should exist")
 end)
 
 test("Command: :Ag (native grep alias)", function()

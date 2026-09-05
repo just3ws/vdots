@@ -28,6 +28,7 @@ vim.pack.add {
   { src = "https://github.com/folke/todo-comments.nvim" },
   { src = "https://github.com/stevearc/oil.nvim" },
   { src = "https://github.com/nvim-tree/nvim-tree.lua" },
+  { src = "https://github.com/mileszs/ack.vim" },
   { src = "https://github.com/nvim-telescope/telescope.nvim" },
   { src = "https://github.com/stevearc/aerial.nvim" },
   { src = "https://github.com/neovim/nvim-lspconfig" },

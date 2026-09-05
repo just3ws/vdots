@@ -101,6 +101,11 @@ vim.keymap.set("x", "<Leader>a", function()
   search.run_ack_visual()
 end, { desc = "Ack: Visual selection into quickfix" })
 
+vim.keymap.set("n", "<Leader>at", function()
+  local query = vim.fn.input "AckTrouble> "
+  search.run_ack_trouble(query)
+end, { desc = "Ack: Search workspace into Trouble view" })
+
 vim.keymap.set("n", "<Leader>fa", function()
   local query = vim.fn.input "Ack> "
   search.run_ack(query)

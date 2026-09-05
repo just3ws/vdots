@@ -74,17 +74,35 @@ function M.run_ack_visual(opts)
   return false
 end
 
+function M.run_ack_trouble(query, opts)
+  opts = opts or {}
+  local normalized = trim(query)
+  if not normalized then
+    return false
+  end
+  local ok = M.run_ack(normalized, vim.tbl_extend("force", opts, { open_qf = false }))
+  if ok then
+    local ok_tr, _ = pcall(vim.cmd, "Trouble qflist open")
+    if not ok_tr then
+      vim.cmd "copen"
+    end
+  end
+  return ok
+end
+
 function M.setup()
   -- 1. Native Grep Configuration (ack preferred, ripgrep fallback)
   if vim.fn.executable "ack" == 1 then
     vim.opt.grepprg = "ack -H --nogroup --column --smart-case --nocolor --nofilter"
     vim.opt.grepformat = "%f:%l:%c:%m"
+    vim.g.ackprg = "ack -H --nogroup --column --smart-case --nocolor --nofilter"
+    vim.g.ackhighlight = 1
   elseif vim.fn.executable "rg" == 1 then
     vim.opt.grepprg = "rg --vimgrep --smart-case"
     vim.opt.grepformat = "%f:%l:%c:%m"
   end
 
-  -- 2. User Commands (:Ack, :AckAdd, :AckFile, :AckWord, :Rg, :Ag)
+  -- 2. User Commands (:Ack, :AckAdd, :AckFile, :AckWord, :AckTrouble, :Rg, :Ag)
   local function ack_cmd(opts)
     local query = opts.args ~= "" and opts.args or vim.fn.input "Ack> "
     M.run_ack(query)
@@ -132,6 +150,16 @@ function M.setup()
     M.run_ack_word()
   end, {
     desc = "Search word under cursor with ack into quickfix",
+  })
+
+  vim.api.nvim_create_user_command("AckTrouble", function(opts)
+    local query = opts.args ~= "" and opts.args or vim.fn.input "AckTrouble> "
+    M.run_ack_trouble(query)
+  end, {
+    bang = true,
+    nargs = "*",
+    complete = "file",
+    desc = "Search workspace with ack into Trouble quickfix view",
   })
 
   vim.api.nvim_create_user_command("Rg", function(opts)
