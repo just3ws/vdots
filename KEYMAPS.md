@@ -10,7 +10,9 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader><space>` / `<C-p>` | **Find Files** | Fast file search (Telescope) |
 | `<leader>,` / `<leader>fb` | **Buffers** | Instant switch between open buffers (Telescope) |
 | `<leader>/` / `<leader>fg` | **Live Grep** | Highly optimized project-wide search (Telescope) |
-| `<leader>ff` | **Grep → Quickfix** | Native `rg` grep populated into quickfix (`:Ack`, `:Ag`, `:Rg`) |
+| `<leader>a` / `<leader>fa` | **Ack Search** | Search workspace with `ack` into quickfix (normal + visual selection) |
+| `<leader>aw` | **Ack Word** | Search word under cursor with `ack` into quickfix |
+| `<leader>ff` | **Grep / Ack → Quickfix** | Native `ack` (or `rg`) grep into quickfix (`:Ack`, `:AckAdd`, `:AckFile`, `:AckWord`) |
 | `<leader>fr` | **Recent Files** | Browse recently opened files (Telescope) |
 | `<leader>fc` | **Find Config** | Find files within `~/.config/nvim` (Telescope) |
 | `<leader>:` | **Command History** | Search and re-run recent commands (Telescope) |

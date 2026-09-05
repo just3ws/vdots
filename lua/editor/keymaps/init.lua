@@ -79,9 +79,32 @@ map("c", "<C-p>", "<up>", { noremap = true })
 local search = require "editor.search"
 
 vim.keymap.set("n", "<Leader>ff", function()
-  local query = vim.fn.input "Rg> "
-  search.run_grep(query)
-end, { desc = "Quickfix: Grep text" })
+  local prompt = vim.fn.executable "ack" == 1 and "Ack> " or "Rg> "
+  local query = vim.fn.input(prompt)
+  if vim.fn.executable "ack" == 1 then
+    search.run_ack(query)
+  else
+    search.run_grep(query)
+  end
+end, { desc = "Quickfix: Grep/Ack text" })
+
+vim.keymap.set("n", "<Leader>a", function()
+  local query = vim.fn.input "Ack> "
+  search.run_ack(query)
+end, { desc = "Ack: Search workspace into quickfix" })
+
+vim.keymap.set("n", "<Leader>aw", function()
+  search.run_ack_word()
+end, { desc = "Ack: Word under cursor into quickfix" })
+
+vim.keymap.set("x", "<Leader>a", function()
+  search.run_ack_visual()
+end, { desc = "Ack: Visual selection into quickfix" })
+
+vim.keymap.set("n", "<Leader>fa", function()
+  local query = vim.fn.input "Ack> "
+  search.run_ack(query)
+end, { desc = "Quickfix: Ack text" })
 
 local ok_builtin, builtin = pcall(require, "telescope.builtin")
 if ok_builtin then
