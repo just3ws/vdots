@@ -30,6 +30,7 @@ vim.pack.add {
   { src = "https://github.com/nvim-tree/nvim-tree.lua" },
   { src = "https://github.com/mileszs/ack.vim" },
   { src = "https://github.com/nvim-telescope/telescope.nvim" },
+  { src = "https://github.com/ibhagwan/fzf-lua" },
   { src = "https://github.com/stevearc/aerial.nvim" },
   { src = "https://github.com/neovim/nvim-lspconfig" },
   { src = "https://github.com/mason-org/mason.nvim" },
@@ -79,6 +80,7 @@ require("editor.claude").setup() -- 🤖 Claude Code session pulse + last-change
 require("editor.usage").setup() -- 📊 Friction/rage telemetry → :NvimUsage
 require("editor.errors").setup() -- 🪲 All-errors log with diagnostic context → :NvimErrors
 require("editor.search").setup() -- Native grep/quickfix (:Rg)
+require("editor.fzf").setup() -- ⚡ Fzf-Lua + Ack interactive finder
 require "editor.healthcheck" -- Log deprecation warnings
 require("editor.terminal").setup() -- 🖥️  Snacks terminal: toggle, named slots, ergonomic keymaps
 

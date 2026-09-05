@@ -139,6 +139,18 @@ test("Core plugins loaded: ack.vim", function()
   assert_true(found, "ack.vim should be registered and active in vim.pack")
 end)
 
+test("Core plugins loaded: fzf-lua", function()
+  local packages = vim.pack.get()
+  local found = false
+  for _, p in ipairs(packages) do
+    if p.spec.name == "fzf-lua" and p.active then
+      found = true
+      break
+    end
+  end
+  assert_true(found, "fzf-lua should be registered and active in vim.pack")
+end)
+
 test("Core plugins loaded: nvim-tree", function()
   assert_exists "nvim-tree"
   local tree_view = require "nvim-tree.view"
@@ -276,6 +288,11 @@ test("Keymap: <leader>at mapped (Ack to Trouble)", function()
   assert_true(exists, "<leader>at should be mapped")
 end)
 
+test("Keymap: <leader>za mapped (Fzf Ack)", function()
+  local exists, _ = keymap_exists("n", ";za")
+  assert_true(exists, "<leader>za should be mapped")
+end)
+
 test("Keymap: <leader>, mapped (Telescope buffers)", function()
   local exists, _ = keymap_exists("n", ";,")
   assert_true(exists, "<leader>, should be mapped")
@@ -369,6 +386,14 @@ end)
 
 test("Command: :AckTrouble (ack into Trouble view)", function()
   assert_true(command_exists "AckTrouble", ":AckTrouble should exist")
+end)
+
+test("Command: :FzfAck (live Ack via Fzf)", function()
+  assert_true(command_exists "FzfAck", ":FzfAck should exist")
+end)
+
+test("Command: :FzfAckFiles (Ack file index via Fzf)", function()
+  assert_true(command_exists "FzfAckFiles", ":FzfAckFiles should exist")
 end)
 
 test("Command: :Ag (native grep alias)", function()

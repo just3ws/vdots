@@ -17,6 +17,12 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader>fr` | **Recent Files** | Browse recently opened files (Telescope) |
 | `<leader>fc` | **Find Config** | Find files within `~/.config/nvim` (Telescope) |
 | `<leader>:` | **Command History** | Search and re-run recent commands (Telescope) |
+| `<leader>za` | **Fzf Ack** | Live streaming search via Fzf and `ack` (`:FzfAck`) |
+| `<leader>zf` | **Fzf Ack Files** | Fast file search respecting `.ackrc` rules (`:FzfAckFiles`) |
+| `<leader>zb` | **Fzf Buffers** | Open buffer switcher (Fzf) |
+| `<leader>zg` | **Fzf Live Grep** | Interactive live grep (Fzf) |
+| `<leader>zh` | **Fzf Help** | Vim help tags finder (Fzf) |
+| `<leader>zq` | **Fzf Quickfix** | Interactive quickfix viewer (Fzf) |
 | `<leader>gB` | **Git Browse** | Open current line/file in GitHub/GitLab (Snacks) |
 | `<leader>n` | **Notifications** | View notification history (Snacks) |
 | `<leader>un` | **Dismiss All** | Clear all active notifications (Snacks) |

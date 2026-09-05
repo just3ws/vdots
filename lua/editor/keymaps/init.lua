@@ -133,6 +133,17 @@ if ok_builtin then
   end, { desc = "Find config file" })
 end
 
+local ok_fzf, fzf = pcall(require, "fzf-lua")
+if ok_fzf then
+  local fzf_mod = require "editor.fzf"
+  vim.keymap.set("n", "<Leader>za", fzf_mod.ack, { desc = "Fzf: Live Ack search" })
+  vim.keymap.set("n", "<Leader>zf", fzf_mod.files, { desc = "Fzf: Ack files finder" })
+  vim.keymap.set("n", "<Leader>zb", fzf.buffers, { desc = "Fzf: Buffers" })
+  vim.keymap.set("n", "<Leader>zg", fzf.live_grep, { desc = "Fzf: Live grep" })
+  vim.keymap.set("n", "<Leader>zh", fzf.help_tags, { desc = "Fzf: Help tags" })
+  vim.keymap.set("n", "<Leader>zq", fzf.quickfix, { desc = "Fzf: Quickfix list" })
+end
+
 -- Buffer / window / quit / snacks convenience (adapted to leader `;`).
 -- Snacks.bufdelete closes the buffer while preserving the window layout.
 map("n", "<Leader>bd", function()
