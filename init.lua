@@ -79,6 +79,7 @@ require("editor.usage").setup() -- 📊 Friction/rage telemetry → :NvimUsage
 require("editor.errors").setup() -- 🪲 All-errors log with diagnostic context → :NvimErrors
 require("editor.search").setup() -- Native grep/quickfix (:Rg)
 require "editor.healthcheck" -- Log deprecation warnings
+require("editor.terminal").setup() -- 🖥️  Snacks terminal: toggle, named slots, ergonomic keymaps
 
 require("snacks").setup {
   dashboard = {

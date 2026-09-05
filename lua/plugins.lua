@@ -401,13 +401,10 @@ function M.setup_all()
     },
   }
 
-  -- Snacks: lazygit + terminal
+  -- Snacks: lazygit (<C-/> terminal toggle lives in editor/terminal.lua)
   map("n", "<leader>gg", function()
     Snacks.lazygit()
   end, "LazyGit")
-  map("n", "<leader>gT", function()
-    Snacks.terminal()
-  end, "Terminal")
 end
 
 return M
