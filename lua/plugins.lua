@@ -183,6 +183,11 @@ function M.setup_all()
       go = { "goimports", "gofmt" },
       javascript = { "prettierd", "prettier", stop_after_first = true },
       typescript = { "prettierd", "prettier", stop_after_first = true },
+      javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+      typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+      json = { "prettierd", "prettier", stop_after_first = true },
+      jsonc = { "prettierd", "prettier", stop_after_first = true },
+      yaml = { "prettierd", "prettier", stop_after_first = true },
     },
     format_on_save = {
       timeout_ms = 500,
@@ -201,6 +206,8 @@ function M.setup_all()
     go = { "golangcilint" },
     javascript = { "eslint_d", "eslint" },
     typescript = { "eslint_d", "eslint" },
+    javascriptreact = { "eslint_d" },
+    typescriptreact = { "eslint_d" },
   }
   local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
   vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
@@ -257,6 +264,11 @@ function M.setup_all()
         experimental = { test_table = true },
         args = { "-v", "-race" },
       },
+      require "neotest-vitest" {
+        -- pnpm workspaces: run vitest from the workspace root so it finds each
+        -- package's vitest.config.ts via the pnpm workspace protocol.
+        vitestCommand = "pnpm vitest",
+      },
     },
     output_panel = {
       enabled = true,
@@ -292,6 +304,47 @@ function M.setup_all()
   dapui.setup()
   require("dap-go").setup()
   require("dap-ruby").setup()
+
+  -- JS/TS DAP via vscode-js debug adapter (Node + Vitest)
+  local ok_jsdbg, dap_vscode_js = pcall(require, "dap-vscode-js")
+  if ok_jsdbg then
+    dap_vscode_js.setup {
+      debugger_path = vim.fn.stdpath "data" .. "/mason/packages/js-debug-adapter",
+      adapters = { "pwa-node", "node-terminal" },
+    }
+    for _, lang in ipairs { "javascript", "typescript", "javascriptreact", "typescriptreact" } do
+      dap.configurations[lang] = {
+        {
+          type = "pwa-node",
+          request = "launch",
+          name = "Launch with tsx (server)",
+          program = "${file}",
+          cwd = "${workspaceFolder}/server",
+          runtimeExecutable = "tsx",
+          sourceMaps = true,
+        },
+        {
+          type = "pwa-node",
+          request = "attach",
+          name = "Attach to running process",
+          processId = require("dap.utils").pick_process,
+          cwd = "${workspaceFolder}",
+          sourceMaps = true,
+        },
+        {
+          type = "pwa-node",
+          request = "launch",
+          name = "Debug Vitest (current file)",
+          program = "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+          args = { "run", "${relativeFile}" },
+          cwd = "${workspaceFolder}",
+          sourceMaps = true,
+          smartStep = true,
+        },
+      }
+    end
+  end
+
   dap.listeners.after.event_initialized["dapui_config"] = function()
     dapui.open()
   end
@@ -347,6 +400,14 @@ function M.setup_all()
       { "<leader>q", group = "quit" },
     },
   }
+
+  -- Snacks: lazygit + terminal
+  map("n", "<leader>gg", function()
+    Snacks.lazygit()
+  end, "LazyGit")
+  map("n", "<leader>gT", function()
+    Snacks.terminal()
+  end, "Terminal")
 end
 
 return M

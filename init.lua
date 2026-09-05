@@ -63,6 +63,9 @@ vim.pack.add {
   { src = "https://github.com/nvim-lua/plenary.nvim" },
   -- Release tag so blink downloads its prebuilt Rust fuzzy lib (no cargo).
   { src = "https://github.com/saghen/blink.cmp", version = vim.version.range "1.*" },
+  -- JS/TS test runner + debugger
+  { src = "https://github.com/marilari88/neotest-vitest" },
+  { src = "https://github.com/mxsdev/nvim-dap-vscode-js" },
 }
 
 require "editor.options" -- General settings (all vim.opt)
@@ -132,6 +135,8 @@ require("snacks").setup {
   },
   notifier = { enabled = true, timeout = 3000 },
   gitbrowse = { enabled = true },
+  lazygit = { enabled = true },
+  terminal = { enabled = true },
   picker = { enabled = true },
   words = { enabled = true },
   rename = { enabled = true },
@@ -201,10 +206,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.diagnostic.jump { count = -1, float = true }
     end, "Prev diagnostic")
 
-    if client.name == "ruby_lsp" then
+    -- Inlay hints: toggle for any LSP that supports them (vtsls, gopls, ruby_lsp…)
+    if client.supports_method "textDocument/inlayHint" then
       map("n", "<leader>ih", function()
         vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-      end, "RubyLSP: Toggle Inlay Hints")
+      end, "Toggle inlay hints")
     end
   end,
 })
@@ -225,6 +231,36 @@ vim.lsp.config("lua_ls", {
 })
 vim.lsp.config("ruby_lsp", { init_options = { formatter = "auto" } })
 vim.lsp.config("yamlls", { settings = { yaml = { keyOrdering = false } } })
+vim.lsp.config("vtsls", {
+  settings = {
+    typescript = {
+      -- Pick up the workspace's own typescript install (matches project tsconfig paths).
+      tsdk = vim.fn.getcwd() .. "/node_modules/typescript/lib",
+      inlayHints = {
+        parameterNames = { enabled = "literals" },
+        variableTypes = { enabled = true },
+        returnTypes = { enabled = true },
+      },
+    },
+    vtsls = {
+      -- Monorepo: auto-detect the workspace tsconfig so @phalanxduel/* paths resolve.
+      autoUseWorkspaceTsdk = true,
+    },
+  },
+})
+vim.lsp.config("sqls", {
+  settings = {
+    sqls = {
+      connections = {
+        -- Matches the typical dev DATABASE_URL in .env.example / docker-compose.yml.
+        {
+          driver = "postgresql",
+          dataSourceName = "host=127.0.0.1 port=5432 dbname=phalanxduel_dev",
+        },
+      },
+    },
+  },
+})
 
 vim.lsp.enable {
   "lua_ls",
@@ -234,4 +270,6 @@ vim.lsp.enable {
   "basedpyright",
   "yamlls",
   "terraformls",
+  "vtsls",
+  "sqls",
 }

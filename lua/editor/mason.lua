@@ -19,6 +19,9 @@ M.servers = {
   "yaml-language-server",
   "terraform-ls",
   "marksman", -- markdown LSP — handy when editing the read-aloud docs
+  "vtsls", -- TypeScript/JavaScript LSP (monorepo-aware)
+  "sqls", -- SQL LSP — Drizzle migrations + raw .sql files
+  "js-debug-adapter", -- DAP adapter for Node/Vitest debugging
 }
 
 function M.setup()
