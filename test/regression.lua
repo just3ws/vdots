@@ -392,8 +392,16 @@ test("Command: :FzfAck (live Ack via Fzf)", function()
   assert_true(command_exists "FzfAck", ":FzfAck should exist")
 end)
 
+test("Command: :Fack (shell parity live Ack)", function()
+  assert_true(command_exists "Fack", ":Fack should exist")
+end)
+
 test("Command: :FzfAckFiles (Ack file index via Fzf)", function()
   assert_true(command_exists "FzfAckFiles", ":FzfAckFiles should exist")
+end)
+
+test("Command: :Fackf (shell parity Ack files)", function()
+  assert_true(command_exists "Fackf", ":Fackf should exist")
 end)
 
 test("Command: :Ag (native grep alias)", function()

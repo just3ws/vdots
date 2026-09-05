@@ -78,38 +78,51 @@ map("c", "<C-p>", "<up>", { noremap = true })
 
 local search = require "editor.search"
 
-vim.keymap.set("n", "<Leader>ff", function()
-  local prompt = vim.fn.executable "ack" == 1 and "Ack> " or "Rg> "
-  local query = vim.fn.input(prompt)
-  if vim.fn.executable "ack" == 1 then
-    search.run_ack(query)
-  else
-    search.run_grep(query)
-  end
-end, { desc = "Quickfix: Grep/Ack text" })
+local fzf_mod = require "editor.fzf"
 
 vim.keymap.set("n", "<Leader>a", function()
-  local query = vim.fn.input "Ack> "
-  search.run_ack(query)
-end, { desc = "Ack: Search workspace into quickfix" })
+  if not fzf_mod.ack() then
+    local query = vim.fn.input "Ack> "
+    search.run_ack(query)
+  end
+end, { desc = "Fack: Live Ack search (Fzf)" })
+
+vim.keymap.set("n", "<Leader>fa", function()
+  if not fzf_mod.ack() then
+    local query = vim.fn.input "Ack> "
+    search.run_ack(query)
+  end
+end, { desc = "Fack: Live Ack search (Fzf, shell parity)" })
+
+vim.keymap.set("n", "<Leader>ff", function()
+  if not fzf_mod.files() then
+    local prompt = vim.fn.executable "ack" == 1 and "Ack> " or "Rg> "
+    local query = vim.fn.input(prompt)
+    search.run_ack(query)
+  end
+end, { desc = "Fackf: Ack files finder (Fzf, shell parity)" })
 
 vim.keymap.set("n", "<Leader>aw", function()
-  search.run_ack_word()
-end, { desc = "Ack: Word under cursor into quickfix" })
+  if not fzf_mod.ack_word() then
+    search.run_ack_word()
+  end
+end, { desc = "Fack: Word under cursor into live Ack" })
 
 vim.keymap.set("x", "<Leader>a", function()
-  search.run_ack_visual()
-end, { desc = "Ack: Visual selection into quickfix" })
+  if not fzf_mod.ack_visual() then
+    search.run_ack_visual()
+  end
+end, { desc = "Fack: Visual selection into live Ack" })
 
 vim.keymap.set("n", "<Leader>at", function()
   local query = vim.fn.input "AckTrouble> "
   search.run_ack_trouble(query)
 end, { desc = "Ack: Search workspace into Trouble view" })
 
-vim.keymap.set("n", "<Leader>fa", function()
-  local query = vim.fn.input "Ack> "
+vim.keymap.set("n", "<Leader>fA", function()
+  local query = vim.fn.input "Quickfix Ack> "
   search.run_ack(query)
-end, { desc = "Quickfix: Ack text" })
+end, { desc = "Quickfix: Ack text directly into quickfix" })
 
 local ok_builtin, builtin = pcall(require, "telescope.builtin")
 if ok_builtin then
@@ -135,7 +148,6 @@ end
 
 local ok_fzf, fzf = pcall(require, "fzf-lua")
 if ok_fzf then
-  local fzf_mod = require "editor.fzf"
   vim.keymap.set("n", "<Leader>za", fzf_mod.ack, { desc = "Fzf: Live Ack search" })
   vim.keymap.set("n", "<Leader>zf", fzf_mod.files, { desc = "Fzf: Ack files finder" })
   vim.keymap.set("n", "<Leader>zb", fzf.buffers, { desc = "Fzf: Buffers" })
