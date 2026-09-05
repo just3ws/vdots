@@ -115,7 +115,7 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | `<leader>ca` | Code action |
 | `[d` / `]d` | Previous / next diagnostic |
 | `<leader>cd` | Diagnostic float (current line) |
-| `<leader>ih` | Toggle inlay hints (ruby_lsp only) |
+| `<leader>ih` | Toggle inlay hints (any LSP supporting textDocument/inlayHint: vtsls, gopls, ruby_lsp …) |
 
 ## Plugin & Package Management (`vim.pack`)
 
@@ -222,3 +222,22 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | `:ZdotsIngest` | Ingest current buffer into zdots |
 | `:ZdotsStatus` | Platform status float |
 | `:ConformInfo` | Show conform.nvim formatter info |
+
+## Git (continued)
+
+| Key | Action |
+|-----|--------|
+| `<leader>gg` | Open LazyGit (Snacks) |
+
+## Terminal
+
+See [Terminal](Terminal.md) for the full terminal reference.
+
+| Key | Mode | Action |
+|-----|------|--------|
+| `<C-/>` | normal, terminal | Toggle main terminal (opens and hides) |
+| `<C-1>` | normal, terminal | Toggle terminal slot 1 |
+| `<C-2>` | normal, terminal | Toggle terminal slot 2 |
+| `<C-3>` | normal, terminal | Toggle terminal slot 3 |
+| `<Esc><Esc>` | terminal | Exit terminal mode |
+| `<C-h/j/k/l>` | terminal | Navigate to adjacent split |

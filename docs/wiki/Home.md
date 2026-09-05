@@ -1,6 +1,6 @@
 # vdots
 
-vdots is the Neovim platform in the personal-OS ecosystem — a Lua-native configuration for Neovim 0.12+ targeting Ruby/Rails, Go, and TypeScript development. It manages plugins via the built-in `vim.pack` API (no external plugin manager), integrates with the [zdots](https://github.com/just3ws/zdots/wiki) shell platform for context ingestion and task management, and ships a health CLI (`vdots-doctor`) parallel to zdots-doctor.
+vdots is the Neovim platform in the personal-OS ecosystem — a Lua-native configuration for Neovim 0.12+ targeting Ruby/Rails, Go, and TypeScript/Node development. It manages plugins via the built-in `vim.pack` API (no external plugin manager), integrates with the [zdots](https://github.com/just3ws/zdots/wiki) shell platform for context ingestion and task management, and ships a health CLI (`vdots-doctor`) parallel to zdots-doctor.
 
 ## The ecosystem
 
@@ -38,4 +38,5 @@ stylua .
 - [Plugins](Plugins.md) — every plugin and its role
 - [LSP-and-Tooling](LSP-and-Tooling.md) — language servers (Mason), formatters, linters, tool-source split
 - [Keymaps](Keymaps.md) — leader key, all notable bindings
+- [Terminal](Terminal.md) — embedded terminal: toggle, named slots, keymaps, style
 - [Read-Aloud](Read-Aloud.md) — the Markdown reader + `vdots publish` listen-along pipeline

@@ -6,7 +6,7 @@ Language servers are configured with `vim.lsp.config()` and enabled with `vim.ls
 
 | Source | Owns | Why |
 |---|---|---|
-| **Mason** (`lua/editor/mason.lua`) | LSP servers only: `lua-language-server`, `gopls`, `basedpyright`, `yaml-language-server`, `terraform-ls`, `marksman` | used *only* inside Neovim |
+| **Mason** (`lua/editor/mason.lua`) | LSP servers: `lua-language-server`, `gopls`, `basedpyright`, `yaml-language-server`, `terraform-ls`, `marksman`, `vtsls`, `sqls`; DAP adapter: `js-debug-adapter` | used *only* inside Neovim |
 | **zdots Brewfile** (`Brewfile.common`) | `stylua`, `selene`, `luacheck`, `shellcheck`, `shfmt`, `prettier(d)`, `rubocop`, `standardrb`, `ffmpeg`, `rubberband` | the shell and CI run these too |
 | **mise / bundler** | `ruby-lsp`, `standardrb` (per-project gems), runtime hosts | project-scoped versions |
 
@@ -23,13 +23,21 @@ installed; `ruby_lsp` / `standardrb` come from the project bundle.
 
 | Server | Language | Notes |
 |--------|----------|-------|
-| `ruby_lsp` | Ruby | `formatter = "auto"`; inlay hints toggle via `<leader>ih` |
+| `vtsls` | TypeScript / JavaScript | `autoUseWorkspaceTsdk = true` for monorepo path aliases; inlay hints (param names, var types, return types) |
+| `ruby_lsp` | Ruby | `formatter = "auto"` |
 | `standardrb` | Ruby | Runs alongside ruby_lsp |
 | `gopls` | Go | `usePlaceholders`, `completeUnimported`, `unusedparams` |
 | `lua_ls` | Lua | `globals = {"vim"}`, `checkThirdParty = false` |
 | `basedpyright` | Python | Default config |
 | `yamlls` | YAML | `keyOrdering = false` |
 | `terraformls` | Terraform | Default config |
+| `sqls` | SQL | Connects to `phalanxduel_dev` postgres (127.0.0.1:5432); useful for Drizzle migrations |
+
+### Monorepo note (vtsls)
+
+Open Neovim from the monorepo root so `autoUseWorkspaceTsdk` resolves to the
+workspace `tsconfig.base.json`. The `@phalanxduel/shared` and `@phalanxduel/engine`
+path aliases then work without extra config.
 
 ## Completion
 
@@ -48,10 +56,13 @@ installed; `ruby_lsp` / `standardrb` come from the project bundle.
 | `gd` | Definition |
 | `K` | Hover |
 | `gr` | References |
+| `gI` | Go to implementation |
+| `gy` | Go to type definition |
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code action |
-| `[d` / `]d` | Previous / next diagnostic (Neovim default) |
-| `<leader>ih` | Toggle inlay hints (ruby_lsp only) |
+| `[d` / `]d` | Previous / next diagnostic |
+| `<leader>cd` | Diagnostic float (current line) |
+| `<leader>ih` | Toggle inlay hints (any LSP supporting `textDocument/inlayHint`: vtsls, gopls, ruby_lsp …) |
 
 ## Formatters (conform.nvim, on save)
 
@@ -62,6 +73,11 @@ installed; `ruby_lsp` / `standardrb` come from the project bundle.
 | Go | `goimports` then `gofmt` | Both run in sequence |
 | JavaScript | `prettierd` → `prettier` | `stop_after_first` |
 | TypeScript | `prettierd` → `prettier` | `stop_after_first` |
+| JavaScriptReact | `prettierd` → `prettier` | `stop_after_first` |
+| TypeScriptReact | `prettierd` → `prettier` | `stop_after_first` |
+| JSON | `prettierd` → `prettier` | `stop_after_first` |
+| JSONC | `prettierd` → `prettier` | `stop_after_first` |
+| YAML | `prettierd` → `prettier` | `stop_after_first` |
 
 Format-on-save timeout: 500 ms; LSP fallback enabled.
 
@@ -76,6 +92,18 @@ Format manually: `<leader>f` (any mode).
 | Go | `golangcilint` |
 | JavaScript | `eslint_d` → `eslint` |
 | TypeScript | `eslint_d` → `eslint` |
+| JavaScriptReact | `eslint_d` |
+| TypeScriptReact | `eslint_d` |
+
+## Debugging (DAP)
+
+| Language | Adapter | Configs |
+|----------|---------|---------|
+| Go | `nvim-dap-go` (delve) | default |
+| Ruby | `nvim-dap-ruby` | default |
+| JS / TS / JSX / TSX | `nvim-dap-vscode-js` + `js-debug-adapter` (Mason) | tsx server launch, process attach, Vitest debug |
+
+JS/TS DAP configs are registered for `javascript`, `typescript`, `javascriptreact`, `typescriptreact`. On `<leader>dc` a picker lists the three configs. The adapter binary is installed by Mason at `~/.local/share/nvim/mason/packages/js-debug-adapter/`.
 
 ## CLI Tooling
 
