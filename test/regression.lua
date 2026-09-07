@@ -447,6 +447,15 @@ test("DiagnosticError highlight exists", function()
   assert_true(hl.fg ~= nil, "DiagnosticError should have fg color")
 end)
 
+test("Ackrc integrated highlights exist", function()
+  local dir_hl = vim.api.nvim_get_hl(0, { name = "ackrcDirective" })
+  local col_hl = vim.api.nvim_get_hl(0, { name = "ackrcColorYellow" })
+  local mod_hl = vim.api.nvim_get_hl(0, { name = "ackrcModifierBold" })
+  assert_true(dir_hl.fg ~= nil, "ackrcDirective should have fg color")
+  assert_true(col_hl.fg ~= nil, "ackrcColorYellow should have fg color")
+  assert_true(mod_hl.bold == true, "ackrcModifierBold should be bold")
+end)
+
 -- ============================================================================
 -- SECTION 9: Autocommands
 -- ============================================================================
@@ -488,6 +497,36 @@ test("Filetype detection for .rb", function()
   vim.cmd "new test.rb"
   local ft = vim.bo.filetype
   assert_eq(ft, "ruby", "filetype for .rb")
+  vim.cmd "bwipeout!"
+end)
+
+test("Filetype detection for .ackrc", function()
+  vim.cmd "new .ackrc"
+  local ft = vim.bo.filetype
+  local cms = vim.bo.commentstring
+  assert_eq(ft, "ackrc", "filetype for .ackrc")
+  assert_eq(cms, "# %s", "commentstring for ackrc")
+  vim.cmd "bwipeout!"
+end)
+
+test("Filetype detection for _ackrc", function()
+  vim.cmd "new _ackrc"
+  local ft = vim.bo.filetype
+  assert_eq(ft, "ackrc", "filetype for _ackrc")
+  vim.cmd "bwipeout!"
+end)
+
+test("Ackrc syntax highlighting on color preferences", function()
+  vim.cmd "new test.ackrc"
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+    "# Visual preferences",
+    "--color-match=bold yellow",
+  })
+  vim.cmd "redraw"
+  local opt_name = vim.fn.synIDattr(vim.fn.synID(2, 3, 1), "name")
+  local col_name = vim.fn.synIDattr(vim.fn.synID(2, 22, 1), "name")
+  assert_eq(opt_name, "ackrcColorOption", "syntax for --color-match")
+  assert_eq(col_name, "ackrcColorYellow", "syntax for yellow")
   vim.cmd "bwipeout!"
 end)
 

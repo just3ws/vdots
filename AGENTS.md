@@ -1,16 +1,12 @@
 <!-- ═══════════════════════════════════════════════════════════════════════
-     CURRENT FOCUS  —  last updated 2026-09-03 (guide.pdf session)
+     CURRENT FOCUS  —  last updated 2026-09-06 (ackrc syntax colorscheme session)
      Cold-start resume state, canonical for every agent tool. Whoever closes
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
        ALL PUSHED to `origin/main`, CI ("Lua Lint, Format, and Tests") green.
-       HEAD = `6852d01`. The vdots control-plane shim + read-aloud plugin +
-       `vdots-listen` publish pipeline + enhanced-doc frontmatter contract +
-       Mason + dashboard Recent-Markdown merged 2026-09-03 via `--no-ff`
-       (`feat/vdots-shim-readaloud`, 27 commits); the post-merge work below is
-       on `main` too. Commit chain: `47c5799` (video + brief.md) → `7458e8e`
-       (pace drift fix) → `7b9093a` (manifest + video CC) → `6852d01` (guide.pdf).
+       HEAD = `c9715a8`. Added .ackrc filetype detection, syntax highlighting,
+       and Kanagawa Wave palette integration with live color modifier/keyword previews.
 
        Publish outputs now, per session dir:
        - `readalong.mp4` — `vdots-readalong` renders one SVG frame per cue
@@ -83,7 +79,7 @@
        ~/.config/nvim/bin: interim via zdots .zshrc.local; zdots Z-337 tracks
        the native env.sh pickup, Z-338 (FIXED this session) was the chpwd hook
        evicting it.
-       Deep handoff: ~/.config/adots/handoffs/2026-09-03-2.md
+       Deep handoff: ~/.config/adots/handoffs/2026-09-06-7.md
 
      Close ritual: rewrite this block + commit; write a deep handoff only if
      work is genuinely unfinished. Reference impl: wwworkremote/core's

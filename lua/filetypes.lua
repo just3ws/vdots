@@ -3,6 +3,7 @@ vim.filetype.add {
     lst = "text",
     gotmpl = "gotmpl",
     bpmn = "xml",
+    ackrc = "ackrc",
   },
   filename = {
     ["go.work"] = "gowork",
@@ -22,8 +23,12 @@ vim.filetype.add {
     [".eslintrc"] = "json",
     [".prettierrc"] = "json",
     [".releaserc"] = "json",
+    [".ackrc"] = "ackrc",
+    ["_ackrc"] = "ackrc",
+    ["ackrc"] = "ackrc",
   },
   pattern = {
     ["%.env%..*"] = "sh",
+    [".*ackrc.*"] = "ackrc",
   },
 }
