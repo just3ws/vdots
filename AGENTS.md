@@ -4,7 +4,7 @@
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
-       CI / local ("./test/run.sh", "./test/lint.sh") green.
+       ALL PUSHED to `origin/main`, CI ("Lua Lint, Format, and Tests") green.
        Added:
        - Startup Snacks dashboard: bottom "Plugin Management Guide" section
          displaying :PackUpdate, :PackSync, :PackClean, :PackStatus, CLI
