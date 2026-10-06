@@ -1,12 +1,22 @@
 <!-- ═══════════════════════════════════════════════════════════════════════
-     CURRENT FOCUS  —  last updated 2026-09-06 (ackrc syntax colorscheme session)
+     CURRENT FOCUS  —  last updated 2026-10-06 (dashboard guide, formatters, explorer focus)
      Cold-start resume state, canonical for every agent tool. Whoever closes
      a session rewrites this block in place — step one, before the wrap-up.
      git log is truth for exact SHAs; if this contradicts it, trust git.
 
-       ALL PUSHED to `origin/main`, CI ("Lua Lint, Format, and Tests") green.
-       HEAD = `c9715a8`. Added .ackrc filetype detection, syntax highlighting,
-       and Kanagawa Wave palette integration with live color modifier/keyword previews.
+       CI / local ("./test/run.sh", "./test/lint.sh") green.
+       Added:
+       - Startup Snacks dashboard: bottom "Plugin Management Guide" section
+         displaying :PackUpdate, :PackSync, :PackClean, :PackStatus, CLI
+         vdots update, and :checkhealth.
+       - Formatter user commands: :Format [formatter] (with autocomplete across
+         configured & installed formatters, e.g. :Format prettier) and :Prettier
+         (direct Prettier runner via Conform), supporting visual ranges and !
+         bang for synchronous execution.
+       - Explorer / NERDTree sidebar focus: enabled update_focused_file in
+         nvim-tree setup; updated editor.explorer toggle/open/focus to focus the
+         active buffer's file; registered :NERDTree, :NERDTreeToggle,
+         :NERDTreeFind, :NERDTreeFocus, and :Explorer* command aliases.
 
        Publish outputs now, per session dir:
        - `readalong.mp4` — `vdots-readalong` renders one SVG frame per cue

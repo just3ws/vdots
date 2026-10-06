@@ -114,3 +114,126 @@ cmd("PackStatus", function()
     { title = "vim.pack" }
   )
 end, { desc = "Show vim.pack plugin status" })
+
+-- Formatter commands (run by command name: :Format [formatter] or :Prettier)
+cmd("Format", function(opts)
+  local range = nil
+  if opts.range == 2 then
+    local last_line = vim.fn.getline(opts.line2)
+    range = { start = { opts.line1, 0 }, ["end"] = { opts.line2, #last_line } }
+  end
+  local ok, conform = pcall(require, "conform")
+  if not ok then
+    vim.notify("conform.nvim is not loaded", vim.log.levels.ERROR)
+    return
+  end
+  local async = not opts.bang
+  local formatter_name = vim.trim(opts.args or "")
+  if formatter_name ~= "" then
+    conform.format {
+      formatters = { formatter_name },
+      async = async,
+      range = range,
+    }
+  else
+    conform.format {
+      async = async,
+      lsp_fallback = true,
+      range = range,
+    }
+  end
+end, {
+  bang = true,
+  nargs = "?",
+  range = true,
+  complete = function(arg_lead)
+    local ok, conform = pcall(require, "conform")
+    if not ok then
+      return {}
+    end
+    local formatters = {}
+    local seen = {}
+    local function add(name)
+      if name and not seen[name] and vim.startswith(name, arg_lead) then
+        seen[name] = true
+        formatters[#formatters + 1] = name
+      end
+    end
+    for _, f in ipairs(conform.list_formatters(0)) do
+      add(f.name)
+    end
+    for _, f in ipairs(conform.list_all_formatters()) do
+      add(f.name)
+    end
+    for _, name in ipairs {
+      "prettier",
+      "prettierd",
+      "stylua",
+      "rubocop",
+      "gofmt",
+      "goimports",
+      "eslint_d",
+    } do
+      add(name)
+    end
+    table.sort(formatters)
+    return formatters
+  end,
+  desc = "Format buffer or range (optional: specify formatter by name, e.g. :Format prettier; ! for sync)",
+})
+
+cmd("Prettier", function(opts)
+  local range = nil
+  if opts.range == 2 then
+    local last_line = vim.fn.getline(opts.line2)
+    range = { start = { opts.line1, 0 }, ["end"] = { opts.line2, #last_line } }
+  end
+  local ok, conform = pcall(require, "conform")
+  if not ok then
+    vim.notify("conform.nvim is not loaded", vim.log.levels.ERROR)
+    return
+  end
+  conform.format {
+    formatters = { "prettierd", "prettier" },
+    async = not opts.bang,
+    range = range,
+    stop_after_first = true,
+  }
+end, {
+  bang = true,
+  range = true,
+  desc = "Format current buffer or range using Prettier (! for sync)",
+})
+
+-- File explorer commands (NERDTree muscle memory + standard Explorer aliases)
+cmd("NERDTree", function()
+  require("editor.explorer").open()
+end, { desc = "Open explorer sidebar focused on current file (NERDTree alias)" })
+
+cmd("NERDTreeToggle", function()
+  require("editor.explorer").toggle()
+end, { desc = "Toggle explorer sidebar, focusing current file (NERDTree alias)" })
+
+cmd("NERDTreeFind", function()
+  require("editor.explorer").find()
+end, { desc = "Reveal and focus current file in explorer sidebar (NERDTreeFind alias)" })
+
+cmd("NERDTreeFocus", function()
+  require("editor.explorer").focus()
+end, { desc = "Focus explorer sidebar on current file (NERDTree alias)" })
+
+cmd("Explorer", function()
+  require("editor.explorer").open()
+end, { desc = "Open explorer sidebar focused on current file" })
+
+cmd("ExplorerToggle", function()
+  require("editor.explorer").toggle()
+end, { desc = "Toggle explorer sidebar, focusing current file" })
+
+cmd("ExplorerFind", function()
+  require("editor.explorer").find()
+end, { desc = "Reveal and focus current file in explorer sidebar" })
+
+cmd("ExplorerFocus", function()
+  require("editor.explorer").focus()
+end, { desc = "Focus explorer sidebar on current file" })

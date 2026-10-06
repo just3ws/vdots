@@ -128,6 +128,45 @@ require("snacks").setup {
         filter = require("editor.mdfiles").is_markdown,
       },
       {
+        title = "Plugin Management Guide",
+        padding = 1,
+        {
+          icon = "󰒲 ",
+          desc = "Update plugins & review changelog",
+          label = ":PackUpdate  (;Pu / ;L)",
+          action = ":PackUpdate",
+        },
+        {
+          icon = "󰒲 ",
+          desc = "Sync plugins to lockfile",
+          label = ":PackSync    (;Ps)",
+          action = ":PackSync",
+        },
+        {
+          icon = "󰒲 ",
+          desc = "Prune unmanaged/inactive plugins",
+          label = ":PackClean   (;Pc)",
+          action = ":PackClean",
+        },
+        {
+          icon = "󰒲 ",
+          desc = "Check installed plugin status",
+          label = ":PackStatus  (;PS)",
+          action = ":PackStatus",
+        },
+        {
+          icon = "󰒲 ",
+          desc = "Full CLI update + test suite",
+          label = "vdots update / vdots-update",
+        },
+        {
+          icon = " ",
+          desc = "Health check (system & plugins)",
+          label = ":checkhealth",
+          action = ":checkhealth",
+        },
+      },
+      {
         footer = ("  Neovim %d.%d.%d"):format(
           vim.version().major,
           vim.version().minor,

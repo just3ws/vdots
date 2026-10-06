@@ -135,14 +135,26 @@ all available bindings. Multi-key prefixes are labelled by group:
 
 ### Explorer (nvim-tree with NERDTree compatibility)
 
-| Key | Action |
+| Key / Command | Action |
 | --- | --- |
-| `;e` | Toggle nvim-tree sidebar |
-| `;ef` | Reveal and focus current file in tree (`:NERDTreeFind`) |
+| `:NERDTree` / `:Explorer` | Open explorer sidebar focused on current file |
+| `:NERDTreeToggle` / `:ExplorerToggle` / `;e` | Toggle sidebar, focusing current file when opened |
+| `:NERDTreeFind` / `:ExplorerFind` / `;ef` | Reveal and focus current file in tree |
+| `:NERDTreeFocus` / `:ExplorerFocus` | Focus explorer sidebar on current file |
 | `;er` | Collapse tree and re-reveal current file |
 | `-` | Open parent directory in buffer with Oil.nvim |
 
 *Inside the nvim-tree buffer, full NERDTree muscle-memory keys work (`t` new tab, `T` background tab, `i` split, `go`/`gi`/`gs` stay in tree, `X` collapse children, `A` zoom, `r` refresh, `<F2>` rename).*
+
+### Code Formatting (Conform)
+
+| Key / Command | Action |
+| --- | --- |
+| `;f` | Format buffer or visual selection via Conform |
+| `:Format [formatter]` | Run filetype formatter or specify formatter by name (e.g. `:Format prettier`) |
+| `:Format!` | Format synchronously (`!` bang) |
+| `:Prettier` / `:Prettier!` | Format buffer or selection with Prettier (`!` for sync) |
+| `:ConformInfo` | Show active/configured formatters |
 
 ### Search & Pickers
 

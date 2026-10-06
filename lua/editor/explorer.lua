@@ -1,13 +1,40 @@
 local M = {}
 
 ---Toggle the sidebar explorer.
-function M.toggle()
-  require("nvim-tree.api").tree.toggle()
+---When opening, focuses and reveals the current buffer's file.
+function M.toggle(opts)
+  opts = opts or {}
+  local find_file = opts.find_file
+  if find_file == nil then
+    find_file = true
+  end
+  require("nvim-tree.api").tree.toggle {
+    find_file = find_file,
+    focus = opts.focus ~= false,
+  }
+end
+
+---Open the sidebar explorer and focus the current file.
+function M.open(opts)
+  opts = opts or {}
+  local find_file = opts.find_file
+  if find_file == nil then
+    find_file = true
+  end
+  require("nvim-tree.api").tree.open {
+    find_file = find_file,
+    focus = opts.focus ~= false,
+  }
+end
+
+---Focus the sidebar explorer on the current file (opening if closed).
+function M.focus(opts)
+  M.open(opts)
 end
 
 ---Open the tree and reveal + focus the current buffer's file (like :NERDTreeFind).
 ---Falls back to just opening the tree when the buffer has no real file.
-function M.toggle_find()
+function M.find()
   local api = require "nvim-tree.api"
   if vim.fn.expand "%" == "" or vim.bo.buftype ~= "" then
     api.tree.open { focus = true }
@@ -15,6 +42,8 @@ function M.toggle_find()
     api.tree.find_file { open = true, focus = true, update_root = true }
   end
 end
+
+M.toggle_find = M.find
 
 -- ---------------------------------------------------------------------------
 -- NERDTree-compatible mappings, layered on top of nvim-tree's defaults.

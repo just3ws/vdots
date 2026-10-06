@@ -428,6 +428,73 @@ test("Command: :PackStatus (vim.pack status)", function()
   assert_true(command_exists "PackStatus", ":PackStatus should exist")
 end)
 
+test("Command: :Format (conform buffer formatter)", function()
+  assert_true(command_exists "Format", ":Format should exist")
+end)
+
+test("Command: :Prettier (conform prettier runner)", function()
+  assert_true(command_exists "Prettier", ":Prettier should exist")
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, { 'const   foo =    "bar";' })
+  vim.bo[buf].filetype = "javascript"
+  vim.api.nvim_set_current_buf(buf)
+  vim.cmd "Prettier!"
+  local res = vim.api.nvim_buf_get_lines(buf, 0, -1, false)[1]
+  assert_eq(res, 'const foo = "bar";', ":Prettier! should format JavaScript buffer")
+  vim.api.nvim_buf_delete(buf, { force = true })
+end)
+
+test("Command: :Format by formatter name and default", function()
+  assert_true(command_exists "Format", ":Format should exist")
+  local buf = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "local   x   =   42" })
+  vim.bo[buf].filetype = "lua"
+  vim.api.nvim_set_current_buf(buf)
+  vim.cmd "Format!"
+  local res = vim.api.nvim_buf_get_lines(buf, 0, -1, false)[1]
+  assert_eq(res, "local x = 42", ":Format! should format Lua buffer with stylua")
+
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "local   y   =   99" })
+  vim.cmd "Format! stylua"
+  local res2 = vim.api.nvim_buf_get_lines(buf, 0, -1, false)[1]
+  assert_eq(res2, "local y = 99", ":Format! stylua should format by formatter name")
+  vim.api.nvim_buf_delete(buf, { force = true })
+end)
+
+test("Command: :NERDTree and :Explorer equivalents", function()
+  assert_true(command_exists "NERDTree", ":NERDTree should exist")
+  assert_true(command_exists "NERDTreeToggle", ":NERDTreeToggle should exist")
+  assert_true(command_exists "NERDTreeFind", ":NERDTreeFind should exist")
+  assert_true(command_exists "NERDTreeFocus", ":NERDTreeFocus should exist")
+  assert_true(command_exists "Explorer", ":Explorer should exist")
+  assert_true(command_exists "ExplorerToggle", ":ExplorerToggle should exist")
+  assert_true(command_exists "ExplorerFind", ":ExplorerFind should exist")
+  assert_true(command_exists "ExplorerFocus", ":ExplorerFocus should exist")
+end)
+
+test("Explorer command focuses current file", function()
+  vim.cmd "edit init.lua"
+  vim.cmd "NERDTree"
+  assert_true(require("nvim-tree.utils").is_nvim_tree_buf(0), "Should focus nvim-tree window")
+  local cur_node = require("nvim-tree.api").tree.get_node_under_cursor()
+  assert_eq(cur_node and cur_node.name, "init.lua", "NERDTree should focus current file init.lua")
+  require("nvim-tree.api").tree.close()
+end)
+
+test("Dashboard includes Plugin Management Guide", function()
+  local ok, snacks = pcall(require, "snacks")
+  assert_true(ok and snacks.dashboard ~= nil, "Snacks dashboard should be available")
+  local sections = package.loaded["snacks"] and Snacks.config.get("dashboard").sections or {}
+  local has_guide = false
+  for _, sec in ipairs(sections) do
+    if sec.title == "Plugin Management Guide" then
+      has_guide = true
+      break
+    end
+  end
+  assert_true(has_guide, "Dashboard should contain 'Plugin Management Guide' section")
+end)
+
 -- ============================================================================
 -- SECTION 8: Highlights / Theme
 -- ============================================================================

@@ -123,6 +123,12 @@ function M.setup_all()
   require("nvim-tree").setup {
     on_attach = require("editor.explorer").on_attach,
     view = { width = 36, side = "left" },
+    update_focused_file = {
+      enable = true,
+      update_root = {
+        enable = false,
+      },
+    },
     renderer = {
       group_empty = true,
       highlight_git = true,

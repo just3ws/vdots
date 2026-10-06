@@ -141,12 +141,24 @@ This document tracks the most important keybindings, focusing on new performance
 | `:NvimUsage` | **Friction report** | Usage/rage telemetry → keymap recommendations |
 | `:NvimUsageReset` | **Clear log** | Wipe the local usage log |
 
+### Code Formatting (Conform)
+| Key / Command | Action | Description |
+| :--- | :--- | :--- |
+| `<leader>f` | **Format buffer** | Format current buffer (normal) or visual selection via Conform |
+| `:Format [formatter]` | **Format command** | Run buffer formatter, or specify formatter by name (e.g. `:Format prettier`, `:Format stylua`) |
+| `:Format!` | **Format sync** | Format synchronously without backgrounding (`!` bang) |
+| `:Prettier` / `:Prettier!` | **Prettier runner** | Format current buffer or visual selection with Prettier (`!` for sync) |
+| `:ConformInfo` | **Conform status** | Show conform.nvim active and configured formatters |
+
 ### Nvim-Tree (NERDTree compatibility)
 *NERDTree muscle memory layered on top of nvim-tree's defaults. These work inside the tree buffer.*
 
-| Key | Action | Notes |
+| Key / Command | Action | Notes |
 | :--- | :--- | :--- |
-| `<leader>ef` | **Reveal current file** | Open tree + focus the current buffer's file (`:NERDTreeFind`) |
+| `:NERDTree` / `:Explorer` | **Open sidebar** | Opens sidebar and focuses the current file |
+| `:NERDTreeToggle` / `:ExplorerToggle` / `<leader>e` | **Toggle sidebar** | Toggles sidebar, focusing current file when opened |
+| `:NERDTreeFind` / `:ExplorerFind` / `<leader>ef` | **Reveal current file** | Open tree + reveal and focus the current buffer's file |
+| `:NERDTreeFocus` / `:ExplorerFocus` | **Focus sidebar** | Focuses the sidebar on current file (opens if needed) |
 | `<leader>er` | **Collapse to current file** | Collapse the tree, then re-reveal the current file |
 | `r` | **Refresh tree** | *Override* — NERDTree `r`; rename moved to `<F2>` |
 | `<F2>` | **Rename** | Relocated from `r` (`e`=rename basename, `u`=full path still work) |
@@ -161,7 +173,7 @@ This document tracks the most important keybindings, focusing on new performance
 | `o` `<CR>` `q` `K` `J` `P` `R` | *(already match NERDTree)* | Open, close, first/last child, parent, refresh |
 
 **NERDTree-style behaviors (automatic):**
-- **Follow** — the tree auto-reveals/highlights the active file as you switch buffers (`update_focused_file`).
+- **Follow** — opening the tree or switching buffers auto-reveals/highlights the active file (`update_focused_file`).
 - **Directory launch** — `nvim .` (or any dir) cd's there and opens the tree focused.
 - **Auto-close** — vim closes if the tree is the last window left.
 
