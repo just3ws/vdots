@@ -29,8 +29,9 @@ rest of the platform). Put `~/.config/nvim/bin` on `PATH` and:
 
 Every noun also works as a standalone script (`./bin/vdots-doctor`, …), so the
 repo is usable without the shim. Man pages ship in `man/` (`man vdots`,
-`man vdots-publish`, …) and a zsh completion in `completions/_vdots`; the zdots
-shell wires both — see [wiki: LSP & Tooling](docs/wiki/LSP-and-Tooling.md).
+`man vdots-publish`, …) and a zsh completion in `completions/_vdots`; inside
+Neovim, full documentation is available via `:help vdots` and `:help vdots-readaloud`.
+The zdots shell wires both — see [wiki: LSP & Tooling](docs/wiki/LSP-and-Tooling.md).
 
 ```mermaid
 flowchart LR
@@ -408,6 +409,14 @@ The Snacks dashboard shows an inline **Recent Files** list and a longer
 latter). Depth comes from `shada` keeping 1000 `oldfiles` (see
 `lua/editor/options.lua`); "what counts as Markdown" is
 `lua/editor/mdfiles.lua`.
+
+At the bottom of the dashboard, the **Plugin Management Guide** provides direct reference and interactive `<CR>` execution for:
+- `:PackUpdate` (`;Pu` / `;L`) — interactive plugin updates with changelog review
+- `:PackSync` (`;Ps`) — synchronize plugins to `nvim-pack-lock.json`
+- `:PackClean` (`;Pc`) — prune unmanaged or inactive plugins from disk
+- `:PackStatus` (`;PS`) — view total installed and active plugin count
+- `vdots update` / `bin/vdots-update` — CLI update pipeline with automated test verification
+- `:checkhealth` — full system and plugin health diagnostics
 
 ## Abbreviations
 
