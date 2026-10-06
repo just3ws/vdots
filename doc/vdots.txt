@@ -1,0 +1,187 @@
+*vdots.txt*   Personal Neovim Configuration & Control Plane
+
+==============================================================================
+VDOTS CONFIGURATION REFERENCE                                         *vdots*
+
+A Lua-based Neovim configuration built for modern development with native
+LSP, Treesitter, Snacks.nvim dashboard, Conform formatting, Nvim-Tree
+with full NERDTree muscle-memory compatibility, and zdots platform bridging.
+
+1. Startup Dashboard & Plugin Guide               |vdots-dashboard|
+2. Code Formatting & Prettier                     |vdots-format|
+3. File Explorer & NERDTree Parity                |vdots-explorer|
+4. Search & Finder Commands                       |vdots-search|
+5. Commands Summary                               |vdots-commands|
+6. Keymaps Reference                              |vdots-keymaps|
+
+==============================================================================
+1. Startup Dashboard & Plugin Guide                          *vdots-dashboard*
+
+On startup (when launching `nvim` with no file argument), the Snacks.nvim
+dashboard is presented. At the bottom of the dashboard, directly above the
+Neovim version footer, is the "Plugin Management Guide":
+
+  󰒲  Update plugins & review changelog        :PackUpdate  (;Pu / ;L)
+  󰒲  Sync plugins to lockfile                 :PackSync    (;Ps)
+  󰒲  Prune unmanaged/inactive plugins         :PackClean   (;Pc)
+  󰒲  Check installed plugin status            :PackStatus  (;PS)
+  󰒲  Full CLI update + test suite             vdots update / vdots-update
+    Health check (system & plugins)          :checkhealth
+
+Each entry can be executed directly from the dashboard by pressing <CR> on
+the line, or via its associated Ex command or leader shortcut.
+
+Pack Management Commands:
+
+:PackUpdate                                                     *:PackUpdate*
+        Interactively update plugins using |vim.pack| and display a visual
+        changelog diff buffer for review. Keymap: `<leader>Pu` or `<leader>L`.
+
+:PackSync                                                       *:PackSync*
+        Sync plugins to exact revisions recorded in `nvim-pack-lock.json`.
+        Keymap: `<leader>Ps`.
+
+:PackClean                                                      *:PackClean*
+        Prune and remove unmanaged or inactive plugins from disk.
+        Keymap: `<leader>Pc`.
+
+:PackStatus                                                     *:PackStatus*
+        Display a notification toast showing total active plugins installed.
+        Keymap: `<leader>PS`.
+
+CLI Tooling:
+        Run `vdots update` or `bin/vdots-update` from the shell to run the full
+        package update pipeline with automated regression test verification.
+        See |vdots-update(1)|.
+
+==============================================================================
+2. Code Formatting & Prettier                                  *vdots-format*
+
+Formatting is managed by |conform.nvim|. Formatting runs automatically on
+save (with a 1000ms timeout and LSP fallback) and can be triggered on demand
+via keymaps or Ex commands.
+
+:Format [formatter]                                             *:Format*
+        Format the current buffer, or selected range in visual mode.
+        - Without arguments (`:Format`): runs the configured formatter for the
+          current buffer's filetype (e.g. `stylua` for Lua, `rubocop` for
+          Ruby, `prettierd`/`prettier` for JavaScript/TypeScript). Falls back
+          to active LSP if no dedicated formatter is defined.
+        - With argument (`:Format <name>`): runs the specified formatter by
+          name (e.g. `:Format prettier`, `:Format stylua`). Supports <Tab>
+          completion over all available formatters.
+        - With bang (`:Format!`): executes formatting synchronously.
+
+:Prettier                                                       *:Prettier*
+        Directly invoke Prettier (`prettierd` or `prettier`) on the current
+        buffer or visual selection. Supports `:Prettier!` for synchronous
+        execution.
+
+:ConformInfo                                                    *:ConformInfo*
+        Display detailed information about configured and available formatters
+        for the current buffer.
+
+Keymaps:
+        `<leader>f` in normal or visual mode invokes |conform.nvim| formatting.
+
+==============================================================================
+3. File Explorer & NERDTree Parity                            *vdots-explorer*
+
+The sidebar file tree is powered by |nvim-tree.lua| with full NERDTree
+muscle-memory bindings and automatic buffer tracking.
+
+Current File Auto-Focus:
+        The explorer is configured with `update_focused_file = { enable = true }`.
+        Whenever you open the sidebar or switch buffers, the tree automatically
+        reveals and focuses the active file.
+
+Commands:
+
+:NERDTree, :Explorer                                   *:NERDTree* *:Explorer*
+        Open the file explorer sidebar, focusing on the current buffer's file.
+
+:NERDTreeToggle, :ExplorerToggle             *:NERDTreeToggle* *:ExplorerToggle*
+        Toggle the file explorer sidebar. When opening, focuses the current
+        file. Keymap: `<leader>e`.
+
+:NERDTreeFind, :ExplorerFind                     *:NERDTreeFind* *:ExplorerFind*
+        Reveal and focus the current file in the sidebar, expanding parent
+        directories as necessary. Keymap: `<leader>ef`.
+
+:NERDTreeFocus, :ExplorerFocus                 *:NERDTreeFocus* *:ExplorerFocus*
+        Move cursor focus to the explorer sidebar (opening it if closed),
+        positioned on the active file.
+
+Tree Buffer Keymaps (NERDTree Compatibility):
+        t           Open file in new tab
+        T           Open file in background tab (keep focus in tree)
+        i           Open file in horizontal split
+        go          Preview file (keep focus in tree)
+        gi, gs      Open in split/vsplit (keep focus in tree)
+        X           Collapse all child nodes
+        A           Zoom / restore sidebar window width
+        r           Refresh tree (NERDTree refresh)
+        <F2>        Rename file / folder (relocated from `r`)
+        ?           Toggle help view
+
+==============================================================================
+4. Search & Finder Commands                                     *vdots-search*
+
+The configuration provides full shell parity with the `ack` utility and
+`fzf-lua`:
+
+:Fack [query]                                                   *:Fack*
+        Interactive live Ack search via Fzf-Lua. Keymap: `<leader>a` or
+        `<leader>fa` or `<leader>za`.
+
+:Fackf [query]                                                  *:Fackf*
+        Ack file index finder via Fzf-Lua, respecting `.ackrc` ignore rules.
+        Keymap: `<leader>ff` or `<leader>zf`.
+
+:Ack [query], :Ag [query], :Rg [query]                          *:Ack* *:Rg*
+        Run native grep with `ack` / `ripgrep` directly into Neovim quickfix.
+
+==============================================================================
+5. Commands Summary                                           *vdots-commands*
+
+Editing & Configuration:
+        :Reload                 Source $MYVIMRC
+        :Vimrc                  Edit $MYVIMRC (:Svimrc, :Tvimrc, :Vvimrc)
+        :Zshenv                 Edit $ZDOTDIR/.zshenv (:Szshenv, :Tzshenv...)
+
+Platform & Telemetry:
+        :ZdotsIngest            Ingest current buffer into zdots context
+        :ZdotsStatus            Display zdots platform status float
+        :NvimUsage              Display telemetry & friction report
+        :NvimErrors             Display recent errors with diagnostic context
+
+Read-Aloud:
+        See |vdots-readaloud| for full documentation on `:VdotsRead`,
+        `:VdotsReadPublish`, `:VdotsReadExport`, etc.
+
+==============================================================================
+6. Keymaps Reference                                           *vdots-keymaps*
+
+The leader key is set to `;` (`vim.g.mapleader = ";"`).
+
+Explorer:
+        <leader>e               Toggle sidebar explorer (focuses current file)
+        <leader>ef              Reveal and focus current file in explorer
+        <leader>er              Collapse tree back to current file
+        -                       Open parent directory via Oil.nvim
+
+Format & Code:
+        <leader>f               Format buffer or visual selection
+        <leader>rn              LSP rename symbol
+        <leader>ca              LSP code action
+        <leader>cd              Line diagnostics float
+        <leader>ih              Toggle LSP inlay hints
+
+Search:
+        <C-p>                   Telescope find files
+        <leader>/               Telescope live grep
+        <leader>a               Fack: Live Ack search via Fzf
+        <leader>ff              Fackf: Ack file finder via Fzf
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

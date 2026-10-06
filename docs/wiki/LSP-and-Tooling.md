@@ -79,9 +79,13 @@ path aliases then work without extra config.
 | JSONC | `prettierd` → `prettier` | `stop_after_first` |
 | YAML | `prettierd` → `prettier` | `stop_after_first` |
 
-Format-on-save timeout: 500 ms; LSP fallback enabled.
+Format-on-save timeout: 1000 ms; LSP fallback enabled.
 
-Format manually: `<leader>f` (any mode).
+Format manually:
+- `<leader>f` (normal or visual selection) invokes `conform.format()`.
+- `:Format [formatter]` runs the buffer's default formatter or an explicit formatter by name (e.g. `:Format prettier`, `:Format stylua`), with `<Tab>` completion across configured formatters. Use `:Format!` for synchronous execution.
+- `:Prettier` (and `:Prettier!`) runs `prettierd`/`prettier` directly on the buffer or visual range.
+- `:ConformInfo` displays active and configured formatters.
 
 ## Linters (nvim-lint)
 

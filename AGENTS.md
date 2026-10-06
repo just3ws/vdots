@@ -17,6 +17,10 @@
          nvim-tree setup; updated editor.explorer toggle/open/focus to focus the
          active buffer's file; registered :NERDTree, :NERDTreeToggle,
          :NERDTreeFind, :NERDTreeFocus, and :Explorer* command aliases.
+       - Documentation & help tags pass: created doc/vdots.txt and regenerated
+         doc/tags covering :help vdots, :help vdots-dashboard, :help vdots-format,
+         :help vdots-explorer, and all new commands; updated man/man1/vdots.1,
+         docs/wiki/Keymaps.md, and docs/wiki/LSP-and-Tooling.md; 78/78 tests green.
 
        Publish outputs now, per session dir:
        - `readalong.mp4` — `vdots-readalong` renders one SVG frame per cue

@@ -221,7 +221,13 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | `:Zshenv` / `:Szshenv` / `:Tzshenv` / `:Vzshenv` | Edit / split / tab / vsplit `.zshenv` |
 | `:ZdotsIngest` | Ingest current buffer into zdots |
 | `:ZdotsStatus` | Platform status float |
+| `:Format [formatter]` | Run buffer formatter or specify formatter by name (`:Format!`) |
+| `:Prettier` | Format buffer or visual selection with Prettier (`:Prettier!`) |
 | `:ConformInfo` | Show conform.nvim formatter info |
+| `:NERDTree` / `:Explorer` | Open explorer sidebar focused on current file |
+| `:NERDTreeToggle` / `:ExplorerToggle` | Toggle explorer sidebar, focusing current file |
+| `:NERDTreeFind` / `:ExplorerFind` | Reveal and focus current file in explorer sidebar |
+| `:NERDTreeFocus` / `:ExplorerFocus` | Focus explorer sidebar on current file |
 
 ## Git (continued)
 

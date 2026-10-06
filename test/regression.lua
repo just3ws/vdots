@@ -495,6 +495,23 @@ test("Dashboard includes Plugin Management Guide", function()
   assert_true(has_guide, "Dashboard should contain 'Plugin Management Guide' section")
 end)
 
+test("Help tag :help vdots and command tags resolve", function()
+  local help_tags = {
+    "vdots",
+    "vdots-dashboard",
+    "vdots-format",
+    "vdots-explorer",
+    ":Format",
+    ":Prettier",
+    ":NERDTree",
+  }
+  for _, tag in ipairs(help_tags) do
+    local ok = pcall(vim.cmd, "silent! help " .. tag)
+    assert_true(ok, "Tag " .. tag .. " should resolve via :help")
+  end
+  vim.cmd "silent! helpclose"
+end)
+
 -- ============================================================================
 -- SECTION 8: Highlights / Theme
 -- ============================================================================
