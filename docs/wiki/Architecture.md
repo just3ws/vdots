@@ -8,7 +8,7 @@ vdots is a single-repo Lua configuration for Neovim 0.12+. All modules live unde
 
 1. **Leader key** — `;` (all other options live in `lua/editor/options.lua`)
 2. **Plugin declarations** — `vim.pack.add({...})` — all plugins declared in one block
-3. **Module requires** — `editor.*` (options, keymaps, autocmds, commands, llm, claude, usage, errors, search, healthcheck)
+3. **Module requires** — `editor.*` (options, keymaps, autocmds, commands, llm, usage, errors, search, healthcheck)
 4. **Snacks + theme** — snacks setup, `colorscheme kanagawa-wave`, kanagawa_wave highlight overrides, lualine, diagnostics, native treesitter
 5. **Mason** — `require("editor.mason").setup()` (editor-only LSP servers; skipped headless/CI) — runs before LSP enable so `mason/bin` is on PATH
 6. **Plugin setup** — `require("plugins").setup_all()` configures every vim.pack plugin and binds its keymaps
@@ -38,7 +38,6 @@ lua/
                             (see wiki: Read-Aloud). parse / frontmatter /
                             pronounce / pace / preview / player / mediakeys.
     llm.lua                 Local llama.cpp integration (ai-query)
-    claude.lua              Claude Code session pulse + :ClaudeDiff
     usage.lua               Friction telemetry → :NvimUsage
     errors.lua              Error log → :NvimErrors
     healthcheck.lua         Deprecation-warning filter/log

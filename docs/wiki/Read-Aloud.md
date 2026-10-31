@@ -150,7 +150,7 @@ sequenceDiagram
                      MP4 metadata + embedded mov_text captions.
     readalong.vtt    same-basename caption sidecar (Drive's player reads it)
     guide.pdf        document.md as a paginated, OCR-friendly text-image PDF —
-                     one attachment to drop into an AI chat (Gemini/ChatGPT/Claude)
+                     one attachment to drop into an AI chat
     brief.md         self-contained analysis brief — open in Gemini from Drive
     manifest.md      interview-prep packs: a research kit (file map + web links)
                      for any AI chat to research the job independently

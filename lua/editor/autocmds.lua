@@ -6,10 +6,10 @@ vim.api.nvim_create_autocmd("VimResized", {
   command = "wincmd =",
 })
 
--- 🤖 Live-reload buffers that Claude Code (or anything) edits on disk.
+-- Live-reload buffers changed by another process.
 -- Without this, an open buffer holds the stale version and a save would
--- clobber Claude's work. checktime triggers FileChangedShellPost on real
--- changes, where we toast a funky notification + repaint git signs.
+-- overwrite the disk version. checktime triggers FileChangedShellPost on
+-- real changes, where we notify and refresh git signs.
 vim.opt.autoread = true
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
   group = augroup,
@@ -24,9 +24,9 @@ vim.api.nvim_create_autocmd("FileChangedShellPost", {
   callback = function(args)
     local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(args.buf), ":t")
     local ok, snacks = pcall(require, "snacks")
-    local msg = "🤖 reloaded " .. name .. " (changed on disk)"
+    local msg = "Reloaded " .. name .. " (changed on disk)"
     if ok and snacks.notifier then
-      snacks.notify(msg, { level = vim.log.levels.INFO, title = "Claude Code" })
+      snacks.notify(msg, { level = vim.log.levels.INFO, title = "External change" })
     else
       vim.notify(msg, vim.log.levels.INFO)
     end

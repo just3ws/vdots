@@ -3,7 +3,7 @@
 
 Each page is essentially a clean text-image: near-black text on white, large
 type, generous margins, one column. Built for dropping into an AI chat
-(Gemini / ChatGPT / Claude) as a single attachment when handing over many
+an AI chat as a single attachment when handing over many
 loose files is awkward — the model OCRs / reads the pages directly.
 
 Note: an image of text is not cheaper in tokens than the text itself; the win

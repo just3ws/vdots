@@ -84,7 +84,7 @@ all available bindings. Multi-key prefixes are labelled by group:
 | `;d` | debug (DAP) |
 | `;e` | explorer (nvim-tree) |
 | `;f` | find / format |
-| `;g` | git (Diffview, Gitsigns, Claude diff) |
+| `;g` | git (Diffview, Gitsigns) |
 | `;h` | git hunks |
 | `;n` | notifications (Snacks) |
 | `;P` | plugins (vim.pack) |
@@ -217,7 +217,6 @@ all available bindings. Multi-key prefixes are labelled by group:
 | `;gd` | Diffview: open git diff |
 | `;gD` | Diffview: close diff |
 | `;gh` | Diffview: file history for current buffer |
-| `;gC` | Diffview: open diff of file Claude Code last touched (`:ClaudeDiff`) |
 | `]h` / `[h` | Jump to next / previous git hunk (Gitsigns) |
 | `;hs` / `;hr` | Stage / reset git hunk |
 | `;hp` | Preview git hunk in floating window |
@@ -255,7 +254,6 @@ all available bindings. Multi-key prefixes are labelled by group:
 | `:PackSync` | Synchronize plugins to lockfile revisions |
 | `:PackClean` | Prune unmanaged plugins from disk |
 | `:PackStatus` | Display active plugin summary toast |
-| `:ClaudeDiff` | Diff the file Claude Code last touched |
 | `:NvimUsage` | Display usage & friction telemetry report |
 | `:NvimUsageReset` | Clear the local friction telemetry log |
 | `:NvimErrors` | Open recent error log with diagnostic context |
@@ -383,7 +381,7 @@ the document into `~/ai/outbox/listen/<date-slug>/` as role-named files:
   straight from Drive.
 - **`manifest.md`** *(interview-prep packs)* — a research kit for any AI chat:
   a map of every relevant file (this package + the wwworkremote source pack +
-  your public résumé/portfolio) with web links, so ChatGPT / Gemini / Claude
+  your public résumé/portfolio) with web links for use in AI chat tools
   can do independent research on the role. `$VDOTS_RESUME_URL` /
   `$VDOTS_PORTFOLIO_URL` override the candidate links.
 - `document.md`, `report.md` (readability + chapters + transcript,

@@ -76,7 +76,6 @@ require "editor.keymaps" -- Global keybindings
 require "editor.autocmds" -- Event hooks
 require "editor.commands" -- :Commands
 require("editor.llm").setup() -- 🦙 Local-LLM (ai-query) buffer/selection pipe
-require("editor.claude").setup() -- 🤖 Claude Code session pulse + last-change diff
 require("editor.usage").setup() -- 📊 Friction/rage telemetry → :NvimUsage
 require("editor.errors").setup() -- 🪲 All-errors log with diagnostic context → :NvimErrors
 require("editor.search").setup() -- Native grep/quickfix (:Rg)

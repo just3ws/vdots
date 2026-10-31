@@ -27,8 +27,5 @@ setup.
 
 - **No secrets committed;** GitHub secret scanning + push protection are on.
 - **Least-privilege CI** — workflows declare `permissions: contents: read`.
-- **AI workflows are gated** — the Claude review / mention workflows only run
-  for the owner, org members, and collaborators, and third-party actions are
-  pinned to a commit SHA.
 - Plugin lockfile (`vdots-lock.json` or equivalent) is committed and updated
   deliberately via `bin/vdots-update`.

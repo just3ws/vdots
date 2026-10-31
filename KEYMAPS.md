@@ -54,7 +54,6 @@ This document tracks the most important keybindings, focusing on new performance
 | `<leader>gd` | **Diffview Open** | Powerful side-by-side diffing interface |
 | `<leader>gD` | **Diffview Close** | Exit diffview mode |
 | `<leader>gh` | **File History** | View Git history for the current file |
-| `<leader>gC` | **Diff Claude's Change** | Diffview the file Claude Code last touched (`:ClaudeDiff`) |
 | `<leader>gB` | **Git Browse** | Open current line/file in GitHub/GitLab |
 | `]h` / `[h` | **Next/Prev Hunk** | Jump between Git changes (Gitsigns) |
 | `<leader>hs` | **Stage Hunk** | Stage git hunk at cursor (Gitsigns) |
@@ -131,13 +130,10 @@ This document tracks the most important keybindings, focusing on new performance
 | `]Q` / `[Q` | **Quickfix Last/First** | Jump to ends of the quickfix list |
 | `<leader>xq` | **Toggle Quickfix** | Open/close the quickfix window |
 
-### Claude Code Integration
-*Live awareness of a Claude Code session running in this repo.*
+### External Changes and Usage
 | Key / Trigger | Action | Description |
 | :--- | :--- | :--- |
-| *(automatic)* | **Auto-reload** | Buffers reload when Claude edits them on disk (toast + gitsigns refresh) |
-| *(statusline)* | **Session pulse** | `󰭹 claude` pulses while a Claude session is active |
-| `<leader>gC` | **Diff last change** | Open Diffview on the file Claude last touched |
+| *(automatic)* | **Auto-reload** | Buffers reload when another process changes them on disk |
 | `:NvimUsage` | **Friction report** | Usage/rage telemetry → keymap recommendations |
 | `:NvimUsageReset` | **Clear log** | Wipe the local usage log |
 

@@ -95,7 +95,6 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | `<leader>gd` | Diffview open |
 | `<leader>gD` | Diffview close |
 | `<leader>gh` | File history (Diffview) |
-| `<leader>gC` | Diff file Claude Code last touched (`:ClaudeDiff`) |
 | `<leader>gB` | Git browse (open in GitHub) |
 | `]h` / `[h` | Next / prev hunk (Gitsigns) |
 | `<leader>hs` | Stage hunk |
@@ -213,7 +212,6 @@ Leader key is `;`. In normal mode `;` is also mapped to `:` (enter command mode)
 | `:PackSync` | Sync plugins to lockfile revisions |
 | `:PackClean` | Prune unmanaged plugins from disk |
 | `:PackStatus` | Display active plugin summary toast |
-| `:ClaudeDiff` | Diff the file Claude Code last touched |
 | `:NvimUsage` | Display typing telemetry & friction report |
 | `:NvimErrors` | Open recent error log with diagnostic context |
 | `:Reload` | Re-source `$MYVIMRC` |

@@ -1,106 +1,14 @@
-<!-- ═══════════════════════════════════════════════════════════════════════
-     CURRENT FOCUS  —  last updated 2026-10-06 (dashboard guide, formatters, explorer focus)
-     Cold-start resume state, canonical for every agent tool. Whoever closes
-     a session rewrites this block in place — step one, before the wrap-up.
-     git log is truth for exact SHAs; if this contradicts it, trust git.
-
-       ALL PUSHED to `origin/main`, CI ("Lua Lint, Format, and Tests") green.
-       Added:
-       - Startup Snacks dashboard: bottom "Plugin Management Guide" section
-         displaying :PackUpdate, :PackSync, :PackClean, :PackStatus, CLI
-         vdots update, and :checkhealth.
-       - Formatter user commands: :Format [formatter] (with autocomplete across
-         configured & installed formatters, e.g. :Format prettier) and :Prettier
-         (direct Prettier runner via Conform), supporting visual ranges and !
-         bang for synchronous execution.
-       - Explorer / NERDTree sidebar focus: enabled update_focused_file in
-         nvim-tree setup; updated editor.explorer toggle/open/focus to focus the
-         active buffer's file; registered :NERDTree, :NERDTreeToggle,
-         :NERDTreeFind, :NERDTreeFocus, and :Explorer* command aliases.
-       - Documentation & help tags pass: created doc/vdots.txt and regenerated
-         doc/tags covering :help vdots, :help vdots-dashboard, :help vdots-format,
-         :help vdots-explorer, and all new commands; updated man/man1/vdots.1,
-         docs/wiki/Keymaps.md, and docs/wiki/LSP-and-Tooling.md; 78/78 tests green.
-
-       Publish outputs now, per session dir:
-       - `readalong.mp4` — `vdots-readalong` renders one SVG frame per cue
-         (scrolling transcript window, active sentence highlighted, chapter
-         header, progress bar) via rsvg-convert, stitches to the narration with
-         ffmpeg. **This is the Drive read-along** — Drive's HTML preview runs no
-         JS so article.html can't sync there; a video needs nothing but a
-         player. ~1 MB/spoken-min, 1280×720 h264+aac. MP4 metadata + mov_text
-         caption track + same-basename `readalong.vtt` sidecar.
-       - `guide.pdf` — document.md rendered by `vdots-guide-image` as a
-         paginated, OCR-friendly text-image PDF (rsvg-convert, one SVG page →
-         one PDF page). One attachment to drop into an AI chat. **Packaging
-         convenience, NOT a token saving** — an image of text costs ≥ the text
-         in vision tokens plus OCR error (said so in the docs; the operator had
-         assumed otherwise). Linked from index.md + article.html + brief/manifest;
-         meta.json gains `guide`; vdots-doctor reports `guide_pdf`.
-       - `brief.md` — self-contained analysis brief (what this is, chapters,
-         "how to help me" tailored to the doc's kind/format, full transcript
-         inline). Open in Gemini straight from Drive.
-       - `manifest.md` (kind: interview-prep only) — a research kit: a MAP of
-         every relevant file (this package + the wwworkremote source pack +
-         `$VDOTS_RESUME_URL`/`$VDOTS_PORTFOLIO_URL` public links) + a research
-         brief, for any AI chat to research the job independently.
-       - all linked from index.md + article.html; meta.json lists
-         video/guide/brief/manifest; vdots-doctor / :checkhealth report rsvg-convert.
-       - publish removes a superseded same-slug session under an old date.
-       - pace.lua M.cues scales modelled pauses by 1/stretch (the [[slnc]]
-         pauses get stretched too) — cuts the read-along drift. **WAITING ON
-         OPERATOR**: confirm whether that is enough before building the exact
-         fix (measure per-sentence `say -o` durations, OR AVSpeech
-         willSpeakRange callbacks — both deterministic; whisper rejected as
-         non-det). Contained to the publish path; leave `say` elsewhere alone.
-
-       Latest session (2026-09-03):
-       - audio: `.mp3` is primary (Drive/Android plays it inline; transcript
-         embedded as a clean-ID3 lyrics frame); `.m4a` kept for chapters +
-         faststart. rubberband (R3) time-stretch for a measured pace, ffmpeg
-         atempo fallback. Per-word `[[slnc]]` removed (flash-card effect);
-         pace.lua = punctuation/paragraph beats + whole-file stretch (follow:
-         168wpm × 0.90 ≈ 10:57 for the basis pack).
-       - role-named session files + `index.md` catalog as the phone surface.
-         article.html read-along wiring verified (highlights, auto-scroll, list
-         items). **KNOWN: the article.html <audio> player does not work in
-         Google Drive's preview — Drive sandboxes JS + media. `index.md` +
-         opening `audio.mp3` directly is the Drive path.** Could not verify
-         real playback (automation Chrome can't load <audio> at all).
-       - selene wired (vim.yml std lib; CI installs it + mandoc + zsh;
-         pre-commit runs it). Mason owns editor-only LSP servers
-         (lua/editor/mason.lua); brew owns shell/CI tools. Brewfile.common
-         (zdots main): + rubberband, + selene, − lua-language-server.
-       - Full doc pass: 9 man pages (man/man1/, incl. vdots-guide-image.1),
-         completions/_vdots, docs/wiki/Read-Aloud.md + 5 mermaid diagrams,
-         .claude/skills/read-aloud.md, README + wiki + :help synced. .zshrc.local
-         (zdots, gitignored) wires PATH + MANPATH + the completion.
-
-       Blocked on human: confirm the read-along drift is acceptable (see
-       pace.lua note above) — that gates the exact-timing fix. Otherwise
-       nothing. (zdots `main` also pushed: Z-338 fix + 2× Brewfile + a
-       `.claude/settings.json` permission tidy.)
-
-       NEXT (recommended, deferred — its own focused pass): rewrite
-       lua/vdots/readaloud/parse.lua from regex to vim.treesitter (markdown +
-       markdown_inline). 331 lines, 43 tests to keep green, must still work in
-       the headless `nvim -l` CLI path. Plan: walk atx_heading / paragraph /
-       list_item / fenced_code_block / block_quote / pipe_table, map node
-       ranges → block s/e, keep parse.document as entry, add parser-availability
-       to readaloud/health.lua.
-
-       Zoe (Premium) is the picked voice (auto-resolves). PATH for
-       ~/.config/nvim/bin: interim via zdots .zshrc.local; zdots Z-337 tracks
-       the native env.sh pickup, Z-338 (FIXED this session) was the chpwd hook
-       evicting it.
-       Deep handoff: ~/.config/adots/handoffs/2026-09-06-7.md
-
-     Close ritual: rewrite this block + commit; write a deep handoff only if
-     work is genuinely unfinished. Reference impl: wwworkremote/core's
-     docs/agents/session-handoff.md.
-     ═══════════════════════════════════════════════════════════════════════ -->
+---
+name: vdots-repository-instructions
+scope: vdots repository
+audience: all coding agents
+canonical: true
+---
 
 # Repository Guidelines
+
+Durable project conventions live below. Use Git history and the project task
+tracker for task status; do not maintain session transcripts in this file.
 
 ## Project Structure & Module Organization
 
@@ -134,9 +42,9 @@ This repository is a Lua-based Neovim configuration.
 - `test/`: regression suite (`test/regression.lua`), Busted specs (`test/unit/`), runner (`test/run.sh`).
 
 **Doc surfaces (keep in sync on any command / vocabulary / contract change):**
-`README.md`, `AGENTS.md` (this file + the CURRENT FOCUS block), `doc/vdots-readaloud.txt`
+`README.md`, `AGENTS.md`, `doc/vdots-readaloud.txt`
 (`:help`), `docs/wiki/` (`Read-Aloud.md`, `LSP-and-Tooling.md`, `Architecture.md`),
-`man/man1/*.1`, `completions/_vdots`, `.claude/skills/read-aloud.md`, per-command
+`man/man1/*.1`, `completions/_vdots`, per-command
 `--help`.
 
 ## Build, Test, and Development Commands

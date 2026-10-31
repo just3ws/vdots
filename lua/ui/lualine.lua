@@ -54,10 +54,6 @@ require("lualine").setup {
     lualine_b = { "branch", "diff", "diagnostics" },
     lualine_c = { { "filename", path = 1 } },
     lualine_x = {
-      {
-        require("editor.claude").status,
-        color = require("editor.claude").color,
-      },
       rails_env,
       "encoding",
       "fileformat",
