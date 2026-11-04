@@ -1,5 +1,9 @@
 # Vdots
 
+The root `VERSION` file carries the shared Astronomicon platform epoch. See
+[zdots platform sync](https://github.com/just3ws/zdots/blob/main/docs/agents/platform-sync.md)
+for the six aligned repositories and rollout procedure.
+
 A native-first Neovim configuration: Lua, `vim.pack` for plugins, built-in LSP,
 and a `;`-leader keymap surfaced through which-key. Ships its own doctor, update,
 and test tooling. Part of a four-repo personal platform (see
