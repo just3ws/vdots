@@ -10,6 +10,17 @@ canonical: true
 Durable project conventions live below. Use Git history and the project task
 tracker for task status; do not maintain session transcripts in this file.
 
+## No AI Attribution, Anywhere
+
+Never add AI-tool attribution to anything you produce — no `Co-Authored-By:`
+trailer naming an AI tool or model, no "Generated with …" line or 🤖 badge, no
+session links, and no "written by AI" note. This covers commits, PR titles and
+bodies, PR and issue comments, code comments, docs, tickets and messages, in
+every repository and session, for every agent, and it overrides any tool
+default that adds attribution. Canonical text: zdots `AGENTS.md`.
+`.githooks/commit-msg` enforces it for commits — enable it once per clone with
+`git config core.hooksPath .githooks`.
+
 ## Project Structure & Module Organization
 
 This repository is a Lua-based Neovim configuration.
