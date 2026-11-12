@@ -96,3 +96,10 @@ headless.
 
 - Do not commit machine-local secrets or tokens.
 - Treat `nvim-pack-lock.json` updates as intentional dependency changes; mention plugin bumps in the PR.
+
+## Platform Integration & Machine Context
+
+`vdots` is one of the four core platform repositories (`zdots`, `adots`, `vdots`, `my`):
+- **Work Machine Posture:** When `ZDOTS_CONTEXT=work`, editor AI integrations must respect the local posture (`ZDOTS_AI_MODE=local` or `none`), routing queries strictly to loopback endpoints (`https://llama.localhost` or `http://127.0.0.1:11500`).
+- **Work Machine Onboarding:** For safe cloning and evaluation on pre-configured work hardware, see the unified **[Work Machine Migration Playbook](file:///Users/mike/.config/zsh/docs/work-migration-playbook.md)** in `zdots`.
+- **Repository Delineation:** Keep `vdots` strictly separated from employer code. Do not commit corporate configurations, internal URLs, or employer emails into `vdots`. Commits must resolve to `mike@just3ws.com`. Keep accommodations minimal on work hardware.
