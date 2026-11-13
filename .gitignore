@@ -34,6 +34,7 @@ luac.out
 
 # Logs and generated files
 *.log
+dist/
 
 # Ignore local-only test files or temp scripts
 scratch.lua
