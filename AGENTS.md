@@ -21,6 +21,14 @@ default that adds attribution. Canonical text: zdots `AGENTS.md`.
 `.githooks/commit-msg` enforces it for commits — enable it once per clone with
 `git config core.hooksPath .githooks`.
 
+## Signed Commits
+
+Commits and tags are signed with the operator's 1Password SSH key through the
+machine's git config. Never bypass signing (`--no-gpg-sign`,
+`-c commit.gpgsign=false`); on failure, stop and report. Verify before pushing
+and merge by fast-forward so signatures survive. Canonical guidance: zdots
+`docs/commit-signing.md`.
+
 ## Project Structure & Module Organization
 
 This repository is a Lua-based Neovim configuration.
