@@ -53,3 +53,10 @@ test_*.lua
 
 # Gemini temp output
 .gemini/tmp/
+
+# graphify transient cache and local interpreter paths
+graphify-out/cache/
+graphify-out/20*
+graphify-out/manifest.json
+graphify-out/.graphify_python
+graphify-out/.graphify_root
