@@ -1,22 +1,22 @@
-# Graph Report - nvim  (2026-11-14)
+# Graph Report - nvim  (2026-11-15)
 
 ## Corpus Check
-- 136 files · ~86,187 words
+- 137 files · ~86,819 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 831 nodes · 902 edges · 108 communities (56 shown, 19 thin omitted)
+- 837 nodes · 907 edges · 108 communities (56 shown, 19 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bcd01632`
+- Built from commit: `4913639c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - Completed Tasks
-- Plugins
+- Keymaps
 - Expert Audit (2026-02-28) — Medium Impact
 - player.lua
 - Process
@@ -25,7 +25,7 @@
 - What You Must Do When Invoked
 - Keymaps
 - tdd/SKILL.md
-- Keymaps
+- Plugins
 - 🛠️ Essential Development Tools
 - fzf.lua
 - parse.lua
@@ -47,7 +47,7 @@
 - vdots-listen-catalog.py
 - preview.lua
 - Dependency categories
-- 2. Standard Workflows by Application
+- System Cartography & Schema Topology
 - explorer.lua
 - During the session
 - /ponytail — Reducing Premature Technical Debt
@@ -63,7 +63,7 @@
 - Language
 - vdots-mediakey-helper.swift
 - options.lua
-- config.lua
+- AI Surface & Multi-Agent Integration Guide
 - Security Policy
 - hitl-loop.template.sh
 - graphify reference: add a URL and watch a folder
@@ -116,17 +116,17 @@
 Cohesion: 0.05
 Nodes (42): Ad-hoc Fixes (discovered during 2026-02-28 audit), Completed Tasks, Expert Audit (2026-02-28) — Bugs / Defects (6/6 Complete), P0 - Potential Data Loss (3/3 Complete), P1 - Broken Functionality (5/5 Complete), P2 - Double Execution / Race Conditions (3/3 Complete), P3 - Redundancy / Cleanup (4/4 Complete), P4 - Best Practices / Optimization (2/5 Complete) (+34 more)
 
-### Community 1 - "Plugins"
-Cohesion: 0.06
-Nodes (30): Architecture, Control-plane CLI (`bin/`), Entrypoint, Module Layout, Plugin Manager, zdots Integration (`lua/zdots/`), Quick Reference, The ecosystem (+22 more)
+### Community 1 - "Keymaps"
+Cohesion: 0.04
+Nodes (40): Architecture, Control-plane CLI (`bin/`), Entrypoint, Module Layout, Plugin Manager, zdots Integration (`lua/zdots/`), Quick Reference, The ecosystem (+32 more)
 
 ### Community 2 - "Expert Audit (2026-02-28) — Medium Impact"
 Cohesion: 0.06
 Nodes (31): Expert Audit (2026-02-28) — Bugs / Defects, Expert Audit (2026-02-28) — High Impact, Expert Audit (2026-02-28) — Long Term / Architectural, Expert Audit (2026-02-28) — Medium Impact, [ ] H-1: Add terminal integration, [ ] L-1: Use global vim.lsp.config("*") for shared on_attach, [ ] L-2: Remove vim.deprecate monkey-patch in healthcheck.lua, [ ] M-2: Replace vim-surround with nvim-surround (+23 more)
 
 ### Community 3 - "player.lua"
-Cohesion: 0.13
-Nodes (24): add(), analyse(), block_at(), clear_hl(), focus_block(), M.close(), M.halt(), M.info() (+16 more)
+Cohesion: 0.11
+Nodes (28): add(), installed_voices(), M.diagnose(), M.get(), M.resolve_voice(), analyse(), block_at(), clear_hl() (+20 more)
 
 ### Community 4 - "Process"
 Cohesion: 0.07
@@ -152,9 +152,9 @@ Nodes (25): Abbreviations, AI & Code Intelligence, Code Formatting (Conform), Co
 Cohesion: 0.09
 Nodes (17): Deep Modules, Interface Design for Testability, Designing for Mockability, When to Mock, Refactor Candidates, 1. Planning, 2. Tracer Bullet, 3. Incremental Loop (+9 more)
 
-### Community 10 - "Keymaps"
-Cohesion: 0.09
-Nodes (22): AI & Local LLM, Commands, Config Shortcuts, Debugging (DAP), Formatting & Diagnostics, General, Git, Git (continued) (+14 more)
+### Community 10 - "Plugins"
+Cohesion: 0.17
+Nodes (12): AI, Debugging (DAP), Editing Primitives (tpope + utilities), Git, LSP & Completion, Navigation & Files, Plugins, Ruby & Rails (+4 more)
 
 ### Community 11 - "🛠️ Essential Development Tools"
 Cohesion: 0.11
@@ -240,13 +240,13 @@ Nodes (4): M.is_open(), M.open(), M.refresh_lines(), M.win()
 Cohesion: 0.25
 Nodes (8): 1. In-process, 2. Local-substitutable, 3. Remote but owned (Ports & Adapters), 4. True external (Mock), Deepening, Dependency categories, Seam discipline, Testing strategy: replace, don't layer
 
-### Community 32 - "2. Standard Workflows by Application"
-Cohesion: 0.25
-Nodes (7): 1. Core Principles, 2. Standard Workflows by Application, 3. System Map Documentation, Context Engine (`~/my/context-engine`), Hallway (`~/github.com/just3ws/hallway`), System Cartography & Schema Topology, WWWorkRemote (`~/github.com/wwworkremote/wwworkremote`)
+### Community 32 - "System Cartography & Schema Topology"
+Cohesion: 0.22
+Nodes (8): 1. Core Principles, 2. Standard Workflows by Application, 3. C4 Architecture & AST Graph Integration (`Groma.md` + `graphify`), 4. System Map Documentation, Context Engine (`~/my/context-engine`), Hallway (`~/github.com/just3ws/hallway`), System Cartography & Schema Topology, WWWorkRemote (`~/github.com/wwworkremote/wwworkremote`)
 
 ### Community 35 - "During the session"
 Cohesion: 0.29
-Nodes (7): Challenge against the glossary, Cross-reference with code, Discuss concrete scenarios, During the session, Offer ADRs sparingly, Sharpen fuzzy language, Update CONTEXT.md inline
+Nodes (7): Challenge against the glossary, Cross-reference with code, Discuss concrete scenarios, During the session, Offer ADRs / Backlog Decisions sparingly, Sharpen fuzzy language, Update CONTEXT.md inline
 
 ### Community 36 - "/ponytail — Reducing Premature Technical Debt"
 Cohesion: 0.29
@@ -296,9 +296,9 @@ Nodes (4): AppKit, nvim(), MediaPlayer, String
 Cohesion: 0.70
 Nodes (4): has_python_module(), probe_python_host(), python_cache_key(), resolve_python_host()
 
-### Community 50 - "config.lua"
-Cohesion: 0.70
-Nodes (4): installed_voices(), M.diagnose(), M.get(), M.resolve_voice()
+### Community 50 - "AI Surface & Multi-Agent Integration Guide"
+Cohesion: 0.40
+Nodes (4): 1. Environment Posture (Home vs. Work), 2. Per-Agent Integration Requirements, 3. Shared Non-Negotiable Rules, AI Surface & Multi-Agent Integration Guide
 
 ### Community 51 - "Security Policy"
 Cohesion: 0.40
@@ -337,24 +337,24 @@ Cohesion: 0.50
 Nodes (3): Creating and Managing Tasks, Issue Tracker: Backlog.md CLI (`backlog`) & Groma.md (`groma`), Linking Tasks to Groma Architecture
 
 ## Knowledge Gaps
-- **393 isolated node(s):** `AppKit`, `MediaPlayer`, `lint.sh script`, `run.sh script`, `Persistence` (+388 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 517 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **397 isolated node(s):** `AppKit`, `MediaPlayer`, `lint.sh script`, `run.sh script`, `Persistence` (+392 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 522 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Vdots` connect `Keymaps` to `Plugins`?**
+- **Why does `Vdots` connect `Keymaps` to `Keymaps`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
 - **Why does `Completed Tasks` connect `Completed Tasks` to `Expert Audit (2026-02-28) — Medium Impact`?**
   _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `Keymaps` connect `Keymaps` to `Plugins`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
 - **What connects `AppKit`, `MediaPlayer`, `lint.sh script` to the rest of the system?**
-  _393 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _397 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Completed Tasks` be split into smaller, more focused modules?**
   _Cohesion score 0.046511627906976744 - nodes in this community are weakly interconnected._
-- **Should `Plugins` be split into smaller, more focused modules?**
-  _Cohesion score 0.05547652916073969 - nodes in this community are weakly interconnected._
+- **Should `Keymaps` be split into smaller, more focused modules?**
+  _Cohesion score 0.04343971631205674 - nodes in this community are weakly interconnected._
 - **Should `Expert Audit (2026-02-28) — Medium Impact` be split into smaller, more focused modules?**
   _Cohesion score 0.06060606060606061 - nodes in this community are weakly interconnected._
+- **Should `player.lua` be split into smaller, more focused modules?**
+  _Cohesion score 0.1066066066066066 - nodes in this community are weakly interconnected._
