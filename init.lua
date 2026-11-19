@@ -216,7 +216,7 @@ then
     vim.log.levels.WARN
   )
 end
-require("ui.kanagawa_wave").setup() -- highlight overrides on top (self-contained palette)
+require("ui.kanagawa").setup() -- highlight overrides on top (self-contained palette)
 require "ui.lualine"
 require("ui.diagnostics").setup() -- Diagnostic signs / virtual-text styling
 require("editor.treesitter").setup() -- Native TS highlighting + textobjects
@@ -224,7 +224,7 @@ require("editor.treesitter").setup() -- Native TS highlighting + textobjects
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = vim.api.nvim_create_augroup("KanagawaOverrides", { clear = true }),
   callback = function()
-    require("ui.kanagawa_wave").setup()
+    require("ui.kanagawa").setup()
     require("editor.treesitter").highlights()
   end,
 })

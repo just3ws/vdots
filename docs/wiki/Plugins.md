@@ -7,7 +7,7 @@ All plugins are declared via `vim.pack.add()` in `init.lua`. Configuration lives
 | Plugin | Role |
 |--------|------|
 | `rebelot/kanagawa.nvim` | Kanagawa colour scheme; `colorscheme kanagawa-wave` (Wave variant), configured via `kanagawa.setup{ theme = "wave" }` in `init.lua` with a hand-tuned `ui.bg` (#1A1B2F) |
-| `ui.kanagawa_wave` | Local override layer — sources the Wave palette from `kanagawa.colors` and provides the lualine palette + diagnostic/gutter highlight overrides |
+| `ui.kanagawa` | Local override layer — sources the Wave palette from `kanagawa.colors` and provides the lualine palette + diagnostic/gutter highlight overrides |
 | `nvim-lualine/lualine.nvim` | Status line — Kanagawa Wave themed, shows mode/branch/diff/diagnostics/filename/rails env/location |
 | `nvim-tree/nvim-web-devicons` | File-type icons (dependency) |
 | `echasnovski/mini.nvim` | `mini.statusline` + `mini.pick` used; provides mini.icons for nvim-tree |

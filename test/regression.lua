@@ -181,15 +181,15 @@ test("Core plugins loaded: lualine", function()
   assert_exists "lualine"
 end)
 
-test("Theme loaded: ui.kanagawa_wave overrides on kanagawa-wave", function()
-  assert_exists "ui.kanagawa_wave"
+test("Theme loaded: ui.kanagawa overrides on kanagawa", function()
+  assert_exists "ui.kanagawa"
   -- kanagawa.nvim's load() always sets colors_name to "kanagawa" regardless
   -- of variant (wave/dragon/lotus) — this is upstream's own behavior.
   assert_eq(vim.g.colors_name, "kanagawa", "colorscheme should be kanagawa")
 end)
 
 test("Theme follows the background: Lotus when light, Wave when dark", function()
-  local palette = require("ui.kanagawa_wave").palette
+  local palette = require("ui.kanagawa").palette
   local was = vim.o.background
   vim.o.background = "light"
   assert_eq(palette.bg:upper(), "#F2ECBC", "light background is Lotus")

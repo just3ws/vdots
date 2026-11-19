@@ -9,7 +9,7 @@ vdots is a single-repo Lua configuration for Neovim 0.12+. All modules live unde
 1. **Leader key** — `;` (all other options live in `lua/editor/options.lua`)
 2. **Plugin declarations** — `vim.pack.add({...})` — all plugins declared in one block
 3. **Module requires** — `editor.*` (options, keymaps, autocmds, commands, llm, usage, errors, search, healthcheck)
-4. **Snacks + theme** — snacks setup, `colorscheme kanagawa-wave`, kanagawa_wave highlight overrides, lualine, diagnostics, native treesitter
+4. **Snacks + theme** — snacks setup, `colorscheme kanagawa` (Lotus in light, Wave in dark), `ui.kanagawa` highlight overrides, lualine, diagnostics, native treesitter
 5. **Mason** — `require("editor.mason").setup()` (editor-only LSP servers; skipped headless/CI) — runs before LSP enable so `mason/bin` is on PATH
 6. **Plugin setup** — `require("plugins").setup_all()` configures every vim.pack plugin and binds its keymaps
 7. **LSP wiring** — `LspAttach` autocmd, per-server `vim.lsp.config()`, then `vim.lsp.enable()`
@@ -43,7 +43,7 @@ lua/
     healthcheck.lua         Deprecation-warning filter/log
   ui/
     diagnostics.lua         Diagnostic display config
-    kanagawa_wave.lua       Kanagawa Wave palette + highlight overrides (colorscheme is "kanagawa-wave")
+    kanagawa.lua       Kanagawa Wave palette + highlight overrides (colorscheme is "kanagawa-wave")
     lualine.lua             lualine theme (kanagawa Wave colours) + rails_env component
   zdots/
     init.lua                Lua bridge to the zdots shell platform (zdots-ctx, ztask, pi-ctx-*)

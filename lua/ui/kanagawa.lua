@@ -1,6 +1,6 @@
 local M = {}
 
----@class KanagawaWavePalette
+---@class KanagawaPalette
 ---@field none     string
 ---@field bg       string
 ---@field bg_dark  string
@@ -113,7 +113,7 @@ end
 ---light (sourced from kanagawa.nvim when installed). The table is filled in
 ---place by M.resolve(), so modules that hold it see the other variant after a
 ---background change.
----@type KanagawaWavePalette
+---@type KanagawaPalette
 M.palette = {}
 
 function M.resolve()

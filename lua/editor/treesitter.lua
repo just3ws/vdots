@@ -62,7 +62,7 @@ end
 ---Apply the Kanagawa highlight overrides for the current background. Runs at
 ---setup and again whenever the colorscheme reloads (light or dark change).
 function M.highlights()
-  local kanagawa = require("ui.kanagawa_wave").palette
+  local kanagawa = require("ui.kanagawa").palette
   local set_hl = vim.api.nvim_set_hl
 
   -- --- Kanagawa Wave Highlight Overrides ---
