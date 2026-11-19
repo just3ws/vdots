@@ -192,21 +192,27 @@ require("snacks").setup {
 -- Guard the base colorscheme: on a fresh machine vim.pack may not have fetched
 -- kanagawa.nvim yet, and an unguarded require/colorscheme throws (E185 / module
 -- not found), aborting the rest of init. Degrade gracefully with a hint instead.
+-- One family, two variants: Lotus on a light background, Wave on a dark one.
+-- Start from the macOS appearance (a GUI has no terminal to ask); in a terminal
+-- Neovim then follows the terminal's own background.
+if vim.fn.executable "/usr/bin/defaults" == 1 then
+  vim.fn.system { "/usr/bin/defaults", "read", "-g", "AppleInterfaceStyle" }
+  vim.o.background = vim.v.shell_error == 0 and "dark" or "light"
+end
 if
   not pcall(function()
     require("kanagawa").setup {
-      theme = "wave",
-      background = { dark = "wave" },
+      background = { dark = "wave", light = "lotus" },
       -- Operator hand-tuned the platform background bluer than canonical Sumi
       -- Ink3 (#1F1F28); overriding ui.bg propagates #1A1B2F to every
       -- kanagawa-generated highlight, not just Normal.
       colors = { theme = { wave = { ui = { bg = "#1A1B2F" } } } },
     }
-    vim.cmd.colorscheme "kanagawa-wave"
+    vim.cmd.colorscheme "kanagawa"
   end)
 then
   vim.notify(
-    "colorscheme 'kanagawa-wave' not installed yet — run :lua vim.pack.update() then restart",
+    "colorscheme 'kanagawa' not installed yet — run :lua vim.pack.update() then restart",
     vim.log.levels.WARN
   )
 end
@@ -214,6 +220,14 @@ require("ui.kanagawa_wave").setup() -- highlight overrides on top (self-containe
 require "ui.lualine"
 require("ui.diagnostics").setup() -- Diagnostic signs / virtual-text styling
 require("editor.treesitter").setup() -- Native TS highlighting + textobjects
+-- A background change reloads the colorscheme; put the overrides back on top.
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = vim.api.nvim_create_augroup("KanagawaOverrides", { clear = true }),
+  callback = function()
+    require("ui.kanagawa_wave").setup()
+    require("editor.treesitter").highlights()
+  end,
+})
 require("editor.mason").setup() -- editor-only LSP servers (skipped headless/CI)
 
 -- Plugin setup + their keymaps (everything vim.pack installs above)

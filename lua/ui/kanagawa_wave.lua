@@ -13,39 +13,83 @@ local M = {}
 ---@field yellow   string
 ---@field green    string
 ---@field cyan     string
+---@field blue     string
 ---@field pink     string
 ---@field purple   string
 ---@field gray     string
 ---@field gray_light string
 
--- Fallback hex (verified against iTerm2-Color-Schemes' Kanagawa Wave.itermcolors)
--- for the same-machine-not-yet-installed race guarded in init.lua.
+-- Fallback hex for the same-machine-not-yet-installed race guarded in init.lua,
+-- one set per variant: Wave for a dark background, Lotus for a light one.
 local fallback = {
-  bg = "#1F1F28",
-  bg_dark = "#16161D",
-  bg_light = "#2A2A37",
-  fg = "#DCD7BA",
-  fg_light = "#DCD7BA",
-  fg_dark = "#C8C093",
-  red = "#C34043",
-  orange = "#FFA066",
-  yellow = "#E6C384",
-  green = "#98BB6C",
-  cyan = "#7AA89F",
-  pink = "#D27E99",
-  purple = "#957FB8",
-  gray = "#727169",
-  gray_light = "#54546D",
+  dark = {
+    bg = "#1F1F28",
+    bg_dark = "#16161D",
+    bg_light = "#2A2A37",
+    fg = "#DCD7BA",
+    fg_light = "#DCD7BA",
+    fg_dark = "#C8C093",
+    red = "#C34043",
+    orange = "#FFA066",
+    yellow = "#E6C384",
+    green = "#98BB6C",
+    cyan = "#7AA89F",
+    blue = "#7E9CD8",
+    pink = "#D27E99",
+    purple = "#957FB8",
+    gray = "#727169",
+    gray_light = "#54546D",
+  },
+  light = {
+    bg = "#F2ECBC",
+    bg_dark = "#DCD5AC",
+    bg_light = "#E7DBA0",
+    fg = "#545464",
+    fg_light = "#43436C",
+    fg_dark = "#716E61",
+    red = "#C84053",
+    orange = "#CC6D00",
+    yellow = "#77713F",
+    green = "#6F894E",
+    cyan = "#597B75",
+    blue = "#4D699B",
+    pink = "#B35B79",
+    purple = "#624C83",
+    gray = "#8A8980",
+    gray_light = "#E7DBA0",
+  },
 }
 
-local ok, kanagawa_colors = pcall(function()
-  return require("kanagawa.colors").setup { theme = "wave" }
-end)
-
-local resolved = fallback
-if ok and kanagawa_colors and kanagawa_colors.palette then
-  local p = kanagawa_colors.palette
-  resolved = {
+---The same roles from kanagawa.nvim's own palette, when it is installed.
+local function from_plugin(variant)
+  local ok, colors = pcall(function()
+    return require("kanagawa.colors").setup { theme = variant == "light" and "lotus" or "wave" }
+  end)
+  if not (ok and colors and colors.palette) then
+    return nil
+  end
+  local p = colors.palette
+  if variant == "light" then
+    return {
+      bg = p.lotusWhite3,
+      bg_dark = p.lotusWhite1,
+      bg_light = p.lotusWhite4,
+      fg = p.lotusInk1,
+      fg_light = p.lotusInk2,
+      fg_dark = p.lotusGray2,
+      red = p.lotusRed,
+      orange = p.lotusOrange,
+      yellow = p.lotusYellow,
+      green = p.lotusGreen,
+      cyan = p.lotusAqua,
+      blue = p.lotusBlue4,
+      pink = p.lotusPink,
+      purple = p.lotusViolet4,
+      gray = p.lotusGray3,
+      gray_light = p.lotusWhite4,
+    }
+  end
+  return {
     bg = p.sumiInk3,
     bg_dark = p.sumiInk0,
     bg_light = p.sumiInk4,
@@ -57,6 +101,7 @@ if ok and kanagawa_colors and kanagawa_colors.palette then
     yellow = p.carpYellow,
     green = p.springGreen,
     cyan = p.waveAqua2,
+    blue = p.crystalBlue,
     pink = p.sakuraPink,
     purple = p.oniViolet,
     gray = p.fujiGray,
@@ -64,18 +109,32 @@ if ok and kanagawa_colors and kanagawa_colors.palette then
   }
 end
 
--- ponytail: bg hand-tuned bluer/more saturated than canonical Sumi Ink3
--- (#1F1F28 -> #1A1B2F), overriding both the fallback and the live plugin
--- value; every other field stays exactly what kanagawa.nvim reports.
-resolved.bg = "#1A1B2F"
-resolved.none = "NONE"
-
----Kanagawa Wave color palette (sourced from kanagawa.nvim when installed).
+---Kanagawa palette for the current background: Wave when dark, Lotus when
+---light (sourced from kanagawa.nvim when installed). The table is filled in
+---place by M.resolve(), so modules that hold it see the other variant after a
+---background change.
 ---@type KanagawaWavePalette
-M.palette = resolved
+M.palette = {}
+
+function M.resolve()
+  local variant = vim.o.background == "light" and "light" or "dark"
+  local resolved = from_plugin(variant) or fallback[variant]
+  for k, v in pairs(resolved) do
+    M.palette[k] = v
+  end
+  if variant == "dark" then
+    -- ponytail: Wave's bg hand-tuned bluer/more saturated than canonical Sumi
+    -- Ink3 (#1F1F28 -> #1A1B2F), overriding both the fallback and the live
+    -- plugin value. Lotus is upstream's, unchanged.
+    M.palette.bg = "#1A1B2F"
+  end
+  M.palette.none = "NONE"
+  return M.palette
+end
 
 function M.setup()
-  -- Highlight overrides layered on the active colorscheme (kanagawa-wave);
+  M.resolve()
+  -- Highlight overrides layered on the active colorscheme (kanagawa);
   -- this module owns the same override set dracula_pro used to, recolored.
   local function hl(name, opts)
     vim.api.nvim_set_hl(0, name, opts)
@@ -152,7 +211,7 @@ function M.setup()
   hl("ackrcColorRed", { fg = p.red, bold = true })
   hl("ackrcColorGreen", { fg = p.green, bold = true })
   hl("ackrcColorYellow", { fg = p.yellow, bold = true })
-  hl("ackrcColorBlue", { fg = "#7E9CD8", bold = true })
+  hl("ackrcColorBlue", { fg = p.blue, bold = true })
   hl("ackrcColorMagenta", { fg = p.pink, bold = true })
   hl("ackrcColorCyan", { fg = p.cyan, bold = true })
   hl("ackrcColorWhite", { fg = p.fg, bold = true })
@@ -160,7 +219,7 @@ function M.setup()
   hl("ackrcBgColorRed", { bg = p.red, fg = p.fg })
   hl("ackrcBgColorGreen", { bg = p.green, fg = p.bg_dark })
   hl("ackrcBgColorYellow", { bg = p.yellow, fg = p.bg_dark })
-  hl("ackrcBgColorBlue", { bg = "#7E9CD8", fg = p.bg_dark })
+  hl("ackrcBgColorBlue", { bg = p.blue, fg = p.bg_dark })
   hl("ackrcBgColorMagenta", { bg = p.pink, fg = p.bg_dark })
   hl("ackrcBgColorCyan", { bg = p.cyan, fg = p.bg_dark })
   hl("ackrcBgColorWhite", { bg = p.fg, fg = p.bg_dark })

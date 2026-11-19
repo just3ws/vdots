@@ -1,37 +1,40 @@
 local kanagawa = require("ui.kanagawa_wave").palette
 
-local kanagawa_wave_theme = {
-  normal = {
-    a = { bg = kanagawa.purple, fg = kanagawa.bg, gui = "bold" },
-    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
-    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
-  },
-  insert = {
-    a = { bg = kanagawa.green, fg = kanagawa.bg, gui = "bold" },
-    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
-    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
-  },
-  visual = {
-    a = { bg = kanagawa.pink, fg = kanagawa.bg, gui = "bold" },
-    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
-    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
-  },
-  replace = {
-    a = { bg = kanagawa.red, fg = kanagawa.bg, gui = "bold" },
-    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
-    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
-  },
-  command = {
-    a = { bg = kanagawa.orange, fg = kanagawa.bg, gui = "bold" },
-    b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
-    c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
-  },
-  inactive = {
-    a = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
-    b = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
-    c = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
-  },
-}
+---The statusline theme, built from the palette for the current background.
+local function kanagawa_theme()
+  return {
+    normal = {
+      a = { bg = kanagawa.purple, fg = kanagawa.bg, gui = "bold" },
+      b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+      c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
+    },
+    insert = {
+      a = { bg = kanagawa.green, fg = kanagawa.bg, gui = "bold" },
+      b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+      c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
+    },
+    visual = {
+      a = { bg = kanagawa.pink, fg = kanagawa.bg, gui = "bold" },
+      b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+      c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
+    },
+    replace = {
+      a = { bg = kanagawa.red, fg = kanagawa.bg, gui = "bold" },
+      b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+      c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
+    },
+    command = {
+      a = { bg = kanagawa.orange, fg = kanagawa.bg, gui = "bold" },
+      b = { bg = kanagawa.bg_light, fg = kanagawa.fg },
+      c = { bg = kanagawa.bg_dark, fg = kanagawa.fg },
+    },
+    inactive = {
+      a = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
+      b = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
+      c = { bg = kanagawa.bg_dark, fg = kanagawa.gray },
+    },
+  }
+end
 
 local function rails_env()
   local is_rails = vim.fn.filereadable "config/environment.rb" ~= 0
@@ -42,24 +45,33 @@ local function rails_env()
   return "󰴭 " .. env
 end
 
-require("lualine").setup {
-  options = {
-    theme = kanagawa_wave_theme,
-    section_separators = "",
-    component_separators = "",
-    globalstatus = true,
-  },
-  sections = {
-    lualine_a = { "mode" },
-    lualine_b = { "branch", "diff", "diagnostics" },
-    lualine_c = { { "filename", path = 1 } },
-    lualine_x = {
-      rails_env,
-      "encoding",
-      "fileformat",
-      "filetype",
+local function apply()
+  require("lualine").setup {
+    options = {
+      theme = kanagawa_theme(),
+      section_separators = "",
+      component_separators = "",
+      globalstatus = true,
     },
-    lualine_y = { "progress" },
-    lualine_z = { "location" },
-  },
-}
+    sections = {
+      lualine_a = { "mode" },
+      lualine_b = { "branch", "diff", "diagnostics" },
+      lualine_c = { { "filename", path = 1 } },
+      lualine_x = {
+        rails_env,
+        "encoding",
+        "fileformat",
+        "filetype",
+      },
+      lualine_y = { "progress" },
+      lualine_z = { "location" },
+    },
+  }
+end
+apply()
+
+-- Rebuild the statusline colours when the colorscheme reloads (light or dark).
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = vim.api.nvim_create_augroup("KanagawaLualine", { clear = true }),
+  callback = apply,
+})
