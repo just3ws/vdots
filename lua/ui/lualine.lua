@@ -1,4 +1,4 @@
-local kanagawa = require("ui.kanagawa_wave").palette
+local kanagawa = require("ui.kanagawa").palette
 
 ---The statusline theme, built from the palette for the current background.
 local function kanagawa_theme()
