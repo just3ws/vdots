@@ -200,6 +200,42 @@ test("Theme follows the background: Lotus when light, Wave when dark", function(
   vim.o.background = was
 end)
 
+test("An open editor follows a macOS appearance flip", function()
+  local appearance = require "ui.appearance"
+  local was, macos = vim.o.background, "light"
+  vim.o.background = "light"
+  appearance.watch(10, function(done)
+    done(macos)
+  end)
+  macos = "dark"
+  vim.wait(1000, function()
+    return vim.o.background == "dark"
+  end)
+  appearance.stop()
+  assert_eq(vim.o.background, "dark", "background after the flip")
+  assert_eq(vim.api.nvim_get_hl(0, { name = "Normal" }).bg, 0x1A1B2F, "Normal bg after the flip")
+  vim.o.background = was
+end)
+
+test("A manual :set background stays until macOS flips", function()
+  local appearance = require "ui.appearance"
+  local was = vim.o.background
+  vim.o.background = "light"
+  appearance.watch(10, function(done)
+    done "light"
+  end)
+  vim.wait(50)
+  vim.o.background = "dark"
+  vim.wait(100)
+  appearance.stop()
+  assert_eq(vim.o.background, "dark", "manual choice kept")
+  vim.o.background = was
+end)
+
+test("No appearance timer without a UI", function()
+  assert_eq(require("ui.appearance").timer, nil, "timer in headless")
+end)
+
 -- ============================================================================
 -- SECTION 3: LSP Configuration
 -- ============================================================================
