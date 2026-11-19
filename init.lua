@@ -193,12 +193,8 @@ require("snacks").setup {
 -- kanagawa.nvim yet, and an unguarded require/colorscheme throws (E185 / module
 -- not found), aborting the rest of init. Degrade gracefully with a hint instead.
 -- One family, two variants: Lotus on a light background, Wave on a dark one.
--- Start from the macOS appearance (a GUI has no terminal to ask); in a terminal
--- Neovim then follows the terminal's own background.
-if vim.fn.executable "/usr/bin/defaults" == 1 then
-  vim.fn.system { "/usr/bin/defaults", "read", "-g", "AppleInterfaceStyle" }
-  vim.o.background = vim.v.shell_error == 0 and "dark" or "light"
-end
+-- The background follows the macOS appearance, at startup and while open.
+require("ui.appearance").setup()
 if
   not pcall(function()
     require("kanagawa").setup {
