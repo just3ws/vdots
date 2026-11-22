@@ -202,7 +202,8 @@ end)
 
 test("An open editor follows a macOS appearance flip", function()
   local appearance = require "ui.appearance"
-  local was, macos = vim.o.background, "light"
+  local was, was_last, macos = vim.o.background, appearance.last, "light"
+  appearance.last = "light"
   vim.o.background = "light"
   appearance.watch(10, function(done)
     done(macos)
@@ -215,11 +216,13 @@ test("An open editor follows a macOS appearance flip", function()
   assert_eq(vim.o.background, "dark", "background after the flip")
   assert_eq(vim.api.nvim_get_hl(0, { name = "Normal" }).bg, 0x1A1B2F, "Normal bg after the flip")
   vim.o.background = was
+  appearance.last = was_last
 end)
 
 test("A manual :set background stays until macOS flips", function()
   local appearance = require "ui.appearance"
-  local was = vim.o.background
+  local was, was_last = vim.o.background, appearance.last
+  appearance.last = "light"
   vim.o.background = "light"
   appearance.watch(10, function(done)
     done "light"
@@ -230,6 +233,7 @@ test("A manual :set background stays until macOS flips", function()
   appearance.stop()
   assert_eq(vim.o.background, "dark", "manual choice kept")
   vim.o.background = was
+  appearance.last = was_last
 end)
 
 test("No appearance timer without a UI", function()
